@@ -2,10 +2,9 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Livewire\Auth\Login;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
+use Livewire\Volt\Volt as LivewireVolt;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -14,7 +13,7 @@ class AuthenticationTest extends TestCase
 
     public function test_login_screen_can_be_rendered(): void
     {
-        $response = $this->get('/login');
+        $response = $this->get(route('login'));
 
         $response->assertStatus(200);
     }
@@ -23,7 +22,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = Livewire::test(Login::class)
+        $response = LivewireVolt::test('auth.login')
             ->set('email', $user->email)
             ->set('password', 'password')
             ->call('login');
@@ -39,7 +38,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = Livewire::test(Login::class)
+        $response = LivewireVolt::test('auth.login')
             ->set('email', $user->email)
             ->set('password', 'wrong-password')
             ->call('login');
@@ -53,9 +52,9 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/logout');
+        $response = $this->actingAs($user)->post(route('logout'));
 
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('home'));
 
         $this->assertGuest();
     }

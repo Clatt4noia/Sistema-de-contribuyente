@@ -2,10 +2,9 @@
 
 namespace Tests\Feature\Settings;
 
-use App\Livewire\Settings\Profile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
+use Livewire\Volt\Volt;
 use Tests\TestCase;
 
 class ProfileUpdateTest extends TestCase
@@ -16,7 +15,7 @@ class ProfileUpdateTest extends TestCase
     {
         $this->actingAs($user = User::factory()->create());
 
-        $this->get('/settings/profile')->assertOk();
+        $this->get(route('profile.edit'))->assertOk();
     }
 
     public function test_profile_information_can_be_updated(): void
@@ -25,7 +24,7 @@ class ProfileUpdateTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = Livewire::test(Profile::class)
+        $response = Volt::test('settings.profile')
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
             ->call('updateProfileInformation');
@@ -45,7 +44,7 @@ class ProfileUpdateTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = Livewire::test(Profile::class)
+        $response = Volt::test('settings.profile')
             ->set('name', 'Test User')
             ->set('email', $user->email)
             ->call('updateProfileInformation');
@@ -61,7 +60,7 @@ class ProfileUpdateTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = Livewire::test('settings.delete-user-form')
+        $response = Volt::test('settings.delete-user-form')
             ->set('password', 'password')
             ->call('deleteUser');
 
@@ -79,7 +78,7 @@ class ProfileUpdateTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = Livewire::test('settings.delete-user-form')
+        $response = Volt::test('settings.delete-user-form')
             ->set('password', 'wrong-password')
             ->call('deleteUser');
 
