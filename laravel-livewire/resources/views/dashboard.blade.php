@@ -2,18 +2,20 @@
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
 
-            <div class="p-4">
-                <div class="flex items-center gap-3">
-                    <div>
-                        <h2 class="font-semibold">{{ Auth::user()->name }}</h2>
-                        <p class="text-sm text-neutral-500">{{ Auth::user()->email }}</p>
-                    </div>
-                </div>
+             <div class="rounded-xl bg-purple-600 text-white p-4 shadow-md">
+                <h3 class="text-lg font-semibold">Proyectos activos</h3>
+                <p class="text-2xl font-bold">5</p>
+                <a href="#" class="text-sm underline">Ver más</a>
             </div>
 
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
+            <div class="rounded-xl bg-purple-600 text-white p-4 shadow-md">
+                <h3 class="text-lg font-semibold">Tareas por hacer</h3>
+                <p class="text-2xl font-bold">3</p>
+                <a href="#" class="text-sm underline">Ver más</a>
             </div>
+
+
+
         </div>
     </div>
 </x-layouts.app>
