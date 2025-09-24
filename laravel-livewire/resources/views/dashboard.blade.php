@@ -8,8 +8,8 @@
                     <a href="{{ route('fleet.assignments.index') }}" class="text-sm bg-white text-blue-600 px-2 py-1 rounded">Asignaciones</a>
                 </div>
         </div>
-    </div>
-    <div class="grid auto-rows-min gap-4 md:grid-cols-2">
+        
+        <div class="grid auto-rows-min gap-4 md:grid-cols-2">
         <div class="rounded-xl bg-white dark:bg-gray-800 p-4 shadow-md">
             <h3 class="text-lg font-semibold mb-3">Camiones Disponibles</h3>
             <div class="overflow-x-auto">
@@ -67,7 +67,6 @@
                 <a href="{{ route('fleet.maintenance.index') }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Ver todos</a>
             </div>
         </div>
+        </div>
     </div>
-</div>
-
 </x-layouts.app>
