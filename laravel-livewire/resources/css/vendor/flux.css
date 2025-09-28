@@ -1,0 +1,12 @@
+/*
+ |--------------------------------------------------------------------------
+ | Flux CSS fallback
+ |--------------------------------------------------------------------------
+ | This lightweight stub prevents Vite builds from failing when the Flux
+ | package isn't installed locally. The real stylesheet will be resolved
+ | automatically when the vendor asset is present.
+ */
+
+:root {
+    --flux-stub-ready: 1;
+}
