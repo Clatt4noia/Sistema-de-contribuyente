@@ -1,83 +1,146 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="rounded-xl bg-blue-600 text-white p-4 shadow-md">
-                <h3 class="text-lg font-semibold">Gestion de Flota</h3>
-                <div class="flex flex-wrap gap-2 mt-3">
-                    <a href="{{ route('fleet.trucks.index') }}" class="text-sm bg-white text-blue-600 px-2 py-1 rounded">Camiones</a>
-                    <a href="{{ route('fleet.drivers.index') }}" class="text-sm bg-white text-blue-600 px-2 py-1 rounded">Conductores</a>
-                    <a href="{{ route('fleet.assignments.index') }}" class="text-sm bg-white text-blue-600 px-2 py-1 rounded">Asignaciones</a>
-                    <a href="{{ route('fleet.report') }}" class="text-sm bg-white text-blue-600 px-2 py-1 rounded">Reportes</a>
-                    <a href="{{ route('fleet.maintenance.index') }}" class="text-sm bg-white text-blue-600 px-2 py-1 rounded">Mantenimientos</a>
+    <section class="grid gap-6 lg:grid-cols-3">
+        <article class="rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 p-6 text-white shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-semibold tracking-tight">Gestión de Flota</h2>
+                    <p class="mt-2 max-w-sm text-sm text-indigo-100">
+                        Supervisa camiones, conductores y reportes con métricas en tiempo real.
+                    </p>
                 </div>
+                <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-50">
+                    Flujo activo
+                </span>
             </div>
-            <div class="rounded-xl bg-white p-4 shadow-md">
-                <h3 class="text-lg font-semibold text-gray-700">Operaciones y Finanzas</h3>
-                <div class="flex flex-wrap gap-2 mt-3">
-                    <a href="{{ route('orders.index') }}" class="text-sm bg-blue-600 text-white px-2 py-1 rounded">Pedidos</a>
-                    <a href="{{ route('clients.index') }}" class="text-sm bg-blue-600 text-white px-2 py-1 rounded">Clientes</a>
-                    <a href="{{ route('billing.invoices.index') }}" class="text-sm bg-blue-600 text-white px-2 py-1 rounded">Facturas</a>
-                    <a href="{{ route('billing.payments.index') }}" class="text-sm bg-blue-600 text-white px-2 py-1 rounded">Pagos</a>
-                </div>
+            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                <a href="{{ route('fleet.trucks.index') }}" class="flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3 text-sm font-semibold tracking-wide transition hover:bg-white/25">
+                    <span>Camiones</span>
+                    <span class="text-white/70">&rarr;</span>
+                </a>
+                <a href="{{ route('fleet.drivers.index') }}" class="flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3 text-sm font-semibold tracking-wide transition hover:bg-white/25">
+                    <span>Conductores</span>
+                    <span class="text-white/70">&rarr;</span>
+                </a>
+                <a href="{{ route('fleet.assignments.index') }}" class="flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3 text-sm font-semibold tracking-wide transition hover:bg-white/25">
+                    <span>Asignaciones</span>
+                    <span class="text-white/70">&rarr;</span>
+                </a>
+                <a href="{{ route('fleet.report') }}" class="flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3 text-sm font-semibold tracking-wide transition hover:bg-white/25">
+                    <span>Reportes</span>
+                    <span class="text-white/70">&rarr;</span>
+                </a>
+                <a href="{{ route('fleet.maintenance.index') }}" class="flex items-center justify-between rounded-2xl bg-white/15 px-4 py-3 text-sm font-semibold tracking-wide transition hover:bg-white/25">
+                    <span>Mantenimientos</span>
+                    <span class="text-white/70">&rarr;</span>
+                </a>
             </div>
-        </div>
+        </article>
 
-        <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-            <div class="rounded-xl bg-white dark:bg-gray-800 p-4 shadow-md">
-                <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">Camiones disponibles</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Placa</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modelo</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                            @foreach(\App\Models\Truck::where('status', 'available')->orderBy('plate_number')->take(5)->get() as $truck)
-                                <tr>
-                                    <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $truck->plate_number }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $truck->brand }} {{ $truck->model }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100">Disponible</span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3 text-right">
-                    <a href="{{ route('fleet.trucks.index') }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Ver todos</a>
-                </div>
+        <article class="flex flex-col rounded-3xl border border-indigo-100 bg-white/90 p-6 shadow-xl backdrop-blur-sm">
+            <h3 class="text-xl font-semibold text-slate-900">Operaciones y Finanzas</h3>
+            <p class="mt-2 text-sm text-slate-500">
+                Mantén el control de pedidos, clientes y facturación con accesos directos claros.
+            </p>
+            <div class="mt-6 grid gap-3">
+                <a href="{{ route('orders.index') }}" class="flex items-center justify-between rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                    <span>Pedidos</span>
+                    <span>&rarr;</span>
+                </a>
+                <a href="{{ route('clients.index') }}" class="flex items-center justify-between rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                    <span>Clientes</span>
+                    <span>&rarr;</span>
+                </a>
+                <a href="{{ route('billing.invoices.index') }}" class="flex items-center justify-between rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                    <span>Facturas</span>
+                    <span>&rarr;</span>
+                </a>
+                <a href="{{ route('billing.payments.index') }}" class="flex items-center justify-between rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                    <span>Pagos</span>
+                    <span>&rarr;</span>
+                </a>
             </div>
+            <div class="mt-6 flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+                <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                Información actualizada al día de hoy.
+            </div>
+        </article>
+    </section>
 
-            <div class="rounded-xl bg-white dark:bg-gray-800 p-4 shadow-md">
-                <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">Mantenimientos programados</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Vehiculo</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tipo</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                            @foreach(\App\Models\Maintenance::where('status', 'scheduled')->with('truck')->orderBy('maintenance_date')->take(5)->get() as $maintenance)
-                                <tr>
-                                    <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $maintenance->truck->plate_number }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $maintenance->maintenance_date->format('d/m/Y') }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $maintenance->maintenance_type }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+    <section class="grid gap-6 lg:grid-cols-2">
+        <article class="rounded-3xl bg-white/95 p-6 shadow-xl ring-1 ring-slate-100 dark:bg-zinc-900/80 dark:ring-zinc-800">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Camiones disponibles</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Últimas unidades listas para despacho.</p>
                 </div>
-                <div class="mt-3 text-right">
-                    <a href="{{ route('fleet.maintenance.index') }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Ver todos</a>
-                </div>
+                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">Stock</span>
             </div>
-        </div>
-    </div>
+            <div class="mt-4 overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+                    <thead class="bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/70 dark:text-slate-300">
+                        <tr>
+                            <th class="px-4 py-3">Placa</th>
+                            <th class="px-4 py-3">Modelo</th>
+                            <th class="px-4 py-3">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white/70 dark:divide-slate-800 dark:bg-transparent">
+                        @foreach(\App\Models\Truck::where('status', 'available')->orderBy('plate_number')->take(5)->get() as $truck)
+                            <tr class="transition hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
+                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">{{ $truck->plate_number }}</td>
+                                <td class="px-4 py-3 text-slate-500 dark:text-slate-300">{{ $truck->brand }} {{ $truck->model }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
+                                        Disponible
+                                    </span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <a href="{{ route('fleet.trucks.index') }}" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                    Ver todos
+                    <span>&rarr;</span>
+                </a>
+            </div>
+        </article>
+
+        <article class="rounded-3xl bg-white/95 p-6 shadow-xl ring-1 ring-slate-100 dark:bg-zinc-900/80 dark:ring-zinc-800">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Mantenimientos programados</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Próximas intervenciones agendadas.</p>
+                </div>
+                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-200">Agenda</span>
+            </div>
+            <div class="mt-4 overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+                    <thead class="bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/70 dark:text-slate-300">
+                        <tr>
+                            <th class="px-4 py-3">Vehículo</th>
+                            <th class="px-4 py-3">Fecha</th>
+                            <th class="px-4 py-3">Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white/70 dark:divide-slate-800 dark:bg-transparent">
+                        @foreach(\App\Models\Maintenance::where('status', 'scheduled')->with('truck')->orderBy('maintenance_date')->take(5)->get() as $maintenance)
+                            <tr class="transition hover:bg-slate-50/80 dark:hover:bg-slate-800/50">
+                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">{{ $maintenance->truck->plate_number }}</td>
+                                <td class="px-4 py-3 text-slate-500 dark:text-slate-300">{{ $maintenance->maintenance_date->format('d/m/Y') }}</td>
+                                <td class="px-4 py-3 text-slate-500 dark:text-slate-300">{{ $maintenance->maintenance_type }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <a href="{{ route('fleet.maintenance.index') }}" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                    Ver todos
+                    <span>&rarr;</span>
+                </a>
+            </div>
+        </article>
+    </section>
 </x-layouts.app>
