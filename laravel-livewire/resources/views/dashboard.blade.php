@@ -44,6 +44,7 @@
                 <a href="{{ route('fleet.maintenance.index') }}" class="group flex items-center justify-between rounded-2xl border border-cyan-100 bg-white/80 px-4 py-3 text-sm font-semibold text-cyan-700 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-white">
                     <span>Mantenimientos</span>
                     <span class="text-cyan-500 transition group-hover:translate-x-0.5">&rarr;</span>
+
                 </a>
             </div>
         </article>
@@ -75,6 +76,7 @@
                 <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
                 Información actualizada al día de hoy.
             </div>
+
         </article>
     </section>
 
@@ -90,6 +92,7 @@
             <div class="mt-4 overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+
                         <tr>
                             <th class="px-4 py-3">Placa</th>
                             <th class="px-4 py-3">Modelo</th>
@@ -103,6 +106,7 @@
                                 <td class="px-4 py-3 text-slate-600">{{ $truck->brand }} {{ $truck->model }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+
                                         Disponible
                                     </span>
                                 </td>
@@ -113,6 +117,7 @@
             </div>
             <div class="mt-4 flex justify-end">
                 <a href="{{ route('fleet.trucks.index') }}" class="inline-flex items-center gap-1 rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-700 transition hover:-translate-y-0.5 hover:border-cyan-300 hover:bg-white">
+
                     Ver todos
                     <span>&rarr;</span>
                 </a>
@@ -130,6 +135,7 @@
             <div class="mt-4 overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+
                         <tr>
                             <th class="px-4 py-3">Vehículo</th>
                             <th class="px-4 py-3">Fecha</th>
@@ -142,6 +148,7 @@
                                 <td class="px-4 py-3 font-medium text-slate-900">{{ $maintenance->truck->plate_number }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ $maintenance->maintenance_date->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ $maintenance->maintenance_type }}</td>
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -149,6 +156,7 @@
             </div>
             <div class="mt-4 flex justify-end">
                 <a href="{{ route('fleet.maintenance.index') }}" class="inline-flex items-center gap-1 rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-700 transition hover:-translate-y-0.5 hover:border-cyan-300 hover:bg-white">
+
                     Ver todos
                     <span>&rarr;</span>
                 </a>

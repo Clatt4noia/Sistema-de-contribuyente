@@ -27,6 +27,7 @@
                         :href="route('dashboard')"
                         :current="request()->routeIs('dashboard')"
                         class="rounded-md transition hover:bg-white/70"
+
                         wire:navigate>
                         {{ __('Inicio') }}
                     </flux:navlist.item>
@@ -41,6 +42,7 @@
                     href="https://github.com/bryansoberon"
                     target="_blank"
                     class="rounded-md transition hover:bg-white/70">
+
                     {{ __('Github bryan') }}
                 </flux:navlist.item>
 
@@ -48,6 +50,7 @@
                     href="https://www.instagram.com/bryansoberon"
                     target="_blank"
                     class="rounded-md transition hover:bg-white/70">
+
                     {{ __('Instagram') }}
                 </flux:navlist.item>
             </flux:navlist>
@@ -62,12 +65,14 @@
                 />
 
                 <flux:menu class="w-[240px] rounded-2xl bg-white/95 text-slate-700 shadow-xl ring-1 ring-cyan-100">
+
                     <flux:menu.radio.group>
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-cyan-100 text-cyan-700"
+
                                     >
                                         {{ auth()->user()->initials() }}
                                     </span>
@@ -76,12 +81,13 @@
                                 <div class="grid flex-1 text-start text-sm leading-tight">
                                     <span class="truncate font-semibold text-slate-900">{{ auth()->user()->name }}</span>
                                     <span class="truncate text-xs text-cyan-600">{{ auth()->user()->email }}</span>
+
                                 </div>
                             </div>
                         </div>
                     </flux:menu.radio.group>
-
                     <flux:menu.separator class="border-cyan-200" />
+
 
                     <flux:menu.radio.group>
                         <flux:menu.item
@@ -89,17 +95,20 @@
                             icon="cog"
                             wire:navigate
                             class="hover:bg-cyan-50">
+
                             {{ __('Configuración') }}
                         </flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator class="border-cyan-200" />
 
+
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
                         <flux:menu.item as="button" type="submit"
                             icon="arrow-right-start-on-rectangle"
                             class="w-full hover:bg-cyan-50"
+
                             data-test="logout-button">
                             {{ __('Cerrar sesión') }}
                         </flux:menu.item>
@@ -128,6 +137,7 @@
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-cyan-100 text-cyan-700"
+
                                     >
                                         {{ auth()->user()->initials() }}
                                     </span>
