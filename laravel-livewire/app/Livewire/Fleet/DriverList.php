@@ -13,7 +13,7 @@ class DriverList extends Component
     public $search = '';
     public $status = '';
 
-    public function deleteDriver($id)
+    public function deleteDriver($id): void
     {
         $driver = Driver::find($id);
         if ($driver) {
@@ -25,6 +25,7 @@ class DriverList extends Component
     public function render()
     {
         $drivers = Driver::query()
+            ->with(['schedules', 'evaluations'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -40,7 +41,7 @@ class DriverList extends Component
             ->paginate(10);
 
         return view('livewire.fleet.driver-list', [
-            'drivers' => $drivers
+            'drivers' => $drivers,
         ]);
     }
 }

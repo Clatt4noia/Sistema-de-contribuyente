@@ -18,7 +18,7 @@ class TruckList extends Component
         $truck = Truck::find($id);
         if ($truck) {
             $truck->delete();
-            session()->flash('message', 'Camión eliminado correctamente.');
+            session()->flash('message', 'Camion eliminado correctamente.');
         }
     }
 

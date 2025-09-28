@@ -6,94 +6,161 @@
         </a>
     </div>
 
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <form wire:submit="save">
+    <div class="bg-white shadow-md rounded-lg p-6 space-y-8">
+        <form wire:submit="save" class="space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Nombre -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                    <input type="text" id="name" wire:model="driver.name" 
-                        class="w-full px-3 py-2 border rounded-md">
+                    <input type="text" id="name" wire:model.defer="driver.name" class="w-full px-3 py-2 border rounded-md">
                     @error('driver.name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Apellido -->
                 <div>
                     <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                    <input type="text" id="last_name" wire:model="driver.last_name" 
-                        class="w-full px-3 py-2 border rounded-md">
+                    <input type="text" id="last_name" wire:model.defer="driver.last_name" class="w-full px-3 py-2 border rounded-md">
                     @error('driver.last_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Número de documento -->
                 <div>
-                    <label for="document_number" class="block text-sm font-medium text-gray-700 mb-1">Número de documento</label>
-                    <input type="text" id="document_number" wire:model="driver.document_number" 
-                        class="w-full px-3 py-2 border rounded-md">
+                    <label for="document_number" class="block text-sm font-medium text-gray-700 mb-1">Numero de documento</label>
+                    <input type="text" id="document_number" wire:model.defer="driver.document_number" class="w-full px-3 py-2 border rounded-md">
                     @error('driver.document_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Número de licencia -->
                 <div>
-                    <label for="license_number" class="block text-sm font-medium text-gray-700 mb-1">Número de licencia</label>
-                    <input type="text" id="license_number" wire:model="driver.license_number" 
-                        class="w-full px-3 py-2 border rounded-md">
+                    <label for="license_number" class="block text-sm font-medium text-gray-700 mb-1">Numero de licencia</label>
+                    <input type="text" id="license_number" wire:model.defer="driver.license_number" class="w-full px-3 py-2 border rounded-md">
                     @error('driver.license_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Vencimiento de licencia -->
                 <div>
                     <label for="license_expiration" class="block text-sm font-medium text-gray-700 mb-1">Vencimiento de licencia</label>
-                    <input type="date" id="license_expiration" wire:model="driver.license_expiration" 
-                        class="w-full px-3 py-2 border rounded-md">
+                    <input type="date" id="license_expiration" wire:model.defer="driver.license_expiration" class="w-full px-3 py-2 border rounded-md">
                     @error('driver.license_expiration') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Teléfono -->
                 <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                    <input type="text" id="phone" wire:model="driver.phone" 
-                        class="w-full px-3 py-2 border rounded-md">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+                    <input type="text" id="phone" wire:model.defer="driver.phone" class="w-full px-3 py-2 border rounded-md">
                     @error('driver.phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="email" wire:model="driver.email" 
-                        class="w-full px-3 py-2 border rounded-md">
+                    <input type="email" id="email" wire:model.defer="driver.email" class="w-full px-3 py-2 border rounded-md">
                     @error('driver.email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Estado -->
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                    <select id="status" wire:model="driver.status" class="w-full px-3 py-2 border rounded-md">
+                    <select id="status" wire:model.defer="driver.status" class="w-full px-3 py-2 border rounded-md">
                         <option value="active">Activo</option>
                         <option value="inactive">Inactivo</option>
                         <option value="on_leave">De permiso</option>
+                        <option value="assigned">Asignado</option>
                     </select>
                     @error('driver.status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
             </div>
 
-            <!-- Dirección -->
-            <div class="mt-6">
-                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
-                <input type="text" id="address" wire:model="driver.address" 
-                    class="w-full px-3 py-2 border rounded-md">
+            <div>
+                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Direccion</label>
+                <input type="text" id="address" wire:model.defer="driver.address" class="w-full px-3 py-2 border rounded-md">
                 @error('driver.address') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Notas -->
-            <div class="mt-6">
+            <div>
                 <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
-                <textarea id="notes" wire:model="driver.notes" rows="4" 
-                    class="w-full px-3 py-2 border rounded-md"></textarea>
+                <textarea id="notes" wire:model.defer="driver.notes" rows="4" class="w-full px-3 py-2 border rounded-md"></textarea>
                 @error('driver.notes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
-            <div class="mt-6">
+            <div class="border-t pt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">Horarios</h2>
+                    <button type="button" wire:click="addSchedule" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Agregar horario</button>
+                </div>
+
+                @error('schedules')
+                    <div class="text-red-600 text-sm mb-2">{{ $message }}</div>
+                @enderror
+
+                <div class="space-y-4">
+                    @forelse ($schedules as $index => $schedule)
+                        <div wire:key="schedule-{{ $index }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-gray-50 p-4 rounded">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Dia</label>
+                                <select wire:model.defer="schedules.{{ $index }}.day_of_week" class="w-full px-3 py-2 border rounded-md">
+                                    <option value="Lunes">Lunes</option>
+                                    <option value="Martes">Martes</option>
+                                    <option value="Miercoles">Miercoles</option>
+                                    <option value="Jueves">Jueves</option>
+                                    <option value="Viernes">Viernes</option>
+                                    <option value="Sabado">Sabado</option>
+                                    <option value="Domingo">Domingo</option>
+                                </select>
+                                @error('schedules.' . $index . '.day_of_week') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Inicio</label>
+                                <input type="time" wire:model.defer="schedules.{{ $index }}.start_time" class="w-full px-3 py-2 border rounded-md">
+                                @error('schedules.' . $index . '.start_time') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Fin</label>
+                                <input type="time" wire:model.defer="schedules.{{ $index }}.end_time" class="w-full px-3 py-2 border rounded-md">
+                                @error('schedules.' . $index . '.end_time') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="button" wire:click="removeSchedule({{ $index }})" class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</button>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-500">No se han definido horarios. Agrega al menos uno para planificar disponibilidad.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">Evaluaciones</h2>
+                    <button type="button" wire:click="addEvaluation" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Agregar evaluacion</button>
+                </div>
+
+                <div class="space-y-4">
+                    @forelse ($evaluations as $index => $evaluation)
+                        <div wire:key="evaluation-{{ $index }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end bg-gray-50 p-4 rounded">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
+                                <input type="date" wire:model.defer="evaluations.{{ $index }}.evaluated_at" class="w-full px-3 py-2 border rounded-md">
+                                @error('evaluations.' . $index . '.evaluated_at') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Puntaje (1-5)</label>
+                                <input type="number" min="1" max="5" wire:model.defer="evaluations.{{ $index }}.score" class="w-full px-3 py-2 border rounded-md">
+                                @error('evaluations.' . $index . '.score') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Evaluador</label>
+                                <input type="text" wire:model.defer="evaluations.{{ $index }}.evaluator" class="w-full px-3 py-2 border rounded-md">
+                                @error('evaluations.' . $index . '.evaluator') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Comentarios</label>
+                                <textarea wire:model.defer="evaluations.{{ $index }}.comments" rows="2" class="w-full px-3 py-2 border rounded-md"></textarea>
+                                @error('evaluations.' . $index . '.comments') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="flex justify-end md:col-span-5">
+                                <button type="button" wire:click="removeEvaluation({{ $index }})" class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</button>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-500">No se han registrado evaluaciones.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="flex justify-end">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                     {{ $isEdit ? 'Actualizar' : 'Guardar' }}
                 </button>
@@ -101,3 +168,4 @@
         </form>
     </div>
 </div>
+

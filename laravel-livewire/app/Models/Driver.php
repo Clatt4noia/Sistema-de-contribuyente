@@ -20,16 +20,28 @@ class Driver extends Model
         'email',
         'address',
         'status',
+        'work_schedule',
         'notes',
     ];
 
     protected $casts = [
         'license_expiration' => 'date',
+        'work_schedule' => 'array',
     ];
 
     public function assignments(): HasMany
     {
         return $this->hasMany(Assignment::class);
+    }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(DriverSchedule::class);
+    }
+
+    public function evaluations(): HasMany
+    {
+        return $this->hasMany(DriverEvaluation::class);
     }
 
     public function getFullNameAttribute(): string

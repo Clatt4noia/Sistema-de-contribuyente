@@ -17,6 +17,7 @@ class Truck extends Model
         'year',
         'type',
         'capacity',
+        'mileage',
         'status',
         'last_maintenance',
         'next_maintenance',
@@ -26,6 +27,7 @@ class Truck extends Model
     protected $casts = [
         'last_maintenance' => 'date',
         'next_maintenance' => 'date',
+        'mileage' => 'integer',
     ];
 
     public function maintenances(): HasMany

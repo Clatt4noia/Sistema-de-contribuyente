@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Assignment extends Model
 {
@@ -12,6 +13,7 @@ class Assignment extends Model
     protected $fillable = [
         'truck_id',
         'driver_id',
+        'order_id',
         'start_date',
         'end_date',
         'status',
@@ -20,17 +22,22 @@ class Assignment extends Model
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 
-    public function truck()
+    public function truck(): BelongsTo
     {
         return $this->belongsTo(Truck::class);
     }
 
-    public function driver()
+    public function driver(): BelongsTo
     {
         return $this->belongsTo(Driver::class);
+    }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
     }
 }
