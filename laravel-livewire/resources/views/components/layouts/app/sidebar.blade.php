@@ -2,6 +2,9 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @fluxAppearance
+        @livewireStyles
     </head>
     <body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
         <flux:sidebar sticky stashable
@@ -170,9 +173,7 @@
         </flux:header>
 
         {{ $slot }}
-
-        @livewireScripts
-        @fluxScripts
-
+    @livewireScripts
+    @fluxScripts
     </body>
 </html>
