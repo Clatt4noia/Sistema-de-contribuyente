@@ -23,7 +23,7 @@ use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
 use App\Livewire\Billing\PaymentList;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return view('dashboard');
     })->name('dashboard');

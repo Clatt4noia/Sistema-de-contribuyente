@@ -13,7 +13,7 @@ class FleetRoutesTest extends TestCase
     /** @test */
     public function trucks_create_route_is_accessible_for_authenticated_users(): void
     {
-        $user = User::factory()->create(['email_verified_at' => now()]);
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)->get(route('fleet.trucks.create'));
 
@@ -26,12 +26,14 @@ class FleetRoutesTest extends TestCase
     }
 
     /** @test */
-    public function unverified_users_are_redirected_to_email_verification_notice(): void
+    public function trucks_create_route_is_accessible_even_if_the_user_is_not_verified(): void
     {
-        $user = User::factory()->create(['email_verified_at' => null]);
+        $user = User::factory()->unverified()->create();
 
         $response = $this->actingAs($user)->get(route('fleet.trucks.create'));
 
-        $response->assertRedirect(route('verification.notice'));
+        $response->assertOk();
+        $response->assertSeeText('Registrar Camion');
+
     }
 }
