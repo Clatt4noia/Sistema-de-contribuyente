@@ -33,19 +33,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('fleet')->name('fleet.')->group(function () {
         Route::get('/trucks', TruckList::class)->name('trucks.index');
         Route::get('/trucks/create', TruckForm::class)->name('trucks.create');
-        Route::get('/trucks/{truck}/edit', TruckForm::class)->name('trucks.edit');
+        Route::get('/trucks/{truck}/edit', TruckForm::class)->whereNumber('truck')->name('trucks.edit');
 
         Route::get('/drivers', DriverList::class)->name('drivers.index');
         Route::get('/drivers/create', DriverForm::class)->name('drivers.create');
-        Route::get('/drivers/{driver}/edit', DriverForm::class)->name('drivers.edit');
+        Route::get('/drivers/{driver}/edit', DriverForm::class)->whereNumber('driver')->name('drivers.edit');
 
         Route::get('/maintenance', MaintenanceList::class)->name('maintenance.index');
         Route::get('/maintenance/create', MaintenanceForm::class)->name('maintenance.create');
-        Route::get('/maintenance/{id}/edit', MaintenanceForm::class)->name('maintenance.edit');
+        Route::get('/maintenance/{id}/edit', MaintenanceForm::class)->whereNumber('id')->name('maintenance.edit');
 
         Route::get('/assignments', AssignmentList::class)->name('assignments.index');
         Route::get('/assignments/create', AssignmentForm::class)->name('assignments.create');
-        Route::get('/assignments/{id}/edit', AssignmentForm::class)->name('assignments.edit');
+        Route::get('/assignments/{id}/edit', AssignmentForm::class)->whereNumber('id')->name('assignments.edit');
         Route::get('/report', FleetReport::class)->name('report');
     });
 
@@ -64,11 +64,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('billing')->name('billing.')->group(function () {
         Route::get('/invoices', InvoiceList::class)->name('invoices.index');
         Route::get('/invoices/create', InvoiceForm::class)->name('invoices.create');
-        Route::get('/invoices/{invoice}/edit', InvoiceForm::class)->name('invoices.edit');
+        Route::get('/invoices/{invoice}/edit', InvoiceForm::class)->whereNumber('invoice')->name('invoices.edit');
 
         Route::get('/payments', PaymentList::class)->name('payments.index');
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
-        Route::get('/payments/{payment}/edit', PaymentForm::class)->name('payments.edit');
+        Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
     });
 
     Volt::route('settings/profile', 'settings.profile')->name('profile.edit');

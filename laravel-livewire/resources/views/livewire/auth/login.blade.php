@@ -104,7 +104,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             />
 
             @if (Route::has('password.request'))
-                <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
+                <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')">
                     {{ __('Olvidaste tu contraseña?') }}
                 </flux:link>
             @endif
@@ -123,7 +123,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     @if (Route::has('register'))
         <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
             <span>{{ __('No tienes una cuenta?') }}</span>
-            <flux:link :href="route('register')" wire:navigate>{{ __('Registrate') }}</flux:link>
+            <flux:link :href="route('register')">{{ __('Registrate') }}</flux:link>
         </div>
     @endif
 </div>

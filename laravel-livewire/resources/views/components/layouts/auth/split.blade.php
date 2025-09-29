@@ -8,7 +8,7 @@
             <div class="relative hidden lg:flex flex-col p-10 text-white h-dvh dark:border-e dark:border-neutral-800">
                 <div class="absolute inset-0 bg-purple-600 dark:bg-purple-900"></div>
 
-                    <a href="{{ route('home') }}" class="relative z-20 flex items-center text-lg font-medium" wire:navigate>
+                    <a href="{{ route('home') }}" class="relative z-20 flex items-center text-lg font-medium">
 
                         {{ config('app.name', 'bryanmenu') }}
                     </a>
@@ -26,7 +26,7 @@
                 </div>
                 <div class="w-full lg:p-8 flex items-center justify-center">
                     <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                        <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden" wire:navigate>
+                        <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden">
                             <span class="flex h-9 w-9 items-center justify-center rounded-md">
                                 <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
                             </span>

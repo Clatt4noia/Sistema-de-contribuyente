@@ -7,9 +7,13 @@ use App\Models\Driver;
 use App\Models\Order;
 use App\Models\Truck;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.app.sidebar', ['title' => 'Asignaciones'])]
+#[Title('Asignaciones')]
 class AssignmentList extends Component
 {
     use WithPagination;

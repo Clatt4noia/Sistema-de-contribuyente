@@ -1,4 +1,4 @@
-<div class="container mx-auto py-6">
+<div class="container mx-auto py-6 space-y-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">{{ $isEdit ? 'Editar Mantenimiento' : 'Registrar Mantenimiento' }}</h1>
         <a href="{{ route('fleet.maintenance.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
@@ -7,7 +7,7 @@
     </div>
 
     <div class="bg-white shadow-md rounded-lg p-6">
-        <form wire:submit="save">
+        <form wire:submit.prevent="save">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Vehículo -->
                 <div>

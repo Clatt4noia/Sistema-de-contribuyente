@@ -2,9 +2,6 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @fluxAppearance
-        @livewireStyles
     </head>
     <body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
         <flux:sidebar sticky stashable
@@ -12,26 +9,23 @@
                 bg-gradient-to-b from-white via-cyan-50 to-sky-100
                 text-slate-700 shadow-xl">
 
-            <!-- Botón para cerrar en mobile -->
+            <!-- Boton para cerrar en mobile -->
             <flux:sidebar.toggle class="lg:hidden text-cyan-600 hover:text-slate-800" icon="x-mark" />
 
             <!-- Logo -->
             <a href="{{ route('dashboard') }}"
-            class="me-5 flex items-center space-x-2 rtl:space-x-reverse text-lg font-semibold text-cyan-700 transition hover:text-slate-900"
-            wire:navigate>
+            class="me-5 flex items-center space-x-2 rtl:space-x-reverse text-lg font-semibold text-cyan-700 transition hover:text-slate-900">
                 <x-app-logo />
             </a>
 
-            <!-- Menú principal -->
+            <!-- Menu principal -->
             <flux:navlist variant="outline" class="text-slate-700">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item
                         icon="home"
                         :href="route('dashboard')"
                         :current="request()->routeIs('dashboard')"
-                        class="rounded-md transition hover:bg-white/70"
-
-                        wire:navigate>
+                        class="rounded-md transition hover:bg-white/70">
                         {{ __('Inicio') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
@@ -58,7 +52,7 @@
                 </flux:navlist.item>
             </flux:navlist>
 
-            <!-- Menú de usuario en desktop -->
+            <!-- Menu de usuario en desktop -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
@@ -96,10 +90,9 @@
                         <flux:menu.item
                             :href="route('profile.edit')"
                             icon="cog"
-                            wire:navigate
                             class="hover:bg-cyan-50">
 
-                            {{ __('Configuración') }}
+                            {{ __('Configuracion') }}
                         </flux:menu.item>
                     </flux:menu.radio.group>
 
@@ -113,7 +106,7 @@
                             class="w-full hover:bg-cyan-50"
 
                             data-test="logout-button">
-                            {{ __('Cerrar sesión') }}
+                            {{ __('Cerrar sesion') }}
                         </flux:menu.item>
                     </form>
                 </flux:menu>
@@ -157,7 +150,7 @@
                     <flux:menu.separator class="border-cyan-100" />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Configuración') }}</flux:menu.item>
+                        <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuracion') }}</flux:menu.item>
                     </flux:menu.radio.group>
 
                     <flux:menu.separator class="border-cyan-100" />
@@ -165,7 +158,7 @@
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
                         <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full" data-test="logout-button">
-                            {{ __('Cerrar sesión') }}
+                            {{ __('Cerrar sesion') }}
                         </flux:menu.item>
                     </form>
                 </flux:menu>
@@ -173,7 +166,8 @@
         </flux:header>
 
         {{ $slot }}
-    @livewireScripts
-    @fluxScripts
+
+        @livewireScripts
+        @fluxScripts
     </body>
 </html>

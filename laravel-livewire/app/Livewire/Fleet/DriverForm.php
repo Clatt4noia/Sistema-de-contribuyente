@@ -6,8 +6,13 @@ use App\Models\Driver;
 use App\Models\DriverEvaluation;
 use App\Models\DriverSchedule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Layout('components.layouts.app.sidebar', ['title' => 'Chofer'])]
+#[Title('Chofer')]
 class DriverForm extends Component
 {
     public Driver $driver;
@@ -18,25 +23,35 @@ class DriverForm extends Component
     protected function rules(): array
     {
         return [
-            'driver.name' => 'required|string|max:100',
-            'driver.last_name' => 'required|string|max:100',
-            'driver.document_number' => 'required|string|max:20|unique:drivers,document_number,' . ($this->driver->id ?? ''),
-            'driver.license_number' => 'required|string|max:20|unique:drivers,license_number,' . ($this->driver->id ?? ''),
-            'driver.license_expiration' => 'required|date',
-            'driver.phone' => 'nullable|string|max:20',
-            'driver.email' => 'nullable|email|max:100',
-            'driver.address' => 'nullable|string|max:255',
-            'driver.status' => 'required|string|in:active,assigned,inactive,on_leave',
-            'driver.notes' => 'nullable|string',
-            'schedules' => 'array',
-            'schedules.*.day_of_week' => 'required|string|in:Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo',
-            'schedules.*.start_time' => 'required|date_format:H:i',
-            'schedules.*.end_time' => 'required|date_format:H:i',
-            'evaluations' => 'array',
-            'evaluations.*.score' => 'required|integer|min:1|max:5',
-            'evaluations.*.evaluated_at' => 'required|date',
-            'evaluations.*.evaluator' => 'nullable|string|max:100',
-            'evaluations.*.comments' => 'nullable|string',
+            'driver.name' => ['required', 'string', 'max:100'],
+            'driver.last_name' => ['required', 'string', 'max:100'],
+            'driver.document_number' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('drivers', 'document_number')->ignore($this->driver->id),
+            ],
+            'driver.license_number' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('drivers', 'license_number')->ignore($this->driver->id),
+            ],
+            'driver.license_expiration' => ['required', 'date'],
+            'driver.phone' => ['nullable', 'string', 'max:20'],
+            'driver.email' => ['nullable', 'email', 'max:100'],
+            'driver.address' => ['nullable', 'string', 'max:255'],
+            'driver.status' => ['required', 'string', 'in:active,assigned,inactive,on_leave'],
+            'driver.notes' => ['nullable', 'string'],
+            'schedules' => ['array'],
+            'schedules.*.day_of_week' => ['required', 'string', 'in:Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo'],
+            'schedules.*.start_time' => ['required', 'date_format:H:i'],
+            'schedules.*.end_time' => ['required', 'date_format:H:i'],
+            'evaluations' => ['array'],
+            'evaluations.*.score' => ['required', 'integer', 'min:1', 'max:5'],
+            'evaluations.*.evaluated_at' => ['required', 'date'],
+            'evaluations.*.evaluator' => ['nullable', 'string', 'max:100'],
+            'evaluations.*.comments' => ['nullable', 'string'],
         ];
     }
 
@@ -51,14 +66,17 @@ class DriverForm extends Component
             ]);
         }
 
-        $this->schedules = $this->driver->schedules->map(fn ($schedule) => [
+        $existingSchedules = $this->driver->exists ? $this->driver->schedules : collect();
+        $existingEvaluations = $this->driver->exists ? $this->driver->evaluations : collect();
+
+        $this->schedules = $existingSchedules->map(fn (DriverSchedule $schedule) => [
             'id' => $schedule->id,
             'day_of_week' => $schedule->day_of_week,
-            'start_time' => $schedule->start_time ? $schedule->start_time->format('H:i') : null,
-            'end_time' => $schedule->end_time ? $schedule->end_time->format('H:i') : null,
+            'start_time' => optional($schedule->start_time)->format('H:i'),
+            'end_time' => optional($schedule->end_time)->format('H:i'),
         ])->values()->toArray();
 
-        $this->evaluations = $this->driver->evaluations->map(fn ($evaluation) => [
+        $this->evaluations = $existingEvaluations->map(fn (DriverEvaluation $evaluation) => [
             'id' => $evaluation->id,
             'score' => $evaluation->score,
             'evaluated_at' => optional($evaluation->evaluated_at)->format('Y-m-d'),
@@ -100,7 +118,7 @@ class DriverForm extends Component
 
     public function save()
     {
-        $this->validate();
+        $validated = $this->validate();
 
         foreach ($this->schedules as $schedule) {
             if (isset($schedule['start_time'], $schedule['end_time']) && $schedule['start_time'] >= $schedule['end_time']) {
@@ -109,14 +127,15 @@ class DriverForm extends Component
             }
         }
 
-        DB::transaction(function () {
+        DB::transaction(function () use ($validated) {
+            $this->driver->fill($validated['driver']);
             $this->driver->work_schedule = $this->schedules;
             $this->driver->save();
 
             $this->driver->schedules()->delete();
             $this->driver->evaluations()->delete();
 
-            if (!empty($this->schedules)) {
+            if (! empty($this->schedules)) {
                 $this->driver->schedules()->createMany(array_map(fn ($schedule) => [
                     'day_of_week' => $schedule['day_of_week'],
                     'start_time' => $schedule['start_time'],
@@ -124,7 +143,7 @@ class DriverForm extends Component
                 ], $this->schedules));
             }
 
-            if (!empty($this->evaluations)) {
+            if (! empty($this->evaluations)) {
                 $this->driver->evaluations()->createMany(array_map(fn ($evaluation) => [
                     'score' => $evaluation['score'],
                     'evaluated_at' => $evaluation['evaluated_at'],
@@ -144,4 +163,3 @@ class DriverForm extends Component
         return view('livewire.fleet.driver-form');
     }
 }
-

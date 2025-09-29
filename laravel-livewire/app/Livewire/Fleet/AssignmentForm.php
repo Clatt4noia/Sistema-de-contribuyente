@@ -8,8 +8,12 @@ use App\Models\Order;
 use App\Models\Truck;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Layout('components.layouts.app.sidebar', ['title' => 'Asignacion'])]
+#[Title('Asignacion')]
 class AssignmentForm extends Component
 {
     public Assignment $assignment;

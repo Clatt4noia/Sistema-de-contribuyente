@@ -1,4 +1,4 @@
-<div class="container mx-auto py-6">
+<div class="container mx-auto py-6 space-y-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">{{ $isEdit ? 'Editar Camion' : 'Registrar Camion' }}</h1>
         <a href="{{ route('fleet.trucks.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
@@ -7,7 +7,7 @@
     </div>
 
     <div class="bg-white shadow-md rounded-lg p-6">
-        <form wire:submit="save">
+        <form wire:submit.prevent="save">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="plate_number" class="block text-sm font-medium text-gray-700 mb-1">Placa</label>
@@ -95,4 +95,58 @@
             </div>
         </form>
     </div>
+</div>
+
+    @if($isEdit)
+        <div class="mt-6 bg-white shadow-md rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Historial de mantenimiento</h2>
+                <a href="{{ route('fleet.maintenance.create') }}" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded">
+                    Programar mantenimiento
+                </a>
+            </div>
+
+            @if(!empty($maintenanceHistory))
+                @php
+                    $statusTags = [
+                        'scheduled' => ['label' => 'Programado', 'class' => 'bg-yellow-100 text-yellow-800'],
+                        'in_progress' => ['label' => 'En progreso', 'class' => 'bg-blue-100 text-blue-800'],
+                        'completed' => ['label' => 'Completado', 'class' => 'bg-green-100 text-green-800'],
+                        'cancelled' => ['label' => 'Cancelado', 'class' => 'bg-red-100 text-red-800'],
+                    ];
+                @endphp
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left font-semibold text-gray-600">Fecha</th>
+                                <th class="px-4 py-2 text-left font-semibold text-gray-600">Tipo</th>
+                                <th class="px-4 py-2 text-left font-semibold text-gray-600">Estado</th>
+                                <th class="px-4 py-2 text-left font-semibold text-gray-600">Costo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($maintenanceHistory as $history)
+                                @php($status = $statusTags[$history['status']] ?? $statusTags['scheduled'])
+                                <tr>
+                                    <td class="px-4 py-2 text-gray-700">{{ $history['date'] }}</td>
+                                    <td class="px-4 py-2 text-gray-700">{{ $history['type'] }}</td>
+                                    <td class="px-4 py-2">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $status['class'] }}">
+                                            {{ $status['label'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-2 text-gray-700">
+                                        {{ $history['cost'] !== null ? ('$' . number_format((float) $history['cost'], 2)) : 'Sin costo' }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-sm text-gray-500">Sin registros de mantenimiento para este vehiculo.</p>
+            @endif
+        </div>
+    @endif
 </div>

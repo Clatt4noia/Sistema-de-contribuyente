@@ -4,8 +4,13 @@ namespace App\Livewire\Fleet;
 
 use App\Models\Maintenance;
 use App\Models\Truck;
+use Illuminate\Support\Carbon;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Layout('components.layouts.app.sidebar', ['title' => 'Mantenimiento'])]
+#[Title('Mantenimiento')]
 class MaintenanceForm extends Component
 {
     public Maintenance $maintenance;
@@ -42,23 +47,52 @@ class MaintenanceForm extends Component
     public function save()
     {
         $this->validate();
-        
+
         $this->maintenance->save();
-        
-        // Actualizar la fecha del último mantenimiento en el camión
-        $truck = Truck::find($this->maintenance->truck_id);
-        if ($truck && $this->maintenance->status === 'completed') {
-            $truck->last_maintenance = $this->maintenance->maintenance_date;
-            
-            // Programar el próximo mantenimiento (por ejemplo, 3 meses después)
-            $truck->next_maintenance = date('Y-m-d', strtotime($this->maintenance->maintenance_date . ' + 3 months'));
-            
+
+        $truck = $this->maintenance->truck;
+
+        if ($truck) {
+            if ($this->maintenance->status === 'completed') {
+                $maintenanceDate = Carbon::parse($this->maintenance->maintenance_date);
+                $truck->last_maintenance = $maintenanceDate;
+                $truck->next_maintenance = $maintenanceDate->copy()->addMonths(3);
+            }
+
+            if (in_array($this->maintenance->status, ['scheduled', 'in_progress'], true)) {
+                $truck->status = 'maintenance';
+            } elseif (in_array($this->maintenance->status, ['completed', 'cancelled'], true)) {
+                $truck->status = $this->resolveTruckStatus($truck);
+            }
+
             $truck->save();
         }
-        
+
         session()->flash('message', $this->isEdit ? 'Mantenimiento actualizado correctamente.' : 'Mantenimiento registrado correctamente.');
-        
+
         return redirect()->route('fleet.maintenance.index');
+    }
+
+    protected function resolveTruckStatus(Truck $truck): string
+    {
+        $hasPendingMaintenance = $truck->maintenances()
+            ->where('id', '!=', $this->maintenance->id)
+            ->whereIn('status', ['scheduled', 'in_progress'])
+            ->exists();
+
+        if ($hasPendingMaintenance) {
+            return 'maintenance';
+        }
+
+        $hasActiveAssignments = $truck->assignments()
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->exists();
+
+        if ($hasActiveAssignments) {
+            return 'in_use';
+        }
+
+        return $truck->status === 'out_of_service' ? 'out_of_service' : 'available';
     }
 
     public function render()

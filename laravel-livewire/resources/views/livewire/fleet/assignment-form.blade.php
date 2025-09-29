@@ -1,4 +1,4 @@
-<div>
+<div class="container mx-auto py-6 space-y-6">
     <div class="mb-6">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
             {{ $isEdit ? 'Editar Asignacion' : 'Nueva Asignacion' }}
@@ -6,7 +6,7 @@
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-        <form wire:submit="save">
+        <form wire:submit.prevent="save">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="order_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pedido *</label>

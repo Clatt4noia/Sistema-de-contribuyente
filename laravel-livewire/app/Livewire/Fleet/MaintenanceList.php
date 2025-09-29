@@ -4,9 +4,13 @@ namespace App\Livewire\Fleet;
 
 use App\Models\Maintenance;
 use App\Models\Truck;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.app.sidebar', ['title' => 'Mantenimientos'])]
+#[Title('Mantenimientos')]
 class MaintenanceList extends Component
 {
     use WithPagination;

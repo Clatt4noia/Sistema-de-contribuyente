@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="container mx-auto py-6 space-y-6">
     <div class="flex justify-between items-center">
         <h1 class="text-2xl font-semibold">Reporte de Flota</h1>
         <a href="{{ route('fleet.assignments.index') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Ver asignaciones</a>
@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white shadow rounded p-4">
             <h2 class="text-lg font-semibold mb-3">Top conductores (mes)</h2>
             <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -63,6 +63,31 @@
                     @empty
                         <tr>
                             <td colspan="2" class="px-3 py-2 text-center text-gray-500">Sin asignaciones recientes</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="bg-white shadow rounded p-4">
+            <h2 class="text-lg font-semibold mb-3">Licencias por vencer (30 dias)</h2>
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500">Conductor</th>
+                        <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500">Vence</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($licenseAlerts as $driver)
+                        <tr>
+                            <td class="px-3 py-2 text-gray-700">{{ $driver->full_name }}</td>
+                            <td class="px-3 py-2 {{ $driver->license_expiration->isPast() ? 'text-red-600 font-semibold' : 'text-amber-600' }}">
+                                {{ $driver->license_expiration->format('d/m/Y') }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="2" class="px-3 py-2 text-center text-gray-500">Sin alertas.</td>
                         </tr>
                     @endforelse
                 </tbody>

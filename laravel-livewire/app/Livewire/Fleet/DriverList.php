@@ -3,9 +3,13 @@
 namespace App\Livewire\Fleet;
 
 use App\Models\Driver;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.app.sidebar', ['title' => 'Gestion de Choferes'])]
+#[Title('Gestion de Choferes')]
 class DriverList extends Component
 {
     use WithPagination;

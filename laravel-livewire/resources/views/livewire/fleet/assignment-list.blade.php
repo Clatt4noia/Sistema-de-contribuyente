@@ -1,4 +1,4 @@
-<div>
+<div class="container mx-auto py-6 space-y-6">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Asignaciones de Vehiculos</h2>
         <a href="{{ route('fleet.assignments.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
@@ -112,7 +112,7 @@
                                 <a href="{{ route('fleet.assignments.edit', $assignment->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
-                                <button wire:click="deleteAssignment({{ $assignment->id }})" wire:confirm="?Esta seguro de eliminar esta asignacion?" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                <button wire:click="deleteAssignment({{ $assignment->id }})" wire:confirm="Esta seguro de eliminar esta asignacion?" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </button>
                             </td>

@@ -7,8 +7,12 @@ use App\Models\Maintenance;
 use App\Models\Order;
 use App\Models\Truck;
 use Illuminate\Support\Carbon;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Layout('components.layouts.app.sidebar', ['title' => 'Reporte de Flota'])]
+#[Title('Reporte de Flota')]
 class Report extends Component
 {
     public function render()
@@ -38,6 +42,12 @@ class Report extends Component
             ->take(5)
             ->get();
 
+        $licenseAlerts = Driver::query()
+            ->whereDate('license_expiration', '<=', Carbon::now()->addDays(30))
+            ->orderBy('license_expiration')
+            ->take(5)
+            ->get();
+
         $orderTotals = Order::selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
@@ -48,6 +58,7 @@ class Report extends Component
             'assignmentsByStatus' => $assignmentsByStatus,
             'upcomingMaintenance' => $upcomingMaintenance,
             'topDrivers' => $topDrivers,
+            'licenseAlerts' => $licenseAlerts,
             'orderTotals' => $orderTotals,
         ]);
     }

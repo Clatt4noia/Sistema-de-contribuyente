@@ -1,4 +1,4 @@
-<div class="container mx-auto py-6">
+<div class="container mx-auto py-6 space-y-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">Mantenimientos de Vehículos</h1>
         <a href="{{ route('fleet.maintenance.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
