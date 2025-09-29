@@ -1,57 +1,57 @@
-<div class="space-y-6">
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-semibold">Facturas</h1>
-        <a href="{{ route('billing.invoices.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Nueva Factura</a>
+<div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">Facturas</h1>
+        <a href="{{ route('billing.invoices.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300">Nueva Factura</a>
     </div>
 
     @if (session()->has('message'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4" role="alert">
+        <div class="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 text-sm font-medium text-emerald-700 shadow-sm dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200" role="alert">
             <p>{{ session('message') }}</p>
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+        <div class="rounded-2xl border border-rose-200/70 bg-rose-50/80 p-4 text-sm font-medium text-rose-600 shadow-sm dark:border-rose-500/40 dark:bg-rose-500/10 dark:text-rose-200" role="alert">
             <p>{{ session('error') }}</p>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="p-4 bg-white shadow rounded">
-            <p class="text-sm text-gray-500">Emision</p>
-            <p class="text-xl font-semibold">S/ {{ number_format($totals['issued'], 2) }}</p>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div class="surface-card p-4 shadow-sm">
+            <p class="text-sm text-slate-500 dark:text-slate-300">Emision</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['issued'], 2) }}</p>
         </div>
-        <div class="p-4 bg-white shadow rounded">
-            <p class="text-sm text-gray-500">Pagado</p>
-            <p class="text-xl font-semibold">S/ {{ number_format($totals['paid'], 2) }}</p>
+        <div class="surface-card p-4 shadow-sm">
+            <p class="text-sm text-slate-500 dark:text-slate-300">Pagado</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['paid'], 2) }}</p>
         </div>
-        <div class="p-4 bg-white shadow rounded">
-            <p class="text-sm text-gray-500">Vencido</p>
-            <p class="text-xl font-semibold">S/ {{ number_format($totals['overdue'], 2) }}</p>
+        <div class="surface-card p-4 shadow-sm">
+            <p class="text-sm text-slate-500 dark:text-slate-300">Vencido</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['overdue'], 2) }}</p>
         </div>
-        <div class="p-4 bg-white shadow rounded">
-            <p class="text-sm text-gray-500">Saldo</p>
-            <p class="text-xl font-semibold">S/ {{ number_format($totals['balance'], 2) }}</p>
+        <div class="surface-card p-4 shadow-sm">
+            <p class="text-sm text-slate-500 dark:text-slate-300">Saldo</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['balance'], 2) }}</p>
         </div>
     </div>
 
-    <div class="bg-white shadow rounded">
-        <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar por numero o cliente..." class="px-3 py-2 border rounded">
-            <select wire:model.live="status" class="px-3 py-2 border rounded">
+    <div class="surface-card overflow-hidden shadow-lg">
+        <div class="grid grid-cols-1 gap-4 border-b border-slate-200/70 px-4 py-4 dark:border-slate-800/70 md:grid-cols-4">
+            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar por numero o cliente..." class="form-control">
+            <select wire:model.live="status" class="form-control">
                 <option value="">Todos los estados</option>
                 <option value="draft">Borrador</option>
                 <option value="issued">Emitida</option>
                 <option value="paid">Pagada</option>
                 <option value="overdue">Vencida</option>
             </select>
-            <select wire:model.live="client_id" class="px-3 py-2 border rounded">
+            <select wire:model.live="client_id" class="form-control">
                 <option value="">Todos los clientes</option>
                 @foreach($clients as $client)
                     <option value="{{ $client->id }}">{{ $client->business_name }}</option>
                 @endforeach
             </select>
-            <select wire:model.live="order_id" class="px-3 py-2 border rounded">
+            <select wire:model.live="order_id" class="form-control">
                 <option value="">Todos los pedidos</option>
                 @foreach($orders as $order)
                     <option value="{{ $order->id }}">{{ $order->reference }}</option>
@@ -60,27 +60,27 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table class="surface-table">
+                <thead>
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Factura</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pedido</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Emision / Venc.</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        <th class="px-6 py-3">Factura</th>
+                        <th class="px-6 py-3">Cliente</th>
+                        <th class="px-6 py-3">Pedido</th>
+                        <th class="px-6 py-3">Emision / Venc.</th>
+                        <th class="px-6 py-3">Total</th>
+                        <th class="px-6 py-3">Saldo</th>
+                        <th class="px-6 py-3">Estado</th>
+                        <th class="px-6 py-3">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody>
                     @forelse($invoices as $invoice)
                         @php
                             $statusStyles = [
-                                'draft' => 'bg-gray-100 text-gray-800',
-                                'issued' => 'bg-blue-100 text-blue-800',
-                                'paid' => 'bg-green-100 text-green-800',
-                                'overdue' => 'bg-red-100 text-red-800',
+                                'draft' => 'bg-slate-200 text-slate-700 dark:bg-slate-500/20 dark:text-slate-200',
+                                'issued' => 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200',
+                                'paid' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200',
+                                'overdue' => 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200',
                             ];
                             $statusLabel = [
                                 'draft' => 'Borrador',
@@ -89,39 +89,39 @@
                                 'overdue' => 'Vencida',
                             ][$invoice->status] ?? 'Emitida';
                         @endphp
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $invoice->invoice_number }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $invoice->client->business_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ optional($invoice->order)->reference ?: '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">{{ $invoice->invoice_number }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ $invoice->client->business_name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ optional($invoice->order)->reference ?: '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
                                 {{ $invoice->issue_date->format('d/m/Y') }}<br>
                                 {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : '-' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">S/ {{ number_format($invoice->total, 2) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">S/ {{ number_format($invoice->balance, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($invoice->total, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($invoice->balance, 2) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-gray-100 text-gray-800' }}">
                                     {{ $statusLabel }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                                <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="text-indigo-600 hover:text-indigo-900">Editar</a>
-                                <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="text-blue-600 hover:text-blue-900">Registrar pago</a>
+                                <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">Editar</a>
+                                <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="font-semibold text-cyan-600 transition hover:text-cyan-700 dark:text-cyan-300 dark:hover:text-cyan-200">Registrar pago</a>
                                 @if($invoice->balance <= 0 && $invoice->status !== 'paid')
-                                    <button wire:click="markAsPaid({{ $invoice->id }})" class="text-green-600 hover:text-green-800">Marcar pagada</button>
+                                    <button wire:click="markAsPaid({{ $invoice->id }})" class="font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-300 dark:hover:text-emerald-200">Marcar pagada</button>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-4 text-center text-gray-500">No se encontraron facturas</td>
+                            <td colspan="8" class="px-6 py-4 text-center text-slate-500 dark:text-slate-400">No se encontraron facturas</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="px-4 py-3 bg-white border-t border-gray-200">
+        <div class="border-t border-slate-200/70 px-4 py-3 dark:border-slate-800/70">
             {{ $invoices->links() }}
         </div>
     </div>
