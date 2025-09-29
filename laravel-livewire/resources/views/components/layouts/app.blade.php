@@ -1,5 +1,7 @@
 <x-layouts.app.sidebar :title="$title ?? null">
-    <flux:main class="min-h-screen w-full px-4 py-6 sm:px-6 lg:px-8 mx-auto max-w-6xl space-y-6">
+    <main
+        class="relative mx-auto w-full max-w-6xl space-y-6 px-4 py-8 transition-colors duration-300 sm:px-6 lg:px-12"
+    >
         {{ $slot }}
-    </flux:main>
+    </main>
 </x-layouts.app.sidebar>
