@@ -32,7 +32,7 @@
             'label' => __('Pagos'),
             'href' => route('billing.payments.index'),
             'icon' => 'credit-card',
-            'badge' => '4',
+            'badge' => 'Ver',
             'badge_style' => 'bg-rose-500 text-white dark:bg-rose-400 dark:text-rose-950',
             'current' => request()->routeIs('billing.payments.*'),
         ],
