@@ -23,20 +23,23 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    --color-accent: var(--color-indigo-500);
+    --color-accent-content: var(--color-indigo-500);
     --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent: var(--color-indigo-400);
+        --color-accent-content: var(--color-indigo-200);
+        --color-accent-foreground: var(--color-slate-950);
     }
 }
 
 @layer base {
+    body {
+        @apply bg-slate-50 text-slate-800 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    }
 
     *,
     ::after,
@@ -45,6 +48,10 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+
+    .dark [data-flux-control] {
+        @apply border-slate-700/70 bg-slate-900/60 text-slate-100 placeholder:text-slate-500;
+    }
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
@@ -52,7 +59,7 @@
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply !mb-0 !leading-tight;
 }
 
 input:focus[data-flux-control],
