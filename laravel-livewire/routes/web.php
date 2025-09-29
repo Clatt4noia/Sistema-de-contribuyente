@@ -11,7 +11,6 @@ use App\Livewire\Fleet\DriverForm;
 use App\Livewire\Fleet\DriverList;
 use App\Livewire\Fleet\MaintenanceForm;
 use App\Livewire\Fleet\MaintenanceList;
-use App\Livewire\Fleet\TruckForm;
 use App\Livewire\Fleet\TruckList;
 use App\Livewire\Fleet\Report as FleetReport;
 use App\Livewire\Orders\OrderForm;
@@ -22,6 +21,7 @@ use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
 use App\Livewire\Billing\PaymentList;
+use App\Models\Truck;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -32,8 +32,10 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('fleet')->name('fleet.')->group(function () {
         Route::get('/trucks', TruckList::class)->name('trucks.index');
-        Route::get('/trucks/create', TruckForm::class)->name('trucks.create');
-        Route::get('/trucks/{truck}/edit', TruckForm::class)->whereNumber('truck')->name('trucks.edit');
+        Route::view('/trucks/create', 'pages.fleet.trucks.create')->name('trucks.create');
+        Route::get('/trucks/{truck}/edit', function (Truck $truck) {
+            return view('pages.fleet.trucks.edit', ['truck' => $truck]);
+        })->whereNumber('truck')->name('trucks.edit');
 
         Route::get('/drivers', DriverList::class)->name('drivers.index');
         Route::get('/drivers/create', DriverForm::class)->name('drivers.create');
