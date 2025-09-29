@@ -4,12 +4,8 @@ namespace App\Livewire\Fleet;
 
 use App\Models\Truck;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('components.layouts.app.sidebar', ['title' => 'Camion'])]
-#[Title('Camion')]
 class TruckForm extends Component
 {
     public Truck $truck;
