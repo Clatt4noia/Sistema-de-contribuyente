@@ -49,6 +49,16 @@
         border-color: var(--color-gray-200, currentColor);
     }
 
+    input:not([type='checkbox']):not([type='radio']):not([type='range']),
+    textarea,
+    select {
+        @apply border border-slate-200 bg-white text-slate-800 transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-100;
+    }
+
+    [data-flux-control] {
+        @apply transition-colors duration-300;
+    }
+
     .dark [data-flux-control] {
         @apply border-slate-700/70 bg-slate-900/60 text-slate-100 placeholder:text-slate-500;
     }
@@ -56,6 +66,20 @@
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
     @apply grid gap-2;
+}
+
+@layer components {
+    .surface-card {
+        @apply rounded-3xl border border-slate-200/80 bg-white/90 shadow-lg transition-colors duration-300 dark:border-slate-800/60 dark:bg-slate-900/70;
+    }
+
+    .surface-muted {
+        @apply rounded-2xl border border-slate-200/70 bg-white/70 transition-colors duration-300 dark:border-slate-800/60 dark:bg-slate-900/60;
+    }
+
+    .surface-pill {
+        @apply inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-200;
+    }
 }
 
 [data-flux-label] {

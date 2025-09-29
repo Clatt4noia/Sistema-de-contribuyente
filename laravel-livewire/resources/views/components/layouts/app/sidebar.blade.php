@@ -51,9 +51,10 @@
         @include('partials.head', ['title' => $title])
     </head>
     <body class="min-h-screen bg-slate-50 text-slate-800 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
-        <div class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200/80 transition-colors duration-500 dark:from-[#030712] dark:via-[#0f172a] dark:to-[#020617]">
+        <div class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200/80 transition-colors duration-500 dark:from-slate-950 dark:via-slate-950/90 dark:to-slate-950/80">
             <div class="min-h-screen lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-                <aside class="hidden min-h-screen flex-col border-r border-white/10 bg-gradient-to-b from-[#101633] via-[#121b3a] to-[#050b1b] px-4 py-6 text-slate-200 shadow-2xl shadow-indigo-900/40 transition-colors duration-500 lg:flex">
+                <aside class="hidden min-h-screen flex-col border-r border-white/10 bg-gradient-to-b from-[#101633] via-[#121b3a] to-[#050b1b] px-4 py-6 text-slate-200 shadow-2xl shadow-indigo-900/40 transition-colors duration-500 dark:border-slate-800/80 dark:text-slate-100 lg:flex">
+
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 rounded-2xl px-4 py-4 transition hover:bg-white/10">
                         <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-300">
                             <x-app-logo-icon class="h-7 w-7" />
@@ -170,8 +171,9 @@
                     </div>
                 </aside>
 
-                <div class="flex min-h-screen flex-col bg-white/60 backdrop-blur transition-colors duration-500 dark:bg-slate-900/40">
-                    <header class="flex items-center gap-3 border-b border-slate-200/70 bg-white/80 px-4 py-3 text-slate-700 shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-white/60 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-100">
+                <div class="flex min-h-screen flex-col bg-white/70 backdrop-blur transition-colors duration-500 dark:bg-slate-950/40 dark:backdrop-blur">
+                    <header class="flex items-center gap-3 border-b border-slate-200/70 bg-white/80 px-4 py-3 text-slate-700 shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-white/60 dark:border-slate-800/70 dark:bg-slate-950/70 dark:text-slate-100">
+
                         <flux:sidebar.toggle
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/5 text-slate-600 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
                             icon="bars-2"
@@ -201,7 +203,8 @@
                         <flux:dropdown position="bottom" align="end">
                             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                            <flux:menu class="w-48 rounded-2xl border border-slate-200/70 bg-white/90 text-slate-700 shadow-lg backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/80 dark:text-slate-100">
+                            <flux:menu class="w-48 rounded-2xl border border-slate-200/70 bg-white/95 text-slate-700 shadow-lg backdrop-blur transition-colors duration-300 dark:border-slate-800/70 dark:bg-slate-950/80 dark:text-slate-100">
+
                                 <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
                                 <flux:menu.separator class="border-slate-200/70 dark:border-slate-700/70" />
                                 <form method="POST" action="{{ route('logout') }}">
@@ -222,7 +225,8 @@
         <flux:sidebar
             stashable
             sticky
-            class="lg:hidden border-r border-white/10 bg-gradient-to-b from-[#101633] via-[#121b3a] to-[#050b1b] p-6 text-slate-200 shadow-2xl shadow-indigo-900/40"
+            class="lg:hidden border-r border-white/10 bg-gradient-to-b from-[#101633] via-[#121b3a] to-[#050b1b] p-6 text-slate-200 shadow-2xl shadow-indigo-900/40 transition-colors duration-500 dark:border-slate-800/80 dark:text-slate-100"
+
         >
             <div class="flex items-center gap-3">
                 <flux:sidebar.toggle class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-slate-200" icon="x-mark" />
