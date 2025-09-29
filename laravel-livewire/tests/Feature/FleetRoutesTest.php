@@ -34,5 +34,6 @@ class FleetRoutesTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeText('Registrar Camion');
+
     }
 }
