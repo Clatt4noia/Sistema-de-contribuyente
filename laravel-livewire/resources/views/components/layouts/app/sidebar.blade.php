@@ -53,16 +53,16 @@
     <body class="min-h-screen bg-slate-50 text-slate-800 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
         <div class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200/80 transition-colors duration-500 dark:from-slate-950 dark:via-slate-950/90 dark:to-slate-950/80">
             <div class="min-h-screen lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-                <aside class="hidden min-h-screen flex-col border-r border-white/10 bg-gradient-to-b from-[#101633] via-[#121b3a] to-[#050b1b] px-4 py-6 text-slate-200 shadow-2xl shadow-indigo-900/40 transition-colors duration-500 dark:border-slate-800/80 dark:text-slate-100 lg:flex">
-
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 rounded-2xl px-4 py-4 transition hover:bg-white/10">
-                        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-300">
+                <aside class="hidden min-h-screen flex-col border-r border-slate-200/70 bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-6 text-slate-700 shadow-2xl shadow-indigo-900/30 transition-colors duration-500 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-950/90 dark:to-slate-950/85 dark:text-slate-100 lg:flex">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 rounded-2xl px-4 py-4 transition hover:bg-slate-900/5 dark:hover:bg-white/10">
+                        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/20 dark:text-indigo-200">
                             <x-app-logo-icon class="h-7 w-7" />
                         </span>
 
-                        <div class="hidden text-sm font-medium leading-tight text-slate-200 xl:block">
-                            <span class="text-base font-semibold">{{ config('app.name') }}</span>
-                            <span class="block text-xs text-indigo-200/80">{{ __('Panel de control') }}</span>
+                        <div class="hidden text-sm font-medium leading-tight text-slate-700 dark:text-slate-200 xl:block">
+                            <span class="text-base font-semibold text-slate-900 dark:text-white">{{ config('app.name') }}</span>
+                            <span class="block text-xs text-indigo-500 dark:text-indigo-200/80">{{ __('Panel de control') }}</span>
+
                         </div>
                     </a>
 
@@ -75,7 +75,8 @@
                             <input
                                 type="search"
                                 placeholder="{{ __('Buscar...') }}"
-                                class="h-12 w-full rounded-2xl border border-white/10 bg-white/10 pl-11 pr-4 text-sm font-medium text-slate-100 placeholder:text-slate-400/80 outline-none transition focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-400/70 dark:border-white/5 dark:bg-white/5 dark:text-slate-100"
+                                class="h-12 w-full rounded-2xl border border-slate-200/70 bg-white/80 pl-11 pr-4 text-sm font-medium text-slate-700 placeholder:text-slate-400/80 outline-none transition focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-400/70 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-100"
+
                             />
                         </label>
                     </div>
@@ -87,15 +88,17 @@
                                 @class([
                                     'group relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition',
                                     'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 ring-1 ring-indigo-300/40 dark:bg-indigo-500/90 dark:text-white' => $item['current'],
-                                    'text-slate-200/80 hover:bg-white/10 hover:text-white dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white' => ! $item['current'],
+                                    'text-slate-700/90 hover:bg-slate-900/5 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white' => ! $item['current'],
+
                                 ])
                                 aria-current="{{ $item['current'] ? 'page' : 'false' }}"
                             >
                                 <span
                                     @class([
                                         'flex h-10 w-10 items-center justify-center rounded-xl transition',
-                                        'bg-white/20 text-white' => $item['current'],
-                                        'bg-white/10 text-indigo-200 dark:bg-white/5 dark:text-indigo-200' => ! $item['current'],
+                                        'bg-indigo-500/20 text-white dark:bg-indigo-500/20' => $item['current'],
+                                        'bg-slate-900/5 text-indigo-500 dark:bg-white/5 dark:text-indigo-200' => ! $item['current'],
+
                                     ])
                                 >
                                     <x-dynamic-component :component="'flux.icon.' . $item['icon']" class="size-5" />
@@ -108,7 +111,8 @@
                                         <span
                                             @class([
                                                 'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
-                                                $item['badge_style'] ?? 'bg-white/15 text-slate-100 dark:bg-white/20 dark:text-slate-900',
+                                                $item['badge_style'] ?? 'bg-slate-900/5 text-slate-700 dark:bg-white/20 dark:text-slate-900',
+
                                                 'shadow-indigo-500/40' => $item['current'],
                                             ])
                                         >
@@ -125,10 +129,11 @@
                             type="button"
                             data-theme-toggle
                             aria-pressed="false"
-                            class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
+                            class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
                         >
                             <span class="flex items-center gap-3">
-                                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-200 transition group-hover:bg-indigo-500/30 group-hover:text-indigo-100">
+                                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-500/20 group-hover:text-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-200">
+
                                     <x-dynamic-component :component="'flux.icon.sun'" class="size-5 dark:hidden" />
                                     <x-dynamic-component :component="'flux.icon.moon-star'" class="hidden size-5 dark:block" />
                                 </span>
@@ -139,28 +144,32 @@
                                 </span>
                             </span>
 
-                            <span class="relative inline-flex h-6 w-12 items-center rounded-full bg-white/20 transition dark:bg-white/30">
+                            <span class="relative inline-flex h-6 w-12 items-center rounded-full bg-slate-900/10 transition dark:bg-white/30">
+
                                 <span class="sr-only">{{ __('Cambiar tema') }}</span>
                                 <span class="pointer-events-none inline-block h-5 w-5 translate-x-1 rounded-full bg-white shadow transition dark:translate-x-6 dark:bg-slate-900"></span>
                             </span>
                         </button>
 
-                        <div class="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-4 text-sm text-slate-200 shadow-inner shadow-slate-900/30 dark:bg-white/10">
-                            <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/30 text-indigo-100">
+                        <div class="flex items-center gap-3 rounded-2xl bg-slate-900/5 px-4 py-4 text-sm text-slate-700 shadow-inner shadow-slate-900/10 dark:bg-white/10 dark:text-slate-100">
+                            <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/30 dark:text-indigo-100">
+
                                 {{ auth()->user()->initials() }}
                             </span>
 
                             <div class="min-w-0 flex-1">
-                                <p class="truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</p>
-                                <p class="truncate text-xs text-slate-400">{{ auth()->user()->email }}</p>
+                                <p class="truncate text-sm font-semibold text-slate-900 dark:text-white">{{ auth()->user()->name }}</p>
+                                <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->email }}</p>
+
                             </div>
 
                             <flux:dropdown position="bottom" align="end">
                                 <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                                <flux:menu class="w-48 rounded-2xl border border-white/10 bg-slate-900/80 text-slate-100 backdrop-blur">
+                                <flux:menu class="w-48 rounded-2xl border border-slate-200/70 bg-white/95 text-slate-700 shadow-lg backdrop-blur transition-colors duration-300 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-100">
                                     <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
-                                    <flux:menu.separator class="border-white/10" />
+                                    <flux:menu.separator class="border-slate-200/70 dark:border-white/10" />
+
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">{{ __('Cerrar sesión') }}</flux:menu.item>
@@ -225,13 +234,13 @@
         <flux:sidebar
             stashable
             sticky
-            class="lg:hidden border-r border-white/10 bg-gradient-to-b from-[#101633] via-[#121b3a] to-[#050b1b] p-6 text-slate-200 shadow-2xl shadow-indigo-900/40 transition-colors duration-500 dark:border-slate-800/80 dark:text-slate-100"
-
+            class="lg:hidden border-r border-slate-200/70 bg-gradient-to-b from-white via-slate-50 to-slate-100 p-6 text-slate-700 shadow-2xl shadow-indigo-900/30 transition-colors duration-500 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-950/90 dark:to-slate-950/85 dark:text-slate-100"
         >
             <div class="flex items-center gap-3">
-                <flux:sidebar.toggle class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-slate-200" icon="x-mark" />
+                <flux:sidebar.toggle class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/5 text-slate-600 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20" icon="x-mark" />
 
-                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-200">
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/20 dark:text-indigo-200">
+
                     <x-app-logo-icon class="h-6 w-6" />
                 </span>
 
@@ -240,14 +249,16 @@
 
             <div class="mt-6">
                 <label class="relative flex h-12 w-full items-center">
-                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400/80">
+                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400/80 dark:text-slate-500">
+
                         <x-dynamic-component :component="'flux.icon.search'" class="size-5" />
                     </span>
 
                     <input
                         type="search"
                         placeholder="{{ __('Buscar...') }}"
-                        class="h-12 w-full rounded-2xl border border-white/10 bg-white/10 pl-11 pr-4 text-sm font-medium text-slate-100 placeholder:text-slate-400/80 outline-none focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-400/70"
+                        class="h-12 w-full rounded-2xl border border-slate-200/70 bg-white/80 pl-11 pr-4 text-sm font-medium text-slate-700 placeholder:text-slate-400/80 outline-none transition focus:border-indigo-400/70 focus:ring-2 focus:ring-indigo-400/70 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-100"
+
                     />
                 </label>
             </div>
@@ -259,15 +270,17 @@
                         @class([
                             'group relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition',
                             'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 ring-1 ring-indigo-300/40' => $item['current'],
-                            'text-slate-200/80 hover:bg-white/10 hover:text-white' => ! $item['current'],
+                            'text-slate-700/90 hover:bg-slate-900/5 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white' => ! $item['current'],
+
                         ])
                         aria-current="{{ $item['current'] ? 'page' : 'false' }}"
                     >
                         <span
                             @class([
                                 'flex h-10 w-10 items-center justify-center rounded-xl transition',
-                                'bg-white/20 text-white' => $item['current'],
-                                'bg-white/10 text-indigo-200' => ! $item['current'],
+                                'bg-indigo-500/20 text-white dark:bg-indigo-500/20' => $item['current'],
+                                'bg-slate-900/5 text-indigo-500 dark:bg-white/5 dark:text-indigo-200' => ! $item['current'],
+
                             ])
                         >
                             <x-dynamic-component :component="'flux.icon.' . $item['icon']" class="size-5" />
@@ -280,7 +293,8 @@
                                 <span
                                     @class([
                                         'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
-                                        $item['badge_style'] ?? 'bg-white/15 text-slate-100',
+                                        $item['badge_style'] ?? 'bg-slate-900/5 text-slate-700 dark:bg-white/20 dark:text-slate-900',
+
                                         'shadow-indigo-500/40' => $item['current'],
                                     ])
                                 >
@@ -297,35 +311,40 @@
                     type="button"
                     data-theme-toggle
                     aria-pressed="false"
-                    class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/10"
+                    class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
                 >
                     <span class="flex items-center gap-3">
-                        <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-200">
+                        <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-500/20 group-hover:text-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-200">
+
                             <x-dynamic-component :component="'flux.icon.sun'" class="size-5 dark:hidden" />
                             <x-dynamic-component :component="'flux.icon.moon-star'" class="hidden size-5 dark:block" />
                         </span>
                         <span>{{ __('Modo oscuro') }}</span>
                     </span>
 
-                    <span class="relative inline-flex h-6 w-12 items-center rounded-full bg-white/20">
+                    <span class="relative inline-flex h-6 w-12 items-center rounded-full bg-slate-900/10 transition dark:bg-white/30">
+
                         <span class="sr-only">{{ __('Cambiar tema') }}</span>
                         <span class="pointer-events-none inline-block h-5 w-5 translate-x-1 rounded-full bg-white shadow transition dark:translate-x-6 dark:bg-slate-900"></span>
                     </span>
                 </button>
 
-                <div class="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-4 text-sm text-slate-200">
-                    <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/30 text-indigo-100">
+                <div class="flex items-center gap-3 rounded-2xl bg-slate-900/5 px-4 py-4 text-sm text-slate-700 dark:bg-white/10 dark:text-slate-100">
+                    <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/30 dark:text-indigo-100">
+
                         {{ auth()->user()->initials() }}
                     </span>
 
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</p>
-                        <p class="truncate text-xs text-slate-400">{{ auth()->user()->email }}</p>
+                        <p class="truncate text-sm font-semibold text-slate-900 dark:text-white">{{ auth()->user()->name }}</p>
+                        <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->email }}</p>
+
                     </div>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <flux:button type="submit" icon="arrow-right-start-on-rectangle" variant="ghost" class="text-slate-200 hover:text-white">
+                        <flux:button type="submit" icon="arrow-right-start-on-rectangle" variant="ghost" class="text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white">
+
                             {{ __('Cerrar sesión') }}
                         </flux:button>
                     </form>
