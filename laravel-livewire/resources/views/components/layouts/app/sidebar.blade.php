@@ -112,7 +112,6 @@
                                             @class([
                                                 'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
                                                 $item['badge_style'] ?? 'bg-slate-900/5 text-slate-700 dark:bg-white/20 dark:text-slate-900',
-
                                                 'shadow-indigo-500/40' => $item['current'],
                                             ])
                                         >
@@ -133,7 +132,6 @@
                         >
                             <span class="flex items-center gap-3">
                                 <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-500/20 group-hover:text-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-200">
-
                                     <x-dynamic-component :component="'flux.icon.sun'" class="size-5 dark:hidden" />
                                     <x-dynamic-component :component="'flux.icon.moon-star'" class="hidden size-5 dark:block" />
                                 </span>
@@ -145,7 +143,6 @@
                             </span>
 
                             <span class="relative inline-flex h-6 w-12 items-center rounded-full bg-slate-900/10 transition dark:bg-white/30">
-
                                 <span class="sr-only">{{ __('Cambiar tema') }}</span>
                                 <span class="pointer-events-none inline-block h-5 w-5 translate-x-1 rounded-full bg-white shadow transition dark:translate-x-6 dark:bg-slate-900"></span>
                             </span>
@@ -153,7 +150,6 @@
 
                         <div class="flex items-center gap-3 rounded-2xl bg-slate-900/5 px-4 py-4 text-sm text-slate-700 shadow-inner shadow-slate-900/10 dark:bg-white/10 dark:text-slate-100">
                             <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/30 dark:text-indigo-100">
-
                                 {{ auth()->user()->initials() }}
                             </span>
 

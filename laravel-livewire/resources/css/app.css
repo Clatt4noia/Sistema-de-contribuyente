@@ -70,15 +70,40 @@
 
 @layer components {
     .surface-card {
-        @apply rounded-3xl border border-slate-200 bg-white shadow-lg transition-colors duration-300 dark:border-slate-800/70 dark:bg-slate-900/80;
+        @apply rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-lg transition-colors duration-300 dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-100;
     }
 
     .surface-muted {
-        @apply rounded-2xl border border-slate-200/80 bg-white/95 transition-colors duration-300 dark:border-slate-800/60 dark:bg-slate-900/70;
+        @apply rounded-2xl border border-slate-200/80 bg-white/95 text-slate-700 transition-colors duration-300 dark:border-slate-800/60 dark:bg-slate-900/70 dark:text-slate-200;
+
     }
 
     .surface-pill {
         @apply inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-200;
+    }
+
+    .surface-table {
+        @apply min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800;
+    }
+
+    .surface-table thead {
+        @apply bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900/60 dark:text-slate-400;
+    }
+
+    .surface-table tbody {
+        @apply divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/40;
+    }
+
+    .form-field {
+        @apply space-y-2;
+    }
+
+    .form-label {
+        @apply block text-sm font-medium text-slate-700 dark:text-slate-200;
+    }
+
+    .form-control {
+        @apply w-full rounded-xl border border-slate-200/70 bg-white/90 px-4 py-2 text-sm text-slate-700 placeholder:text-slate-400 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/20 dark:border-slate-700/70 dark:bg-slate-950/40 dark:text-slate-100 dark:placeholder:text-slate-500;
 
     }
 }

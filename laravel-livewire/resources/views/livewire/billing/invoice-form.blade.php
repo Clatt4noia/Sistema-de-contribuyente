@@ -1,78 +1,78 @@
-<div class="space-y-6">
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-semibold">{{ $isEdit ? 'Editar Factura' : 'Nueva Factura' }}</h1>
-        <a href="{{ route('billing.invoices.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Volver</a>
+<div class="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">{{ $isEdit ? 'Editar Factura' : 'Nueva Factura' }}</h1>
+        <a href="{{ route('billing.invoices.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700/70 dark:text-slate-200 dark:hover:bg-slate-900/60">Volver</a>
     </div>
 
-    <div class="bg-white shadow rounded p-6">
-        <form wire:submit="save" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Numero de factura *</label>
-                <input type="text" wire:model.defer="invoice.invoice_number" class="w-full px-3 py-2 border rounded @error('invoice.invoice_number') border-red-500 @enderror">
-                @error('invoice.invoice_number') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+    <div class="surface-card p-6 shadow-lg">
+        <form wire:submit="save" class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div class="form-field">
+                <label class="form-label">Numero de factura *</label>
+                <input type="text" wire:model.defer="invoice.invoice_number" class="form-control @error('invoice.invoice_number') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.invoice_number') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
-                <select wire:model.defer="invoice.status" class="w-full px-3 py-2 border rounded @error('invoice.status') border-red-500 @enderror">
+            <div class="form-field">
+                <label class="form-label">Estado *</label>
+                <select wire:model.defer="invoice.status" class="form-control @error('invoice.status') border-rose-400 dark:border-rose-400 @enderror">
                     <option value="draft">Borrador</option>
                     <option value="issued">Emitida</option>
                     <option value="paid">Pagada</option>
                     <option value="overdue">Vencida</option>
                 </select>
-                @error('invoice.status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                @error('invoice.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
-                <select wire:model.defer="invoice.client_id" class="w-full px-3 py-2 border rounded @error('invoice.client_id') border-red-500 @enderror">
+            <div class="form-field">
+                <label class="form-label">Cliente *</label>
+                <select wire:model.defer="invoice.client_id" class="form-control @error('invoice.client_id') border-rose-400 dark:border-rose-400 @enderror">
                     <option value="">Seleccione un cliente</option>
                     @foreach($clients as $client)
                         <option value="{{ $client->id }}">{{ $client->business_name }}</option>
                     @endforeach
                 </select>
-                @error('invoice.client_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                @error('invoice.client_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Pedido asociado</label>
-                <select wire:model.defer="invoice.order_id" class="w-full px-3 py-2 border rounded @error('invoice.order_id') border-red-500 @enderror">
+            <div class="form-field">
+                <label class="form-label">Pedido asociado</label>
+                <select wire:model.defer="invoice.order_id" class="form-control @error('invoice.order_id') border-rose-400 dark:border-rose-400 @enderror">
                     <option value="">Sin pedido</option>
                     @foreach($orders as $order)
                         <option value="{{ $order->id }}">{{ $order->reference }}</option>
                     @endforeach
                 </select>
-                @error('invoice.order_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                @error('invoice.order_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de emision *</label>
-                <input type="date" wire:model.defer="invoice.issue_date" class="w-full px-3 py-2 border rounded @error('invoice.issue_date') border-red-500 @enderror">
-                @error('invoice.issue_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field">
+                <label class="form-label">Fecha de emision *</label>
+                <input type="date" wire:model.defer="invoice.issue_date" class="form-control @error('invoice.issue_date') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.issue_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de vencimiento</label>
-                <input type="date" wire:model.defer="invoice.due_date" class="w-full px-3 py-2 border rounded @error('invoice.due_date') border-red-500 @enderror">
-                @error('invoice.due_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field">
+                <label class="form-label">Fecha de vencimiento</label>
+                <input type="date" wire:model.defer="invoice.due_date" class="form-control @error('invoice.due_date') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.due_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Subtotal *</label>
-                <input type="number" step="0.01" wire:model.defer="invoice.subtotal" class="w-full px-3 py-2 border rounded @error('invoice.subtotal') border-red-500 @enderror">
-                @error('invoice.subtotal') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field">
+                <label class="form-label">Subtotal *</label>
+                <input type="number" step="0.01" wire:model.defer="invoice.subtotal" class="form-control @error('invoice.subtotal') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.subtotal') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Impuestos</label>
-                <input type="number" step="0.01" wire:model.defer="invoice.tax" class="w-full px-3 py-2 border rounded @error('invoice.tax') border-red-500 @enderror">
-                @error('invoice.tax') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field">
+                <label class="form-label">Impuestos</label>
+                <input type="number" step="0.01" wire:model.defer="invoice.tax" class="form-control @error('invoice.tax') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.tax') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Total</label>
-                <input type="number" step="0.01" wire:model.defer="invoice.total" class="w-full px-3 py-2 border rounded @error('invoice.total') border-red-500 @enderror" placeholder="Se calcula si se deja vacio">
-                @error('invoice.total') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field">
+                <label class="form-label">Total</label>
+                <input type="number" step="0.01" wire:model.defer="invoice.total" class="form-control @error('invoice.total') border-rose-400 dark:border-rose-400 @enderror" placeholder="Se calcula si se deja vacio">
+                @error('invoice.total') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
-                <textarea rows="4" wire:model.defer="invoice.notes" class="w-full px-3 py-2 border rounded @error('invoice.notes') border-red-500 @enderror"></textarea>
-                @error('invoice.notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field md:col-span-2">
+                <label class="form-label">Notas</label>
+                <textarea rows="4" wire:model.defer="invoice.notes" class="form-control @error('invoice.notes') border-rose-400 dark:border-rose-400 @enderror"></textarea>
+                @error('invoice.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
             <div class="md:col-span-2 flex justify-end">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{{ $isEdit ? 'Actualizar' : 'Guardar' }}</button>
+                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300">{{ $isEdit ? 'Actualizar' : 'Guardar' }}</button>
             </div>
         </form>
     </div>
