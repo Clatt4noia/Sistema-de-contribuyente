@@ -5,6 +5,13 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
 
+use App\Enums\UserRole;
+use App\Livewire\Dashboards\AdminDashboard;
+use App\Livewire\Dashboards\ClientDashboard;
+use App\Livewire\Dashboards\FinanceAnalystDashboard;
+use App\Livewire\Dashboards\FinanceDashboard;
+use App\Livewire\Dashboards\FleetDashboard;
+use App\Livewire\Dashboards\LogisticsDashboard;
 use App\Livewire\Fleet\AssignmentForm;
 use App\Livewire\Fleet\AssignmentList;
 use App\Livewire\Fleet\DriverForm;
@@ -25,10 +32,48 @@ use App\Models\Truck;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
-        return view('dashboard');
+        $user = auth()->user();
+
+        $route = match ($user->role) {
+            UserRole::ADMIN => 'dashboards.admin',
+            UserRole::LOGISTICS_MANAGER => 'dashboards.logistics',
+            UserRole::FLEET_MANAGER => 'dashboards.fleet',
+            UserRole::FINANCE_MANAGER => 'dashboards.finance',
+            UserRole::FINANCE_ANALYST => 'dashboards.finance-analyst',
+            UserRole::CLIENT => 'dashboards.client',
+            default => 'dashboards.client',
+        };
+
+        return redirect()->route($route);
     })->name('dashboard');
 
     Route::redirect('/home', '/')->name('home');
+
+    Route::prefix('dashboards')->name('dashboards.')->group(function () {
+        Route::get('/admin', AdminDashboard::class)
+            ->middleware('can:view-dashboard.admin')
+            ->name('admin');
+
+        Route::get('/logistics', LogisticsDashboard::class)
+            ->middleware('can:view-dashboard.logistics')
+            ->name('logistics');
+
+        Route::get('/fleet', FleetDashboard::class)
+            ->middleware('can:view-dashboard.fleet')
+            ->name('fleet');
+
+        Route::get('/finance', FinanceDashboard::class)
+            ->middleware('can:view-dashboard.finance')
+            ->name('finance');
+
+        Route::get('/finance-analyst', FinanceAnalystDashboard::class)
+            ->middleware('can:view-dashboard.finance-analyst')
+            ->name('finance-analyst');
+
+        Route::get('/client', ClientDashboard::class)
+            ->middleware('can:view-dashboard.client')
+            ->name('client');
+    });
 
     Route::prefix('fleet')->name('fleet.')->group(function () {
         Route::get('/trucks', TruckList::class)->name('trucks.index');

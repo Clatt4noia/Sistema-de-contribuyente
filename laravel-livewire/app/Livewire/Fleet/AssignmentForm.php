@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Truck;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -16,6 +17,8 @@ use Livewire\Component;
 #[Title('Asignacion')]
 class AssignmentForm extends Component
 {
+    use AuthorizesRequests;
+
     public Assignment $assignment;
     public bool $isEdit = false;
     public $trucks = [];
@@ -40,6 +43,7 @@ class AssignmentForm extends Component
     {
         if ($id) {
             $this->assignment = Assignment::findOrFail($id);
+            $this->authorize('update', $this->assignment);
             $this->isEdit = true;
 
             if ($this->assignment->start_date) {
@@ -50,6 +54,7 @@ class AssignmentForm extends Component
                 $this->assignment->end_date = $this->assignment->end_date->format('Y-m-d\TH:i');
             }
         } else {
+            $this->authorize('create', Assignment::class);
             $this->assignment = new Assignment([
                 'status' => 'scheduled',
                 'start_date' => now()->format('Y-m-d\TH:i'),
@@ -71,6 +76,11 @@ class AssignmentForm extends Component
 
     public function save()
     {
+        $this->authorize(
+            $this->isEdit ? 'update' : 'create',
+            $this->isEdit ? $this->assignment : Assignment::class
+        );
+
         $this->validate();
 
         $start = Carbon::parse($this->assignment->start_date);
@@ -111,11 +121,17 @@ class AssignmentForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Assignment::class);
+
         return view('livewire.fleet.assignment-form');
     }
 
     protected function loadOptions(): void
     {
+        $this->authorize('viewAny', Order::class);
+        $this->authorize('viewAny', Truck::class);
+        $this->authorize('viewAny', Driver::class);
+
         $orderId = $this->assignment->order_id;
 
         $this->orders = Order::query()

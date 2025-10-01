@@ -1,48 +1,10 @@
-@props(['title' => null])
+@props([
+    'title' => null,
+    'menu' => null,
+])
 
 @php
-    $navItems = [
-        [
-            'label' => __('Inicio'),
-            'href' => route('dashboard'),
-            'icon' => 'layout-grid',
-            'current' => request()->routeIs('dashboard'),
-        ],
-        [
-            'label' => __('Analíticas'),
-            'href' => route('fleet.report'),
-            'icon' => 'bar-chart-3',
-            'current' => request()->routeIs('fleet.report'),
-        ],
-        [
-            'label' => __('Nuevo camión'),
-            'href' => route('fleet.trucks.create'),
-            'icon' => 'bell',
-            'badge' => __('Nuevo'),
-            'badge_style' => 'bg-indigo-500 text-white dark:bg-indigo-400 dark:text-slate-900',
-            'current' => request()->routeIs('fleet.trucks.create'),
-        ],
-        [
-            'label' => __('Vehículos'),
-            'href' => route('fleet.trucks.index'),
-            'icon' => 'truck',
-            'current' => request()->routeIs('fleet.trucks.index'),
-        ],
-        [
-            'label' => __('Pagos'),
-            'href' => route('billing.payments.index'),
-            'icon' => 'credit-card',
-            'badge' => 'Ver',
-            'badge_style' => 'bg-rose-500 text-white dark:bg-rose-400 dark:text-rose-950',
-            'current' => request()->routeIs('billing.payments.*'),
-        ],
-        [
-            'label' => __('Configuración'),
-            'href' => route('profile.edit'),
-            'icon' => 'settings',
-            'current' => request()->routeIs('profile.*'),
-        ],
-    ];
+    $navItems = $menu ?? \App\Support\Navigation\MainMenu::for(auth()->user());
 @endphp
 
 <!DOCTYPE html>

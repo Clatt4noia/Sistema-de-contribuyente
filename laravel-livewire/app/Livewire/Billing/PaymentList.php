@@ -4,6 +4,7 @@ namespace App\Livewire\Billing;
 
 use App\Models\Invoice;
 use App\Models\Payment;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 class PaymentList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public string $search = '';
     public string $invoice_id = '';
@@ -39,10 +41,9 @@ class PaymentList extends Component
 
     public function deletePayment(int $paymentId): void
     {
-        $payment = Payment::find($paymentId);
-        if (!$payment) {
-            return;
-        }
+        $payment = Payment::findOrFail($paymentId);
+
+        $this->authorize('delete', $payment);
 
         DB::transaction(function () use ($payment) {
             $invoice = $payment->invoice;
@@ -67,6 +68,8 @@ class PaymentList extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Payment::class);
+
         $payments = Payment::query()
             ->with('invoice.client')
             ->when($this->search, function ($query) {
