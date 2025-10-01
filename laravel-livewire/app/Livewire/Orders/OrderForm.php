@@ -4,12 +4,15 @@ namespace App\Livewire\Orders;
 
 use App\Models\Order;
 use App\Models\RoutePlan;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class OrderForm extends Component
 {
+    use AuthorizesRequests;
+
     public Order $order;
     public bool $isEdit = false;
     public array $routePlan = [
@@ -46,7 +49,9 @@ class OrderForm extends Component
     public function mount($order = null): void
     {
         if ($order) {
-            $this->order = $order->load('routePlans');
+            $this->order = $order;
+            $this->authorize('update', $this->order);
+            $this->order->load('routePlans');
             $this->isEdit = true;
 
             if ($this->order->pickup_date) {
@@ -67,6 +72,7 @@ class OrderForm extends Component
                 ];
             }
         } else {
+            $this->authorize('create', Order::class);
             $this->order = new Order([
                 'status' => 'pending',
             ]);
@@ -77,6 +83,8 @@ class OrderForm extends Component
 
     public function save()
     {
+        $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->order : Order::class);
+
         $this->validate();
 
         DB::transaction(function () {
@@ -133,6 +141,8 @@ class OrderForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Order::class);
+
         return view('livewire.orders.order-form');
     }
 }
