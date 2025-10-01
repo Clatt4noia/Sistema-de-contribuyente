@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Enums\UserRole;
+
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
@@ -27,6 +28,7 @@ class RegistrationTest extends TestCase
             ->set('password', 'password')
             ->set('password_confirmation', 'password')
             ->set('role', UserRole::ADMIN->value)
+
             ->call('register');
 
         $response
@@ -38,6 +40,7 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'role' => UserRole::ADMIN->value,
+
         ]);
     }
 }

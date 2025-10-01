@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserRole;
+
 use App\Models\Assignment;
 use App\Models\Client;
 use App\Models\Driver;
@@ -28,6 +29,7 @@ use App\Policies\PaymentPolicy;
 use App\Policies\PaymentPolicyV2;
 use App\Policies\TruckPolicy;
 use App\Policies\TruckPolicyV2;
+
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -48,6 +50,7 @@ class AuthServiceProvider extends ServiceProvider
         Client::class => ClientPolicyV2::class,
         Invoice::class => InvoicePolicyV2::class,
         Payment::class => PaymentPolicyV2::class,
+
     ];
 
     public function boot(): void
@@ -83,5 +86,6 @@ class AuthServiceProvider extends ServiceProvider
         ]));
 
         Gate::define('view-dashboard.client', fn (User $user) => $user->hasRole(UserRole::CLIENT));
+
     }
 }

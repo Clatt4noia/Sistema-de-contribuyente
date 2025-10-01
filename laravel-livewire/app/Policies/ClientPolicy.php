@@ -16,6 +16,7 @@ class ClientPolicy
             ...User::LOGISTICS_ROLES,
             ...User::FINANCE_ROLES,
         ]);
+
     }
 
     public function view(User $user, Client $client): bool
@@ -29,6 +30,7 @@ class ClientPolicy
             User::ROLE_ADMIN,
             User::ROLE_LOGISTICS_MANAGER,
         ]);
+
     }
 
     public function update(User $user, Client $client): bool
@@ -38,6 +40,7 @@ class ClientPolicy
             User::ROLE_LOGISTICS_MANAGER,
             User::ROLE_FINANCE_MANAGER,
         ]);
+
     }
 
     public function delete(User $user, Client $client): bool

@@ -22,6 +22,7 @@
 
         return Blade::componentExists($component) ? $component : $fallbackIcon;
     };
+
 @endphp
 
 <!DOCTYPE html>
