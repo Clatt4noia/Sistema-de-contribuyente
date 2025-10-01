@@ -3,6 +3,7 @@
 namespace App\Livewire\Fleet;
 
 use App\Models\Truck;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -13,21 +14,25 @@ use Livewire\WithPagination;
 class TruckList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public $search = '';
     public $status = '';
     
     public function deleteTruck($id)
     {
-        $truck = Truck::find($id);
-        if ($truck) {
-            $truck->delete();
-            session()->flash('message', 'Camion eliminado correctamente.');
-        }
+        $truck = Truck::findOrFail($id);
+
+        $this->authorize('delete', $truck);
+
+        $truck->delete();
+        session()->flash('message', 'Camion eliminado correctamente.');
     }
 
     public function render()
     {
+        $this->authorize('viewAny', Truck::class);
+
         $query = Truck::query();
         
         if ($this->search) {

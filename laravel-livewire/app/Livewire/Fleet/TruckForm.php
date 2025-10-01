@@ -3,11 +3,14 @@
 namespace App\Livewire\Fleet;
 
 use App\Models\Truck;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class TruckForm extends Component
 {
+    use AuthorizesRequests;
+
     public Truck $truck;
     public bool $isEdit = false;
     public array $maintenanceHistory = [];
@@ -37,9 +40,11 @@ class TruckForm extends Component
     public function mount(?Truck $truck = null): void
     {
         if ($truck && $truck->exists) {
+            $this->authorize('update', $truck);
             $this->truck = $truck;
             $this->isEdit = true;
         } else {
+            $this->authorize('create', Truck::class);
             $this->truck = new Truck([
                 'status' => 'available',
                 'mileage' => 0,
@@ -64,6 +69,8 @@ class TruckForm extends Component
 
     public function save()
     {
+        $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->truck : Truck::class);
+
         $validated = $this->validate();
 
         $this->truck->fill($validated['truck']);
@@ -77,6 +84,8 @@ class TruckForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Truck::class);
+
         return view('livewire.fleet.truck-form');
     }
 }

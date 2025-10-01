@@ -3,10 +3,13 @@
 namespace App\Livewire\Clients;
 
 use App\Models\Client;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 
 class ClientForm extends Component
 {
+    use AuthorizesRequests;
+
     public Client $client;
     public bool $isEdit = false;
 
@@ -30,14 +33,18 @@ class ClientForm extends Component
     {
         if ($client) {
             $this->client = $client;
+            $this->authorize('update', $this->client);
             $this->isEdit = true;
         } else {
+            $this->authorize('create', Client::class);
             $this->client = new Client();
         }
     }
 
     public function save()
     {
+        $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->client : Client::class);
+
         $this->validate();
 
         $this->client->save();
@@ -48,6 +55,8 @@ class ClientForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Client::class);
+
         return view('livewire.clients.client-form');
     }
 }

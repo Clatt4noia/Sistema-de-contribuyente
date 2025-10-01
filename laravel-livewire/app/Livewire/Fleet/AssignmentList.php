@@ -6,6 +6,7 @@ use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\Order;
 use App\Models\Truck;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -17,6 +18,7 @@ use Livewire\WithPagination;
 class AssignmentList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public string $search = '';
     public string $status = '';
@@ -66,10 +68,9 @@ class AssignmentList extends Component
 
     public function deleteAssignment(int $id): void
     {
-        $assignment = Assignment::with(['truck', 'driver', 'order'])->find($id);
-        if (!$assignment) {
-            return;
-        }
+        $assignment = Assignment::with(['truck', 'driver', 'order'])->findOrFail($id);
+
+        $this->authorize('delete', $assignment);
 
         DB::transaction(function () use ($assignment) {
             $truckId = $assignment->truck_id;
@@ -99,6 +100,8 @@ class AssignmentList extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Assignment::class);
+
         $assignments = Assignment::query()
             ->with(['truck', 'driver', 'order'])
             ->when($this->search, function ($query) {

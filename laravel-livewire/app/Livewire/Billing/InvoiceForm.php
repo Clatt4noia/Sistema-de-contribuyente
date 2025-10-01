@@ -4,12 +4,15 @@ namespace App\Livewire\Billing;
 
 use App\Models\Invoice;
 use App\Models\Order;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class InvoiceForm extends Component
 {
+    use AuthorizesRequests;
+
     public Invoice $invoice;
     public bool $isEdit = false;
     public $clients;
@@ -37,8 +40,10 @@ class InvoiceForm extends Component
     {
         if ($invoice) {
             $this->invoice = $invoice;
+            $this->authorize('update', $this->invoice);
             $this->isEdit = true;
         } else {
+            $this->authorize('create', Invoice::class);
             $this->invoice = new Invoice([
                 'status' => 'draft',
                 'issue_date' => now()->format('Y-m-d'),
@@ -70,6 +75,8 @@ class InvoiceForm extends Component
 
     public function save()
     {
+        $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->invoice : Invoice::class);
+
         $this->validate();
 
         DB::transaction(function () {
@@ -91,6 +98,8 @@ class InvoiceForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Invoice::class);
+
         return view('livewire.billing.invoice-form');
     }
 }

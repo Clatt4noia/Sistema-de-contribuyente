@@ -4,12 +4,15 @@ namespace App\Livewire\Billing;
 
 use App\Models\Invoice;
 use App\Models\Payment;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class PaymentForm extends Component
 {
+    use AuthorizesRequests;
+
     public Payment $payment;
     public bool $isEdit = false;
     public $invoices;
@@ -30,8 +33,10 @@ class PaymentForm extends Component
     {
         if ($payment) {
             $this->payment = $payment;
+            $this->authorize('update', $this->payment);
             $this->isEdit = true;
         } else {
+            $this->authorize('create', Payment::class);
             $this->payment = new Payment([
                 'paid_at' => now()->format('Y-m-d'),
             ]);
@@ -46,6 +51,8 @@ class PaymentForm extends Component
 
     public function save()
     {
+        $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->payment : Payment::class);
+
         $this->validate();
 
         DB::transaction(function () {
@@ -72,6 +79,8 @@ class PaymentForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Payment::class);
+
         return view('livewire.billing.payment-form');
     }
 }
