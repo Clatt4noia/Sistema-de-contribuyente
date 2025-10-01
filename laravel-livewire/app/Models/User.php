@@ -10,6 +10,19 @@ use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
+    public const ROLE_USER = 'user';
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_BILLING_MANAGER = 'billing_manager';
+    public const ROLE_BILLING_VIEWER = 'viewer';
+    public const ROLE_FLEET_MANAGER = 'fleet_manager';
+    public const ROLE_LOGISTICS_MANAGER = 'logistics_manager';
+
+    public const BILLING_ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_BILLING_MANAGER,
+        self::ROLE_BILLING_VIEWER,
+    ];
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
