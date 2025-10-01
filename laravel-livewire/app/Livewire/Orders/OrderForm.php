@@ -15,6 +15,7 @@ class OrderForm extends Component
 
     public Order $order;
     public bool $isEdit = false;
+    public array $form = [];
     public array $routePlan = [
         'planner' => null,
         'route_summary' => null,
@@ -28,17 +29,17 @@ class OrderForm extends Component
         $orderId = $this->order->id ?? 'NULL';
 
         return [
-            'order.client_id' => 'required|exists:clients,id',
-            'order.reference' => 'required|string|max:50|unique:orders,reference,' . $orderId,
-            'order.origin' => 'required|string|max:150',
-            'order.destination' => 'required|string|max:150',
-            'order.pickup_date' => 'nullable|date',
-            'order.delivery_date' => 'nullable|date|after_or_equal:order.pickup_date',
-            'order.status' => 'required|in:pending,en_route,delivered,cancelled',
-            'order.cargo_details' => 'nullable|string',
-            'order.estimated_distance_km' => 'nullable|numeric|min:0',
-            'order.estimated_duration_hours' => 'nullable|numeric|min:0',
-            'order.notes' => 'nullable|string',
+            'form.client_id' => 'required|exists:clients,id',
+            'form.reference' => 'required|string|max:50|unique:orders,reference,' . $orderId,
+            'form.origin' => 'required|string|max:150',
+            'form.destination' => 'required|string|max:150',
+            'form.pickup_date' => 'nullable|date',
+            'form.delivery_date' => 'nullable|date|after_or_equal:form.pickup_date',
+            'form.status' => 'required|in:pending,en_route,delivered,cancelled',
+            'form.cargo_details' => 'nullable|string',
+            'form.estimated_distance_km' => 'nullable|numeric|min:0',
+            'form.estimated_duration_hours' => 'nullable|numeric|min:0',
+            'form.notes' => 'nullable|string',
             'routePlan.planner' => 'nullable|string|max:100',
             'routePlan.route_summary' => 'nullable|string',
             'routePlan.map_url' => 'nullable|url',
@@ -53,14 +54,6 @@ class OrderForm extends Component
             $this->authorize('update', $this->order);
             $this->order->load('routePlans');
             $this->isEdit = true;
-
-            if ($this->order->pickup_date) {
-                $this->order->pickup_date = $this->order->pickup_date->format('Y-m-d\TH:i');
-            }
-
-            if ($this->order->delivery_date) {
-                $this->order->delivery_date = $this->order->delivery_date->format('Y-m-d\TH:i');
-            }
 
             $firstPlan = $this->order->routePlans->first();
             if ($firstPlan) {
@@ -78,6 +71,20 @@ class OrderForm extends Component
             ]);
         }
 
+        $this->form = [
+            'client_id' => $this->order->client_id ?? '',
+            'reference' => $this->order->reference ?? '',
+            'origin' => $this->order->origin ?? '',
+            'destination' => $this->order->destination ?? '',
+            'pickup_date' => optional($this->order->pickup_date)->format('Y-m-d\TH:i'),
+            'delivery_date' => optional($this->order->delivery_date)->format('Y-m-d\TH:i'),
+            'status' => $this->order->status ?? 'pending',
+            'cargo_details' => $this->order->cargo_details ?? '',
+            'estimated_distance_km' => $this->order->estimated_distance_km ?? null,
+            'estimated_duration_hours' => $this->order->estimated_duration_hours ?? null,
+            'notes' => $this->order->notes ?? '',
+        ];
+
         $this->clients = \App\Models\Client::orderBy('business_name')->get();
     }
 
@@ -85,13 +92,37 @@ class OrderForm extends Component
     {
         $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->order : Order::class);
 
-        $this->validate();
+        $validated = $this->validate();
+        $data = $validated['form'];
+
+        // Normalizamos campos libres antes de persistirlos y reflejamos el resultado en el estado del formulario.
+        $data['cargo_details'] = trim((string) $data['cargo_details']) ?: null;
+        $data['notes'] = trim((string) $data['notes']) ?: null;
+        $data['estimated_distance_km'] = $data['estimated_distance_km'] !== null ? (float) $data['estimated_distance_km'] : null;
+        $data['estimated_duration_hours'] = $data['estimated_duration_hours'] !== null ? (float) $data['estimated_duration_hours'] : null;
+
+        $this->form = array_merge($this->form, [
+            'cargo_details' => $data['cargo_details'],
+            'notes' => $data['notes'],
+            'estimated_distance_km' => $data['estimated_distance_km'],
+            'estimated_duration_hours' => $data['estimated_duration_hours'],
+        ]);
 
         DB::transaction(function () {
-            $this->order->pickup_date = $this->order->pickup_date ? Carbon::parse($this->order->pickup_date) : null;
-            $this->order->delivery_date = $this->order->delivery_date ? Carbon::parse($this->order->delivery_date) : null;
-            $this->order->estimated_distance_km = $this->order->estimated_distance_km ?: null;
-            $this->order->estimated_duration_hours = $this->order->estimated_duration_hours ?: null;
+            $this->order->fill([
+                'client_id' => $this->form['client_id'],
+                'reference' => $this->form['reference'],
+                'origin' => $this->form['origin'],
+                'destination' => $this->form['destination'],
+                'status' => $this->form['status'],
+                'cargo_details' => $this->form['cargo_details'] ?: null,
+                'estimated_distance_km' => $this->form['estimated_distance_km'] !== null ? (float) $this->form['estimated_distance_km'] : null,
+                'estimated_duration_hours' => $this->form['estimated_duration_hours'] !== null ? (float) $this->form['estimated_duration_hours'] : null,
+                'notes' => $this->form['notes'] ?: null,
+            ]);
+
+            $this->order->pickup_date = $this->form['pickup_date'] ? Carbon::parse($this->form['pickup_date']) : null;
+            $this->order->delivery_date = $this->form['delivery_date'] ? Carbon::parse($this->form['delivery_date']) : null;
 
             $this->order->save();
 
