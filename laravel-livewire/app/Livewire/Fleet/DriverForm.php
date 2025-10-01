@@ -5,6 +5,7 @@ namespace App\Livewire\Fleet;
 use App\Models\Driver;
 use App\Models\DriverEvaluation;
 use App\Models\DriverSchedule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -15,6 +16,8 @@ use Livewire\Component;
 #[Title('Chofer')]
 class DriverForm extends Component
 {
+    use AuthorizesRequests;
+
     public Driver $driver;
     public bool $isEdit = false;
     public array $schedules = [];
@@ -59,8 +62,10 @@ class DriverForm extends Component
     {
         if ($id) {
             $this->driver = Driver::with(['schedules', 'evaluations'])->findOrFail($id);
+            $this->authorize('update', $this->driver);
             $this->isEdit = true;
         } else {
+            $this->authorize('create', Driver::class);
             $this->driver = new Driver([
                 'status' => 'active',
             ]);
@@ -118,6 +123,8 @@ class DriverForm extends Component
 
     public function save()
     {
+        $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->driver : Driver::class);
+
         $validated = $this->validate();
 
         foreach ($this->schedules as $schedule) {
@@ -160,6 +167,8 @@ class DriverForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Driver::class);
+
         return view('livewire.fleet.driver-form');
     }
 }
