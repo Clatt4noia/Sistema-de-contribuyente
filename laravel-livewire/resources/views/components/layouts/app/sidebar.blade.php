@@ -4,7 +4,25 @@
 ])
 
 @php
-    $navItems = $menu ?? \App\Support\Navigation\MainMenu::for(auth()->user());
+    use Illuminate\Support\Facades\Blade;
+
+    $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
+    $navItems = $menu
+        ?? (class_exists($menuBuilder)
+            ? $menuBuilder::for(auth()->user())
+            : \App\Support\Navigation\MainMenu::for(auth()->user()));
+    $fallbackIcon = 'heroicon-o-squares-2x2';
+
+    $resolveIcon = static function (?string $icon) use ($fallbackIcon) {
+        if (! $icon) {
+            return $fallbackIcon;
+        }
+
+        $component = str_starts_with($icon, 'heroicon-') ? $icon : 'heroicon-o-' . ltrim($icon, '-');
+
+        return Blade::componentExists($component) ? $component : $fallbackIcon;
+    };
+
 @endphp
 
 <!DOCTYPE html>
@@ -31,7 +49,7 @@
                     <div class="mt-8 px-4">
                         <label class="relative flex h-12 w-full items-center">
                             <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400/80 dark:text-slate-500">
-                                <x-dynamic-component :component="'flux.icon.search'" class="size-5" />
+                                <x-dynamic-component :component="$resolveIcon('heroicon-o-magnifying-glass')" class="size-5" />
                             </span>
 
                             <input
@@ -63,7 +81,9 @@
 
                                     ])
                                 >
-                                    <x-dynamic-component :component="'flux.icon.' . $item['icon']" class="size-5" />
+                                    @php($iconComponent = $resolveIcon($item['icon'] ?? null))
+
+                                    <x-dynamic-component :component="$iconComponent" class="size-5" />
                                 </span>
 
                                 <span class="flex flex-1 items-center justify-between truncate">
@@ -94,8 +114,8 @@
                         >
                             <span class="flex items-center gap-3">
                                 <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-500/20 group-hover:text-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-200">
-                                    <x-dynamic-component :component="'flux.icon.sun'" class="size-5 dark:hidden" />
-                                    <x-dynamic-component :component="'flux.icon.moon-star'" class="hidden size-5 dark:block" />
+                                    <x-dynamic-component :component="$resolveIcon('heroicon-o-sun')" class="size-5 dark:hidden" />
+                                    <x-dynamic-component :component="$resolveIcon('heroicon-o-moon')" class="hidden size-5 dark:block" />
                                 </span>
 
                                 <span class="grid text-left leading-tight">
@@ -163,8 +183,8 @@
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/5 text-slate-600 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
                         >
                             <span class="sr-only">{{ __('Cambiar tema') }}</span>
-                            <x-dynamic-component :component="'flux.icon.sun'" class="size-5 dark:hidden" />
-                            <x-dynamic-component :component="'flux.icon.moon-star'" class="hidden size-5 dark:block" />
+                            <x-dynamic-component :component="$resolveIcon('heroicon-o-sun')" class="size-5 dark:hidden" />
+                            <x-dynamic-component :component="$resolveIcon('heroicon-o-moon')" class="hidden size-5 dark:block" />
                         </button>
 
                         <flux:dropdown position="bottom" align="end">
@@ -209,7 +229,7 @@
                 <label class="relative flex h-12 w-full items-center">
                     <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400/80 dark:text-slate-500">
 
-                        <x-dynamic-component :component="'flux.icon.search'" class="size-5" />
+                        <x-dynamic-component :component="$resolveIcon('heroicon-o-magnifying-glass')" class="size-5" />
                     </span>
 
                     <input
@@ -241,7 +261,9 @@
 
                             ])
                         >
-                            <x-dynamic-component :component="'flux.icon.' . $item['icon']" class="size-5" />
+                            @php($iconComponent = $resolveIcon($item['icon'] ?? null))
+
+                            <x-dynamic-component :component="$iconComponent" class="size-5" />
                         </span>
 
                         <span class="flex flex-1 items-center justify-between truncate">
@@ -271,11 +293,11 @@
                     aria-pressed="false"
                     class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
                 >
-                    <span class="flex items-center gap-3">
-                        <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-500/20 group-hover:text-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-200">
+                        <span class="flex items-center gap-3">
+                            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-500/20 group-hover:text-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-200">
 
-                            <x-dynamic-component :component="'flux.icon.sun'" class="size-5 dark:hidden" />
-                            <x-dynamic-component :component="'flux.icon.moon-star'" class="hidden size-5 dark:block" />
+                            <x-dynamic-component :component="$resolveIcon('heroicon-o-sun')" class="size-5 dark:hidden" />
+                            <x-dynamic-component :component="$resolveIcon('heroicon-o-moon')" class="hidden size-5 dark:block" />
                         </span>
                         <span>{{ __('Modo oscuro') }}</span>
                     </span>
