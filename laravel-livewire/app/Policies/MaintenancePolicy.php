@@ -13,6 +13,7 @@ class MaintenancePolicy
     public function viewAny(User $user): bool
     {
         return $user->hasAnyRole(User::LOGISTICS_ROLES);
+
     }
 
     public function view(User $user, Maintenance $maintenance): bool
@@ -23,6 +24,7 @@ class MaintenancePolicy
     public function create(User $user): bool
     {
         return $user->hasAnyRole(User::FLEET_MANAGEMENT_ROLES);
+
     }
 
     public function update(User $user, Maintenance $maintenance): bool

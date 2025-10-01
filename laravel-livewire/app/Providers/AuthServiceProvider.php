@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserRole;
+
 use App\Models\Assignment;
 use App\Models\Client;
 use App\Models\Driver;
@@ -69,5 +70,6 @@ class AuthServiceProvider extends ServiceProvider
         ]));
 
         Gate::define('view-dashboard.client', fn (User $user) => $user->hasRole(UserRole::CLIENT));
+
     }
 }

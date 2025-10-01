@@ -52,6 +52,7 @@ class User extends Authenticatable
         self::ROLE_ADMIN,
         self::ROLE_LOGISTICS_MANAGER,
         self::ROLE_FINANCE_MANAGER,
+
     ];
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -90,6 +91,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+
         ];
     }
 
@@ -116,6 +118,7 @@ class User extends Authenticatable
         } catch (\ValueError) {
             return false;
         }
+
 
         return $this->role === $role;
     }
@@ -145,6 +148,7 @@ class User extends Authenticatable
         }
 
         return false;
+
     }
 
     public function isAdmin(): bool
@@ -165,5 +169,6 @@ class User extends Authenticatable
         return collect($roles)
             ->mapWithKeys(fn (UserRole $role) => [$role->value => $role->label()])
             ->all();
+
     }
 }

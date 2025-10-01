@@ -13,6 +13,7 @@ class DriverPolicy
     public function viewAny(User $user): bool
     {
         return $user->hasAnyRole(User::LOGISTICS_ROLES);
+
     }
 
     public function view(User $user, Driver $driver): bool
@@ -23,6 +24,7 @@ class DriverPolicy
     public function create(User $user): bool
     {
         return $user->hasAnyRole(User::FLEET_MANAGEMENT_ROLES);
+
     }
 
     public function update(User $user, Driver $driver): bool
