@@ -12,7 +12,11 @@ class ClientPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'logistics_manager', 'billing_manager', 'viewer']);
+        return $user->hasAnyRole([
+            ...User::LOGISTICS_ROLES,
+            ...User::FINANCE_ROLES,
+        ]);
+
     }
 
     public function view(User $user, Client $client): bool
@@ -22,12 +26,21 @@ class ClientPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'logistics_manager', 'billing_manager']);
+        return $user->hasAnyRole([
+            User::ROLE_ADMIN,
+            User::ROLE_LOGISTICS_MANAGER,
+        ]);
+
     }
 
     public function update(User $user, Client $client): bool
     {
-        return $this->create($user);
+        return $user->hasAnyRole([
+            User::ROLE_ADMIN,
+            User::ROLE_LOGISTICS_MANAGER,
+            User::ROLE_FINANCE_MANAGER,
+        ]);
+
     }
 
     public function delete(User $user, Client $client): bool

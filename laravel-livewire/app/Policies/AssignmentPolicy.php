@@ -12,7 +12,8 @@ class AssignmentPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'fleet_manager', 'logistics_manager', 'viewer']);
+        return $user->hasAnyRole(User::LOGISTICS_ROLES);
+
     }
 
     public function view(User $user, Assignment $assignment): bool
@@ -22,7 +23,11 @@ class AssignmentPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'fleet_manager', 'logistics_manager']);
+        return $user->hasAnyRole([
+            User::ROLE_ADMIN,
+            User::ROLE_LOGISTICS_MANAGER,
+        ]);
+
     }
 
     public function update(User $user, Assignment $assignment): bool

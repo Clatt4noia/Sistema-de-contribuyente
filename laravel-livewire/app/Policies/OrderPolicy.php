@@ -12,7 +12,11 @@ class OrderPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'logistics_manager', 'fleet_manager', 'viewer']);
+        return $user->hasAnyRole([
+            ...User::LOGISTICS_ROLES,
+            ...User::FINANCE_ROLES,
+        ]);
+
     }
 
     public function view(User $user, Order $order): bool

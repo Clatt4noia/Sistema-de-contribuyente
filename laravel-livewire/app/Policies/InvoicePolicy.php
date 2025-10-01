@@ -25,7 +25,7 @@ class InvoicePolicy
     {
         return $user->hasAnyRole([
             User::ROLE_ADMIN,
-            User::ROLE_BILLING_MANAGER,
+            User::ROLE_FINANCE_MANAGER,
         ]);
 
     }

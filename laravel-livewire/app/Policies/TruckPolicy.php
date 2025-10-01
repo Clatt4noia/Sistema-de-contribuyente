@@ -12,7 +12,8 @@ class TruckPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'fleet_manager', 'viewer']);
+        return $user->hasAnyRole(User::LOGISTICS_ROLES);
+
     }
 
     public function view(User $user, Truck $truck): bool
@@ -22,7 +23,8 @@ class TruckPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'fleet_manager']);
+        return $user->hasAnyRole(User::FLEET_MANAGEMENT_ROLES);
+
     }
 
     public function update(User $user, Truck $truck): bool

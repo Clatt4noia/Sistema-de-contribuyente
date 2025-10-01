@@ -3,24 +3,56 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    public const ROLE_USER = 'user';
-    public const ROLE_ADMIN = 'admin';
-    public const ROLE_BILLING_MANAGER = 'billing_manager';
-    public const ROLE_BILLING_VIEWER = 'viewer';
-    public const ROLE_FLEET_MANAGER = 'fleet_manager';
-    public const ROLE_LOGISTICS_MANAGER = 'logistics_manager';
+    public const ROLE_ADMIN = UserRole::ADMIN->value;
+    public const ROLE_LOGISTICS_MANAGER = UserRole::LOGISTICS_MANAGER->value;
+    public const ROLE_FLEET_MANAGER = UserRole::FLEET_MANAGER->value;
+    public const ROLE_FINANCE_MANAGER = UserRole::FINANCE_MANAGER->value;
+    public const ROLE_FINANCE_ANALYST = UserRole::FINANCE_ANALYST->value;
+    public const ROLE_CLIENT = UserRole::CLIENT->value;
 
-    public const BILLING_ROLES = [
+    /** @var array<int, string> */
+    public const LOGISTICS_ROLES = [
         self::ROLE_ADMIN,
-        self::ROLE_BILLING_MANAGER,
-        self::ROLE_BILLING_VIEWER,
+        self::ROLE_LOGISTICS_MANAGER,
+        self::ROLE_FLEET_MANAGER,
+    ];
+
+    /** @var array<int, string> */
+    public const FLEET_MANAGEMENT_ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_FLEET_MANAGER,
+    ];
+
+    /** @var array<int, string> */
+    public const FINANCE_ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_FINANCE_MANAGER,
+        self::ROLE_FINANCE_ANALYST,
+    ];
+
+    /** @var array<int, string> */
+    public const BILLING_ROLES = self::FINANCE_ROLES;
+
+    /** @var array<int, string> */
+    public const CLIENT_PORTAL_ROLES = [
+        self::ROLE_CLIENT,
+    ];
+
+    /** @var array<int, string> */
+    public const REGISTRATION_ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_LOGISTICS_MANAGER,
+        self::ROLE_FINANCE_MANAGER,
+
     ];
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -58,7 +90,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => 'string',
+            'role' => UserRole::class,
+
         ];
     }
 
@@ -74,8 +107,19 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    public function hasRole(string $role): bool
+    public function hasRole(UserRole|string $role): bool
     {
+        if (! $this->role instanceof UserRole) {
+            return false;
+        }
+
+        try {
+            $role = $role instanceof UserRole ? $role : UserRole::from($role);
+        } catch (\ValueError) {
+            return false;
+        }
+
+
         return $this->role === $role;
     }
 
@@ -84,15 +128,47 @@ class User extends Authenticatable
      *
      * @param  string|array<int, string>  $roles
      */
-    public function hasAnyRole(string|array $roles): bool
+    public function hasAnyRole(UserRole|string|array $roles): bool
     {
-        $roles = is_array($roles) ? $roles : [$roles];
+        $roles = Collection::wrap($roles)
+            ->map(function (string|UserRole $role): ?UserRole {
+                try {
+                    return $role instanceof UserRole ? $role : UserRole::from($role);
+                } catch (\ValueError) {
+                    return null;
+                }
+            })
+            ->filter()
+            ->all();
 
-        return in_array($this->role, $roles, true);
+        foreach ($roles as $role) {
+            if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin');
+        return $this->hasRole(UserRole::ADMIN);
+    }
+
+    /**
+     * Obtener las opciones de rol disponibles para formularios de selección.
+     *
+     * @param  array<int, UserRole>|null  $roles
+     * @return array<string, string>
+     */
+    public static function roleOptions(?array $roles = null): array
+    {
+        $roles ??= UserRole::cases();
+
+        return collect($roles)
+            ->mapWithKeys(fn (UserRole $role) => [$role->value => $role->label()])
+            ->all();
+
     }
 }

@@ -58,9 +58,10 @@ class AuthorizationTest extends TestCase
         }
     }
 
-    public function test_viewer_role_cannot_mutate_fleet_resources(): void
+    public function test_finance_analyst_cannot_manage_fleet_resources(): void
     {
-        $viewer = User::factory()->viewer()->create();
+        $financeAnalyst = User::factory()->financeAnalyst()->create();
+
 
         $client = Client::create([
             'business_name' => 'Client Co',
@@ -113,64 +114,70 @@ class AuthorizationTest extends TestCase
             'description' => 'Test assignment',
         ]);
 
-        $this->actingAs($viewer)->get(route('fleet.trucks.index'))->assertOk();
+        $this->actingAs($financeAnalyst)->get(route('fleet.trucks.index'))->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(TruckList::class)
             ->call('deleteTruck', $truck->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(TruckForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(TruckForm::class, ['truck' => $truck])
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(DriverList::class)
             ->call('deleteDriver', $driver->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(DriverForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(DriverForm::class, ['id' => $driver->id])
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(MaintenanceList::class)
             ->call('deleteMaintenance', $maintenance->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(MaintenanceForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(MaintenanceForm::class, ['id' => $maintenance->id])
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(AssignmentList::class)
             ->call('deleteAssignment', $assignment->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(AssignmentForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(AssignmentForm::class, ['id' => $assignment->id])
             ->assertForbidden();
     }
 
-    public function test_viewer_role_cannot_mutate_order_records(): void
+    public function test_finance_analyst_cannot_mutate_order_records(): void
     {
-        $viewer = User::factory()->viewer()->create();
+        $financeAnalyst = User::factory()->financeAnalyst()->create();
+
 
         $client = Client::create([
             'business_name' => 'Client Co',
@@ -186,28 +193,32 @@ class AuthorizationTest extends TestCase
             'status' => 'pending',
         ]);
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(OrderList::class)
             ->call('deleteOrder', $order->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(OrderList::class)
             ->call('updateOrderStatus', $order->id, 'delivered')
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(OrderForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(OrderForm::class, ['order' => $order])
             ->assertForbidden();
     }
 
-    public function test_viewer_role_cannot_mutate_clients(): void
+    public function test_finance_analyst_cannot_mutate_clients(): void
     {
-        $viewer = User::factory()->viewer()->create();
+        $financeAnalyst = User::factory()->financeAnalyst()->create();
+
 
         $client = Client::create([
             'business_name' => 'Client Test',
@@ -215,23 +226,26 @@ class AuthorizationTest extends TestCase
             'contact_name' => 'Jane Doe',
         ]);
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(ClientList::class)
             ->call('deleteClient', $client->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(ClientForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(ClientForm::class, ['client' => $client])
             ->assertForbidden();
     }
 
-    public function test_viewer_role_cannot_mutate_billing_records(): void
+    public function test_finance_analyst_cannot_mutate_billing_records(): void
     {
-        $viewer = User::factory()->viewer()->create();
+        $financeAnalyst = User::factory()->financeAnalyst()->create();
+
 
         $client = Client::create([
             'business_name' => 'Billing Client',
@@ -265,29 +279,32 @@ class AuthorizationTest extends TestCase
             'method' => 'cash',
         ]);
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(InvoiceList::class)
             ->call('markAsPaid', $invoice->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(InvoiceForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(InvoiceForm::class, ['invoice' => $invoice])
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(PaymentList::class)
             ->call('deletePayment', $payment->id)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
             ->test(PaymentForm::class)
             ->assertForbidden();
 
-        Livewire::actingAs($viewer)
+        Livewire::actingAs($financeAnalyst)
+
             ->test(PaymentForm::class, ['payment' => $payment])
             ->assertForbidden();
     }

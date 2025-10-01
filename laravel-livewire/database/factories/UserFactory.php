@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => User::ROLE_USER,
+            'role' => User::ROLE_CLIENT,
 
         ];
     }
@@ -49,23 +49,6 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => User::ROLE_ADMIN,
-
-        ]);
-    }
-
-    public function viewer(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'role' => User::ROLE_BILLING_VIEWER,
-
-        ]);
-    }
-
-    public function fleetManager(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'role' => User::ROLE_FLEET_MANAGER,
-
         ]);
     }
 
@@ -77,10 +60,31 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function billingManager(): static
+    public function fleetManager(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => User::ROLE_BILLING_MANAGER,
+            'role' => User::ROLE_FLEET_MANAGER,
+        ]);
+    }
+
+    public function financeManager(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => User::ROLE_FINANCE_MANAGER,
+        ]);
+    }
+
+    public function financeAnalyst(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => User::ROLE_FINANCE_ANALYST,
+        ]);
+    }
+
+    public function client(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => User::ROLE_CLIENT,
 
         ]);
     }
