@@ -13,27 +13,41 @@ use App\Models\Payment;
 use App\Models\Truck;
 use App\Models\User;
 use App\Policies\AssignmentPolicy;
+use App\Policies\AssignmentPolicyV2;
 use App\Policies\ClientPolicy;
+use App\Policies\ClientPolicyV2;
 use App\Policies\DriverPolicy;
+use App\Policies\DriverPolicyV2;
 use App\Policies\InvoicePolicy;
+use App\Policies\InvoicePolicyV2;
 use App\Policies\MaintenancePolicy;
+use App\Policies\MaintenancePolicyV2;
 use App\Policies\OrderPolicy;
+use App\Policies\OrderPolicyV2;
 use App\Policies\PaymentPolicy;
+use App\Policies\PaymentPolicyV2;
 use App\Policies\TruckPolicy;
+use App\Policies\TruckPolicyV2;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
+    /**
+     * Durante la transición evitamos eliminar los mapeos existentes. La nueva
+     * versión basada en enums queda registrada primero para que Gate utilice
+     * TruckPolicyV2, DriverPolicyV2, etc., pero mantenemos las clases previas
+     * en caso otros equipos aún dependan de ellas.
+     */
     protected $policies = [
-        Truck::class => TruckPolicy::class,
-        Driver::class => DriverPolicy::class,
-        Maintenance::class => MaintenancePolicy::class,
-        Assignment::class => AssignmentPolicy::class,
-        Order::class => OrderPolicy::class,
-        Client::class => ClientPolicy::class,
-        Invoice::class => InvoicePolicy::class,
-        Payment::class => PaymentPolicy::class,
+        Truck::class => TruckPolicyV2::class,
+        Driver::class => DriverPolicyV2::class,
+        Maintenance::class => MaintenancePolicyV2::class,
+        Assignment::class => AssignmentPolicyV2::class,
+        Order::class => OrderPolicyV2::class,
+        Client::class => ClientPolicyV2::class,
+        Invoice::class => InvoicePolicyV2::class,
+        Payment::class => PaymentPolicyV2::class,
     ];
 
     public function boot(): void

@@ -6,7 +6,11 @@
 @php
     use Illuminate\Support\Facades\Blade;
 
-    $navItems = $menu ?? \App\Support\Navigation\MainMenu::for(auth()->user());
+    $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
+    $navItems = $menu
+        ?? (class_exists($menuBuilder)
+            ? $menuBuilder::for(auth()->user())
+            : \App\Support\Navigation\MainMenu::for(auth()->user()));
     $fallbackIcon = 'heroicon-o-squares-2x2';
 
     $resolveIcon = static function (?string $icon) use ($fallbackIcon) {
