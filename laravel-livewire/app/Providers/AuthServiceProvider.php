@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
+
 use App\Models\Assignment;
 use App\Models\Client;
 use App\Models\Driver;
@@ -46,5 +48,28 @@ class AuthServiceProvider extends ServiceProvider
 
             return null;
         });
+
+        Gate::define('view-dashboard.admin', fn (User $user) => $user->hasRole(UserRole::ADMIN));
+
+        Gate::define('view-dashboard.logistics', fn (User $user) => $user->hasAnyRole([
+            UserRole::LOGISTICS_MANAGER,
+        ]));
+
+        Gate::define('view-dashboard.fleet', fn (User $user) => $user->hasAnyRole([
+            UserRole::FLEET_MANAGER,
+            UserRole::LOGISTICS_MANAGER,
+        ]));
+
+        Gate::define('view-dashboard.finance', fn (User $user) => $user->hasAnyRole([
+            UserRole::FINANCE_MANAGER,
+        ]));
+
+        Gate::define('view-dashboard.finance-analyst', fn (User $user) => $user->hasAnyRole([
+            UserRole::FINANCE_ANALYST,
+            UserRole::FINANCE_MANAGER,
+        ]));
+
+        Gate::define('view-dashboard.client', fn (User $user) => $user->hasRole(UserRole::CLIENT));
+
     }
 }
