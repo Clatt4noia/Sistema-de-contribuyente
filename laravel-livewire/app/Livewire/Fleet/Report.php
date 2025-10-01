@@ -6,6 +6,7 @@ use App\Models\Driver;
 use App\Models\Maintenance;
 use App\Models\Order;
 use App\Models\Truck;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -15,8 +16,12 @@ use Livewire\Component;
 #[Title('Reporte de Flota')]
 class Report extends Component
 {
+    use AuthorizesRequests;
+
     public function render()
     {
+        $this->authorize('viewAny', Truck::class);
+
         $truckTotals = Truck::selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');

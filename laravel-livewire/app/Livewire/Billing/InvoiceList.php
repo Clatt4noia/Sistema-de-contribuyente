@@ -4,12 +4,14 @@ namespace App\Livewire\Billing;
 
 use App\Models\Invoice;
 use App\Models\Order;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class InvoiceList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public string $search = '';
     public string $status = '';
@@ -45,10 +47,9 @@ class InvoiceList extends Component
 
     public function markAsPaid(int $invoiceId): void
     {
-        $invoice = Invoice::with('payments')->find($invoiceId);
-        if (!$invoice) {
-            return;
-        }
+        $invoice = Invoice::with('payments')->findOrFail($invoiceId);
+
+        $this->authorize('update', $invoice);
 
         if ($invoice->balance > 0) {
             session()->flash('error', 'La factura aun tiene saldo pendiente.');
@@ -63,6 +64,8 @@ class InvoiceList extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Invoice::class);
+
         $invoices = Invoice::query()
             ->with(['client', 'order'])
             ->when($this->search, function ($query) {
