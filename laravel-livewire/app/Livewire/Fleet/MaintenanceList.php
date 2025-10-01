@@ -4,6 +4,7 @@ namespace App\Livewire\Fleet;
 
 use App\Models\Maintenance;
 use App\Models\Truck;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -14,6 +15,7 @@ use Livewire\WithPagination;
 class MaintenanceList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public $search = '';
     public $status = '';
@@ -21,15 +23,18 @@ class MaintenanceList extends Component
 
     public function deleteMaintenance($id)
     {
-        $maintenance = Maintenance::find($id);
-        if ($maintenance) {
-            $maintenance->delete();
-            session()->flash('message', 'Registro de mantenimiento eliminado correctamente.');
-        }
+        $maintenance = Maintenance::findOrFail($id);
+
+        $this->authorize('delete', $maintenance);
+
+        $maintenance->delete();
+        session()->flash('message', 'Registro de mantenimiento eliminado correctamente.');
     }
 
     public function render()
     {
+        $this->authorize('viewAny', Maintenance::class);
+
         $maintenances = Maintenance::query()
             ->with('truck')
             ->when($this->search, function ($query) {

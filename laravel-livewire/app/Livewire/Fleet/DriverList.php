@@ -3,6 +3,7 @@
 namespace App\Livewire\Fleet;
 
 use App\Models\Driver;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -13,21 +14,25 @@ use Livewire\WithPagination;
 class DriverList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public $search = '';
     public $status = '';
 
     public function deleteDriver($id): void
     {
-        $driver = Driver::find($id);
-        if ($driver) {
-            $driver->delete();
-            session()->flash('message', 'Chofer eliminado correctamente.');
-        }
+        $driver = Driver::findOrFail($id);
+
+        $this->authorize('delete', $driver);
+
+        $driver->delete();
+        session()->flash('message', 'Chofer eliminado correctamente.');
     }
 
     public function render()
     {
+        $this->authorize('viewAny', Driver::class);
+
         $drivers = Driver::query()
             ->with(['schedules', 'evaluations'])
             ->when($this->search, function ($query) {
