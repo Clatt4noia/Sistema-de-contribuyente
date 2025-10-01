@@ -6,6 +6,7 @@ use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\Order;
 use App\Models\Truck;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 class OrderList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public string $search = '';
     public string $status = '';
@@ -41,13 +43,13 @@ class OrderList extends Component
 
     public function deleteOrder(int $orderId): void
     {
-        $order = Order::with('assignments')->find($orderId);
-        if (!$order) {
-            return;
-        }
+        $order = Order::with('assignments')->findOrFail($orderId);
+
+        $this->authorize('delete', $order);
 
         DB::transaction(function () use ($order) {
             foreach ($order->assignments as $assignment) {
+                $this->authorize('delete', $assignment);
                 $truckId = $assignment->truck_id;
                 $driverId = $assignment->driver_id;
 
@@ -75,10 +77,9 @@ class OrderList extends Component
             return;
         }
 
-        $order = Order::find($orderId);
-        if (!$order) {
-            return;
-        }
+        $order = Order::findOrFail($orderId);
+
+        $this->authorize('update', $order);
 
         $order->status = $status;
         if ($status === 'delivered') {
@@ -91,6 +92,8 @@ class OrderList extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Order::class);
+
         $orders = Order::query()
             ->with(['client', 'activeAssignment.truck', 'activeAssignment.driver'])
             ->when($this->search, function ($query) {
