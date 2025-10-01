@@ -16,6 +16,7 @@ class OrderPolicy
             ...User::LOGISTICS_ROLES,
             ...User::FINANCE_ROLES,
         ]);
+
     }
 
     public function view(User $user, Order $order): bool

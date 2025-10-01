@@ -13,6 +13,7 @@ class InvoicePolicy
     public function viewAny(User $user): bool
     {
         return $user->hasAnyRole(User::BILLING_ROLES);
+
     }
 
     public function view(User $user, Invoice $invoice): bool
@@ -26,6 +27,7 @@ class InvoicePolicy
             User::ROLE_ADMIN,
             User::ROLE_FINANCE_MANAGER,
         ]);
+
     }
 
     public function update(User $user, Invoice $invoice): bool
