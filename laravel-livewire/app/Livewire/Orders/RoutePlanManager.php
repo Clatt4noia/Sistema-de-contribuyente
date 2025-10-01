@@ -4,15 +4,24 @@ namespace App\Livewire\Orders;
 
 use App\Models\Order;
 use App\Models\RoutePlan;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 
 class RoutePlanManager extends Component
 {
+    use AuthorizesRequests;
+
     public Order $order;
     public string $planner = '';
     public string $route_summary = '';
     public string $map_url = '';
     public string $route_data = '';
+
+    public function mount(Order $order): void
+    {
+        $this->order = $order;
+        $this->authorize('update', $this->order);
+    }
 
     protected function rules(): array
     {
@@ -26,6 +35,8 @@ class RoutePlanManager extends Component
 
     public function save(): void
     {
+        $this->authorize('update', $this->order);
+
         $this->validate();
 
         $payload = $this->route_data ? json_decode($this->route_data, true) : null;
@@ -49,6 +60,8 @@ class RoutePlanManager extends Component
 
     public function delete(int $routePlanId): void
     {
+        $this->authorize('update', $this->order);
+
         $plan = $this->order->routePlans()->find($routePlanId);
         if ($plan) {
             $plan->delete();
@@ -59,6 +72,8 @@ class RoutePlanManager extends Component
 
     public function render()
     {
+        $this->authorize('view', $this->order);
+
         return view('livewire.orders.route-plan-manager', [
             'plans' => $this->order->routePlans()->latest()->get(),
         ]);

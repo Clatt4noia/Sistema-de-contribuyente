@@ -4,6 +4,7 @@ namespace App\Livewire\Fleet;
 
 use App\Models\Maintenance;
 use App\Models\Truck;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -13,6 +14,8 @@ use Livewire\Component;
 #[Title('Mantenimiento')]
 class MaintenanceForm extends Component
 {
+    use AuthorizesRequests;
+
     public Maintenance $maintenance;
     public bool $isEdit = false;
     public $trucks = [];
@@ -32,20 +35,24 @@ class MaintenanceForm extends Component
 
     public function mount($id = null)
     {
-        $this->trucks = Truck::orderBy('plate_number')->get();
-        
         if ($id) {
             $this->maintenance = Maintenance::findOrFail($id);
+            $this->authorize('update', $this->maintenance);
             $this->isEdit = true;
         } else {
+            $this->authorize('create', Maintenance::class);
             $this->maintenance = new Maintenance();
             $this->maintenance->status = 'scheduled';
             $this->maintenance->maintenance_date = now()->format('Y-m-d');
         }
+
+        $this->trucks = Truck::orderBy('plate_number')->get();
     }
 
     public function save()
     {
+        $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->maintenance : Maintenance::class);
+
         $this->validate();
 
         $this->maintenance->save();
@@ -97,6 +104,8 @@ class MaintenanceForm extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Maintenance::class);
+
         return view('livewire.fleet.maintenance-form');
     }
 }

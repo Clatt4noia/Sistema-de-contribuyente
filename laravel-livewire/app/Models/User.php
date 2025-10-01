@@ -10,6 +10,19 @@ use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
+    public const ROLE_USER = 'user';
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_BILLING_MANAGER = 'billing_manager';
+    public const ROLE_BILLING_VIEWER = 'viewer';
+    public const ROLE_FLEET_MANAGER = 'fleet_manager';
+    public const ROLE_LOGISTICS_MANAGER = 'logistics_manager';
+
+    public const BILLING_ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_BILLING_MANAGER,
+        self::ROLE_BILLING_VIEWER,
+    ];
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -22,6 +35,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,6 +58,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => 'string',
         ];
     }
 
@@ -57,5 +72,27 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    /**
+     * Determine if the user has any of the provided roles.
+     *
+     * @param  string|array<int, string>  $roles
+     */
+    public function hasAnyRole(string|array $roles): bool
+    {
+        $roles = is_array($roles) ? $roles : [$roles];
+
+        return in_array($this->role, $roles, true);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
     }
 }

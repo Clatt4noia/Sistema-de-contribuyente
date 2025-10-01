@@ -3,12 +3,14 @@
 namespace App\Livewire\Clients;
 
 use App\Models\Client;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class ClientList extends Component
 {
     use WithPagination;
+    use AuthorizesRequests;
 
     public string $search = '';
 
@@ -23,10 +25,9 @@ class ClientList extends Component
 
     public function deleteClient(int $clientId): void
     {
-        $client = Client::withCount(['orders', 'invoices'])->find($clientId);
-        if (!$client) {
-            return;
-        }
+        $client = Client::withCount(['orders', 'invoices'])->findOrFail($clientId);
+
+        $this->authorize('delete', $client);
 
         if ($client->orders_count > 0 || $client->invoices_count > 0) {
             session()->flash('error', 'No se puede eliminar el cliente porque tiene pedidos o facturas asociadas.');
@@ -40,6 +41,8 @@ class ClientList extends Component
 
     public function render()
     {
+        $this->authorize('viewAny', Client::class);
+
         $clients = Client::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($searchQuery) {
