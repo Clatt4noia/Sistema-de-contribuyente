@@ -5,75 +5,75 @@
     </div>
 
     <div class="bg-white shadow rounded p-6">
-        <form wire:submit="save" class="space-y-6">
+        <form wire:submit.prevent="save" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
-                    <select wire:model.defer="order.client_id" class="w-full px-3 py-2 border rounded @error('order.client_id') border-red-500 @enderror">
+                    <select wire:model.defer="form.client_id" class="w-full px-3 py-2 border rounded @error('form.client_id') border-red-500 @enderror">
                         <option value="">Seleccione un cliente</option>
                         @foreach($clients as $client)
                             <option value="{{ $client->id }}">{{ $client->business_name }}</option>
                         @endforeach
                     </select>
-                    @error('order.client_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    @error('form.client_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Numero de referencia *</label>
-                    <input type="text" wire:model.defer="order.reference" class="w-full px-3 py-2 border rounded @error('order.reference') border-red-500 @enderror">
-                    @error('order.reference') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <input type="text" wire:model.defer="form.reference" class="w-full px-3 py-2 border rounded @error('form.reference') border-red-500 @enderror">
+                    @error('form.reference') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Origen *</label>
-                    <input type="text" wire:model.defer="order.origin" class="w-full px-3 py-2 border rounded @error('order.origin') border-red-500 @enderror">
-                    @error('order.origin') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <input type="text" wire:model.defer="form.origin" class="w-full px-3 py-2 border rounded @error('form.origin') border-red-500 @enderror">
+                    @error('form.origin') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Destino *</label>
-                    <input type="text" wire:model.defer="order.destination" class="w-full px-3 py-2 border rounded @error('order.destination') border-red-500 @enderror">
-                    @error('order.destination') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <input type="text" wire:model.defer="form.destination" class="w-full px-3 py-2 border rounded @error('form.destination') border-red-500 @enderror">
+                    @error('form.destination') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de recojo</label>
-                    <input type="datetime-local" wire:model.defer="order.pickup_date" class="w-full px-3 py-2 border rounded @error('order.pickup_date') border-red-500 @enderror">
-                    @error('order.pickup_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <input type="datetime-local" wire:model.defer="form.pickup_date" class="w-full px-3 py-2 border rounded @error('form.pickup_date') border-red-500 @enderror">
+                    @error('form.pickup_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de entrega</label>
-                    <input type="datetime-local" wire:model.defer="order.delivery_date" class="w-full px-3 py-2 border rounded @error('order.delivery_date') border-red-500 @enderror">
-                    @error('order.delivery_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <input type="datetime-local" wire:model.defer="form.delivery_date" class="w-full px-3 py-2 border rounded @error('form.delivery_date') border-red-500 @enderror">
+                    @error('form.delivery_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
-                    <select wire:model.defer="order.status" class="w-full px-3 py-2 border rounded @error('order.status') border-red-500 @enderror">
+                    <select wire:model.defer="form.status" class="w-full px-3 py-2 border rounded @error('form.status') border-red-500 @enderror">
                         <option value="pending">Pendiente</option>
                         <option value="en_route">En ruta</option>
                         <option value="delivered">Entregado</option>
                         <option value="cancelled">Cancelado</option>
                     </select>
-                    @error('order.status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    @error('form.status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Distancia estimada (km)</label>
-                    <input type="number" step="0.01" wire:model.defer="order.estimated_distance_km" class="w-full px-3 py-2 border rounded @error('order.estimated_distance_km') border-red-500 @enderror">
-                    @error('order.estimated_distance_km') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <input type="number" step="0.01" wire:model.defer="form.estimated_distance_km" class="w-full px-3 py-2 border rounded @error('form.estimated_distance_km') border-red-500 @enderror">
+                    @error('form.estimated_distance_km') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Duracion estimada (horas)</label>
-                    <input type="number" step="0.01" wire:model.defer="order.estimated_duration_hours" class="w-full px-3 py-2 border rounded @error('order.estimated_duration_hours') border-red-500 @enderror">
-                    @error('order.estimated_duration_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <input type="number" step="0.01" wire:model.defer="form.estimated_duration_hours" class="w-full px-3 py-2 border rounded @error('form.estimated_duration_hours') border-red-500 @enderror">
+                    @error('form.estimated_duration_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Detalle de carga</label>
-                <textarea rows="3" wire:model.defer="order.cargo_details" class="w-full px-3 py-2 border rounded @error('order.cargo_details') border-red-500 @enderror"></textarea>
-                @error('order.cargo_details') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                <textarea rows="3" wire:model.defer="form.cargo_details" class="w-full px-3 py-2 border rounded @error('form.cargo_details') border-red-500 @enderror"></textarea>
+                @error('form.cargo_details') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Notas internas</label>
-                <textarea rows="3" wire:model.defer="order.notes" class="w-full px-3 py-2 border rounded @error('order.notes') border-red-500 @enderror"></textarea>
-                @error('order.notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                <textarea rows="3" wire:model.defer="form.notes" class="w-full px-3 py-2 border rounded @error('form.notes') border-red-500 @enderror"></textarea>
+                @error('form.notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
             <div class="border-t pt-6 space-y-4">

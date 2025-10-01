@@ -21,21 +21,23 @@ class AssignmentForm extends Component
 
     public Assignment $assignment;
     public bool $isEdit = false;
+    public array $form = [];
     public $trucks = [];
     public $drivers = [];
     public $orders = [];
+    public ?Order $orderPreview = null;
 
     protected function rules(): array
     {
         return [
-            'assignment.order_id' => 'required|exists:orders,id',
-            'assignment.truck_id' => 'required|exists:trucks,id',
-            'assignment.driver_id' => 'required|exists:drivers,id',
-            'assignment.start_date' => 'required|date',
-            'assignment.end_date' => 'nullable|date|after_or_equal:assignment.start_date',
-            'assignment.status' => 'required|in:scheduled,in_progress,completed,cancelled',
-            'assignment.description' => 'required|string|max:255',
-            'assignment.notes' => 'nullable|string',
+            'form.order_id' => 'required|exists:orders,id',
+            'form.truck_id' => 'required|exists:trucks,id',
+            'form.driver_id' => 'required|exists:drivers,id',
+            'form.start_date' => 'required|date',
+            'form.end_date' => 'nullable|date|after_or_equal:form.start_date',
+            'form.status' => 'required|in:scheduled,in_progress,completed,cancelled',
+            'form.description' => 'required|string|max:255',
+            'form.notes' => 'nullable|string',
         ];
     }
 
@@ -61,15 +63,30 @@ class AssignmentForm extends Component
             ]);
         }
 
+        $this->form = [
+            'order_id' => $this->assignment->order_id ?? '',
+            'truck_id' => $this->assignment->truck_id ?? '',
+            'driver_id' => $this->assignment->driver_id ?? '',
+            'start_date' => $this->assignment->start_date instanceof Carbon
+                ? $this->assignment->start_date->format('Y-m-d\TH:i')
+                : ($this->assignment->start_date ?? now()->format('Y-m-d\TH:i')),
+            'end_date' => $this->assignment->end_date instanceof Carbon
+                ? $this->assignment->end_date->format('Y-m-d\TH:i')
+                : ($this->assignment->end_date ?? ''),
+            'status' => $this->assignment->status ?? 'scheduled',
+            'description' => $this->assignment->description ?? '',
+            'notes' => $this->assignment->notes ?? '',
+        ];
+
         $this->loadOptions();
     }
 
-    public function updatedAssignmentOrderId(): void
+    public function updatedFormOrderId(): void
     {
         $this->loadOptions();
     }
 
-    public function updatedAssignmentStatus(): void
+    public function updatedFormStatus(): void
     {
         $this->loadOptions();
     }
@@ -81,33 +98,46 @@ class AssignmentForm extends Component
             $this->isEdit ? $this->assignment : Assignment::class
         );
 
-        $this->validate();
+        $validated = $this->validate();
+        $data = $validated['form'];
 
-        $start = Carbon::parse($this->assignment->start_date);
-        $end = $this->assignment->end_date ? Carbon::parse($this->assignment->end_date) : $start->copy();
+        $data['description'] = trim((string) $data['description']);
+        $data['notes'] = trim((string) $data['notes']) ?: null;
+
+        $start = Carbon::parse($data['start_date']);
+        $end = $data['end_date'] ? Carbon::parse($data['end_date']) : $start->copy();
 
         if ($start->greaterThan($end)) {
-            $this->addError('assignment.end_date', 'La fecha de fin debe ser posterior o igual a la fecha de inicio.');
+            $this->addError('form.end_date', 'La fecha de fin debe ser posterior o igual a la fecha de inicio.');
             return;
         }
 
-        if ($this->resourceOccupied('truck_id', (int) $this->assignment->truck_id, $start, $end)) {
-            $this->addError('assignment.truck_id', 'El camion seleccionado ya esta asignado en esas fechas.');
+        if ($this->resourceOccupied('truck_id', (int) $data['truck_id'], $start, $end)) {
+            $this->addError('form.truck_id', 'El camion seleccionado ya esta asignado en esas fechas.');
             return;
         }
 
-        if ($this->resourceOccupied('driver_id', (int) $this->assignment->driver_id, $start, $end)) {
-            $this->addError('assignment.driver_id', 'El chofer seleccionado ya esta asignado en esas fechas.');
+        if ($this->resourceOccupied('driver_id', (int) $data['driver_id'], $start, $end)) {
+            $this->addError('form.driver_id', 'El chofer seleccionado ya esta asignado en esas fechas.');
             return;
         }
 
-        DB::transaction(function () use ($start, $end) {
+        DB::transaction(function () use ($data, $start, $end) {
             $originalTruck = $this->assignment->getOriginal('truck_id');
             $originalDriver = $this->assignment->getOriginal('driver_id');
             $originalStatus = $this->assignment->getOriginal('status');
 
+            $this->assignment->fill([
+                'order_id' => $data['order_id'],
+                'truck_id' => $data['truck_id'],
+                'driver_id' => $data['driver_id'],
+                'status' => $data['status'],
+                'description' => $data['description'],
+                'notes' => $data['notes'],
+            ]);
+
             $this->assignment->start_date = $start;
-            $this->assignment->end_date = $this->assignment->end_date ? $end : null;
+            $this->assignment->end_date = $data['end_date'] ? $end : null;
             $this->assignment->save();
 
             $this->syncTruckAvailability($originalTruck);
@@ -132,7 +162,7 @@ class AssignmentForm extends Component
         $this->authorize('viewAny', Truck::class);
         $this->authorize('viewAny', Driver::class);
 
-        $orderId = $this->assignment->order_id;
+        $orderId = $this->form['order_id'] ?? null;
 
         $this->orders = Order::query()
             ->where(function ($query) use ($orderId) {
@@ -147,8 +177,8 @@ class AssignmentForm extends Component
         $this->trucks = Truck::query()
             ->where(function ($query) {
                 $query->where('status', 'available');
-                if ($this->assignment->truck_id) {
-                    $query->orWhere('id', $this->assignment->truck_id);
+                if (!empty($this->form['truck_id'])) {
+                    $query->orWhere('id', $this->form['truck_id']);
                 }
             })
             ->orderBy('plate_number')
@@ -157,12 +187,15 @@ class AssignmentForm extends Component
         $this->drivers = Driver::query()
             ->where(function ($query) {
                 $query->whereIn('status', ['active', 'assigned']);
-                if ($this->assignment->driver_id) {
-                    $query->orWhere('id', $this->assignment->driver_id);
+                if (!empty($this->form['driver_id'])) {
+                    $query->orWhere('id', $this->form['driver_id']);
                 }
             })
             ->orderBy('name')
             ->get();
+
+        // Guardamos una vista previa del pedido seleccionado para alimentar el resumen lateral.
+        $this->orderPreview = $this->orders->firstWhere('id', (int) ($this->form['order_id'] ?? 0));
     }
 
     protected function resourceOccupied(string $column, int $resourceId, Carbon $start, Carbon $end): bool

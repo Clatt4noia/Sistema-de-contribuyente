@@ -11,31 +11,31 @@
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div class="form-field">
                     <label for="plate_number" class="form-label">Placa</label>
-                    <input type="text" id="plate_number" wire:model.defer="truck.plate_number" class="form-control">
-                    @error('truck.plate_number') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="text" id="plate_number" wire:model.defer="form.plate_number" class="form-control">
+                    @error('form.plate_number') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="brand" class="form-label">Marca</label>
-                    <input type="text" id="brand" wire:model.defer="truck.brand" class="form-control">
-                    @error('truck.brand') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="text" id="brand" wire:model.defer="form.brand" class="form-control">
+                    @error('form.brand') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="model" class="form-label">Modelo</label>
-                    <input type="text" id="model" wire:model.defer="truck.model" class="form-control">
-                    @error('truck.model') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="text" id="model" wire:model.defer="form.model" class="form-control">
+                    @error('form.model') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="year" class="form-label">Ano</label>
-                    <input type="number" id="year" wire:model.defer="truck.year" class="form-control">
-                    @error('truck.year') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="number" id="year" wire:model.defer="form.year" class="form-control">
+                    @error('form.year') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="type" class="form-label">Tipo</label>
-                    <select id="type" wire:model.defer="truck.type" class="form-control">
+                    <select id="type" wire:model.defer="form.type" class="form-control">
                         <option value="">Seleccione un tipo</option>
                         <option value="Camion">Camion</option>
                         <option value="Tractocamion">Tractocamion</option>
@@ -43,49 +43,48 @@
                         <option value="Cisterna">Cisterna</option>
                         <option value="Volquete">Volquete</option>
                     </select>
-                    @error('truck.type') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.type') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="capacity" class="form-label">Capacidad (Ton)</label>
-                    <input type="number" step="0.01" id="capacity" wire:model.defer="truck.capacity" class="form-control">
-                    @error('truck.capacity') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="number" step="0.01" id="capacity" wire:model.defer="form.capacity" class="form-control">
+                    @error('form.capacity') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="mileage" class="form-label">Kilometraje</label>
-                    <input type="number" id="mileage" wire:model.defer="truck.mileage" class="form-control">
-                    @error('truck.mileage') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="number" id="mileage" wire:model.defer="form.mileage" class="form-control">
+                    @error('form.mileage') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="status" class="form-label">Estado</label>
-                    <select id="status" wire:model.defer="truck.status" class="form-control">
-                        <option value="available">Disponible</option>
-                        <option value="in_use">En uso</option>
-                        <option value="maintenance">En mantenimiento</option>
-                        <option value="out_of_service">Fuera de servicio</option>
+                    <select id="status" wire:model.defer="form.status" class="form-control">
+                        @foreach($statusLabels as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
                     </select>
-                    @error('truck.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="last_maintenance" class="form-label">Ultimo mantenimiento</label>
-                    <input type="date" id="last_maintenance" wire:model.defer="truck.last_maintenance" class="form-control">
-                    @error('truck.last_maintenance') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="date" id="last_maintenance" wire:model.defer="form.last_maintenance" class="form-control">
+                    @error('form.last_maintenance') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="next_maintenance" class="form-label">Proximo mantenimiento</label>
-                    <input type="date" id="next_maintenance" wire:model.defer="truck.next_maintenance" class="form-control">
-                    @error('truck.next_maintenance') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="date" id="next_maintenance" wire:model.defer="form.next_maintenance" class="form-control">
+                    @error('form.next_maintenance') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
             </div>
 
             <div class="form-field">
                 <label for="technical_details" class="form-label">Detalles tecnicos</label>
-                <textarea id="technical_details" wire:model.defer="truck.technical_details" rows="4" class="form-control"></textarea>
-                @error('truck.technical_details') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                <textarea id="technical_details" wire:model.defer="form.technical_details" rows="4" class="form-control"></textarea>
+                @error('form.technical_details') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
 
             <div class="flex items-center justify-end gap-3">
