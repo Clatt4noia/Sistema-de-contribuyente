@@ -13,22 +13,25 @@
             : \App\Support\Navigation\MainMenu::for(auth()->user()));
     $fallbackIcon = 'heroicon-o-squares-2x2';
 
-    $resolveIcon = static function (?string $icon) use ($fallbackIcon) {
+     $resolveIcon = static function (?string $icon) use ($fallbackIcon) {
         if (! $icon) {
             return $fallbackIcon;
         }
 
-        $component = str_starts_with($icon, 'heroicon-') ? $icon : 'heroicon-o-' . ltrim($icon, '-');
+        // normalizamos el nombre
+        $component = str_starts_with($icon, 'heroicon-')
+            ? $icon
+            : 'heroicon-o-' . ltrim($icon, '-');
 
-        $bladeCompiler = Blade::getFacadeRoot();
+        // comprobamos si existe la vista del componente
+        $viewName = 'components.' . str_replace('-', '.', $component);
 
-        if ($bladeCompiler && method_exists($bladeCompiler, 'componentExists')) {
-            return $bladeCompiler->componentExists($component) ? $component : $fallbackIcon;
+        if (View::exists($viewName)) {
+            return $component;
         }
 
-        return $component;
+        return $fallbackIcon;
     };
-
 @endphp
 
 <!DOCTYPE html>
