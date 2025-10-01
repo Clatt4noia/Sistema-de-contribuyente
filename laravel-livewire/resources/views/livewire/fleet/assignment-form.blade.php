@@ -12,71 +12,71 @@
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div class="form-field">
                     <label for="order_id" class="form-label">Pedido *</label>
-                    <select id="order_id" wire:model="assignment.order_id" class="form-control @error('assignment.order_id') border-rose-400 dark:border-rose-400 @enderror">
+                    <select id="order_id" wire:model="form.order_id" class="form-control @error('form.order_id') border-rose-400 dark:border-rose-400 @enderror">
                         <option value="">Seleccione un pedido</option>
                         @foreach($orders as $order)
                             <option value="{{ $order->id }}">{{ $order->reference }} - {{ $order->origin }} -> {{ $order->destination }}</option>
                         @endforeach
                     </select>
-                    @error('assignment.order_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.order_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="truck_id" class="form-label">Vehiculo *</label>
-                    <select id="truck_id" wire:model="assignment.truck_id" class="form-control @error('assignment.truck_id') border-rose-400 dark:border-rose-400 @enderror">
+                    <select id="truck_id" wire:model="form.truck_id" class="form-control @error('form.truck_id') border-rose-400 dark:border-rose-400 @enderror">
                         <option value="">Seleccione un vehiculo</option>
                         @foreach($trucks as $truck)
                             <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }} ({{ ucfirst($truck->status) }})</option>
                         @endforeach
                     </select>
-                    @error('assignment.truck_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.truck_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="driver_id" class="form-label">Conductor *</label>
-                    <select id="driver_id" wire:model="assignment.driver_id" class="form-control @error('assignment.driver_id') border-rose-400 dark:border-rose-400 @enderror">
+                    <select id="driver_id" wire:model="form.driver_id" class="form-control @error('form.driver_id') border-rose-400 dark:border-rose-400 @enderror">
                         <option value="">Seleccione un conductor</option>
                         @foreach($drivers as $driver)
                             <option value="{{ $driver->id }}">{{ $driver->name }} {{ $driver->last_name }} ({{ ucfirst($driver->status) }})</option>
                         @endforeach
                     </select>
-                    @error('assignment.driver_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.driver_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="start_date" class="form-label">Fecha y hora de inicio *</label>
-                    <input type="datetime-local" id="start_date" wire:model="assignment.start_date" class="form-control @error('assignment.start_date') border-rose-400 dark:border-rose-400 @enderror">
-                    @error('assignment.start_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="datetime-local" id="start_date" wire:model="form.start_date" class="form-control @error('form.start_date') border-rose-400 dark:border-rose-400 @enderror">
+                    @error('form.start_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="end_date" class="form-label">Fecha y hora de fin</label>
-                    <input type="datetime-local" id="end_date" wire:model="assignment.end_date" class="form-control @error('assignment.end_date') border-rose-400 dark:border-rose-400 @enderror">
-                    @error('assignment.end_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="datetime-local" id="end_date" wire:model="form.end_date" class="form-control @error('form.end_date') border-rose-400 dark:border-rose-400 @enderror">
+                    @error('form.end_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
                     <label for="status" class="form-label">Estado *</label>
-                    <select id="status" wire:model="assignment.status" class="form-control @error('assignment.status') border-rose-400 dark:border-rose-400 @enderror">
+                    <select id="status" wire:model="form.status" class="form-control @error('form.status') border-rose-400 dark:border-rose-400 @enderror">
                         <option value="scheduled">Programada</option>
                         <option value="in_progress">En ruta</option>
                         <option value="completed">Completada</option>
                         <option value="cancelled">Cancelada</option>
                     </select>
-                    @error('assignment.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field md:col-span-2">
                     <label for="description" class="form-label">Descripcion *</label>
-                    <input type="text" id="description" wire:model="assignment.description" class="form-control @error('assignment.description') border-rose-400 dark:border-rose-400 @enderror" placeholder="Ej: Transporte Lima - Arequipa">
-                    @error('assignment.description') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    <input type="text" id="description" wire:model="form.description" class="form-control @error('form.description') border-rose-400 dark:border-rose-400 @enderror" placeholder="Ej: Transporte Lima - Arequipa">
+                    @error('form.description') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
             </div>
 
             <div class="form-field">
                 <label for="notes" class="form-label">Notas</label>
-                <textarea id="notes" wire:model="assignment.notes" rows="4" class="form-control @error('assignment.notes') border-rose-400 dark:border-rose-400 @enderror" placeholder="Observaciones adicionales"></textarea>
-                @error('assignment.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                <textarea id="notes" wire:model="form.notes" rows="4" class="form-control @error('form.notes') border-rose-400 dark:border-rose-400 @enderror" placeholder="Observaciones adicionales"></textarea>
+                @error('form.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
 
             <div class="flex flex-wrap items-center justify-end gap-3">
@@ -91,21 +91,21 @@
         </form>
     </div>
 
-    @if($assignment->order)
+    @if($orderPreview)
         <div class="surface-card p-6 shadow-lg">
             <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Resumen del pedido</h3>
             <dl class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
                 <div class="flex items-center gap-2">
                     <dt class="font-semibold text-slate-800 dark:text-slate-100">Ruta:</dt>
-                    <dd>{{ $assignment->order->origin }} -> {{ $assignment->order->destination }}</dd>
+                    <dd>{{ $orderPreview->origin }} -> {{ $orderPreview->destination }}</dd>
                 </div>
                 <div class="flex items-center gap-2">
                     <dt class="font-semibold text-slate-800 dark:text-slate-100">Estado actual:</dt>
-                    <dd>{{ ucfirst($assignment->order->status) }}</dd>
+                    <dd>{{ ucfirst($orderPreview->status) }}</dd>
                 </div>
                 <div>
                     <dt class="font-semibold text-slate-800 dark:text-slate-100">Detalle:</dt>
-                    <dd>{{ $assignment->order->cargo_details ?: 'Sin detalle de carga' }}</dd>
+                    <dd>{{ $orderPreview->cargo_details ?: 'Sin detalle de carga' }}</dd>
                 </div>
             </dl>
         </div>

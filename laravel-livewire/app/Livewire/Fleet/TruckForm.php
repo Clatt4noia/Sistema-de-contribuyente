@@ -13,27 +13,40 @@ class TruckForm extends Component
 
     public Truck $truck;
     public bool $isEdit = false;
+    public array $form = [];
     public array $maintenanceHistory = [];
+
+    /**
+     * @var array<string, string> $statusLabels
+     */
+    public array $statusLabels = [
+        'available' => 'Disponible',
+        'in_use' => 'En uso',
+        'maintenance' => 'En mantenimiento',
+        'out_of_service' => 'Fuera de servicio',
+    ];
 
     protected function rules(): array
     {
         return [
-            'truck.plate_number' => [
+            // Validamos la placa garantizando unicidad, formato y longitud.
+            'form.plate_number' => [
                 'required',
                 'string',
                 'max:20',
                 Rule::unique('trucks', 'plate_number')->ignore($this->truck->id),
             ],
-            'truck.brand' => ['required', 'string', 'max:50'],
-            'truck.model' => ['required', 'string', 'max:50'],
-            'truck.year' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
-            'truck.type' => ['required', 'string', 'max:50'],
-            'truck.capacity' => ['nullable', 'numeric', 'min:0'],
-            'truck.mileage' => ['nullable', 'integer', 'min:0'],
-            'truck.status' => ['required', 'string', 'in:available,in_use,maintenance,out_of_service'],
-            'truck.last_maintenance' => ['nullable', 'date'],
-            'truck.next_maintenance' => ['nullable', 'date'],
-            'truck.technical_details' => ['nullable', 'string'],
+            // Reglas de integridad para cada campo del formulario.
+            'form.brand' => ['required', 'string', 'max:50'],
+            'form.model' => ['required', 'string', 'max:50'],
+            'form.year' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
+            'form.type' => ['required', 'string', 'max:50'],
+            'form.capacity' => ['nullable', 'numeric', 'min:0'],
+            'form.mileage' => ['nullable', 'integer', 'min:0'],
+            'form.status' => ['required', 'string', 'in:available,in_use,maintenance,out_of_service'],
+            'form.last_maintenance' => ['nullable', 'date'],
+            'form.next_maintenance' => ['nullable', 'date'],
+            'form.technical_details' => ['nullable', 'string'],
         ];
     }
 
@@ -50,6 +63,22 @@ class TruckForm extends Component
                 'mileage' => 0,
             ]);
         }
+
+        // Inicializamos el formulario a partir del modelo para que los campos
+        // siempre tengan un valor consistente antes de interactuar con Livewire.
+        $this->form = [
+            'plate_number' => $this->truck->plate_number ?? '',
+            'brand' => $this->truck->brand ?? '',
+            'model' => $this->truck->model ?? '',
+            'year' => $this->truck->year ?? (int) date('Y'),
+            'type' => $this->truck->type ?? '',
+            'capacity' => $this->truck->capacity ?? null,
+            'mileage' => $this->truck->mileage ?? 0,
+            'status' => $this->truck->status ?? 'available',
+            'last_maintenance' => optional($this->truck->last_maintenance)->format('Y-m-d'),
+            'next_maintenance' => optional($this->truck->next_maintenance)->format('Y-m-d'),
+            'technical_details' => $this->truck->technical_details ?? '',
+        ];
 
         $this->maintenanceHistory = $this->truck->exists
             ? $this->truck->maintenances()
@@ -71,10 +100,19 @@ class TruckForm extends Component
     {
         $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->truck : Truck::class);
 
+        // Validamos la data enviada desde el formulario desacoplada del modelo.
         $validated = $this->validate();
+        $data = $validated['form'];
 
-        $this->truck->fill($validated['truck']);
-        $this->truck->mileage = $this->truck->mileage ?? 0;
+        // Normalizamos valores numericos y fechas para evitar nulos inconsistentes.
+        $data['capacity'] = $data['capacity'] !== null ? (float) $data['capacity'] : null;
+        $data['mileage'] = $data['mileage'] !== null ? (int) $data['mileage'] : 0;
+        $data['last_maintenance'] = $data['last_maintenance'] ?: null;
+        $data['next_maintenance'] = $data['next_maintenance'] ?: null;
+        $data['technical_details'] = trim((string) $data['technical_details']) ?: null;
+
+        // Sincronizamos la informacion con el modelo Eloquent y persistimos.
+        $this->truck->fill($data);
         $this->truck->save();
 
         session()->flash('message', $this->isEdit ? 'Camion actualizado correctamente.' : 'Camion creado correctamente.');

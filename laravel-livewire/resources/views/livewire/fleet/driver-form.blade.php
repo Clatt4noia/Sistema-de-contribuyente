@@ -11,68 +11,68 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                    <input type="text" id="name" wire:model.defer="driver.name" class="w-full px-3 py-2 border rounded-md">
-                    @error('driver.name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <input type="text" id="name" wire:model.defer="form.name" class="w-full px-3 py-2 border rounded-md">
+                    @error('form.name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                    <input type="text" id="last_name" wire:model.defer="driver.last_name" class="w-full px-3 py-2 border rounded-md">
-                    @error('driver.last_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <input type="text" id="last_name" wire:model.defer="form.last_name" class="w-full px-3 py-2 border rounded-md">
+                    @error('form.last_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="document_number" class="block text-sm font-medium text-gray-700 mb-1">Numero de documento</label>
-                    <input type="text" id="document_number" wire:model.defer="driver.document_number" class="w-full px-3 py-2 border rounded-md">
-                    @error('driver.document_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <input type="text" id="document_number" wire:model.defer="form.document_number" class="w-full px-3 py-2 border rounded-md">
+                    @error('form.document_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="license_number" class="block text-sm font-medium text-gray-700 mb-1">Numero de licencia</label>
-                    <input type="text" id="license_number" wire:model.defer="driver.license_number" class="w-full px-3 py-2 border rounded-md">
-                    @error('driver.license_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <input type="text" id="license_number" wire:model.defer="form.license_number" class="w-full px-3 py-2 border rounded-md">
+                    @error('form.license_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="license_expiration" class="block text-sm font-medium text-gray-700 mb-1">Vencimiento de licencia</label>
-                    <input type="date" id="license_expiration" wire:model.defer="driver.license_expiration" class="w-full px-3 py-2 border rounded-md">
-                    @error('driver.license_expiration') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <input type="date" id="license_expiration" wire:model.defer="form.license_expiration" class="w-full px-3 py-2 border rounded-md">
+                    @error('form.license_expiration') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
-                    <input type="text" id="phone" wire:model.defer="driver.phone" class="w-full px-3 py-2 border rounded-md">
-                    @error('driver.phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <input type="text" id="phone" wire:model.defer="form.phone" class="w-full px-3 py-2 border rounded-md">
+                    @error('form.phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="email" wire:model.defer="driver.email" class="w-full px-3 py-2 border rounded-md">
-                    @error('driver.email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <input type="email" id="email" wire:model.defer="form.email" class="w-full px-3 py-2 border rounded-md">
+                    @error('form.email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                    <select id="status" wire:model.defer="driver.status" class="w-full px-3 py-2 border rounded-md">
+                    <select id="status" wire:model.defer="form.status" class="w-full px-3 py-2 border rounded-md">
                         <option value="active">Activo</option>
                         <option value="inactive">Inactivo</option>
                         <option value="on_leave">De permiso</option>
                         <option value="assigned">Asignado</option>
                     </select>
-                    @error('driver.status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    @error('form.status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
             </div>
 
             <div>
                 <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Direccion</label>
-                <input type="text" id="address" wire:model.defer="driver.address" class="w-full px-3 py-2 border rounded-md">
-                @error('driver.address') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                <input type="text" id="address" wire:model.defer="form.address" class="w-full px-3 py-2 border rounded-md">
+                @error('form.address') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
-                <textarea id="notes" wire:model.defer="driver.notes" rows="4" class="w-full px-3 py-2 border rounded-md"></textarea>
-                @error('driver.notes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                <textarea id="notes" wire:model.defer="form.notes" rows="4" class="w-full px-3 py-2 border rounded-md"></textarea>
+                @error('form.notes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
             <div class="border-t pt-6">

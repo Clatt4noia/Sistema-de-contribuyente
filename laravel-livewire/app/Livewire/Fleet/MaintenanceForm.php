@@ -18,18 +18,19 @@ class MaintenanceForm extends Component
 
     public Maintenance $maintenance;
     public bool $isEdit = false;
+    public array $form = [];
     public $trucks = [];
 
     protected function rules()
     {
         return [
-            'maintenance.truck_id' => 'required|exists:trucks,id',
-            'maintenance.maintenance_date' => 'required|date',
-            'maintenance.maintenance_type' => 'required|string|max:100',
-            'maintenance.cost' => 'required|numeric|min:0',
-            'maintenance.status' => 'required|string|in:scheduled,in_progress,completed,cancelled',
-            'maintenance.description' => 'nullable|string',
-            'maintenance.notes' => 'nullable|string',
+            'form.truck_id' => 'required|exists:trucks,id',
+            'form.maintenance_date' => 'required|date',
+            'form.maintenance_type' => 'required|string|max:100',
+            'form.cost' => 'required|numeric|min:0',
+            'form.status' => 'required|string|in:scheduled,in_progress,completed,cancelled',
+            'form.description' => 'nullable|string',
+            'form.notes' => 'nullable|string',
         ];
     }
 
@@ -46,6 +47,16 @@ class MaintenanceForm extends Component
             $this->maintenance->maintenance_date = now()->format('Y-m-d');
         }
 
+        $this->form = [
+            'truck_id' => $this->maintenance->truck_id ?? '',
+            'maintenance_date' => optional($this->maintenance->maintenance_date)->format('Y-m-d') ?? now()->format('Y-m-d'),
+            'maintenance_type' => $this->maintenance->maintenance_type ?? '',
+            'cost' => $this->maintenance->cost ?? 0,
+            'status' => $this->maintenance->status ?? 'scheduled',
+            'description' => $this->maintenance->description ?? '',
+            'notes' => $this->maintenance->notes ?? '',
+        ];
+
         $this->trucks = Truck::orderBy('plate_number')->get();
     }
 
@@ -53,7 +64,21 @@ class MaintenanceForm extends Component
     {
         $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->maintenance : Maintenance::class);
 
-        $this->validate();
+        $validated = $this->validate();
+
+        $data = $validated['form'];
+        $data['description'] = trim((string) $data['description']) ?: null;
+        $data['notes'] = trim((string) $data['notes']) ?: null;
+
+        $this->maintenance->fill([
+            'truck_id' => $data['truck_id'],
+            'maintenance_date' => Carbon::parse($data['maintenance_date']),
+            'maintenance_type' => $data['maintenance_type'],
+            'cost' => $data['cost'],
+            'status' => $data['status'],
+            'description' => $data['description'],
+            'notes' => $data['notes'],
+        ]);
 
         $this->maintenance->save();
 

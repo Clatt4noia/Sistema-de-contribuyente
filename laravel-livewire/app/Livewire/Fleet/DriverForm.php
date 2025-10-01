@@ -20,32 +20,34 @@ class DriverForm extends Component
 
     public Driver $driver;
     public bool $isEdit = false;
+    public array $form = [];
     public array $schedules = [];
     public array $evaluations = [];
 
     protected function rules(): array
     {
         return [
-            'driver.name' => ['required', 'string', 'max:100'],
-            'driver.last_name' => ['required', 'string', 'max:100'],
-            'driver.document_number' => [
+            // Datos basicos del chofer.
+            'form.name' => ['required', 'string', 'max:100'],
+            'form.last_name' => ['required', 'string', 'max:100'],
+            'form.document_number' => [
                 'required',
                 'string',
                 'max:20',
                 Rule::unique('drivers', 'document_number')->ignore($this->driver->id),
             ],
-            'driver.license_number' => [
+            'form.license_number' => [
                 'required',
                 'string',
                 'max:20',
                 Rule::unique('drivers', 'license_number')->ignore($this->driver->id),
             ],
-            'driver.license_expiration' => ['required', 'date'],
-            'driver.phone' => ['nullable', 'string', 'max:20'],
-            'driver.email' => ['nullable', 'email', 'max:100'],
-            'driver.address' => ['nullable', 'string', 'max:255'],
-            'driver.status' => ['required', 'string', 'in:active,assigned,inactive,on_leave'],
-            'driver.notes' => ['nullable', 'string'],
+            'form.license_expiration' => ['required', 'date'],
+            'form.phone' => ['nullable', 'string', 'max:20'],
+            'form.email' => ['nullable', 'email', 'max:100'],
+            'form.address' => ['nullable', 'string', 'max:255'],
+            'form.status' => ['required', 'string', 'in:active,assigned,inactive,on_leave'],
+            'form.notes' => ['nullable', 'string'],
             'schedules' => ['array'],
             'schedules.*.day_of_week' => ['required', 'string', 'in:Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo'],
             'schedules.*.start_time' => ['required', 'date_format:H:i'],
@@ -70,6 +72,19 @@ class DriverForm extends Component
                 'status' => 'active',
             ]);
         }
+
+        $this->form = [
+            'name' => $this->driver->name ?? '',
+            'last_name' => $this->driver->last_name ?? '',
+            'document_number' => $this->driver->document_number ?? '',
+            'license_number' => $this->driver->license_number ?? '',
+            'license_expiration' => optional($this->driver->license_expiration)->format('Y-m-d'),
+            'phone' => $this->driver->phone ?? '',
+            'email' => $this->driver->email ?? '',
+            'address' => $this->driver->address ?? '',
+            'status' => $this->driver->status ?? 'active',
+            'notes' => $this->driver->notes ?? '',
+        ];
 
         $existingSchedules = $this->driver->exists ? $this->driver->schedules : collect();
         $existingEvaluations = $this->driver->exists ? $this->driver->evaluations : collect();
@@ -126,6 +141,12 @@ class DriverForm extends Component
         $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->driver : Driver::class);
 
         $validated = $this->validate();
+        $data = $validated['form'];
+
+        $data['phone'] = trim((string) $data['phone']) ?: null;
+        $data['email'] = trim((string) $data['email']) ?: null;
+        $data['address'] = trim((string) $data['address']) ?: null;
+        $data['notes'] = trim((string) $data['notes']) ?: null;
 
         foreach ($this->schedules as $schedule) {
             if (isset($schedule['start_time'], $schedule['end_time']) && $schedule['start_time'] >= $schedule['end_time']) {
@@ -134,8 +155,9 @@ class DriverForm extends Component
             }
         }
 
-        DB::transaction(function () use ($validated) {
-            $this->driver->fill($validated['driver']);
+        DB::transaction(function () use ($data) {
+            // Persistimos los datos principales y reseteamos colecciones dependientes.
+            $this->driver->fill($data);
             $this->driver->work_schedule = $this->schedules;
             $this->driver->save();
 
