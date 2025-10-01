@@ -17,6 +17,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public string $password_confirmation = '';
     public string $role = UserRole::LOGISTICS_MANAGER->value;
 
+
     /**
      * Handle an incoming registration request.
      */
@@ -34,6 +35,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                     UserRole::forSelfRegistration()
                 )),
             ],
+
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -107,6 +109,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 class="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-primary-400 dark:focus:ring-primary-400"
             >
                 @foreach (\App\Models\User::roleOptions(UserRole::forSelfRegistration()) as $value => $label)
+
                     <option value="{{ $value }}">{{ $label }}</option>
                 @endforeach
             </select>
