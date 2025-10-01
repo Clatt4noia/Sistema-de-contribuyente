@@ -62,6 +62,7 @@ class AuthorizationTest extends TestCase
     {
         $financeAnalyst = User::factory()->financeAnalyst()->create();
 
+
         $client = Client::create([
             'business_name' => 'Client Co',
             'tax_id' => '123456789',
@@ -116,6 +117,7 @@ class AuthorizationTest extends TestCase
         $this->actingAs($financeAnalyst)->get(route('fleet.trucks.index'))->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(TruckList::class)
             ->call('deleteTruck', $truck->id)
             ->assertForbidden();
@@ -129,6 +131,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(DriverList::class)
             ->call('deleteDriver', $driver->id)
             ->assertForbidden();
@@ -142,6 +145,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(MaintenanceList::class)
             ->call('deleteMaintenance', $maintenance->id)
             ->assertForbidden();
@@ -155,6 +159,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(AssignmentList::class)
             ->call('deleteAssignment', $assignment->id)
             ->assertForbidden();
@@ -164,6 +169,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(AssignmentForm::class, ['id' => $assignment->id])
             ->assertForbidden();
     }
@@ -171,6 +177,7 @@ class AuthorizationTest extends TestCase
     public function test_finance_analyst_cannot_mutate_order_records(): void
     {
         $financeAnalyst = User::factory()->financeAnalyst()->create();
+
 
         $client = Client::create([
             'business_name' => 'Client Co',
@@ -187,11 +194,13 @@ class AuthorizationTest extends TestCase
         ]);
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(OrderList::class)
             ->call('deleteOrder', $order->id)
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(OrderList::class)
             ->call('updateOrderStatus', $order->id, 'delivered')
             ->assertForbidden();
@@ -201,6 +210,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(OrderForm::class, ['order' => $order])
             ->assertForbidden();
     }
@@ -209,6 +219,7 @@ class AuthorizationTest extends TestCase
     {
         $financeAnalyst = User::factory()->financeAnalyst()->create();
 
+
         $client = Client::create([
             'business_name' => 'Client Test',
             'tax_id' => '123456781',
@@ -216,6 +227,7 @@ class AuthorizationTest extends TestCase
         ]);
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(ClientList::class)
             ->call('deleteClient', $client->id)
             ->assertForbidden();
@@ -225,6 +237,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(ClientForm::class, ['client' => $client])
             ->assertForbidden();
     }
@@ -232,6 +245,7 @@ class AuthorizationTest extends TestCase
     public function test_finance_analyst_cannot_mutate_billing_records(): void
     {
         $financeAnalyst = User::factory()->financeAnalyst()->create();
+
 
         $client = Client::create([
             'business_name' => 'Billing Client',
@@ -266,6 +280,7 @@ class AuthorizationTest extends TestCase
         ]);
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(InvoiceList::class)
             ->call('markAsPaid', $invoice->id)
             ->assertForbidden();
@@ -279,6 +294,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(PaymentList::class)
             ->call('deletePayment', $payment->id)
             ->assertForbidden();
@@ -288,6 +304,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
+
             ->test(PaymentForm::class, ['payment' => $payment])
             ->assertForbidden();
     }

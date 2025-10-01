@@ -13,6 +13,7 @@ class PaymentPolicy
     public function viewAny(User $user): bool
     {
         return $user->hasAnyRole(User::BILLING_ROLES);
+
     }
 
     public function view(User $user, Payment $payment): bool
@@ -26,6 +27,7 @@ class PaymentPolicy
             User::ROLE_ADMIN,
             User::ROLE_FINANCE_MANAGER,
         ]);
+
     }
 
     public function update(User $user, Payment $payment): bool
