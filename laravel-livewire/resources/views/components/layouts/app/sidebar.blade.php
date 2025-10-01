@@ -20,7 +20,13 @@
 
         $component = str_starts_with($icon, 'heroicon-') ? $icon : 'heroicon-o-' . ltrim($icon, '-');
 
-        return Blade::componentExists($component) ? $component : $fallbackIcon;
+        $bladeCompiler = Blade::getFacadeRoot();
+
+        if ($bladeCompiler && method_exists($bladeCompiler, 'componentExists')) {
+            return $bladeCompiler->componentExists($component) ? $component : $fallbackIcon;
+        }
+
+        return $component;
     };
 
 @endphp
