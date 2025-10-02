@@ -97,3 +97,5 @@
 - Ajustar formularios (registro, administración de usuarios) para validar contra el catálogo de roles permitidos.
 - Añadir pruebas de autorización diferenciando cada rol clave.
 - Documentar arquitectura (este archivo) y mantenerlo actualizado con decisiones ADR.
+
+hola
