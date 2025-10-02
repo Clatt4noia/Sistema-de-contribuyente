@@ -4,7 +4,7 @@
 ])
 
 @php
-    use Illuminate\Support\Facades\Blade;
+    use Illuminate\Support\Facades\View;
 
     $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
     $navItems = $menu
@@ -32,10 +32,12 @@
 
         return $fallbackIcon;
     };
+    $storedTheme = request()->cookie('app_theme');
+    $initialTheme = in_array($storedTheme, ['light', 'dark'], true) ? $storedTheme : null;
 @endphp
 
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $initialTheme === 'dark' ? 'dark' : '' }}" @if($initialTheme) data-theme="{{ $initialTheme }}" @endif>
     <head>
         @include('partials.head', ['title' => $title])
     </head>
@@ -374,6 +376,8 @@
                 }
 
                 var storageKey = 'app:theme';
+                var cookieKey = 'app_theme';
+                var cookieTtl = 60 * 60 * 24 * 365; // 1 year
                 var root = document.documentElement;
                 var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -385,6 +389,29 @@
                     document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
                         button.setAttribute('aria-pressed', String(isDark));
                     });
+                };
+
+                var setCookieTheme = function (theme) {
+                    try {
+                        document.cookie = cookieKey + '=' + theme + '; path=/; max-age=' + cookieTtl + '; SameSite=Lax';
+                    } catch (error) {
+                        // Ignore cookie errors
+                    }
+                };
+
+                var getCookieTheme = function () {
+                    try {
+                        return document.cookie
+                            .split(';')
+                            .map(function (entry) {
+                                return entry.trim().split('=');
+                            })
+                            .find(function (pair) {
+                                return pair[0] === cookieKey;
+                            })?.[1] || null;
+                    } catch (error) {
+                        return null;
+                    }
                 };
 
                 var getStoredTheme = function () {
@@ -409,12 +436,18 @@
                         return stored;
                     }
 
+                    var cookieTheme = getCookieTheme();
+                    if (cookieTheme === 'light' || cookieTheme === 'dark') {
+                        return cookieTheme;
+                    }
+
                     return mediaQuery.matches ? 'dark' : 'light';
                 };
 
                 var syncTheme = function (theme) {
                     applyTheme(theme);
                     setStoredTheme(theme);
+                    setCookieTheme(theme);
                 };
 
                 var init = function () {
@@ -434,13 +467,16 @@
                     mediaQuery.addEventListener('change', function (event) {
                         var stored = getStoredTheme();
                         if (stored !== 'light' && stored !== 'dark') {
-                            applyTheme(event.matches ? 'dark' : 'light');
+                            var theme = event.matches ? 'dark' : 'light';
+                            applyTheme(theme);
+                            setCookieTheme(theme);
                         }
                     });
 
                     window.addEventListener('storage', function (event) {
                         if (event.key === storageKey && event.newValue) {
                             applyTheme(event.newValue);
+                            setCookieTheme(event.newValue);
                         }
                     });
                 };
