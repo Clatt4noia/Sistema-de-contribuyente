@@ -317,6 +317,7 @@ class AssignmentForm extends Component
     }
 
     protected function findAvailableTruck(Carbon $start, Carbon $end): ?Truck
+
     {
         return Truck::operational()
             ->with('maintenances')
@@ -384,21 +385,6 @@ class AssignmentForm extends Component
                     })
                     ->orWhereBetween('end_date', [$start, $end]);
             });
-    }
-
-    protected function resourceOccupied(string $column, int $resourceId, Carbon $start, Carbon $end): bool
-    {
-        return Assignment::query()
-            ->when($this->assignment->exists, fn ($q) => $q->whereKeyNot($this->assignment->id))
-            ->where($column, $resourceId)
-            ->whereNotIn('status', ['completed', 'cancelled'])
-            ->where(function ($query) use ($start, $end) {
-                $query->where('start_date', '<=', $end)
-                    ->where(function ($overlap) use ($start) {
-                        $overlap->whereNull('end_date')->orWhere('end_date', '>=', $start);
-                    });
-            })
-            ->exists();
     }
 
     protected function syncTruckAvailability(?int $originalTruck): void
