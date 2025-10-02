@@ -59,6 +59,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-shield-check',
                 'route' => 'dashboards.admin',
                 'active' => ['dashboards.admin'],
+                'group' => __('Paneles'),
                 'roles' => [UserRole::ADMIN],
             ],
             [
@@ -66,6 +67,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-compass',
                 'route' => 'dashboards.logistics',
                 'active' => ['dashboards.logistics'],
+                'group' => __('Paneles'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -73,6 +75,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-truck',
                 'route' => 'dashboards.fleet',
                 'active' => ['dashboards.fleet'],
+                'group' => __('Paneles'),
                 'roles' => [UserRole::FLEET_MANAGER, UserRole::LOGISTICS_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -80,6 +83,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-banknotes',
                 'route' => 'dashboards.finance',
                 'active' => ['dashboards.finance'],
+                'group' => __('Paneles'),
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -87,6 +91,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-presentation-chart-line',
                 'route' => 'dashboards.finance-analyst',
                 'active' => ['dashboards.finance-analyst'],
+                'group' => __('Paneles'),
                 'roles' => [UserRole::FINANCE_ANALYST, UserRole::FINANCE_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -94,6 +99,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-user-circle',
                 'route' => 'dashboards.client',
                 'active' => ['dashboards.client'],
+                'group' => __('Paneles'),
                 'roles' => [UserRole::CLIENT],
             ],
             [
@@ -101,6 +107,15 @@ class MainMenuV2
                 'icon' => 'heroicon-o-presentation-chart-bar',
                 'route' => 'fleet.report',
                 'active' => ['fleet.report'],
+                'group' => __('Gestión de flota'),
+                'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::FLEET_MANAGER, UserRole::ADMIN],
+            ],
+            [
+                'label' => __('Disponibilidad en vivo'),
+                'icon' => 'heroicon-o-sparkles',
+                'route' => 'fleet.availability',
+                'active' => ['fleet.availability'],
+                'group' => __('Gestión de flota'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::FLEET_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -108,6 +123,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-truck',
                 'route' => 'fleet.trucks.index',
                 'active' => ['fleet.trucks.*'],
+                'group' => __('Gestión de flota'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::FLEET_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -115,6 +131,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-identification',
                 'route' => 'fleet.drivers.index',
                 'active' => ['fleet.drivers.*'],
+                'group' => __('Gestión de flota'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::FLEET_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -122,6 +139,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-wrench-screwdriver',
                 'route' => 'fleet.maintenance.index',
                 'active' => ['fleet.maintenance.*'],
+                'group' => __('Gestión de flota'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::FLEET_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -129,6 +147,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-map',
                 'route' => 'fleet.assignments.index',
                 'active' => ['fleet.assignments.*'],
+                'group' => __('Gestión de flota'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::FLEET_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -136,6 +155,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-clipboard-document-list',
                 'route' => 'orders.index',
                 'active' => ['orders.*'],
+                'group' => __('Operaciones logísticas'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -143,6 +163,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-users',
                 'route' => 'clients.index',
                 'active' => ['clients.*'],
+                'group' => __('Operaciones logísticas'),
                 'roles' => [UserRole::LOGISTICS_MANAGER, UserRole::ADMIN],
             ],
             [
@@ -150,6 +171,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-document-text',
                 'route' => 'billing.invoices.index',
                 'active' => ['billing.invoices.*'],
+                'group' => __('Finanzas'),
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::FINANCE_ANALYST, UserRole::ADMIN],
             ],
             [
@@ -157,6 +179,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-credit-card',
                 'route' => 'billing.payments.index',
                 'active' => ['billing.payments.*'],
+                'group' => __('Finanzas'),
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::FINANCE_ANALYST, UserRole::ADMIN],
             ],
             [
@@ -164,6 +187,7 @@ class MainMenuV2
                 'icon' => 'heroicon-o-cog-6-tooth',
                 'route' => 'profile.edit',
                 'active' => ['profile.*', 'password.*', 'appearance.*'],
+                'group' => __('Mi cuenta'),
                 'roles' => null,
             ],
         ];

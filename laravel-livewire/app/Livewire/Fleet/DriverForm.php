@@ -5,6 +5,7 @@ namespace App\Livewire\Fleet;
 use App\Models\Driver;
 use App\Models\DriverEvaluation;
 use App\Models\DriverSchedule;
+use App\Models\DriverTraining;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -23,6 +24,7 @@ class DriverForm extends Component
     public array $form = [];
     public array $schedules = [];
     public array $evaluations = [];
+    public array $trainings = [];
 
     protected function rules(): array
     {
@@ -57,6 +59,14 @@ class DriverForm extends Component
             'evaluations.*.evaluated_at' => ['required', 'date'],
             'evaluations.*.evaluator' => ['nullable', 'string', 'max:100'],
             'evaluations.*.comments' => ['nullable', 'string'],
+            'trainings' => ['array'],
+            'trainings.*.name' => ['required', 'string', 'max:150'],
+            'trainings.*.provider' => ['nullable', 'string', 'max:150'],
+            'trainings.*.issued_at' => ['nullable', 'date'],
+            'trainings.*.expires_at' => ['nullable', 'date', 'after_or_equal:trainings.*.issued_at'],
+            'trainings.*.hours' => ['nullable', 'integer', 'min:0', 'max:200'],
+            'trainings.*.status' => ['required', 'string', 'in:valid,expired,in_progress'],
+            'trainings.*.certificate_url' => ['nullable', 'url'],
         ];
     }
 
@@ -88,6 +98,7 @@ class DriverForm extends Component
 
         $existingSchedules = $this->driver->exists ? $this->driver->schedules : collect();
         $existingEvaluations = $this->driver->exists ? $this->driver->evaluations : collect();
+        $existingTrainings = $this->driver->exists ? $this->driver->trainings : collect();
 
         $this->schedules = $existingSchedules->map(fn (DriverSchedule $schedule) => [
             'id' => $schedule->id,
@@ -102,6 +113,17 @@ class DriverForm extends Component
             'evaluated_at' => optional($evaluation->evaluated_at)->format('Y-m-d'),
             'evaluator' => $evaluation->evaluator,
             'comments' => $evaluation->comments,
+        ])->values()->toArray();
+
+        $this->trainings = $existingTrainings->map(fn (DriverTraining $training) => [
+            'id' => $training->id,
+            'name' => $training->name,
+            'provider' => $training->provider,
+            'issued_at' => optional($training->issued_at)->format('Y-m-d'),
+            'expires_at' => optional($training->expires_at)->format('Y-m-d'),
+            'hours' => $training->hours,
+            'status' => $training->status,
+            'certificate_url' => $training->certificate_url,
         ])->values()->toArray();
     }
 
@@ -136,6 +158,25 @@ class DriverForm extends Component
         $this->evaluations = array_values($this->evaluations);
     }
 
+    public function addTraining(): void
+    {
+        $this->trainings[] = [
+            'name' => 'Capacitación',
+            'provider' => null,
+            'issued_at' => now()->format('Y-m-d'),
+            'expires_at' => now()->addYear()->format('Y-m-d'),
+            'hours' => 8,
+            'status' => 'valid',
+            'certificate_url' => null,
+        ];
+    }
+
+    public function removeTraining(int $index): void
+    {
+        unset($this->trainings[$index]);
+        $this->trainings = array_values($this->trainings);
+    }
+
     public function save()
     {
         $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->driver : Driver::class);
@@ -163,6 +204,7 @@ class DriverForm extends Component
 
             $this->driver->schedules()->delete();
             $this->driver->evaluations()->delete();
+            $this->driver->trainings()->delete();
 
             if (! empty($this->schedules)) {
                 $this->driver->schedules()->createMany(array_map(fn ($schedule) => [
@@ -179,6 +221,18 @@ class DriverForm extends Component
                     'evaluator' => $evaluation['evaluator'],
                     'comments' => $evaluation['comments'],
                 ], $this->evaluations));
+            }
+
+            if (! empty($this->trainings)) {
+                $this->driver->trainings()->createMany(array_map(fn ($training) => [
+                    'name' => $training['name'],
+                    'provider' => $training['provider'],
+                    'issued_at' => $training['issued_at'] ?: null,
+                    'expires_at' => $training['expires_at'] ?: null,
+                    'hours' => $training['hours'] ?? null,
+                    'status' => $training['status'],
+                    'certificate_url' => $training['certificate_url'] ?? null,
+                ], $this->trainings));
             }
         });
 
