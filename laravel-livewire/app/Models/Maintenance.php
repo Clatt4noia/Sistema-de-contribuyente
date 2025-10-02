@@ -14,6 +14,7 @@ class Maintenance extends Model
         'maintenance_date',
         'maintenance_type',
         'cost',
+        'odometer',
         'status',
         'description',
         'notes',
@@ -22,6 +23,7 @@ class Maintenance extends Model
     protected $casts = [
         'maintenance_date' => 'date',
         'cost' => 'decimal:2',
+        'odometer' => 'integer',
     ];
 
     public function truck()

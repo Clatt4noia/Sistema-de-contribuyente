@@ -66,6 +66,7 @@
                         <th class="px-6 py-3">Kilometraje</th>
                         <th class="px-6 py-3">Estado</th>
                         <th class="px-6 py-3">Prox. Mant.</th>
+                        <th class="px-6 py-3">Alerta</th>
                         <th class="px-6 py-3 text-center">Pend. Mant.</th>
                         <th class="px-6 py-3 text-right">Acciones</th>
                     </tr>
@@ -88,6 +89,7 @@
                                 : ($isDueSoon
                                     ? 'text-amber-600 font-semibold dark:text-amber-300'
                                     : 'text-slate-700 dark:text-slate-300');
+                            $alertLevel = $truck->maintenanceAlertLevel();
                         @endphp
                         <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
                             <td class="px-6 py-3 font-medium text-slate-900 dark:text-slate-100">{{ $truck->plate_number }}</td>
@@ -103,6 +105,20 @@
                             <td class="px-6 py-3 {{ $nextClass }}">
                                 {{ $nextMaintenance ? $nextMaintenance->format('d/m/Y') : 'No programado' }}
                             </td>
+                            <td class="px-6 py-3">
+                                <span @class([
+                                    'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold',
+                                    'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200' => $alertLevel === 'ok',
+                                    'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200' => $alertLevel === 'warning',
+                                    'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200' => $alertLevel === 'danger',
+                                ])>
+                                    @switch($alertLevel)
+                                        @case('danger') Requiere mantenimiento @break
+                                        @case('warning') Revisar pronto @break
+                                        @default Sin alertas
+                                    @endswitch
+                                </span>
+                            </td>
                             <td class="px-6 py-3 text-center text-slate-600 dark:text-slate-300">{{ $truck->pending_maintenances_count ?? 0 }}</td>
                             <td class="px-6 py-3 text-right">
                                 <a href="{{ route('fleet.trucks.edit', $truck) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">Editar</a>
@@ -111,7 +127,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-6 py-6 text-center text-slate-500 dark:text-slate-400">No hay camiones registrados.</td>
+                            <td colspan="10" class="px-6 py-6 text-center text-slate-500 dark:text-slate-400">No hay camiones registrados.</td>
                         </tr>
                     @endforelse
                 </tbody>

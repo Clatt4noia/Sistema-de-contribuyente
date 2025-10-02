@@ -12,6 +12,7 @@ use App\Livewire\Dashboards\FinanceAnalystDashboard;
 use App\Livewire\Dashboards\FinanceDashboard;
 use App\Livewire\Dashboards\FleetDashboard;
 use App\Livewire\Dashboards\LogisticsDashboard;
+use App\Livewire\Fleet\AvailabilityBoard;
 use App\Livewire\Fleet\AssignmentForm;
 use App\Livewire\Fleet\AssignmentList;
 use App\Livewire\Fleet\DriverForm;
@@ -93,6 +94,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/assignments', AssignmentList::class)->name('assignments.index');
         Route::get('/assignments/create', AssignmentForm::class)->name('assignments.create');
         Route::get('/assignments/{id}/edit', AssignmentForm::class)->whereNumber('id')->name('assignments.edit');
+        Route::get('/availability', AvailabilityBoard::class)->name('availability');
         Route::get('/report', FleetReport::class)->name('report');
     });
 

@@ -70,47 +70,70 @@
                         </label>
                     </div>
 
-                    <nav class="mt-10 flex-1 space-y-1 px-2">
-                        @foreach ($navItems as $item)
-                            <a
-                                href="{{ $item['href'] }}"
-                                @class([
-                                    'group relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition',
-                                    'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 ring-1 ring-indigo-300/40 dark:bg-indigo-500/90 dark:text-white' => $item['current'],
-                                    'text-slate-700/90 hover:bg-slate-900/5 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white' => ! $item['current'],
+                    @php
+                        $groupedNavItems = collect($navItems)->groupBy(fn ($item) => $item['group'] ?? __('General'));
+                    @endphp
 
-                                ])
-                                aria-current="{{ $item['current'] ? 'page' : 'false' }}"
-                            >
-                                <span
-                                    @class([
-                                        'flex h-10 w-10 items-center justify-center rounded-xl transition',
-                                        'bg-indigo-500/20 text-white dark:bg-indigo-500/20' => $item['current'],
-                                        'bg-slate-900/5 text-indigo-500 dark:bg-white/5 dark:text-indigo-200' => ! $item['current'],
+                    <nav class="mt-10 flex-1 space-y-3 px-2">
+                        @foreach ($groupedNavItems as $group => $items)
+                            @php
+                                $isOpen = collect($items)->contains(fn ($entry) => $entry['current']);
+                                $groupIcon = $items->first()['icon'] ?? null;
+                            @endphp
 
-                                    ])
-                                >
-                                    @php($iconComponent = $resolveIcon($item['icon'] ?? null))
-
-                                    <x-dynamic-component :component="$iconComponent" class="size-5" />
-                                </span>
-
-                                <span class="flex flex-1 items-center justify-between truncate">
-                                    <span class="truncate">{{ $item['label'] }}</span>
-
-                                    @if (isset($item['badge']))
-                                        <span
-                                            @class([
-                                                'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
-                                                $item['badge_style'] ?? 'bg-slate-900/5 text-slate-700 dark:bg-white/20 dark:text-slate-900',
-                                                'shadow-indigo-500/40' => $item['current'],
-                                            ])
-                                        >
-                                            {{ $item['badge'] }}
+                            <details @class(['group/nav overflow-hidden rounded-2xl border border-slate-200/70 bg-white/70 text-slate-700 shadow-sm transition dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-200']) {{ $isOpen ? 'open' : '' }}>
+                                <summary class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold">
+                                    <span class="flex items-center gap-3">
+                                        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900/5 text-indigo-500 transition group-open/nav:bg-indigo-500/15 dark:bg-white/10 dark:text-indigo-200">
+                                            @php($summaryIcon = $resolveIcon($groupIcon))
+                                            <x-dynamic-component :component="$summaryIcon" class="size-5" />
                                         </span>
-                                    @endif
-                                </span>
-                            </a>
+                                        <span>{{ $group }}</span>
+                                    </span>
+                                    <x-dynamic-component :component="$resolveIcon('heroicon-o-chevron-down')" class="size-4 transition group-open/nav:rotate-180" />
+                                </summary>
+
+                                <div class="space-y-1 border-t border-slate-200/70 bg-white/50 px-2 py-2 dark:border-slate-800/60 dark:bg-slate-900/50">
+                                    @foreach ($items as $item)
+                                        <a
+                                            href="{{ $item['href'] }}"
+                                            @class([
+                                                'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
+                                                'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 ring-1 ring-indigo-300/40 dark:bg-indigo-500/90 dark:text-white' => $item['current'],
+                                                'text-slate-700/90 hover:bg-slate-900/5 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white' => ! $item['current'],
+                                            ])
+                                            aria-current="{{ $item['current'] ? 'page' : 'false' }}"
+                                        >
+                                            <span
+                                                @class([
+                                                    'flex h-9 w-9 items-center justify-center rounded-xl transition',
+                                                    'bg-indigo-500/20 text-white dark:bg-indigo-500/20' => $item['current'],
+                                                    'bg-slate-900/5 text-indigo-500 dark:bg-white/5 dark:text-indigo-200' => ! $item['current'],
+                                                ])
+                                            >
+                                                @php($iconComponent = $resolveIcon($item['icon'] ?? null))
+                                                <x-dynamic-component :component="$iconComponent" class="size-5" />
+                                            </span>
+
+                                            <span class="flex flex-1 items-center justify-between truncate">
+                                                <span class="truncate">{{ $item['label'] }}</span>
+
+                                                @if (isset($item['badge']))
+                                                    <span
+                                                        @class([
+                                                            'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
+                                                            $item['badge_style'] ?? 'bg-slate-900/5 text-slate-700 dark:bg-white/20 dark:text-slate-900',
+                                                            'shadow-indigo-500/40' => $item['current'],
+                                                        ])
+                                                    >
+                                                        {{ $item['badge'] }}
+                                                    </span>
+                                                @endif
+                                            </span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </details>
                         @endforeach
                     </nav>
 
