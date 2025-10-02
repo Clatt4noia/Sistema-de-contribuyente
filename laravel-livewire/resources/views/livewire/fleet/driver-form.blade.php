@@ -1,6 +1,26 @@
 <div class="container mx-auto py-6 space-y-6">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold">{{ $isEdit ? 'Editar Chofer' : 'Registrar Chofer' }}</h1>
+        <div>
+            <h1 class="text-2xl font-semibold">{{ $isEdit ? 'Editar Chofer' : 'Registrar Chofer' }}</h1>
+            @if ($form['license_expiration'])
+                <p class="mt-2 text-sm">
+                    <span class="font-medium">Vigencia de licencia:</span>
+                    @php
+                        $expiresAt = \Illuminate\Support\Carbon::parse($form['license_expiration']);
+                        $daysLeft = now()->diffInDays($expiresAt, false);
+                    @endphp
+                    <span @class([
+                        'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold',
+                        'bg-red-100 text-red-700' => $daysLeft < 0,
+                        'bg-yellow-100 text-yellow-700' => $daysLeft >= 0 && $daysLeft <= 30,
+                        'bg-green-100 text-green-700' => $daysLeft > 30,
+                    ])>
+                        {{ $expiresAt->format('d/m/Y') }}
+                        ({{ $daysLeft < 0 ? 'Vencida' : 'Quedan ' . $daysLeft . ' días' }})
+                    </span>
+                </p>
+            @endif
+        </div>
         <a href="{{ route('fleet.drivers.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
             Volver
         </a>
@@ -117,6 +137,64 @@
                         </div>
                     @empty
                         <p class="text-sm text-gray-500">No se han definido horarios. Agrega al menos uno para planificar disponibilidad.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">Capacitaciones</h2>
+                    <button type="button" wire:click="addTraining" class="px-3 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Agregar capacitación</button>
+                </div>
+
+                <div class="space-y-4">
+                    @forelse ($trainings as $index => $training)
+                        <div wire:key="training-{{ $index }}" class="grid grid-cols-1 md:grid-cols-6 gap-4 bg-indigo-50/70 p-4 rounded">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Nombre</label>
+                                <input type="text" wire:model.defer="trainings.{{ $index }}.name" class="w-full px-3 py-2 border rounded-md">
+                                @error('trainings.' . $index . '.name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Proveedor</label>
+                                <input type="text" wire:model.defer="trainings.{{ $index }}.provider" class="w-full px-3 py-2 border rounded-md">
+                                @error('trainings.' . $index . '.provider') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Emitida</label>
+                                <input type="date" wire:model.defer="trainings.{{ $index }}.issued_at" class="w-full px-3 py-2 border rounded-md">
+                                @error('trainings.' . $index . '.issued_at') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Vence</label>
+                                <input type="date" wire:model.defer="trainings.{{ $index }}.expires_at" class="w-full px-3 py-2 border rounded-md">
+                                @error('trainings.' . $index . '.expires_at') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Horas</label>
+                                <input type="number" min="0" wire:model.defer="trainings.{{ $index }}.hours" class="w-full px-3 py-2 border rounded-md">
+                                @error('trainings.' . $index . '.hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Estado</label>
+                                <select wire:model.defer="trainings.{{ $index }}.status" class="w-full px-3 py-2 border rounded-md">
+                                    <option value="valid">Vigente</option>
+                                    <option value="in_progress">En curso</option>
+                                    <option value="expired">Vencida</option>
+                                </select>
+                                @error('trainings.' . $index . '.status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Certificado (URL)</label>
+                                <input type="url" wire:model.defer="trainings.{{ $index }}.certificate_url" class="w-full px-3 py-2 border rounded-md">
+                                @error('trainings.' . $index . '.certificate_url') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="flex justify-end md:col-span-6">
+                                <button type="button" wire:click="removeTraining({{ $index }})" class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</button>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-500">No se han registrado capacitaciones.</p>
                     @endforelse
                 </div>
             </div>

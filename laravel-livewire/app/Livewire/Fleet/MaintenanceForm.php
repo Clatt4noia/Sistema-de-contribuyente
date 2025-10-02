@@ -29,6 +29,7 @@ class MaintenanceForm extends Component
             'form.maintenance_type' => 'required|string|max:100',
             'form.cost' => 'required|numeric|min:0',
             'form.status' => 'required|string|in:scheduled,in_progress,completed,cancelled',
+            'form.odometer' => 'nullable|integer|min:0',
             'form.description' => 'nullable|string',
             'form.notes' => 'nullable|string',
         ];
@@ -53,6 +54,7 @@ class MaintenanceForm extends Component
             'maintenance_type' => $this->maintenance->maintenance_type ?? '',
             'cost' => $this->maintenance->cost ?? 0,
             'status' => $this->maintenance->status ?? 'scheduled',
+            'odometer' => $this->maintenance->odometer ?? null,
             'description' => $this->maintenance->description ?? '',
             'notes' => $this->maintenance->notes ?? '',
         ];
@@ -76,6 +78,7 @@ class MaintenanceForm extends Component
             'maintenance_type' => $data['maintenance_type'],
             'cost' => $data['cost'],
             'status' => $data['status'],
+            'odometer' => $data['odometer'] ?? null,
             'description' => $data['description'],
             'notes' => $data['notes'],
         ]);
@@ -88,7 +91,16 @@ class MaintenanceForm extends Component
             if ($this->maintenance->status === 'completed') {
                 $maintenanceDate = Carbon::parse($this->maintenance->maintenance_date);
                 $truck->last_maintenance = $maintenanceDate;
-                $truck->next_maintenance = $maintenanceDate->copy()->addMonths(3);
+                $intervalDays = max((int) ($truck->maintenance_interval_days ?? 90), 1);
+                $truck->next_maintenance = $maintenanceDate->copy()->addDays($intervalDays);
+
+                if (! empty($data['odometer'])) {
+                    $truck->last_maintenance_mileage = $data['odometer'];
+
+                    if ($data['odometer'] > ($truck->mileage ?? 0)) {
+                        $truck->mileage = $data['odometer'];
+                    }
+                }
             }
 
             if (in_array($this->maintenance->status, ['scheduled', 'in_progress'], true)) {

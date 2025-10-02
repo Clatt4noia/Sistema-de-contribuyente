@@ -1,6 +1,7 @@
 <?php
 namespace App\Livewire\Fleet;
 
+use App\Exports\FleetReportExport;
 use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\Maintenance;
@@ -8,6 +9,8 @@ use App\Models\Order;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -22,6 +25,31 @@ class Report extends Component
     {
         $this->authorize('viewAny', Truck::class);
 
+        return view('livewire.fleet.report', $this->reportData());
+    }
+
+    public function exportPdf()
+    {
+        if (! class_exists(Pdf::class)) {
+            abort(501, __('Instale barryvdh/laravel-dompdf para exportar este reporte.'));
+        }
+
+        $pdf = Pdf::loadView('exports.fleet.report', $this->reportData())->setPaper('a4', 'landscape');
+
+        return response()->streamDownload(static fn () => print($pdf->output()), 'reporte-flota.pdf');
+    }
+
+    public function exportExcel()
+    {
+        if (! class_exists(Excel::class)) {
+            abort(501, __('Instale maatwebsite/excel para exportar este reporte.'));
+        }
+
+        return Excel::download(new FleetReportExport($this->reportData()), 'reporte-flota.xlsx');
+    }
+
+    protected function reportData(): array
+    {
         $truckTotals = Truck::selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
@@ -57,7 +85,7 @@ class Report extends Component
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        return view('livewire.fleet.report', [
+        return [
             'truckTotals' => $truckTotals,
             'driverTotals' => $driverTotals,
             'assignmentsByStatus' => $assignmentsByStatus,
@@ -65,6 +93,6 @@ class Report extends Component
             'topDrivers' => $topDrivers,
             'licenseAlerts' => $licenseAlerts,
             'orderTotals' => $orderTotals,
-        ]);
+        ];
     }
 }

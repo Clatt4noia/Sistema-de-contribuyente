@@ -1,7 +1,17 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">Reporte de Flota</h1>
-        <a href="{{ route('fleet.assignments.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300">Ver asignaciones</a>
+        <div class="flex flex-wrap items-center gap-3">
+            <button type="button" wire:click="exportPdf" class="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700/70 dark:text-slate-200 dark:hover:bg-slate-900/60">
+                <i class="fas fa-file-pdf text-rose-500"></i>
+                PDF
+            </button>
+            <button type="button" wire:click="exportExcel" class="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700/70 dark:text-slate-200 dark:hover:bg-slate-900/60">
+                <i class="fas fa-file-excel text-emerald-500"></i>
+                Excel
+            </button>
+            <a href="{{ route('fleet.assignments.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300">Ver asignaciones</a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4">

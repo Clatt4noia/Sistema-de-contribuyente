@@ -38,6 +38,7 @@
                         <th class="px-6 py-3">Vencimiento</th>
                         <th class="px-6 py-3">Horarios</th>
                         <th class="px-6 py-3">Evaluacion</th>
+                        <th class="px-6 py-3">Capacitaciones</th>
                         <th class="px-6 py-3">Estado</th>
                         <th class="px-6 py-3">Acciones</th>
                     </tr>
@@ -54,6 +55,8 @@
                             $statusConfig = $statusStyles[$driver->status] ?? $statusStyles['active'];
                             $scheduleSummary = $driver->schedules->map(fn ($schedule) => substr($schedule->day_of_week, 0, 3) . ' ' . ($schedule->start_time?->format('H:i') ?? '') . '-' . ($schedule->end_time?->format('H:i') ?? ''))->filter()->implode(', ');
                             $averageScore = $driver->evaluations->isNotEmpty() ? round($driver->evaluations->avg('score'), 2) : null;
+                            $validTrainings = $driver->trainings->filter(fn($training) => ! $training->expires_at || $training->expires_at->isFuture());
+                            $expiringTraining = $driver->trainings->first(fn($training) => $training->expires_at && $training->expires_at->diffInDays(now(), false) >= -30 && $training->expires_at->isFuture());
                         @endphp
                         <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">{{ $driver->full_name }}</td>
@@ -73,6 +76,20 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
                                 {{ $averageScore ? $averageScore . ' / 5' : 'Sin evaluaciones' }}
                             </td>
+                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                <div class="flex flex-col gap-1">
+                                    <span class="inline-flex items-center gap-2 text-xs font-semibold">
+                                        <span class="inline-flex h-2 w-2 rounded-full bg-indigo-500"></span>
+                                        {{ $validTrainings->count() }} vigentes
+                                    </span>
+                                    @if ($expiringTraining)
+                                        <span class="inline-flex items-center gap-2 text-xs font-medium text-amber-600 dark:text-amber-300">
+                                            <span class="inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
+                                            {{ $expiringTraining->name }} vence {{ $expiringTraining->expires_at?->format('d/m/Y') }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusConfig['class'] }}">
                                     {{ $statusConfig['label'] }}
@@ -85,7 +102,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-4 text-center text-slate-500 dark:text-slate-400">No se encontraron choferes</td>
+                            <td colspan="9" class="px-6 py-4 text-center text-slate-500 dark:text-slate-400">No se encontraron choferes</td>
                         </tr>
                     @endforelse
                 </tbody>

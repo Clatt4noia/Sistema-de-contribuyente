@@ -4,6 +4,7 @@ namespace App\Livewire\Fleet;
 
 use App\Models\Assignment;
 use App\Models\Driver;
+use App\Models\DriverTraining;
 use App\Models\Order;
 use App\Models\Truck;
 use Illuminate\Support\Carbon;
@@ -26,6 +27,8 @@ class AssignmentForm extends Component
     public $drivers = [];
     public $orders = [];
     public ?Order $orderPreview = null;
+    public string $mode = 'manual';
+    public ?string $autoAssignAlert = null;
 
     protected function rules(): array
     {
@@ -38,6 +41,7 @@ class AssignmentForm extends Component
             'form.status' => 'required|in:scheduled,in_progress,completed,cancelled',
             'form.description' => 'required|string|max:255',
             'form.notes' => 'nullable|string',
+            'mode' => 'required|in:manual,automatic',
         ];
     }
 
@@ -81,6 +85,15 @@ class AssignmentForm extends Component
         $this->loadOptions();
     }
 
+    public function updatedMode(): void
+    {
+        $this->autoAssignAlert = null;
+
+        if ($this->mode === 'automatic') {
+            $this->autoAssignResources();
+        }
+    }
+
     public function updatedFormOrderId(): void
     {
         $this->loadOptions();
@@ -98,6 +111,15 @@ class AssignmentForm extends Component
             $this->isEdit ? $this->assignment : Assignment::class
         );
 
+        if ($this->mode === 'automatic' && empty($this->form['truck_id']) && empty($this->form['driver_id'])) {
+            $this->autoAssignResources();
+
+            if (empty($this->form['truck_id']) || empty($this->form['driver_id'])) {
+                $this->addError('mode', 'No se encontraron recursos disponibles para asignacion automatica.');
+                return;
+            }
+        }
+
         $validated = $this->validate();
         $data = $validated['form'];
 
@@ -112,6 +134,9 @@ class AssignmentForm extends Component
             return;
         }
 
+        $driver = Driver::with('trainings')->findOrFail($data['driver_id']);
+        $truck = Truck::with('maintenances')->findOrFail($data['truck_id']);
+
         if ($this->resourceOccupied('truck_id', (int) $data['truck_id'], $start, $end)) {
             $this->addError('form.truck_id', 'El camion seleccionado ya esta asignado en esas fechas.');
             return;
@@ -119,6 +144,44 @@ class AssignmentForm extends Component
 
         if ($this->resourceOccupied('driver_id', (int) $data['driver_id'], $start, $end)) {
             $this->addError('form.driver_id', 'El chofer seleccionado ya esta asignado en esas fechas.');
+            return;
+        }
+
+        if (! $driver->hasValidLicenseAt($start)) {
+            $this->addError('form.driver_id', 'La licencia del chofer esta vencida para la fecha seleccionada.');
+            return;
+        }
+
+        if (! $driver->isAvailableBetween($start, $end, $this->assignment->id)) {
+            $this->addError('form.driver_id', 'El chofer no esta disponible en el rango seleccionado.');
+            return;
+        }
+
+        $hasValidTraining = $driver->trainings->first(function (DriverTraining $training) use ($start) {
+            return ! $training->expires_at || $training->expires_at->greaterThanOrEqualTo($start);
+        });
+
+        if (! $hasValidTraining) {
+            $this->addError('form.driver_id', 'El chofer no cuenta con capacitaciones vigentes.');
+            return;
+        }
+
+        if (in_array($truck->status, ['maintenance', 'out_of_service'], true)) {
+            $this->addError('form.truck_id', 'El camion seleccionado no esta disponible (mantenimiento o fuera de servicio).');
+            return;
+        }
+
+        if ($truck->requiresMaintenanceAlert($start)) {
+            $this->addError('form.truck_id', 'El camion requiere mantenimiento antes de la fecha seleccionada.');
+            return;
+        }
+
+        $pendingMaintenance = $truck->maintenances
+            ->filter(fn ($maintenance) => in_array($maintenance->status, ['scheduled', 'in_progress'], true))
+            ->first(fn ($maintenance) => $maintenance->maintenance_date && $maintenance->maintenance_date->between($start->copy()->startOfDay(), $end->copy()->endOfDay()));
+
+        if ($pendingMaintenance) {
+            $this->addError('form.truck_id', 'El camion tiene un mantenimiento programado en el periodo seleccionado.');
             return;
         }
 
@@ -163,6 +226,8 @@ class AssignmentForm extends Component
         $this->authorize('viewAny', Driver::class);
 
         $orderId = $this->form['order_id'] ?? null;
+        $start = isset($this->form['start_date']) ? Carbon::parse($this->form['start_date']) : now();
+        $end = isset($this->form['end_date']) && $this->form['end_date'] ? Carbon::parse($this->form['end_date']) : $start->copy();
 
         $this->orders = Order::query()
             ->where(function ($query) use ($orderId) {
@@ -175,42 +240,151 @@ class AssignmentForm extends Component
             ->get();
 
         $this->trucks = Truck::query()
+            ->with('maintenances')
             ->where(function ($query) {
-                $query->where('status', 'available');
-                if (!empty($this->form['truck_id'])) {
+                $query->whereIn('status', ['available', 'in_use']);
+                if (! empty($this->form['truck_id'])) {
                     $query->orWhere('id', $this->form['truck_id']);
                 }
             })
             ->orderBy('plate_number')
-            ->get();
+            ->get()
+            ->filter(function (Truck $truck) use ($start, $end) {
+                if ($this->assignment->truck_id === $truck->id) {
+                    return true;
+                }
+
+                if ($truck->requiresMaintenanceAlert($start)) {
+                    return false;
+                }
+
+                $hasPendingMaintenance = $truck->maintenances
+                    ->filter(fn ($maintenance) => in_array($maintenance->status, ['scheduled', 'in_progress'], true))
+                    ->first(fn ($maintenance) => $maintenance->maintenance_date && $maintenance->maintenance_date->between($start->copy()->startOfDay(), $end->copy()->endOfDay()));
+
+                return ! $hasPendingMaintenance;
+            })
+            ->values();
 
         $this->drivers = Driver::query()
+            ->with('trainings')
             ->where(function ($query) {
                 $query->whereIn('status', ['active', 'assigned']);
-                if (!empty($this->form['driver_id'])) {
+                if (! empty($this->form['driver_id'])) {
                     $query->orWhere('id', $this->form['driver_id']);
                 }
             })
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->filter(function (Driver $driver) use ($start, $end) {
+                if ($this->assignment->driver_id === $driver->id) {
+                    return true;
+                }
+
+                if (! $driver->hasValidLicenseAt($start)) {
+                    return false;
+                }
+
+                if (! $driver->isAvailableBetween($start, $end, $this->assignment->id)) {
+                    return false;
+                }
+
+                return $driver->trainings->contains(fn (DriverTraining $training) => ! $training->expires_at || $training->expires_at->greaterThanOrEqualTo($start));
+            })
+            ->values();
 
         // Guardamos una vista previa del pedido seleccionado para alimentar el resumen lateral.
         $this->orderPreview = $this->orders->firstWhere('id', (int) ($this->form['order_id'] ?? 0));
     }
 
-    protected function resourceOccupied(string $column, int $resourceId, Carbon $start, Carbon $end): bool
+    public function autoAssignResources(): void
     {
-        return Assignment::query()
-            ->when($this->assignment->exists, fn ($q) => $q->whereKeyNot($this->assignment->id))
-            ->where($column, $resourceId)
+        $this->autoAssignAlert = null;
+
+        $start = isset($this->form['start_date']) ? Carbon::parse($this->form['start_date']) : now();
+        $end = isset($this->form['end_date']) && $this->form['end_date'] ? Carbon::parse($this->form['end_date']) : $start->copy();
+
+        $truck = $this->findAvailableTruck($start, $end);
+        $driver = $this->findAvailableDriver($start, $end);
+
+        if (! $truck || ! $driver) {
+            $this->autoAssignAlert = 'No hay camiones o choferes disponibles en el rango seleccionado.';
+            return;
+        }
+
+        $this->form['truck_id'] = $truck->id;
+        $this->form['driver_id'] = $driver->id;
+    }
+
+    protected function findAvailableTruck(Carbon $start, Carbon $end): ?Truck
+
+    {
+        return Truck::operational()
+            ->with('maintenances')
+            ->orderBy('next_maintenance')
+            ->get()
+            ->first(function (Truck $truck) use ($start, $end) {
+                if ($this->assignment->truck_id === $truck->id) {
+                    return true;
+                }
+
+                if ($truck->requiresMaintenanceAlert($start)) {
+                    return false;
+                }
+
+                $hasOverlap = $this->resourceOccupiedQuery('truck_id', $truck->id, $start, $end)->exists();
+
+                if ($hasOverlap) {
+                    return false;
+                }
+
+                $hasPendingMaintenance = $truck->maintenances
+                    ->filter(fn ($maintenance) => in_array($maintenance->status, ['scheduled', 'in_progress'], true))
+                    ->first(fn ($maintenance) => $maintenance->maintenance_date && $maintenance->maintenance_date->between($start->copy()->startOfDay(), $end->copy()->endOfDay()));
+
+                return ! $hasPendingMaintenance;
+            });
+    }
+
+    protected function findAvailableDriver(Carbon $start, Carbon $end): ?Driver
+    {
+        return Driver::query()
+            ->with('trainings')
+            ->whereIn('status', ['active'])
+            ->orderBy('license_expiration')
+            ->get()
+            ->first(function (Driver $driver) use ($start, $end) {
+                if (! $driver->hasValidLicenseAt($start)) {
+                    return false;
+                }
+
+                if (! $driver->isAvailableBetween($start, $end, $this->assignment->id)) {
+                    return false;
+                }
+
+                return $driver->trainings->contains(fn (DriverTraining $training) => ! $training->expires_at || $training->expires_at->greaterThanOrEqualTo($start));
+            });
+    }
+
+    protected function resourceOccupied(string $column, int $id, Carbon $start, Carbon $end): bool
+    {
+        return $this->resourceOccupiedQuery($column, $id, $start, $end)->exists();
+    }
+
+    protected function resourceOccupiedQuery(string $column, int $id, Carbon $start, Carbon $end)
+    {
+        return Assignment::where($column, $id)
             ->whereNotIn('status', ['completed', 'cancelled'])
+            ->when($this->assignment->exists, fn ($query) => $query->where('id', '!=', $this->assignment->id))
             ->where(function ($query) use ($start, $end) {
-                $query->where('start_date', '<=', $end)
-                    ->where(function ($overlap) use ($start) {
-                        $overlap->whereNull('end_date')->orWhere('end_date', '>=', $start);
-                    });
-            })
-            ->exists();
+                $query->whereBetween('start_date', [$start, $end])
+                    ->orWhere(function ($q) use ($start, $end) {
+                        $q->where('start_date', '<=', $start)->where(function ($inner) use ($end) {
+                            $inner->whereNull('end_date')->orWhere('end_date', '>=', $end);
+                        });
+                    })
+                    ->orWhereBetween('end_date', [$start, $end]);
+            });
     }
 
     protected function syncTruckAvailability(?int $originalTruck): void
