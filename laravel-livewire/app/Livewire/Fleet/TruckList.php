@@ -4,6 +4,7 @@ namespace App\Livewire\Fleet;
 
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -58,10 +59,15 @@ class TruckList extends Component
             ->pluck('total', 'status');
 
         $maintenanceDueSoon = Truck::query()
-            ->whereNotNull('next_maintenance')
-            ->whereDate('next_maintenance', '<=', now()->addMonth())
+            ->where(function ($query) {
+                $query->whereNotNull('next_maintenance')
+                    ->whereDate('next_maintenance', '<=', now()->addMonth())
+                    ->orWhere(function ($mileageQuery) {
+                        $mileageQuery->whereColumn('mileage', '>=', DB::raw('last_maintenance_mileage + maintenance_mileage_threshold'));
+                    });
+            })
             ->count();
-        
+
         return view('livewire.fleet.truck-list', [
             'trucks' => $trucks,
             'statusTotals' => $statusTotals,

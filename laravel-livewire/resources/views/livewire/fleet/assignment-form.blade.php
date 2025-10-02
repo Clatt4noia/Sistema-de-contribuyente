@@ -22,6 +22,30 @@
                 </div>
 
                 <div class="form-field">
+                    <label class="form-label">Modo de asignación *</label>
+                    <div class="flex items-center gap-4">
+                        <label class="inline-flex items-center gap-2 text-sm">
+                            <input type="radio" wire:model="mode" value="manual" class="text-indigo-500 focus:ring-indigo-500">
+                            Manual
+                        </label>
+                        <label class="inline-flex items-center gap-2 text-sm">
+                            <input type="radio" wire:model="mode" value="automatic" class="text-indigo-500 focus:ring-indigo-500">
+                            Automática
+                        </label>
+                    </div>
+                    @error('mode') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @if ($mode === 'automatic')
+                        <button type="button" wire:click="autoAssignResources" class="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-white shadow hover:bg-emerald-600">
+                            <i class="fas fa-bolt"></i>
+                            Buscar recursos disponibles
+                        </button>
+                        @if ($autoAssignAlert)
+                            <p class="mt-2 text-xs font-medium text-amber-600 dark:text-amber-300">{{ $autoAssignAlert }}</p>
+                        @endif
+                    @endif
+                </div>
+
+                <div class="form-field">
                     <label for="truck_id" class="form-label">Vehiculo *</label>
                     <select id="truck_id" wire:model="form.truck_id" class="form-control @error('form.truck_id') border-rose-400 dark:border-rose-400 @enderror">
                         <option value="">Seleccione un vehiculo</option>
@@ -30,6 +54,17 @@
                         @endforeach
                     </select>
                     @error('form.truck_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @if ($form['truck_id'])
+                        @php
+                            $selectedTruck = $trucks->firstWhere('id', (int) $form['truck_id']);
+                        @endphp
+                        @if ($selectedTruck)
+                            <div class="mt-3 rounded-lg border border-slate-200/60 bg-slate-50/70 p-3 text-xs text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300">
+                                <p><span class="font-semibold">Mantenimiento prox.:</span> {{ optional($selectedTruck->next_maintenance)->format('d/m/Y') ?? 'No definido' }}</p>
+                                <p><span class="font-semibold">Km acumulado:</span> {{ number_format($selectedTruck->mileage) }} km</p>
+                            </div>
+                        @endif
+                    @endif
                 </div>
 
                 <div class="form-field">
@@ -41,6 +76,17 @@
                         @endforeach
                     </select>
                     @error('form.driver_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @if ($form['driver_id'])
+                        @php
+                            $selectedDriver = $drivers->firstWhere('id', (int) $form['driver_id']);
+                        @endphp
+                        @if ($selectedDriver)
+                            <div class="mt-3 rounded-lg border border-slate-200/60 bg-slate-50/70 p-3 text-xs text-slate-600 dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-300">
+                                <p><span class="font-semibold">Licencia:</span> {{ optional($selectedDriver->license_expiration)->format('d/m/Y') }}</p>
+                                <p><span class="font-semibold">Capacitaciones vigentes:</span> {{ $selectedDriver->trainings->filter(fn($training) => ! $training->expires_at || $training->expires_at->isFuture())->count() }}</p>
+                            </div>
+                        @endif
+                    @endif
                 </div>
 
                 <div class="form-field">

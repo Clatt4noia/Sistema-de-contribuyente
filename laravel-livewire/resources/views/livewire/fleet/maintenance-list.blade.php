@@ -1,33 +1,38 @@
-<div class="container mx-auto py-6 space-y-6">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold">Mantenimientos de Vehículos</h1>
-        <a href="{{ route('fleet.maintenance.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">Mantenimientos de Vehículos</h1>
+        <a
+            href="{{ route('fleet.maintenance.create') }}"
+            class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300"
+        >
             Registrar Mantenimiento
         </a>
     </div>
 
     @if (session()->has('message'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-            <p>{{ session('message') }}</p>
+        <div class="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 text-sm font-medium text-emerald-700 shadow-sm dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-100">
+            {{ session('message') }}
         </div>
     @endif
 
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-        <div class="p-4 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
-            <div class="flex-1 max-w-md">
-                <input type="text" wire:model.live="search" placeholder="Buscar por tipo o descripción..." 
-                    class="w-full px-3 py-2 border rounded-md">
+    <div class="surface-card overflow-hidden">
+        <div class="flex flex-col gap-4 border-b border-slate-200/70 bg-slate-50/80 p-4 dark:border-slate-800/60 dark:bg-slate-900/50 md:flex-row md:items-center md:justify-between">
+            <div class="flex-1 md:max-w-md">
+                <input
+                    type="text"
+                    wire:model.live="search"
+                    placeholder="Buscar por tipo o descripción..."
+                    class="form-control"
+                >
             </div>
-            <div class="flex-none">
-                <select wire:model.live="truck_id" class="px-3 py-2 border rounded-md">
+            <div class="flex flex-wrap gap-3 text-sm">
+                <select wire:model.live="truck_id" class="form-control">
                     <option value="">Todos los vehículos</option>
                     @foreach($trucks as $truck)
                         <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }}</option>
                     @endforeach
                 </select>
-            </div>
-            <div class="flex-none">
-                <select wire:model.live="status" class="px-3 py-2 border rounded-md">
+                <select wire:model.live="status" class="form-control">
                     <option value="">Todos los estados</option>
                     <option value="scheduled">Programado</option>
                     <option value="in_progress">En progreso</option>
@@ -38,69 +43,66 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table class="surface-table">
+                <thead>
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Vehículo
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Fecha
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Tipo
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Costo
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Estado
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Acciones
-                        </th>
+                        <th class="px-6 py-3">Vehículo</th>
+                        <th class="px-6 py-3">Fecha</th>
+                        <th class="px-6 py-3">Tipo</th>
+                        <th class="px-6 py-3">Costo</th>
+                        <th class="px-6 py-3">Estado</th>
+                        <th class="px-6 py-3">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody>
                     @forelse ($maintenances as $maintenance)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $maintenance->truck->plate_number }}</div>
-                                <div class="text-xs text-gray-500">{{ $maintenance->truck->brand }} {{ $maintenance->truck->model }}</div>
+                        <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $maintenance->truck->plate_number }}</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">{{ $maintenance->truck->brand }} {{ $maintenance->truck->model }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">{{ $maintenance->maintenance_date->format('d/m/Y') }}</div>
+                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                {{ $maintenance->maintenance_date->format('d/m/Y') }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">{{ $maintenance->maintenance_type }}</div>
+                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                {{ $maintenance->maintenance_type }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">${{ number_format($maintenance->cost, 2) }}</div>
+                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                ${{ number_format($maintenance->cost, 2) }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {{ $maintenance->status === 'completed' ? 'bg-green-100 text-green-800' : 
-                                       ($maintenance->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 
-                                       ($maintenance->status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')) }}">
-                                    {{ $maintenance->status === 'completed' ? 'Completado' : 
-                                       ($maintenance->status === 'in_progress' ? 'En progreso' : 
-                                       ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}
+                            <td class="px-6 py-4">
+                                <span
+                                    @class([
+                                        'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm transition',
+                                        'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-100' => $maintenance->status === 'completed',
+                                        'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-100' => $maintenance->status === 'in_progress',
+                                        'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-100' => $maintenance->status === 'scheduled',
+                                        'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-100' => $maintenance->status === 'cancelled',
+                                    ])
+                                >
+                                    {{ $maintenance->status === 'completed' ? 'Completado' : ($maintenance->status === 'in_progress' ? 'En progreso' : ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="{{ route('fleet.maintenance.edit', $maintenance) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                            <td class="px-6 py-4 text-sm font-semibold">
+                                <a
+                                    href="{{ route('fleet.maintenance.edit', $maintenance) }}"
+                                    class="text-indigo-600 transition hover:text-indigo-400 dark:text-indigo-300 dark:hover:text-indigo-200"
+                                >
                                     Editar
                                 </a>
-                                <button wire:click="deleteMaintenance({{ $maintenance->id }})" wire:confirm="¿Está seguro de eliminar este registro?" 
-                                    class="text-red-600 hover:text-red-900">
+                                <button
+                                    wire:click="deleteMaintenance({{ $maintenance->id }})"
+                                    wire:confirm="¿Está seguro de eliminar este registro?"
+                                    class="ml-3 text-rose-600 transition hover:text-rose-500 dark:text-rose-300 dark:hover:text-rose-200"
+                                >
                                     Eliminar
                                 </button>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                                No se encontraron registros de mantenimiento
+                            <td colspan="6" class="px-6 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                                No se encontraron registros de mantenimiento.
                             </td>
                         </tr>
                     @endforelse
@@ -108,7 +110,7 @@
             </table>
         </div>
 
-        <div class="px-4 py-3 bg-white border-t border-gray-200">
+        <div class="border-t border-slate-200/70 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 dark:border-slate-800/60 dark:bg-slate-900/50 dark:text-slate-300">
             {{ $maintenances->links() }}
         </div>
     </div>
