@@ -34,7 +34,7 @@ class DriverList extends Component
         $this->authorize('viewAny', Driver::class);
 
         $drivers = Driver::query()
-            ->with(['schedules', 'evaluations'])
+            ->with(['schedules', 'evaluations', 'trainings'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
