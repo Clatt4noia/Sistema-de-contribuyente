@@ -317,6 +317,7 @@ class AssignmentForm extends Component
     }
 
     protected function findAvailableTruck(Carbon $start, Carbon $end): ?Truck
+
     {
         return Truck::operational()
             ->with('maintenances')

@@ -60,6 +60,7 @@
                 <div class="form-field">
                     <label for="status" class="form-label">Estado *</label>
                     <select id="status" wire:model="form.status" class="form-control">
+
                         <option value="scheduled">Programado</option>
                         <option value="in_progress">En progreso</option>
                         <option value="completed">Completado</option>
