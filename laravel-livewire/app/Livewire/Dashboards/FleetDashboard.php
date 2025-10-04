@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboards;
 
+use App\Models\Document;
 use App\Models\Driver;
 use App\Models\Maintenance;
 use App\Models\Truck;
@@ -50,27 +51,57 @@ class FleetDashboard extends Component
             });
 
         // Paso 4: detectar licencias de conductores próximas a vencer y exponerlas como "documentos".
-        $expiringDocuments = Driver::query()
-            ->whereDate('license_expiration', '<=', now()->addMonths(3))
-            ->orderBy('license_expiration')
+        $expiringDocuments = Document::query()
+            ->with('documentable')
+            ->whereNotNull('expires_at')
+            ->whereDate('expires_at', '<=', now()->addMonths(3))
+            ->orderBy('expires_at')
             ->take(5)
             ->get()
-            ->map(static function (Driver $driver) {
-                // Buscamos la última asignación con su camión para mostrar información contextual.
-                $latestAssignment = $driver->assignments()
-                    ->with('truck')
-                    ->latest('start_date')
-                    ->first();
-
+            ->map(static function (Document $document) {
                 return (object) [
-                    'truck' => $latestAssignment?->truck,
-                    'name' => __('Licencia de :driver', [
-                        'driver' => $driver->full_name ?? trim(($driver->name ?? '') . ' ' . ($driver->last_name ?? '')),
-                    ]),
-                    'expires_at' => $driver->license_expiration,
-                    'status_label' => __('Por vencer'),
+                    'owner_type' => $document->documentable_type,
+                    'owner_id' => $document->documentable_id,
+                    'resource_label' => $document->owner_label,
+                    'name' => $document->title ?: $document->type_label,
+                    'expires_at' => $document->expires_at,
+                    'status' => $document->status,
+                    'status_label' => $document->status_label,
                 ];
             });
+
+        if ($expiringDocuments->count() < 5) {
+            $driversPending = Driver::query()
+                ->whereNotNull('license_expiration')
+                ->whereDate('license_expiration', '<=', now()->addMonths(3))
+                ->whereNotIn('id', $expiringDocuments
+                    ->filter(fn ($item) => $item->owner_type === Driver::class)
+                    ->pluck('owner_id')
+                    ->all())
+                ->orderBy('license_expiration')
+                ->take(5 - $expiringDocuments->count())
+                ->get()
+                ->map(static function (Driver $driver) {
+                    $status = optional($driver->license_expiration)->isPast()
+                        ? Document::STATUS_EXPIRED
+                        : Document::STATUS_WARNING;
+
+                    return (object) [
+                        'owner_type' => Driver::class,
+                        'owner_id' => $driver->getKey(),
+                        'resource_label' => __('Chofer :name', ['name' => $driver->full_name]),
+                        'name' => __('Licencia de conducir'),
+                        'expires_at' => $driver->license_expiration,
+                        'status' => $status,
+                        'status_label' => match ($status) {
+                            Document::STATUS_EXPIRED => __('Vencido'),
+                            default => __('Por vencer'),
+                        },
+                    ];
+                });
+
+            $expiringDocuments = $expiringDocuments->concat($driversPending);
+        }
 
         // Paso 5: actualizar el indicador de documentos por vencer con la colección calculada.
         $fleetStats['expiringDocuments'] = $expiringDocuments->count();

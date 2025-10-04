@@ -3,6 +3,7 @@ namespace App\Livewire\Fleet;
 
 use App\Exports\FleetReportExport;
 use App\Models\Assignment;
+use App\Models\Document;
 use App\Models\Driver;
 use App\Models\Maintenance;
 use App\Models\Order;
@@ -85,6 +86,13 @@ class Report extends Component
             ->groupBy('status')
             ->pluck('total', 'status');
 
+        $documentAlerts = Document::with('documentable')
+            ->whereIn('status', [Document::STATUS_WARNING, Document::STATUS_EXPIRED])
+            ->orderByRaw("CASE WHEN status = '" . Document::STATUS_EXPIRED . "' THEN 0 ELSE 1 END")
+            ->orderBy('expires_at')
+            ->take(10)
+            ->get();
+
         return [
             'truckTotals' => $truckTotals,
             'driverTotals' => $driverTotals,
@@ -93,6 +101,7 @@ class Report extends Component
             'topDrivers' => $topDrivers,
             'licenseAlerts' => $licenseAlerts,
             'orderTotals' => $orderTotals,
+            'documentAlerts' => $documentAlerts,
         ];
     }
 }
