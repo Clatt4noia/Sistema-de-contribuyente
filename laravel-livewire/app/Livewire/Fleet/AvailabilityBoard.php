@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Fleet;
 
+use App\Models\Document;
 use App\Models\Driver;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -32,6 +33,9 @@ class AvailabilityBoard extends Component
             ->withCount(['assignments as active_assignments_count' => function ($query) {
                 $query->whereNotIn('status', ['completed', 'cancelled']);
             }])
+            ->with(['documents' => function ($query) {
+                $query->orderBy('expires_at');
+            }])
             ->when($this->vehicleStatus, fn ($query) => $query->where('status', $this->vehicleStatus))
             ->when($this->vehicleSearch, function ($query) {
                 $term = '%' . trim($this->vehicleSearch) . '%';
@@ -47,6 +51,9 @@ class AvailabilityBoard extends Component
             ->get()
             ->map(function (Truck $truck) {
                 $truck->alert_level = $truck->maintenanceAlertLevel();
+                $truck->document_alerts = $truck->documents
+                    ->filter(fn ($document) => in_array($document->status, [Document::STATUS_WARNING, Document::STATUS_EXPIRED], true))
+                    ->take(2);
 
                 return $truck;
             });
@@ -54,7 +61,9 @@ class AvailabilityBoard extends Component
         $drivers = Driver::query()
             ->with(['assignments' => function ($query) {
                 $query->whereNotIn('status', ['completed', 'cancelled'])->latest('start_date');
-            }, 'trainings'])
+            }, 'trainings', 'documents' => function ($query) {
+                $query->orderBy('expires_at');
+            }])
             ->when($this->driverStatus, fn ($query) => $query->where('status', $this->driverStatus))
             ->when($this->driverSearch, function ($query) {
                 $term = '%' . trim($this->driverSearch) . '%';
@@ -71,6 +80,9 @@ class AvailabilityBoard extends Component
             ->map(function (Driver $driver) {
                 $driver->next_assignment = $driver->assignments->first();
                 $driver->valid_trainings = $driver->trainings->filter(fn ($training) => ! $training->expires_at || $training->expires_at->isFuture());
+                $driver->document_alerts = $driver->documents
+                    ->filter(fn ($document) => in_array($document->status, [Document::STATUS_WARNING, Document::STATUS_EXPIRED], true))
+                    ->take(2);
 
                 return $driver;
             });

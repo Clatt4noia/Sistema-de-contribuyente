@@ -105,6 +105,16 @@
                                 <p>{{ $truck->active_assignments_count }}</p>
                             </div>
                         </div>
+                        @if($truck->document_alerts->isNotEmpty())
+                            <div class="mt-3 rounded-xl border border-amber-200/60 bg-amber-50/70 p-3 text-xs text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                                <p class="font-semibold">Documentos por atender:</p>
+                                <ul class="mt-1 list-disc space-y-1 pl-4">
+                                    @foreach($truck->document_alerts as $document)
+                                        <li>{{ $document->type_label }} · {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                     </article>
                 @empty
                     <div class="rounded-2xl border border-dashed border-slate-200/70 bg-white/60 p-6 text-center text-sm text-slate-500 dark:border-slate-800/70 dark:bg-slate-900/40 dark:text-slate-400">
@@ -159,6 +169,16 @@
                                 </p>
                             </div>
                         </div>
+                        @if($driver->document_alerts->isNotEmpty())
+                            <div class="mt-3 rounded-xl border border-amber-200/60 bg-amber-50/70 p-3 text-xs text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                                <p class="font-semibold">Alertas de documentación:</p>
+                                <ul class="mt-1 list-disc space-y-1 pl-4">
+                                    @foreach($driver->document_alerts as $document)
+                                        <li>{{ $document->type_label }} · {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                     </article>
                 @empty
                     <div class="rounded-2xl border border-dashed border-slate-200/70 bg-white/60 p-6 text-center text-sm text-slate-500 dark:border-slate-800/70 dark:bg-slate-900/40 dark:text-slate-400">

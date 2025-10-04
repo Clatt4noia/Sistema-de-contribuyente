@@ -66,20 +66,27 @@
                 <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
                     <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
                         <tr>
-                            <th class="px-4 py-3">{{ __('Camión') }}</th>
+                            <th class="px-4 py-3">{{ __('Recurso') }}</th>
                             <th class="px-4 py-3">{{ __('Documento') }}</th>
                             <th class="px-4 py-3">{{ __('Vencimiento') }}</th>
                             <th class="px-4 py-3">{{ __('Estado') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/50">
+                        @php
+                            $badgeStyles = [
+                                \App\Models\Document::STATUS_VALID => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200',
+                                \App\Models\Document::STATUS_WARNING => 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
+                                \App\Models\Document::STATUS_EXPIRED => 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-200',
+                            ];
+                        @endphp
                         @forelse ($expiringDocuments as $document)
                             <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-900/70">
-                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ optional($document->truck)->plate_number ?? '—' }}</td>
+                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ $document->resource_label }}</td>
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $document->name ?? '—' }}</td>
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($document->expires_at)?->format('d/m/Y') ?? '—' }}</td>
                                 <td class="px-4 py-3">
-                                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">{{ $document->status_label ?? __('pendiente') }}</span>
+                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $badgeStyles[$document->status] ?? $badgeStyles[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label ?? __('Pendiente') }}</span>
                                 </td>
                             </tr>
                         @empty
