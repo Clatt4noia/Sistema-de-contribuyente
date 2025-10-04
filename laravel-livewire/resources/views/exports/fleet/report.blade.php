@@ -142,5 +142,31 @@
             @endforelse
         </tbody>
     </table>
+
+    <h2>Documentos críticos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Recurso</th>
+                <th>Documento</th>
+                <th>Vence</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($documentAlerts as $document)
+                <tr>
+                    <td>{{ $document->owner_label }}</td>
+                    <td>{{ $document->title ?: $document->type_label }}</td>
+                    <td>{{ optional($document->expires_at)->format('d/m/Y') ?? '—' }}</td>
+                    <td>{{ $document->status_label }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4">Sin documentos con alerta.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </body>
 </html>
