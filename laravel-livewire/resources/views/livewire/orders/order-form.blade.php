@@ -36,15 +36,46 @@
                 </div>
 
                 <div class="form-field">
+                    <label for="cargo_type_id" class="form-label">Tipo de carga</label>
+                    <select id="cargo_type_id" wire:model.defer="form.cargo_type_id" class="form-control">
+                        <option value="">Seleccione una opción</option>
+                        @foreach($cargoTypes as $type)
+                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('form.cargo_type_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="form-field">
                     <label for="origin" class="form-label">Origen *</label>
                     <input id="origin" type="text" wire:model.defer="form.origin" class="form-control">
                     @error('form.origin') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
+                    <label class="form-label">Coordenadas de origen</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" step="0.000001" placeholder="Latitud" wire:model.defer="form.origin_latitude" class="form-control" />
+                        <input type="number" step="0.000001" placeholder="Longitud" wire:model.defer="form.origin_longitude" class="form-control" />
+                    </div>
+                    @error('form.origin_latitude') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.origin_longitude') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="form-field">
                     <label for="destination" class="form-label">Destino *</label>
                     <input id="destination" type="text" wire:model.defer="form.destination" class="form-control">
                     @error('form.destination') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label">Coordenadas de destino</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" step="0.000001" placeholder="Latitud" wire:model.defer="form.destination_latitude" class="form-control" />
+                        <input type="number" step="0.000001" placeholder="Longitud" wire:model.defer="form.destination_longitude" class="form-control" />
+                    </div>
+                    @error('form.destination_latitude') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                    @error('form.destination_longitude') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
@@ -57,6 +88,18 @@
                     <label for="delivery_date" class="form-label">Fecha de entrega</label>
                     <input id="delivery_date" type="datetime-local" wire:model.defer="form.delivery_date" class="form-control">
                     @error('form.delivery_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="form-field">
+                    <label for="delivery_window_start" class="form-label">Inicio ventana entrega</label>
+                    <input id="delivery_window_start" type="datetime-local" wire:model.defer="form.delivery_window_start" class="form-control">
+                    @error('form.delivery_window_start') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="form-field">
+                    <label for="delivery_window_end" class="form-label">Fin ventana entrega</label>
+                    <input id="delivery_window_end" type="datetime-local" wire:model.defer="form.delivery_window_end" class="form-control">
+                    @error('form.delivery_window_end') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="form-field">
@@ -80,6 +123,18 @@
                     <label for="estimated_duration_hours" class="form-label">Duracion estimada (horas)</label>
                     <input id="estimated_duration_hours" type="number" step="0.01" wire:model.defer="form.estimated_duration_hours" class="form-control">
                     @error('form.estimated_duration_hours') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="form-field">
+                    <label for="cargo_weight_kg" class="form-label">Peso (kg)</label>
+                    <input id="cargo_weight_kg" type="number" step="0.01" wire:model.defer="form.cargo_weight_kg" class="form-control">
+                    @error('form.cargo_weight_kg') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="form-field">
+                    <label for="cargo_volume_m3" class="form-label">Volumen (m³)</label>
+                    <input id="cargo_volume_m3" type="number" step="0.01" wire:model.defer="form.cargo_volume_m3" class="form-control">
+                    @error('form.cargo_volume_m3') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
             </div>
 

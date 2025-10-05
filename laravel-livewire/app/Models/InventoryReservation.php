@@ -6,25 +6,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class RoutePlan extends Model
+class InventoryReservation extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'order_id',
-        'planner',
-        'route_summary',
-        'map_url',
-        'route_data',
+        'item_sku',
+        'quantity',
+        'status',
+        'reserved_at',
+        'released_at',
+        'source_system',
+        'payload',
     ];
 
     protected $casts = [
-        'route_data' => 'array',
+        'quantity' => 'float',
+        'reserved_at' => 'datetime',
+        'released_at' => 'datetime',
+        'payload' => 'array',
     ];
 
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
-
 }
