@@ -3,6 +3,7 @@
 namespace App\Livewire\Dashboards;
 
 use App\Models\Assignment;
+
 use App\Models\Document;
 use App\Models\Driver;
 use App\Models\Maintenance;
@@ -155,6 +156,7 @@ class FleetDashboard extends Component
             });
 
         // Paso 6: detectar licencias de conductores próximas a vencer y exponerlas como "documentos".
+
         $expiringDocuments = Document::query()
             ->with('documentable')
             ->whereNotNull('expires_at')
@@ -208,6 +210,7 @@ class FleetDashboard extends Component
         }
 
         // Paso 7: actualizar el indicador de documentos por vencer con la colección calculada.
+
         $fleetStats['expiringDocuments'] = $expiringDocuments->count();
 
         return view('livewire.dashboards.fleet-dashboard', [
