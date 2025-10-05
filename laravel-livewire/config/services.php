@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'maps' => [
+        'google_api_key' => env('GOOGLE_MAPS_EMBED_KEY'),
+    ],
+
 ];

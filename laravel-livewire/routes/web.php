@@ -10,6 +10,7 @@ use App\Livewire\Dashboards\AdminDashboard;
 use App\Livewire\Dashboards\ClientDashboard;
 use App\Livewire\Dashboards\FinanceAnalystDashboard;
 use App\Livewire\Dashboards\FinanceDashboard;
+use App\Livewire\ClientPortal\OrderTracker as ClientOrderTracker;
 use App\Livewire\Dashboards\FleetDashboard;
 use App\Livewire\Dashboards\LogisticsDashboard;
 use App\Livewire\Fleet\AvailabilityBoard;
@@ -21,6 +22,7 @@ use App\Livewire\Fleet\MaintenanceForm;
 use App\Livewire\Fleet\MaintenanceList;
 use App\Livewire\Fleet\TruckList;
 use App\Livewire\Fleet\Report as FleetReport;
+use App\Livewire\Logistics\LiveTrackingBoard;
 use App\Livewire\Orders\OrderForm;
 use App\Livewire\Orders\OrderList;
 use App\Livewire\Clients\ClientForm;
@@ -58,6 +60,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/logistics', LogisticsDashboard::class)
             ->middleware('can:view-dashboard.logistics')
             ->name('logistics');
+
+        Route::get('/logistics/tracking', LiveTrackingBoard::class)
+            ->middleware('can:view-dashboard.logistics')
+            ->name('logistics-tracking');
 
         Route::get('/fleet', FleetDashboard::class)
             ->middleware('can:view-dashboard.fleet')
@@ -126,6 +132,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments', PaymentList::class)->name('payments.index');
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
         Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
+    });
+
+    Route::prefix('portal')->name('portal.')->middleware('can:view-dashboard.client')->group(function () {
+        Route::get('/orders', ClientOrderTracker::class)->name('orders');
     });
 
     Volt::route('settings/profile', 'settings.profile')->name('profile.edit');
