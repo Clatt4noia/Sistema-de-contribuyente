@@ -30,6 +30,7 @@ class DriverPolicyV2
         return $user->hasAnyRole([
             UserRole::ADMIN,
             UserRole::FLEET_MANAGER,
+            UserRole::LOGISTICS_MANAGER,
         ]);
     }
 
