@@ -99,7 +99,18 @@
     </div>
 
     @if($isEdit)
-        <livewire:fleet.document-manager :documentable-type="'truck'" :documentable-id="$truck->id" :key="'truck-documents-' . $truck->id" />
+        @if ($truck->exists)
+            <livewire:fleet.document-manager
+                :documentable-type="'truck'"
+                :documentable-id="$truck->id"
+                :key="'truck-documents-' . $truck->id"
+            />
+        @else
+            <div class="surface-card border border-dashed border-slate-300/70 p-6 text-sm text-slate-600 dark:border-slate-700/70 dark:text-slate-300">
+                Guarda el camión para poder adjuntar pólizas, SOAT u otros documentos.
+            </div>
+        @endif
+
     @else
         <div class="rounded-2xl border border-dashed border-slate-200/80 bg-white/70 p-6 text-sm text-slate-500 dark:border-slate-800/70 dark:bg-slate-900/40 dark:text-slate-400">
             Guarda el camión para habilitar la carga de documentos (SOAT, pólizas, revisiones técnicas).
