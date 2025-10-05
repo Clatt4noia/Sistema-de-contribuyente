@@ -256,4 +256,22 @@
             </div>
         </form>
     </div>
+
+    @if ($isEdit)
+        @if ($isEdit && $driver->exists)
+            <livewire:fleet.document-manager
+                :documentable-type="'driver'"
+                :documentable-id="$driver->id"
+                :key="'driver-documents-' . $driver->id"
+            />
+        @else
+            <div class="surface-card border border-dashed border-slate-300/70 p-6 text-sm text-slate-600 dark:border-slate-700/70 dark:text-slate-300">
+                Guarda el chofer para habilitar la carga de documentos (licencia, certificados, etc.).
+            </div>
+        @endif
+    @else
+        <div class="rounded-2xl border border-dashed border-slate-200/80 bg-white/70 p-6 text-sm text-slate-500 dark:border-slate-800/70 dark:bg-slate-900/40 dark:text-slate-400">
+            Guarda el registro del chofer para adjuntar licencias escaneadas, certificados médicos o constancias de capacitación.
+        </div>
+    @endif
 </div>

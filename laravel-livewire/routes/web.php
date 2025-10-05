@@ -76,6 +76,14 @@ Route::middleware('auth')->group(function () {
             ->name('client');
     });
 
+    Route::get('/drivers', fn () => redirect()->route('fleet.drivers.index'))
+        ->name('legacy.drivers.index');
+    Route::get('/drivers/create', DriverForm::class)
+        ->name('legacy.drivers.create');
+    Route::get('/drivers/{driver}/edit', DriverForm::class)
+        ->whereNumber('driver')
+        ->name('legacy.drivers.edit');
+
     Route::prefix('fleet')->name('fleet.')->group(function () {
         Route::get('/trucks', TruckList::class)->name('trucks.index');
         Route::view('/trucks/create', 'pages.fleet.trucks.create')->name('trucks.create');

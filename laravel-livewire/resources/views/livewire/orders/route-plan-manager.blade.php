@@ -1,66 +1,76 @@
 <div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold">Rutas adicionales</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Rutas adicionales</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Documenta alternativas, desvíos y datos complementarios al plan principal.</p>
+        </div>
+
         @if (session()->has('message'))
-            <span class="text-sm text-green-600">{{ session('message') }}</span>
+            <span class="rounded-xl border border-emerald-200/70 bg-emerald-50/80 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200">{{ session('message') }}</span>
         @endif
     </div>
 
-    <form wire:submit="save" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Planificador</label>
-            <input type="text" wire:model.defer="planner" class="w-full px-3 py-2 border rounded @error('planner') border-red-500 @enderror" placeholder="Operador a cargo">
-            @error('planner') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+    <form wire:submit="save" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-field">
+            <label for="planner" class="form-label">Planificador</label>
+            <input id="planner" type="text" wire:model.defer="planner" class="form-control" placeholder="Operador a cargo">
+            @error('planner') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">URL del mapa</label>
-            <input type="url" wire:model.defer="map_url" class="w-full px-3 py-2 border rounded @error('map_url') border-red-500 @enderror" placeholder="https://maps...">
-            @error('map_url') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+        <div class="form-field">
+            <label for="map_url" class="form-label">URL del mapa</label>
+            <input id="map_url" type="url" wire:model.defer="map_url" class="form-control" placeholder="https://maps...">
+            @error('map_url') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
         </div>
-        <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Resumen *</label>
-            <textarea rows="3" wire:model.defer="route_summary" class="w-full px-3 py-2 border rounded @error('route_summary') border-red-500 @enderror" placeholder="Puntos clave, carreteras, riesgos..."></textarea>
-            @error('route_summary') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+        <div class="form-field md:col-span-2">
+            <label for="route_summary" class="form-label">Resumen *</label>
+            <textarea id="route_summary" rows="3" wire:model.defer="route_summary" class="form-control" placeholder="Puntos clave, carreteras, riesgos..."></textarea>
+            @error('route_summary') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
         </div>
-        <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Datos JSON</label>
-            <textarea rows="3" wire:model.defer="route_data" class="w-full px-3 py-2 border rounded @error('route_data') border-red-500 @enderror" placeholder='{"waypoints": []}'></textarea>
-            @error('route_data') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+        <div class="form-field md:col-span-2">
+            <label for="route_data" class="form-label">Datos JSON</label>
+            <textarea id="route_data" rows="3" wire:model.defer="route_data" class="form-control" placeholder='{"waypoints": []}'></textarea>
+            @error('route_data') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
         </div>
+
         <div class="md:col-span-2 flex justify-end">
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Agregar ruta</button>
+            <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300">
+                Agregar ruta
+            </button>
         </div>
     </form>
 
-    <div class="bg-white border border-gray-200 rounded">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div class="rounded-2xl border border-slate-200/80 shadow-sm dark:border-slate-800/70">
+        <table class="surface-table">
+            <thead>
                 <tr>
-                    <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500">Planificador</th>
-                    <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500">Resumen</th>
-                    <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500">Mapa</th>
-                    <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500">Acciones</th>
+                    <th class="px-4 py-2">Planificador</th>
+                    <th class="px-4 py-2">Resumen</th>
+                    <th class="px-4 py-2">Mapa</th>
+                    <th class="px-4 py-2">Acciones</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody>
                 @forelse($plans as $plan)
-                    <tr>
-                        <td class="px-4 py-2 text-sm text-gray-700">{{ $plan->planner ?: 'No definido' }}</td>
-                        <td class="px-4 py-2 text-sm text-gray-700">{{ \Illuminate\Support\Str::limit($plan->route_summary, 80) }}</td>
-                        <td class="px-4 py-2 text-sm text-blue-600">
+                    <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
+                        <td class="px-4 py-2 text-sm text-slate-700 dark:text-slate-200">{{ $plan->planner ?: 'No definido' }}</td>
+                        <td class="px-4 py-2 text-sm text-slate-700 dark:text-slate-200">{{ \Illuminate\Support\Str::limit($plan->route_summary, 80) }}</td>
+                        <td class="px-4 py-2 text-sm">
                             @if($plan->map_url)
-                                <a href="{{ $plan->map_url }}" target="_blank" class="hover:underline">Ver mapa</a>
+                                <a href="{{ $plan->map_url }}" target="_blank" class="font-medium text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">Ver mapa</a>
                             @else
-                                <span class="text-gray-400">Sin enlace</span>
+                                <span class="text-sm text-slate-400 dark:text-slate-500">Sin enlace</span>
                             @endif
                         </td>
                         <td class="px-4 py-2 text-sm">
-                            <button wire:click="delete({{ $plan->id }})" wire:confirm="Eliminar esta ruta?" class="text-red-600 hover:text-red-800">Eliminar</button>
+                            <button wire:click="delete({{ $plan->id }})" wire:confirm="Eliminar esta ruta?" class="font-semibold text-rose-600 transition hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300">Eliminar</button>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-3 text-center text-gray-500">No hay rutas adicionales registradas.</td>
+                        <td colspan="4" class="px-4 py-3 text-center text-sm text-slate-500 dark:text-slate-400">No hay rutas adicionales registradas.</td>
                     </tr>
                 @endforelse
             </tbody>
