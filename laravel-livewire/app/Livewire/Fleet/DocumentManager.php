@@ -28,6 +28,7 @@ class DocumentManager extends Component
 
     public $file;
 
+
     protected function rules(): array
     {
         return [
@@ -44,6 +45,7 @@ class DocumentManager extends Component
     {
         $this->documentableType = $documentableType;
         $this->documentableId = $documentableId;
+
         $this->typeOptions = Document::typeOptions($documentableType);
         $this->form = $this->defaultForm();
 
@@ -74,6 +76,7 @@ class DocumentManager extends Component
 
         Document::create([
             'documentable_type' => $this->ownerClass(),
+
             'documentable_id' => $owner->getKey(),
             'document_type' => $validated['form']['document_type'],
             'title' => $title,
@@ -97,6 +100,7 @@ class DocumentManager extends Component
         $document = Document::query()
             ->where('id', $documentId)
             ->where('documentable_type', $this->ownerClass())
+
             ->where('documentable_id', $this->documentableId)
             ->firstOrFail();
 
@@ -131,6 +135,7 @@ class DocumentManager extends Component
     {
         $class = $this->ownerClass();
 
+
         return $class::findOrFail($this->documentableId);
     }
 
@@ -140,6 +145,7 @@ class DocumentManager extends Component
 
         $this->documents = Document::query()
             ->where('documentable_type', $ownerClass)
+
             ->where('documentable_id', $this->documentableId)
             ->orderByRaw("CASE WHEN status = '" . Document::STATUS_EXPIRED . "' THEN 0 WHEN status = '" . Document::STATUS_WARNING . "' THEN 1 ELSE 2 END")
             ->orderBy('expires_at')
@@ -174,4 +180,5 @@ class DocumentManager extends Component
     {
         return $this->resolveOwnerClass($this->documentableType);
     }
+
 }
