@@ -30,6 +30,7 @@ class User extends Authenticatable
     public const FLEET_MANAGEMENT_ROLES = [
         self::ROLE_ADMIN,
         self::ROLE_FLEET_MANAGER,
+        self::ROLE_LOGISTICS_MANAGER,
     ];
 
     /** @var array<int, string> */
