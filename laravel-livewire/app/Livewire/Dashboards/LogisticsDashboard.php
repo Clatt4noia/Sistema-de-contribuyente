@@ -10,6 +10,7 @@ use App\Models\RoutePlan;
 use App\Models\Truck;
 use App\Models\VehicleLocationUpdate;
 use Illuminate\Support\Facades\Schema;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 
@@ -53,6 +54,7 @@ class LogisticsDashboard extends Component
             $deliveriesWithWindow = 0;
             $onTimeRate = null;
         }
+
 
         $averageCost = round(Order::whereNotNull('estimated_cost')->avg('estimated_cost') ?? 0, 2);
         $activeIncidents = RouteIncident::where('status', '!=', 'resolved')->count();
