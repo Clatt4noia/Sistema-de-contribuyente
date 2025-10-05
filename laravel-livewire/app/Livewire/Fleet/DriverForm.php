@@ -70,10 +70,10 @@ class DriverForm extends Component
         ];
     }
 
-    public function mount($id = null): void
+    public function mount(?Driver $driver = null): void
     {
-        if ($id) {
-            $this->driver = Driver::with(['schedules', 'evaluations'])->findOrFail($id);
+        if ($driver && $driver->exists) {
+            $this->driver = $driver->load(['schedules', 'evaluations', 'trainings']);
             $this->authorize('update', $this->driver);
             $this->isEdit = true;
         } else {

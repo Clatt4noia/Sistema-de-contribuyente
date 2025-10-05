@@ -129,4 +129,41 @@
             </table>
         </div>
     </div>
+
+    <div class="surface-card p-4 shadow-sm">
+        <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Documentos críticos</h2>
+        <table class="surface-table mt-3">
+            <thead>
+                <tr>
+                    <th class="px-3 py-2">Recurso</th>
+                    <th class="px-3 py-2">Documento</th>
+                    <th class="px-3 py-2">Vence</th>
+                    <th class="px-3 py-2">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $statusClasses = [
+                        \App\Models\Document::STATUS_WARNING => 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200',
+                        \App\Models\Document::STATUS_EXPIRED => 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200',
+                        \App\Models\Document::STATUS_VALID => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200',
+                    ];
+                @endphp
+                @forelse($documentAlerts as $document)
+                    <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
+                        <td class="px-3 py-2 text-slate-700 dark:text-slate-200">{{ $document->owner_label }}</td>
+                        <td class="px-3 py-2 text-slate-700 dark:text-slate-200">{{ $document->title ?: $document->type_label }}</td>
+                        <td class="px-3 py-2 text-slate-700 dark:text-slate-200">{{ optional($document->expires_at)->format('d/m/Y') ?? '—' }}</td>
+                        <td class="px-3 py-2">
+                            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document->status] ?? $statusClasses[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label }}</span>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="px-3 py-2 text-center text-slate-500 dark:text-slate-400">Sin documentos con alertas de vigencia.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>

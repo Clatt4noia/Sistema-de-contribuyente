@@ -1,115 +1,145 @@
-<div class="space-y-6">
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-semibold">{{ $isEdit ? 'Editar Pedido' : 'Nuevo Pedido' }}</h1>
-        <a href="{{ route('orders.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Volver</a>
+<div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1">
+            <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">{{ $isEdit ? 'Editar Pedido' : 'Nuevo Pedido' }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-300">Gestiona la informacion clave del pedido y planifica su ruta principal.</p>
+        </div>
+        <a href="{{ route('orders.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700/70 dark:text-slate-200 dark:hover:bg-slate-900/60">
+            Volver
+        </a>
     </div>
 
-    <div class="bg-white shadow rounded p-6">
-        <form wire:submit.prevent="save" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
-                    <select wire:model.defer="form.client_id" class="w-full px-3 py-2 border rounded @error('form.client_id') border-red-500 @enderror">
+    @if (session()->has('message'))
+        <div class="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-700 shadow-sm dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200">
+            {{ session('message') }}
+        </div>
+    @endif
+
+    <div class="surface-card p-6 shadow-lg">
+        <form wire:submit.prevent="save" class="grid gap-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div class="form-field">
+                    <label for="client_id" class="form-label">Cliente *</label>
+                    <select id="client_id" wire:model.defer="form.client_id" class="form-control">
                         <option value="">Seleccione un cliente</option>
                         @foreach($clients as $client)
                             <option value="{{ $client->id }}">{{ $client->business_name }}</option>
                         @endforeach
                     </select>
-                    @error('form.client_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    @error('form.client_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Numero de referencia *</label>
-                    <input type="text" wire:model.defer="form.reference" class="w-full px-3 py-2 border rounded @error('form.reference') border-red-500 @enderror">
-                    @error('form.reference') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="reference" class="form-label">Numero de referencia *</label>
+                    <input id="reference" type="text" wire:model.defer="form.reference" class="form-control">
+                    @error('form.reference') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Origen *</label>
-                    <input type="text" wire:model.defer="form.origin" class="w-full px-3 py-2 border rounded @error('form.origin') border-red-500 @enderror">
-                    @error('form.origin') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="origin" class="form-label">Origen *</label>
+                    <input id="origin" type="text" wire:model.defer="form.origin" class="form-control">
+                    @error('form.origin') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Destino *</label>
-                    <input type="text" wire:model.defer="form.destination" class="w-full px-3 py-2 border rounded @error('form.destination') border-red-500 @enderror">
-                    @error('form.destination') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="destination" class="form-label">Destino *</label>
+                    <input id="destination" type="text" wire:model.defer="form.destination" class="form-control">
+                    @error('form.destination') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de recojo</label>
-                    <input type="datetime-local" wire:model.defer="form.pickup_date" class="w-full px-3 py-2 border rounded @error('form.pickup_date') border-red-500 @enderror">
-                    @error('form.pickup_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="pickup_date" class="form-label">Fecha de recojo</label>
+                    <input id="pickup_date" type="datetime-local" wire:model.defer="form.pickup_date" class="form-control">
+                    @error('form.pickup_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de entrega</label>
-                    <input type="datetime-local" wire:model.defer="form.delivery_date" class="w-full px-3 py-2 border rounded @error('form.delivery_date') border-red-500 @enderror">
-                    @error('form.delivery_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="delivery_date" class="form-label">Fecha de entrega</label>
+                    <input id="delivery_date" type="datetime-local" wire:model.defer="form.delivery_date" class="form-control">
+                    @error('form.delivery_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
-                    <select wire:model.defer="form.status" class="w-full px-3 py-2 border rounded @error('form.status') border-red-500 @enderror">
+
+                <div class="form-field">
+                    <label for="status" class="form-label">Estado *</label>
+                    <select id="status" wire:model.defer="form.status" class="form-control">
                         <option value="pending">Pendiente</option>
                         <option value="en_route">En ruta</option>
                         <option value="delivered">Entregado</option>
                         <option value="cancelled">Cancelado</option>
                     </select>
-                    @error('form.status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    @error('form.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Distancia estimada (km)</label>
-                    <input type="number" step="0.01" wire:model.defer="form.estimated_distance_km" class="w-full px-3 py-2 border rounded @error('form.estimated_distance_km') border-red-500 @enderror">
-                    @error('form.estimated_distance_km') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="estimated_distance_km" class="form-label">Distancia estimada (km)</label>
+                    <input id="estimated_distance_km" type="number" step="0.01" wire:model.defer="form.estimated_distance_km" class="form-control">
+                    @error('form.estimated_distance_km') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Duracion estimada (horas)</label>
-                    <input type="number" step="0.01" wire:model.defer="form.estimated_duration_hours" class="w-full px-3 py-2 border rounded @error('form.estimated_duration_hours') border-red-500 @enderror">
-                    @error('form.estimated_duration_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="estimated_duration_hours" class="form-label">Duracion estimada (horas)</label>
+                    <input id="estimated_duration_hours" type="number" step="0.01" wire:model.defer="form.estimated_duration_hours" class="form-control">
+                    @error('form.estimated_duration_hours') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Detalle de carga</label>
-                <textarea rows="3" wire:model.defer="form.cargo_details" class="w-full px-3 py-2 border rounded @error('form.cargo_details') border-red-500 @enderror"></textarea>
-                @error('form.cargo_details') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field">
+                <label for="cargo_details" class="form-label">Detalle de carga</label>
+                <textarea id="cargo_details" rows="3" wire:model.defer="form.cargo_details" class="form-control"></textarea>
+                @error('form.cargo_details') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Notas internas</label>
-                <textarea rows="3" wire:model.defer="form.notes" class="w-full px-3 py-2 border rounded @error('form.notes') border-red-500 @enderror"></textarea>
-                @error('form.notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="form-field">
+                <label for="notes" class="form-label">Notas internas</label>
+                <textarea id="notes" rows="3" wire:model.defer="form.notes" class="form-control"></textarea>
+                @error('form.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
 
-            <div class="border-t pt-6 space-y-4">
-                <h2 class="text-lg font-semibold text-gray-700">Plan de ruta principal</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Planificador</label>
-                        <input type="text" wire:model.defer="routePlan.planner" class="w-full px-3 py-2 border rounded @error('routePlan.planner') border-red-500 @enderror">
-                        @error('routePlan.planner') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            <div class="space-y-4 rounded-2xl border border-slate-200/80 p-4 dark:border-slate-800/70">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Plan de ruta principal</h2>
+                    <span class="text-sm text-slate-500 dark:text-slate-400">Sincroniza la ruta base del pedido con las asignaciones.</span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div class="form-field">
+                        <label for="route_planner" class="form-label">Planificador</label>
+                        <input id="route_planner" type="text" wire:model.defer="routePlan.planner" class="form-control">
+                        @error('routePlan.planner') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">URL del mapa</label>
-                        <input type="url" wire:model.defer="routePlan.map_url" class="w-full px-3 py-2 border rounded @error('routePlan.map_url') border-red-500 @enderror" placeholder="https://maps...">
-                        @error('routePlan.map_url') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <div class="form-field">
+                        <label for="route_map_url" class="form-label">URL del mapa</label>
+                        <input id="route_map_url" type="url" wire:model.defer="routePlan.map_url" class="form-control" placeholder="https://maps...">
+                        @error('routePlan.map_url') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Resumen de la ruta</label>
-                    <textarea rows="3" wire:model.defer="routePlan.route_summary" class="w-full px-3 py-2 border rounded @error('routePlan.route_summary') border-red-500 @enderror" placeholder="Puntos clave de la ruta..."></textarea>
-                    @error('routePlan.route_summary') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="route_summary" class="form-label">Resumen de la ruta</label>
+                    <textarea id="route_summary" rows="3" wire:model.defer="routePlan.route_summary" class="form-control" placeholder="Puntos clave de la ruta..."></textarea>
+                    @error('routePlan.route_summary') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Datos adicionales (JSON)</label>
-                    <textarea rows="3" wire:model.defer="routePlan.route_data" class="w-full px-3 py-2 border rounded @error('routePlan.route_data') border-red-500 @enderror" placeholder='{"waypoints": []}'></textarea>
-                    @error('routePlan.route_data') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+
+                <div class="form-field">
+                    <label for="route_data" class="form-label">Datos adicionales (JSON)</label>
+                    <textarea id="route_data" rows="3" wire:model.defer="routePlan.route_data" class="form-control" placeholder='{"waypoints": []}'></textarea>
+                    @error('routePlan.route_data') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
                 </div>
             </div>
 
-            <div class="flex justify-end">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{{ $isEdit ? 'Actualizar' : 'Guardar' }}</button>
+            <div class="flex items-center justify-end gap-3">
+                <a href="{{ route('orders.index') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200/80 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700/70 dark:text-slate-200 dark:hover:bg-slate-900/60">
+                    Cancelar
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300">
+                    {{ $isEdit ? 'Actualizar' : 'Guardar' }}
+                </button>
             </div>
         </form>
     </div>
 
     @if($isEdit)
-        <div class="bg-white shadow rounded p-6">
+        <div class="surface-card p-6 shadow-lg">
             <livewire:orders.route-plan-manager :order="$order" :key="'route-plan-'.$order->id" />
         </div>
     @endif
