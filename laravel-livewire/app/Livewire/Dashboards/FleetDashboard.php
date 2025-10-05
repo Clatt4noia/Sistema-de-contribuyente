@@ -2,10 +2,14 @@
 
 namespace App\Livewire\Dashboards;
 
+use App\Models\Assignment;
+
 use App\Models\Document;
 use App\Models\Driver;
 use App\Models\Maintenance;
 use App\Models\Truck;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 
@@ -35,7 +39,108 @@ class FleetDashboard extends Component
             'inMaintenance' => ($statusBreakdown['in_maintenance'] ?? 0) + ($statusBreakdown['maintenance'] ?? 0),
         ];
 
-        // Paso 3: consultar los mantenimientos programados y enriquecerlos con alias usados en la plantilla.
+        $totalFleet = $statusBreakdown->sum();
+        $occupiedCount = max($totalFleet - ($fleetStats['available'] + $fleetStats['inMaintenance']), 0);
+
+        $statusChart = [
+            'labels' => [
+                __('Disponibles'),
+                __('En mantenimiento'),
+                __('Ocupados'),
+            ],
+            'datasets' => [[
+                'label' => __('Estado de flota'),
+                'data' => [
+                    $fleetStats['available'],
+                    $fleetStats['inMaintenance'],
+                    $occupiedCount,
+                ],
+                'backgroundColor' => [
+                    'rgba(16, 185, 129, 0.85)',
+                    'rgba(251, 191, 36, 0.85)',
+                    'rgba(59, 130, 246, 0.85)',
+                ],
+                'borderWidth' => 0,
+            ]],
+        ];
+
+        // Paso 3: calcular series históricas para mantenimientos programados.
+        $monthsBack = 5;
+        $currentMonth = now()->startOfMonth();
+        $monthsWindow = Collection::times($monthsBack + 1, static function ($index) use ($monthsBack, $currentMonth) {
+            return $currentMonth->copy()->subMonths($monthsBack - ($index - 1));
+        });
+
+        $maintenanceWindowStart = $monthsWindow->first()->copy();
+        $maintenanceWindowEnd = now()->endOfMonth();
+
+        $maintenanceGroups = Maintenance::query()
+            ->whereNotNull('maintenance_date')
+            ->whereBetween('maintenance_date', [$maintenanceWindowStart, $maintenanceWindowEnd])
+            ->get()
+            ->groupBy(static function (Maintenance $maintenance) {
+                return optional($maintenance->maintenance_date)?->format('Y-m');
+            });
+
+        $maintenanceTrend = [
+            'labels' => $monthsWindow->map(static fn (Carbon $month) => $month->isoFormat('MMM YY'))->all(),
+            'datasets' => [[
+                'label' => __('Mantenimientos programados'),
+                'data' => $monthsWindow
+                    ->map(static function (Carbon $month) use ($maintenanceGroups) {
+                        $key = $month->format('Y-m');
+
+                        return isset($maintenanceGroups[$key]) ? $maintenanceGroups[$key]->count() : 0;
+                    })
+                    ->all(),
+                'borderColor' => 'rgba(99, 102, 241, 1)',
+                'backgroundColor' => 'rgba(99, 102, 241, 0.18)',
+                'tension' => 0.35,
+                'fill' => true,
+            ]],
+        ];
+
+        // Paso 4: agregar métricas de asignaciones por conductor para los últimos 90 días.
+        $assignmentWindowStart = now()->copy()->subDays(90);
+        $assignments = Assignment::query()
+            ->with('driver')
+            ->whereNotNull('driver_id')
+            ->whereBetween('start_date', [$assignmentWindowStart, now()])
+            ->get()
+            ->groupBy('driver_id')
+            ->map(static function ($rows) {
+                /** @var \Illuminate\Support\Collection<int, Assignment> $rows */
+                $first = $rows->first();
+                $driver = optional($first)->driver;
+
+                return [
+                    'driver' => $driver?->full_name ?? __('Chofer sin asignar'),
+                    'count' => $rows->count(),
+                ];
+            })
+            ->sortByDesc('count');
+
+        $topAssignments = $assignments->take(5)->values();
+        $averageAssignments = $assignments->isNotEmpty() ? round($assignments->avg('count'), 2) : 0;
+
+        $assignmentsChart = [
+            'labels' => $topAssignments->pluck('driver')->all(),
+            'datasets' => [[
+                'label' => __('Asignaciones (últimos 90 días)'),
+                'data' => $topAssignments->pluck('count')->all(),
+                'backgroundColor' => [
+                    'rgba(14, 165, 233, 0.85)',
+                    'rgba(34, 211, 238, 0.85)',
+                    'rgba(129, 140, 248, 0.85)',
+                    'rgba(16, 185, 129, 0.85)',
+                    'rgba(251, 113, 133, 0.85)',
+                ],
+                'borderRadius' => 12,
+                'maxBarThickness' => 42,
+            ]],
+        ];
+
+        // Paso 5: consultar los mantenimientos programados y enriquecerlos con alias usados en la plantilla.
         $upcomingMaintenances = Maintenance::with('truck')
             ->whereDate('maintenance_date', '>=', now()->startOfDay())
             ->orderBy('maintenance_date')
@@ -50,7 +155,8 @@ class FleetDashboard extends Component
                 return $maintenance;
             });
 
-        // Paso 4: detectar licencias de conductores próximas a vencer y exponerlas como "documentos".
+        // Paso 6: detectar licencias de conductores próximas a vencer y exponerlas como "documentos".
+
         $expiringDocuments = Document::query()
             ->with('documentable')
             ->whereNotNull('expires_at')
@@ -103,13 +209,18 @@ class FleetDashboard extends Component
             $expiringDocuments = $expiringDocuments->concat($driversPending);
         }
 
-        // Paso 5: actualizar el indicador de documentos por vencer con la colección calculada.
+        // Paso 7: actualizar el indicador de documentos por vencer con la colección calculada.
+
         $fleetStats['expiringDocuments'] = $expiringDocuments->count();
 
         return view('livewire.dashboards.fleet-dashboard', [
             'fleetStats' => $fleetStats,
             'upcomingMaintenances' => $upcomingMaintenances,
             'expiringDocuments' => $expiringDocuments,
+            'statusChart' => $statusChart,
+            'maintenanceTrend' => $maintenanceTrend,
+            'assignmentsChart' => $assignmentsChart,
+            'assignmentsAverage' => $averageAssignments,
         ])->layout('components.layouts.dashboard', [
             'title' => __('Panel de flota'),
         ]);

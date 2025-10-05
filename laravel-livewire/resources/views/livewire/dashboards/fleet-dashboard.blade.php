@@ -12,6 +12,34 @@
                 <x-dashboard.stat :label="__('En mantenimiento')" :value="$fleetStats['inMaintenance']" icon="timer" />
                 <x-dashboard.stat :label="__('Documentos por vencer')" :value="$fleetStats['expiringDocuments']" icon="alert-circle" />
             </div>
+            <div class="border-t border-slate-200/70 px-6 py-6 dark:border-slate-800/60">
+                <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    <div class="xl:col-span-1">
+                        <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ __('Distribución de la flota') }}</h3>
+                        <div class="relative h-60">
+                            <canvas id="fleet-status-chart" aria-label="{{ __('Distribución de estados de la flota') }}" role="img"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 xl:col-span-1">
+                        <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ __('Mantenimientos por mes') }}</h3>
+                        <div class="relative h-60">
+                            <canvas id="maintenance-trend-chart" aria-label="{{ __('Tendencia de mantenimientos programados') }}" role="img"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 xl:col-span-1">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ __('Asignaciones por chofer') }}</h3>
+                            <span class="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-200">{{ __('Promedio: :value', ['value' => $assignmentsAverage]) }}</span>
+                        </div>
+                        <div class="relative mt-4 h-60">
+                            <canvas id="driver-assignments-chart" aria-label="{{ __('Top de asignaciones por chofer') }}" role="img"></canvas>
+                        </div>
+                        <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">{{ __('Basado en los últimos 90 días de operaciones.') }}</p>
+                    </div>
+                </div>
+            </div>
         </article>
 
         <article class="surface-card">
@@ -110,4 +138,132 @@
         </div>
     </section>
 </div>
+
+@php
+    $chartPayloads = [
+        'status' => $statusChart,
+        'maintenance' => $maintenanceTrend,
+        'assignments' => $assignmentsChart,
+    ];
+@endphp
+
+<script>
+    document.addEventListener('livewire:init', () => {
+        const chartPayloads = @json($chartPayloads);
+
+        const chartFactory = () => {
+            if (typeof window === 'undefined' || typeof window.Chart === 'undefined') {
+                return;
+            }
+
+            const registryKey = '__fleetDashboardCharts';
+            window[registryKey] = window[registryKey] || {};
+            const registry = window[registryKey];
+
+            const createOrUpdate = (id, config) => {
+                const canvas = document.getElementById(id);
+                if (!canvas) {
+                    return;
+                }
+
+                const context = canvas.getContext('2d');
+
+                if (registry[id]) {
+                    registry[id].data = config.data;
+                    registry[id].options = config.options || {};
+                    registry[id].update();
+                    return;
+                }
+
+                registry[id] = new window.Chart(context, config);
+            };
+
+            createOrUpdate('fleet-status-chart', {
+                type: 'doughnut',
+                data: chartPayloads.status,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                            },
+                        },
+                    },
+                    cutout: '60%',
+                },
+            });
+
+            createOrUpdate('maintenance-trend-chart', {
+                type: 'line',
+                data: chartPayloads.maintenance,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                            },
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.2)',
+                            },
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                    },
+                },
+            });
+
+            createOrUpdate('driver-assignments-chart', {
+                type: 'bar',
+                data: chartPayloads.assignments,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                            },
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.2)',
+                            },
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                    },
+                },
+            });
+        };
+
+        chartFactory();
+
+        Livewire.hook('message.processed', (message, component) => {
+            if (component.fingerprint.name === 'dashboards.fleet-dashboard') {
+                chartFactory();
+            }
+        });
+    });
+</script>
 
