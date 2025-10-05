@@ -1,26 +1,45 @@
 <div class="space-y-6">
-    <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
+    <section class="grid gap-6 xl:grid-cols-[2fr_1fr]">
         <article class="surface-card">
             <header class="flex items-center justify-between border-b border-slate-200/70 px-6 py-5 dark:border-slate-800/70">
                 <div>
                     <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">{{ __('Seguimiento logístico') }}</h1>
-                    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{{ __('Estado actual de órdenes, asignaciones y flota disponible.') }}</p>
+                    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{{ __('Estado consolidado de pedidos, ventanas de entrega y desempeño operativo.') }}</p>
                 </div>
             </header>
-            <div class="grid gap-4 p-6 sm:grid-cols-3">
+            <div class="grid gap-4 p-6 sm:grid-cols-4">
                 <x-dashboard.stat :label="__('Órdenes totales')" :value="$ordersSummary['total']" icon="package" />
-                <x-dashboard.stat :label="__('En tránsito')" :value="$ordersSummary['inTransit']" icon="navigation" />
-                <x-dashboard.stat :label="__('Programadas')" :value="$ordersSummary['scheduled']" icon="calendar" />
+                <x-dashboard.stat :label="__('En ruta')" :value="$ordersSummary['en_route']" icon="navigation" />
+                <x-dashboard.stat :label="__('Pendientes')" :value="$ordersSummary['pending']" icon="calendar" />
+                <x-dashboard.stat :label="__('Entregadas')" :value="$ordersSummary['delivered']" icon="check" />
             </div>
         </article>
 
         <article class="surface-card">
             <header class="border-b border-slate-200/70 px-6 py-5 dark:border-slate-800/70">
-                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('Disponibilidad de flota') }}</h2>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('Indicadores clave') }}</h2>
             </header>
-            <div class="space-y-4 p-6">
-                <p class="text-4xl font-semibold text-emerald-500 dark:text-emerald-300">{{ number_format($availableTrucks) }}</p>
-                <p class="text-sm text-slate-600 dark:text-slate-400">{{ __('Unidades listas para asignar.') }}</p>
+            <div class="space-y-4 p-6 text-sm text-slate-600 dark:text-slate-300">
+                <div class="flex items-center justify-between">
+                    <span>{{ __('Disponibilidad de flota') }}</span>
+                    <span class="text-base font-semibold text-emerald-500 dark:text-emerald-300">{{ number_format($availableTrucks) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>{{ __('Entregas a tiempo') }}</span>
+                    <span class="text-base font-semibold">{{ $onTimeRate !== null ? $onTimeRate.'%' : '—' }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>{{ __('Costo promedio por envío') }}</span>
+                    <span class="text-base font-semibold">{{ $averageCost ? '$ '.number_format($averageCost, 2) : '—' }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>{{ __('Incidencias activas') }}</span>
+                    <span class="text-base font-semibold text-amber-500">{{ $activeIncidents }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>{{ __('Reservas de inventario confirmadas') }}</span>
+                    <span class="text-base font-semibold text-sky-500">{{ $openReservations }}</span>
+                </div>
             </div>
         </article>
     </section>
@@ -93,14 +112,117 @@
         </article>
     </section>
 
-    <section class="surface-card">
-        <header class="border-b border-slate-200/70 px-6 py-5 dark:border-slate-800/70">
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('Por qué separar paneles') }}</h2>
-        </header>
-        <div class="space-y-3 p-6 text-sm text-slate-600 dark:text-slate-300">
-            <p>{{ __('Este panel concentra indicadores de rutas y disponibilidad para el equipo logístico. Al separar los dashboards evitamos que finanzas o clientes vean datos operativos que no les competen.') }}</p>
-            <p>{{ __('Cada módulo aplica autorización en backend; aunque un usuario conozca la URL, el sistema denegará el acceso si su rol no corresponde.') }}</p>
-        </div>
+    <section class="grid gap-6 lg:grid-cols-2">
+        <article class="surface-card">
+            <header class="border-b border-slate-200/70 px-6 py-5 dark:border-slate-800/70">
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('Incidencias en ruta') }}</h2>
+            </header>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                    <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
+                        <tr>
+                            <th class="px-4 py-3">{{ __('Tipo') }}</th>
+                            <th class="px-4 py-3">{{ __('Severidad') }}</th>
+                            <th class="px-4 py-3">{{ __('Asignación') }}</th>
+                            <th class="px-4 py-3">{{ __('Reportado') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/50">
+                        @forelse ($recentIncidents as $incident)
+                            <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-900/70">
+                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ __($incident->type) }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-200">{{ __($incident->severity) }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
+                                    {{ optional($incident->assignment?->order)->reference ?? '—' }} · {{ optional($incident->assignment?->truck)->plate_number ?? '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($incident->reported_at)?->format('d/m/Y H:i') ?? '—' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">{{ __('No hay incidencias registradas recientemente.') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="surface-card">
+            <header class="border-b border-slate-200/70 px-6 py-5 dark:border-slate-800/70">
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('Historial de rutas') }}</h2>
+            </header>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                    <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
+                        <tr>
+                            <th class="px-4 py-3">{{ __('Pedido') }}</th>
+                            <th class="px-4 py-3">{{ __('Planificador') }}</th>
+                            <th class="px-4 py-3">{{ __('Distancia (km)') }}</th>
+                            <th class="px-4 py-3">{{ __('Actualizado') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/50">
+                        @forelse ($routeHistory as $plan)
+                            <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-900/70">
+                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ optional($plan->order)->reference ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $plan->planner ?? __('Sistema') }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ data_get($plan->route_data, 'distance_km') ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($plan->updated_at)?->diffForHumans() }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">{{ __('No se han registrado rutas aún.') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-[3fr_2fr]">
+        <article class="surface-card">
+            <header class="border-b border-slate-200/70 px-6 py-5 dark:border-slate-800/70">
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('Seguimiento en tiempo real') }}</h2>
+            </header>
+            <div class="p-4">
+                <livewire:logistics.live-tracking-board :latestTracking="$latestTracking" />
+            </div>
+        </article>
+
+        <article class="surface-card">
+            <header class="border-b border-slate-200/70 px-6 py-5 dark:border-slate-800/70">
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('Últimas posiciones reportadas') }}</h2>
+            </header>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                    <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
+                        <tr>
+                            <th class="px-4 py-3">{{ __('Vehículo') }}</th>
+                            <th class="px-4 py-3">{{ __('Pedido') }}</th>
+                            <th class="px-4 py-3">{{ __('Estado') }}</th>
+                            <th class="px-4 py-3">{{ __('Reportado') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/50">
+                        @forelse ($latestTracking as $tracking)
+                            <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-900/70">
+                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ optional($tracking->truck)->plate_number ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($tracking->assignment?->order)->reference ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ __($tracking->status) }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($tracking->reported_at)?->format('d/m/Y H:i') ?? '—' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">{{ __('Sin reportes recientes de GPS.') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </article>
     </section>
 </div>
 
