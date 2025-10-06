@@ -19,8 +19,8 @@
 
                     <div class="relative z-20 mt-auto">
                         <blockquote class="space-y-2">
-                            <flux:heading size="lg">&ldquo;{{ trim("SOPHISTICATED ENVIRONMENT") }}&rdquo;</flux:heading>
-                            <footer><flux:heading>{{ trim("Bryan Soberón") }}</flux:heading></footer>
+                            <flux:heading size="lg">&ldquo;{{ __('Entorno sofisticado') }}&rdquo;</flux:heading>
+                            <footer><flux:heading>{{ __('Bryan Soberón') }}</flux:heading></footer>
                         </blockquote>
                     </div>
                 </div>
