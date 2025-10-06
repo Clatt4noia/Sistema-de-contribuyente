@@ -1,3 +1,7 @@
+@php
+    use App\Support\Formatters\MoneyFormatter;
+@endphp
+
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">Mantenimientos de Vehículos</h1>
@@ -68,7 +72,7 @@
                                 {{ $maintenance->maintenance_type }}
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
-                                ${{ number_format($maintenance->cost, 2) }}
+                                {{ MoneyFormatter::pen($maintenance->cost) }}
                             </td>
                             <td class="px-6 py-4">
                                 <span

@@ -1,3 +1,7 @@
+@php
+    use App\Support\Formatters\MoneyFormatter;
+@endphp
+
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">Facturas</h1>
@@ -18,20 +22,20 @@
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">Emision</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['issued'], 2) }}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Emisión') }}</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($totals['issued']) }}</p>
         </div>
         <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">Pagado</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['paid'], 2) }}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Pagado') }}</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($totals['paid']) }}</p>
         </div>
         <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">Vencido</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['overdue'], 2) }}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Vencido') }}</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($totals['overdue']) }}</p>
         </div>
         <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">Saldo</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($totals['balance'], 2) }}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Saldo') }}</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($totals['balance']) }}</p>
         </div>
     </div>
 
@@ -97,8 +101,8 @@
                                 {{ $invoice->issue_date->format('d/m/Y') }}<br>
                                 {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : '-' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($invoice->total, 2) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($invoice->balance, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($invoice->total) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($invoice->balance) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-gray-100 text-gray-800' }}">
                                     {{ $statusLabel }}
