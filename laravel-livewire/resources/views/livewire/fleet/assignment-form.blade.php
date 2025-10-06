@@ -50,7 +50,7 @@
                     <select id="truck_id" wire:model="form.truck_id" class="form-control @error('form.truck_id') border-rose-400 dark:border-rose-400 @enderror">
                         <option value="">Seleccione un vehiculo</option>
                         @foreach($trucks as $truck)
-                            <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }} ({{ ucfirst($truck->status) }})</option>
+                            <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }} ({{ __($truck->status) }})</option>
                         @endforeach
                     </select>
                     @error('form.truck_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
@@ -72,7 +72,7 @@
                     <select id="driver_id" wire:model="form.driver_id" class="form-control @error('form.driver_id') border-rose-400 dark:border-rose-400 @enderror">
                         <option value="">Seleccione un conductor</option>
                         @foreach($drivers as $driver)
-                            <option value="{{ $driver->id }}">{{ $driver->name }} {{ $driver->last_name }} ({{ ucfirst($driver->status) }})</option>
+                            <option value="{{ $driver->id }}">{{ $driver->name }} {{ $driver->last_name }} ({{ __($driver->status) }})</option>
                         @endforeach
                     </select>
                     @error('form.driver_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
@@ -147,7 +147,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <dt class="font-semibold text-slate-800 dark:text-slate-100">Estado actual:</dt>
-                    <dd>{{ ucfirst($orderPreview->status) }}</dd>
+                    <dd>{{ __($orderPreview->status) }}</dd>
                 </div>
                 <div>
                     <dt class="font-semibold text-slate-800 dark:text-slate-100">Detalle:</dt>

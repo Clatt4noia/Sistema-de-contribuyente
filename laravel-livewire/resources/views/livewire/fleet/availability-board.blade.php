@@ -80,7 +80,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-base font-semibold text-slate-900 dark:text-white">{{ $truck->plate_number }} · {{ $truck->brand }} {{ $truck->model }}</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">{{ ucfirst($truck->status) }} · {{ number_format($truck->mileage) }} km</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">{{ __($truck->status) }} · {{ number_format($truck->mileage) }} km</p>
                             </div>
                             <span @class([
                                 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
@@ -150,7 +150,7 @@
                                 <p class="text-sm text-slate-500 dark:text-slate-400">Licencia {{ $driver->license_number }} · {{ optional($driver->license_expiration)->format('d/m/Y') }}</p>
                             </div>
                             <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-slate-900/5 text-slate-700 dark:bg-white/10 dark:text-slate-200">
-                                {{ ucfirst($driver->status) }}
+                                {{ __($driver->status) }}
                             </span>
                         </div>
                         <div class="mt-3 grid grid-cols-2 gap-4 text-xs text-slate-500 dark:text-slate-400">
