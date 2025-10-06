@@ -31,6 +31,7 @@ use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
 use App\Livewire\Billing\PaymentList;
+use App\Models\Driver;
 use App\Models\Truck;
 
 Route::middleware('auth')->group(function () {
@@ -84,11 +85,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/drivers', fn () => redirect()->route('fleet.drivers.index'))
         ->name('legacy.drivers.index');
-    Route::get('/drivers/create', DriverForm::class)
-        ->name('legacy.drivers.create');
-    Route::get('/drivers/{driver}/edit', DriverForm::class)
-        ->whereNumber('driver')
-        ->name('legacy.drivers.edit');
+    Route::get('/drivers/create', function () {
+        return view('pages.fleet.drivers.create');
+    })->name('legacy.drivers.create');
+    Route::get('/drivers/{driver}/edit', function (Driver $driver) {
+        return view('pages.fleet.drivers.edit', ['driver' => $driver]);
+    })->whereNumber('driver')->name('legacy.drivers.edit');
 
     Route::prefix('fleet')->name('fleet.')->group(function () {
         Route::get('/trucks', TruckList::class)->name('trucks.index');
@@ -98,8 +100,12 @@ Route::middleware('auth')->group(function () {
         })->whereNumber('truck')->name('trucks.edit');
 
         Route::get('/drivers', DriverList::class)->name('drivers.index');
-        Route::get('/drivers/create', DriverForm::class)->name('drivers.create');
-        Route::get('/drivers/{driver}/edit', DriverForm::class)->whereNumber('driver')->name('drivers.edit');
+        Route::get('/drivers/create', function () {
+            return view('pages.fleet.drivers.create');
+        })->name('drivers.create');
+        Route::get('/drivers/{driver}/edit', function (Driver $driver) {
+            return view('pages.fleet.drivers.edit', ['driver' => $driver]);
+        })->whereNumber('driver')->name('drivers.edit');
 
         Route::get('/maintenance', MaintenanceList::class)->name('maintenance.index');
         Route::get('/maintenance/create', MaintenanceForm::class)->name('maintenance.create');
