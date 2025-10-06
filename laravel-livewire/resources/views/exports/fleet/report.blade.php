@@ -50,7 +50,7 @@
         <tbody>
             @foreach ($driverTotals as $status => $total)
                 <tr>
-                    <td>{{ ucfirst(str_replace('_', ' ', $status)) }}</td>
+                    <td>{{ __($status) }}</td>
                     <td>{{ $total }}</td>
                 </tr>
             @endforeach
@@ -68,7 +68,7 @@
         <tbody>
             @foreach ($assignmentsByStatus as $status => $total)
                 <tr>
-                    <td>{{ ucfirst(str_replace('_', ' ', $status)) }}</td>
+                    <td>{{ __($status) }}</td>
                     <td>{{ $total }}</td>
                 </tr>
             @endforeach
