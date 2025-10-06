@@ -96,18 +96,21 @@
                             <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-900/70">
                                 <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ $order->reference ?? '—' }}</td>
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($order->client)->business_name ?? optional($order->client)->contact_name ?? '—' }}</td>
-                                @php
-                                    $statusMap = [
-                                        'pending' => 'Pendiente',
-                                        'en_route' => 'En ruta',
-                                        'delivered' => 'Entregado',
-                                        'cancelled' => 'Cancelado',
-                                    ];
-                                @endphp
+                                <td class="px-4 py-3">
+                                    @php
+                                        $statusMap = [
+                                            'pending' => 'Pendiente',
+                                            'en_route' => 'En ruta',
+                                            'delivered' => 'Entregado',
+                                            'cancelled' => 'Cancelado',
+                                        ];
+                                    @endphp
 
-                                <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300">
-                                    {{ $statusMap[$order->status ?? 'pending'] ?? 'Desconocido' }}
-                                </span>
+                                    <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300">
+                                        {{ $statusMap[$order->status ?? 'pending'] ?? 'Desconocido' }}
+                                    </span>
+                                </td>
+
 
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($order->pickup_date)?->format('d/m/Y') ?? '—' }}</td>
                             </tr>
