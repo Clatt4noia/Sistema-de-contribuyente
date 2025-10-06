@@ -1,3 +1,7 @@
+@php
+    use App\Support\Formatters\MoneyFormatter;
+@endphp
+
 <div class="space-y-6">
     <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
         <article class="surface-card">
@@ -8,9 +12,9 @@
                 </div>
             </header>
             <div class="grid gap-4 p-6 sm:grid-cols-3">
-                <x-dashboard.stat :label="__('Facturas pendientes')" :value="$insights['pendingInvoices']" icon="receipt" />
-                <x-dashboard.stat :label="__('Pagos por conciliar')" :value="$insights['unreconciledPayments']" icon="alert-circle" />
-                <x-dashboard.stat :label="__('Clientes con mora')" :value="$insights['delinquentClients']" icon="badge-check" />
+                <x-dashboard.stat :label="__('Facturas pendientes')" :value="$metrics['pendingCount']" icon="receipt" />
+                <x-dashboard.stat :label="__('Pagos por conciliar')" :value="MoneyFormatter::pen($metrics['recentPayments'])" icon="alert-circle" />
+                <x-dashboard.stat :label="__('Facturas vencidas')" :value="$metrics['overdueCount']" icon="badge-check" />
             </div>
         </article>
 
@@ -41,12 +45,17 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/50">
-                        @forelse ($reviewInvoices as $invoice)
+                        @forelse ($outstandingInvoices as $invoice)
                             <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-900/70">
-                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ $invoice->number ?? '—' }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($invoice->client)->business_name ?? optional($invoice->client)->contact_name ?? '—' }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $invoice->amount?->formatCurrency('PEN') ?? '—' }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $invoice->due_days ?? '—' }}</td>
+                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ $invoice->invoice_number ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
+                                    {{ optional($invoice->client)->business_name ?? optional($invoice->client)->contact_name ?? '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ MoneyFormatter::pen($invoice->total) }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
+                                    @php($days = optional($invoice->due_date)?->diffInDays(now(), false))
+                                    {{ $days === null ? '—' : max($days, 0) }}
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -73,12 +82,14 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/50">
-                        @forelse ($pendingPayments as $payment)
+                        @forelse ($latestPayments as $payment)
                             <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-900/70">
                                 <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{{ $payment->reference ?? '—' }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($payment->client)->business_name ?? optional($payment->client)->contact_name ?? '—' }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $payment->amount?->formatCurrency('PEN') ?? '—' }}</td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($payment->received_at)?->format('d/m/Y') ?? '—' }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
+                                    {{ optional($payment->invoice?->client)->business_name ?? optional($payment->invoice?->client)->contact_name ?? '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ MoneyFormatter::pen($payment->amount) }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($payment->paid_at)?->format('d/m/Y') ?? '—' }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -101,4 +112,3 @@
         </div>
     </section>
 </div>
-
