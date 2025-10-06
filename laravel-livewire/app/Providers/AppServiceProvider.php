@@ -35,5 +35,6 @@ class AppServiceProvider extends ServiceProvider
         // ✅ Zona horaria Perú
         config(['app.timezone' => 'America/Lima']);
         date_default_timezone_set('America/Lima');
+
     }
 }
