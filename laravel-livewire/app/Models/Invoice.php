@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,9 +28,9 @@ class Invoice extends Model
     protected $casts = [
         'issue_date' => 'date',
         'due_date' => 'date',
-        'subtotal' => 'float',
-        'tax' => 'float',
-        'total' => 'float',
+        'subtotal' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
     protected $appends = [
@@ -51,10 +52,22 @@ class Invoice extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function getBalanceAttribute(): float
+    protected function balance(): Attribute
     {
-        $paid = $this->payments()->sum('amount');
+        return Attribute::make(
+            get: function (): float {
+                $paid = $this->getAttribute('payments_sum_amount');
 
-        return max($this->total - $paid, 0);
+                if ($paid === null && $this->relationLoaded('payments')) {
+                    $paid = $this->payments->sum('amount');
+                }
+
+                if ($paid === null) {
+                    $paid = $this->payments()->sum('amount');
+                }
+
+                return round(max((float) $this->total - (float) $paid, 0), 2);
+            },
+        );
     }
 }

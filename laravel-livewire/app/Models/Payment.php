@@ -21,7 +21,7 @@ class Payment extends Model
 
     protected $casts = [
         'paid_at' => 'date',
-        'amount' => 'float',
+        'amount' => 'decimal:2',
     ];
 
     public function invoice(): BelongsTo
