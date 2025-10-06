@@ -9,12 +9,8 @@ use App\Models\DriverTraining;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('components.layouts.app.sidebar', ['title' => 'Chofer'])]
-#[Title('Chofer')]
 class DriverForm extends Component
 {
     use AuthorizesRequests;
