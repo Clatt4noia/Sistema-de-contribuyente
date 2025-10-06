@@ -9,7 +9,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Registrar servicios de aplicación.
      */
     public function register(): void
     {
@@ -17,17 +17,23 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Inicializar configuraciones globales.
      */
     public function boot(): void
     {
+        // Registrar observer de órdenes
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
 
-        Date::useLocale('es');
+        // ✅ Configurar localización en español (Perú)
         Carbon::setLocale('es');
+        Date::setLocale('es');
 
         if (function_exists('setlocale')) {
-            setlocale(LC_TIME, 'es_PE.UTF-8', 'es_PE', 'es');
+            setlocale(LC_TIME, 'es_PE.UTF-8', 'es_ES.UTF-8', 'es');
         }
+
+        // ✅ Zona horaria Perú
+        config(['app.timezone' => 'America/Lima']);
+        date_default_timezone_set('America/Lima');
     }
 }
