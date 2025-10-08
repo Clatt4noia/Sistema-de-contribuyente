@@ -9,7 +9,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Registrar servicios de aplicación.
      */
     public function register(): void
     {
@@ -17,10 +17,11 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Inicializar configuraciones globales.
      */
     public function boot(): void
     {
+        // Registrar observer de órdenes
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
 
         Date::useLocale('es');
@@ -29,5 +30,6 @@ class AppServiceProvider extends ServiceProvider
         if (function_exists('setlocale')) {
             setlocale(LC_TIME, 'es_PE.UTF-8', 'es_PE', 'es');
         }
+
     }
 }
