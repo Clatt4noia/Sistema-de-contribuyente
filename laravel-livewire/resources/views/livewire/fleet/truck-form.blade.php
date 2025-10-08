@@ -1,3 +1,7 @@
+@php
+    use App\Support\Formatters\MoneyFormatter;
+@endphp
+
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">{{ $isEdit ? 'Editar Camion' : 'Registrar Camion' }}</h1>
@@ -157,7 +161,7 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-2 text-slate-700 dark:text-slate-200">
-                                        {{ $history['cost'] !== null ? ('$' . number_format((float) $history['cost'], 2)) : 'Sin costo' }}
+                                        {{ $history['cost'] !== null ? MoneyFormatter::pen((float) $history['cost']) : 'Sin costo' }}
                                     </td>
                                 </tr>
                             @endforeach

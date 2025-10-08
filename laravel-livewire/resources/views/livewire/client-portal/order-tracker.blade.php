@@ -1,3 +1,7 @@
+@php
+    use App\Support\Formatters\MoneyFormatter;
+@endphp
+
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -50,7 +54,7 @@
                         </div>
                         <div>
                             <dt class="font-medium text-slate-500 dark:text-slate-400">{{ __('Costo estimado') }}</dt>
-                            <dd>{{ $order->estimated_cost ? '$ '.number_format($order->estimated_cost, 2) : '—' }}</dd>
+                            <dd>{{ $order->estimated_cost ? MoneyFormatter::pen($order->estimated_cost) : '—' }}</dd>
                         </div>
                     </dl>
 

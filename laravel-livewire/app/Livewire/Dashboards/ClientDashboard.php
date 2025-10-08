@@ -22,16 +22,20 @@ class ClientDashboard extends Component
 
         $orderScope = fn ($query) => $query->where('email', $user->email);
 
-        $orders = Order::with('client')
+        $orders = Order::query()
+            ->select(['id', 'client_id', 'reference', 'origin', 'destination', 'status', 'pickup_date'])
+            ->with(['client:id,business_name,contact_name'])
             ->whereHas('client', $orderScope)
             ->latest('pickup_date')
-            ->take(5)
+            ->limit(5)
             ->get();
 
-        $invoices = Invoice::with('client')
+        $invoices = Invoice::query()
+            ->select(['id', 'client_id', 'invoice_number', 'status', 'total', 'issue_date'])
+            ->with(['client:id,business_name,contact_name'])
             ->whereHas('client', $orderScope)
             ->latest('issue_date')
-            ->take(5)
+            ->limit(5)
             ->get();
 
         $metrics = [
