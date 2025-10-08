@@ -68,6 +68,7 @@ class Invoice extends Model
         'metadata' => '[]',
     ];
 
+
     public function scopeAceptadas($query)
     {
         return $query->where('sunat_status', 'aceptado');
@@ -122,8 +123,6 @@ class Invoice extends Model
                 if ($paid === null && $this->relationLoaded('payments')) {
                     $paid = $this->payments->sum('amount');
                 }
-
-
 
                 if ($paid === null) {
                     $paid = $this->payments()->sum('amount');

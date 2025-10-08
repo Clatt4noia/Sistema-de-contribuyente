@@ -15,7 +15,8 @@ class SunatWebhookController extends Controller
         SunatLog::create([
             'operation' => 'webhook',
             'endpoint' => 'webhook',
-            'request_payload' => json_encode($payload),
+            'request_payload' => json_encode($payload, JSON_THROW_ON_ERROR),
+
             'response_payload' => null,
             'status_code' => 'WEBHOOK',
             'is_success' => true,

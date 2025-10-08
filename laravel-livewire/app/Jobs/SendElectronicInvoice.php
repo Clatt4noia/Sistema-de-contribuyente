@@ -66,7 +66,8 @@ class SendElectronicInvoice implements ShouldQueue
                 'xml_path' => $xmlPath,
                 'sunat_sent_at' => now(),
                 'sunat_status' => $status,
-                'sunat_response_message' => $result['parsed']['description'] ?? $result['error'] ?? null,
+                'sunat_response_message' => data_get($result, 'parsed.description', $result['error'] ?? null),
+
                 'sunat_ticket' => $result['ticket'] ?? null,
             ])->save();
 
@@ -76,7 +77,8 @@ class SendElectronicInvoice implements ShouldQueue
 
                 $invoice->forceFill([
                     'cdr_path' => $cdrPath,
-                    'sunat_status' => ($result['parsed']['is_accepted'] ?? false) ? 'aceptado' : 'observado',
+                    'sunat_status' => data_get($result, 'parsed.is_accepted') ? 'aceptado' : 'observado',
+
                 ])->save();
             }
         });

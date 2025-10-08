@@ -195,13 +195,16 @@ class SunatSender
     protected function log(?Invoice $invoice, string $operation, $request, $response, bool $success): void
     {
         try {
+            $normalizedResponse = $this->normalizeResponse($response);
+
             SunatLog::create([
                 'invoice_id' => $invoice?->getKey(),
                 'operation' => $operation,
                 'endpoint' => $this->resolveEndpoint($operation),
                 'request_payload' => json_encode($request, JSON_THROW_ON_ERROR),
-                'response_payload' => json_encode($this->normalizeResponse($response), JSON_THROW_ON_ERROR),
-                'status_code' => $success ? 'OK' : ($response['faultcode'] ?? null),
+                'response_payload' => json_encode($normalizedResponse, JSON_THROW_ON_ERROR),
+                'status_code' => $success ? 'OK' : (data_get($normalizedResponse, 'faultcode') ?? data_get($normalizedResponse, 'faultCode')),
+
                 'is_success' => $success,
                 'executed_at' => now(),
             ]);

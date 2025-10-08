@@ -134,7 +134,8 @@ class ElectronicInvoiceForm extends Component
             ->onQueue(config('billing.queues.sunat', 'sunat'));
 
         session()->flash('message', 'Se envió la factura electrónica a SUNAT. Revisa el estado en unos minutos.');
-        return redirect()->route('billing.invoices.index');
+        $this->redirectRoute('billing.invoices.index');
+
     }
 
     protected function calculateTotals(): array

@@ -48,8 +48,9 @@ class CheckSunatTicketStatus implements ShouldQueue
         DB::transaction(function () use ($result, $cdrDirectory, $fileBase) {
             $this->invoice->forceFill([
                 'cdr_path' => ! empty($result['cdr']) ? $cdrDirectory.'/'.str_replace('-', '_', $fileBase).'.zip' : $this->invoice->cdr_path,
-                'sunat_status' => ($result['parsed']['is_accepted'] ?? false) ? 'aceptado' : 'observado',
-                'sunat_response_message' => $result['parsed']['description'] ?? null,
+                'sunat_status' => data_get($result, 'parsed.is_accepted') ? 'aceptado' : 'observado',
+                'sunat_response_message' => data_get($result, 'parsed.description', $this->invoice->sunat_response_message),
+
             ])->save();
         });
     }
