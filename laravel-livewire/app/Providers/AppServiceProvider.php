@@ -24,17 +24,12 @@ class AppServiceProvider extends ServiceProvider
         // Registrar observer de órdenes
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
 
-        // ✅ Configurar localización en español (Perú)
+        Date::useLocale('es');
         Carbon::setLocale('es');
-        Date::setLocale('es');
 
         if (function_exists('setlocale')) {
-            setlocale(LC_TIME, 'es_PE.UTF-8', 'es_ES.UTF-8', 'es');
+            setlocale(LC_TIME, 'es_PE.UTF-8', 'es_PE', 'es');
         }
-
-        // ✅ Zona horaria Perú
-        config(['app.timezone' => 'America/Lima']);
-        date_default_timezone_set('America/Lima');
 
     }
 }
