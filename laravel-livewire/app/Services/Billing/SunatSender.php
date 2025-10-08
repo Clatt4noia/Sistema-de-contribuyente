@@ -204,6 +204,7 @@ class SunatSender
                 'request_payload' => json_encode($request, JSON_THROW_ON_ERROR),
                 'response_payload' => json_encode($normalizedResponse, JSON_THROW_ON_ERROR),
                 'status_code' => $success ? 'OK' : (data_get($normalizedResponse, 'faultcode') ?? data_get($normalizedResponse, 'faultCode')),
+
                 'is_success' => $success,
                 'executed_at' => now(),
             ]);

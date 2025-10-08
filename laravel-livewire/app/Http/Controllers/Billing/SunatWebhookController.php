@@ -16,6 +16,7 @@ class SunatWebhookController extends Controller
             'operation' => 'webhook',
             'endpoint' => 'webhook',
             'request_payload' => json_encode($payload, JSON_THROW_ON_ERROR),
+
             'response_payload' => null,
             'status_code' => 'WEBHOOK',
             'is_success' => true,

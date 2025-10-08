@@ -5,13 +5,14 @@ namespace App\Providers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Support\ServiceProvider;
 use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Registrar servicios de aplicación.
      */
     public function register(): void
     {
@@ -19,12 +20,14 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Inicializar configuraciones globales.
      */
     public function boot(): void
     {
+        // Registrar observer de órdenes
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
         \App\Models\Invoice::observe(\App\Observers\InvoiceObserver::class);
+
 
         Date::useLocale('es');
         Carbon::setLocale('es');
@@ -51,5 +54,6 @@ class AppServiceProvider extends ServiceProvider
         } catch (Throwable $exception) {
             report($exception);
         }
+
     }
 }

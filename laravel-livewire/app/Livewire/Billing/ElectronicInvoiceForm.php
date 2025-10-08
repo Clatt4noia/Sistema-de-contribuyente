@@ -135,6 +135,7 @@ class ElectronicInvoiceForm extends Component
 
         session()->flash('message', 'Se envió la factura electrónica a SUNAT. Revisa el estado en unos minutos.');
         $this->redirectRoute('billing.invoices.index');
+
     }
 
     protected function calculateTotals(): array
