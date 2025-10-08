@@ -86,5 +86,9 @@ class DatabaseSeeder extends Seeder
             $assignment->order_id = $orders->random()->id;
             $assignment->save();
         });
+
+        $this->call([
+            SunatBillingCatalogSeeder::class,
+        ]);
     }
 }

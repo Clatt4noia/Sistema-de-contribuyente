@@ -43,6 +43,15 @@ return [
             'after_commit' => false,
         ],
 
+        'sunat' => [
+            'driver' => 'database',
+            'connection' => env('DB_QUEUE_CONNECTION'),
+            'table' => env('DB_QUEUE_TABLE', 'jobs'),
+            'queue' => env('BILLING_QUEUE_SUNAT', 'sunat'),
+            'retry_after' => 300,
+            'after_commit' => false,
+        ],
+
         'beanstalkd' => [
             'driver' => 'beanstalkd',
             'host' => env('BEANSTALKD_QUEUE_HOST', 'localhost'),

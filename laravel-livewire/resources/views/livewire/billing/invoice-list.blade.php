@@ -74,6 +74,8 @@
                         <th class="px-6 py-3">Total</th>
                         <th class="px-6 py-3">Saldo</th>
                         <th class="px-6 py-3">Estado</th>
+                        <th class="px-6 py-3">Estado SUNAT</th>
+                        <th class="px-6 py-3">Documentos</th>
                         <th class="px-6 py-3">Acciones</th>
                     </tr>
                 </thead>
@@ -94,7 +96,7 @@
                             ][$invoice->status] ?? 'Emitida';
                         @endphp
                         <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">{{ $invoice->invoice_number }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">{{ $invoice->numero_completo ?: $invoice->invoice_number }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ $invoice->client->business_name }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ optional($invoice->order)->reference ?: '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
@@ -108,12 +110,23 @@
                                     {{ $statusLabel }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                                <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">Editar</a>
-                                <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="font-semibold text-cyan-600 transition hover:text-cyan-700 dark:text-cyan-300 dark:hover:text-cyan-200">Registrar pago</a>
-                                @if($invoice->balance <= 0 && $invoice->status !== 'paid')
-                                    <button wire:click="markAsPaid({{ $invoice->id }})" class="font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-300 dark:hover:text-emerald-200">Marcar pagada</button>
-                                @endif
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <livewire:billing.sunat-status-badge :status="$invoice->sunat_status" :message="$invoice->sunat_response_message" :key="'status-'.$invoice->id" />
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <livewire:billing.invoice-file-downloader :invoice="$invoice" :key="'files-'.$invoice->id" />
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2">
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">Editar</a>
+                                    <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="font-semibold text-cyan-600 transition hover:text-cyan-700 dark:text-cyan-300 dark:hover:text-cyan-200">Registrar pago</a>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <a href="{{ route('billing.invoices.electronic', $invoice->id) }}" class="font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-300 dark:hover:text-emerald-200">Emitir SUNAT</a>
+                                    @if($invoice->balance <= 0 && $invoice->status !== 'paid')
+                                        <button wire:click="markAsPaid({{ $invoice->id }})" class="font-semibold text-slate-700 transition hover:text-slate-900 dark:text-slate-200 dark:hover:text-white">Marcar pagada</button>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

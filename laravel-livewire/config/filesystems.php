@@ -47,6 +47,21 @@ return [
             'report' => false,
         ],
 
+        'secure-billing' => [
+            'driver' => env('BILLING_STORAGE_DRIVER', 'local'),
+            'root' => env('BILLING_STORAGE_DRIVER', 'local') === 's3'
+                ? null
+                : storage_path('app/billing'),
+            'bucket' => env('BILLING_S3_BUCKET'),
+            'key' => env('BILLING_S3_KEY'),
+            'secret' => env('BILLING_S3_SECRET'),
+            'region' => env('BILLING_S3_REGION'),
+            'endpoint' => env('BILLING_S3_ENDPOINT'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
