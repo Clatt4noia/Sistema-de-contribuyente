@@ -81,3 +81,4 @@
 ---
 
 Con este plan y las credenciales SUNAT proporcionadas, podemos implementar el flujo completo mostrado en el diagrama, manteniendo buenas prácticas de Laravel 10+, Livewire y TailwindCSS. Consulte también `README-billing.md` para pasos de instalación y operación.
+

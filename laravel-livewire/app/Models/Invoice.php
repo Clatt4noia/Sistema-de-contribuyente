@@ -55,6 +55,7 @@ class Invoice extends Model
         'exempt_amount' => 'decimal:2',
         'sunat_sent_at' => 'datetime',
         'metadata' => 'array',
+
     ];
 
     protected $appends = [
@@ -122,6 +123,8 @@ class Invoice extends Model
                     $paid = $this->payments->sum('amount');
                 }
 
+
+
                 if ($paid === null) {
                     $paid = $this->payments()->sum('amount');
                 }
@@ -143,5 +146,6 @@ class Invoice extends Model
         return $this->issue_date instanceof Carbon
             ? $this->issue_date->format('d/m/Y')
             : null;
+
     }
 }
