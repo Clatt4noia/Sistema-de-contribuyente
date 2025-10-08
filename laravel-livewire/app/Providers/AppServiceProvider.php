@@ -31,5 +31,11 @@ class AppServiceProvider extends ServiceProvider
             setlocale(LC_TIME, 'es_PE.UTF-8', 'es_PE', 'es');
         }
 
+        // ✅ Zona horaria Perú
+        config(['app.timezone' => 'America/Lima']);
+        date_default_timezone_set('America/Lima');
+
+
+
     }
 }
