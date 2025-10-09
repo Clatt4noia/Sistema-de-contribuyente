@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,6 +31,42 @@ class Driver extends Model
         'license_expiration' => 'date',
         'work_schedule' => 'array',
     ];
+
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: static function (?string $value) {
+                if ($value === null) {
+                    return null;
+                }
+
+                $normalized = strtolower(trim($value));
+
+                return match ($normalized) {
+                    'active', 'activo', 'available' => 'active',
+                    'assigned', 'asignado' => 'assigned',
+                    'inactive', 'inactivo', 'baja', 'desactivado' => 'inactive',
+                    'on_leave', 'permiso', 'de permiso', 'leave' => 'on_leave',
+                    default => $normalized,
+                };
+            },
+            set: static function (?string $value) {
+                if ($value === null) {
+                    return null;
+                }
+
+                $normalized = strtolower(trim($value));
+
+                return match ($normalized) {
+                    'activo', 'available' => 'active',
+                    'asignado' => 'assigned',
+                    'inactivo', 'baja', 'desactivado' => 'inactive',
+                    'permiso', 'de permiso', 'leave' => 'on_leave',
+                    default => $normalized,
+                };
+            }
+        );
+    }
 
     public function trainings(): HasMany
     {

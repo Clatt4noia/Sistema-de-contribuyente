@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'tax_rate' => env('BILLING_TAX_RATE', 18),
+
     'sunat' => [
         'mode' => env('BILLING_SUNAT_MODE', 'homologation'),
         'ruc' => env('BILLING_SUNAT_RUC'),
