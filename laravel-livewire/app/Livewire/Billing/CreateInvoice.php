@@ -3,6 +3,8 @@
 namespace App\Livewire\Billing;
 
 use App\Jobs\SendElectronicInvoice;
+use App\Models\CargoType;
+
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
@@ -46,6 +48,13 @@ class CreateInvoice extends Component
 
     public string $orderSearch = '';
 
+    public ?int $cargoTypeFilter = null;
+
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    public array $cargoTypes = [];
+
 
     /**
      * @var array<int, array<string, mixed>>
@@ -69,9 +78,20 @@ class CreateInvoice extends Component
     public function mount(): void
     {
         $this->taxRate = (float) Config::get('billing.tax_rate', 18);
-
         $this->issueDate = now()->format('Y-m-d');
         $this->dueDate = now()->format('Y-m-d');
+
+        $this->cargoTypes = CargoType::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'code', 'is_hazardous'])
+            ->map(fn (CargoType $type) => [
+                'id' => $type->getKey(),
+                'name' => $type->name,
+                'code' => $type->code,
+                'is_hazardous' => $type->is_hazardous,
+            ])
+            ->all();
+
 
         $this->documentType = SunatDocumentType::query()
             ->orderBy('code')
@@ -156,66 +176,23 @@ class CreateInvoice extends Component
         $this->clientResults = [];
         $this->orderSearch = '';
         $this->orderResults = [];
+        $this->cargoTypeFilter = null;
         $this->invoiceItems = [];
         $this->calculateTotals();
+        $this->refreshOrderResults();
+
     }
 
     public function updatedOrderSearch(): void
     {
-        $term = trim($this->orderSearch);
+        $this->refreshOrderResults();
+    }
 
-        if (! $this->selectedClient) {
-            $this->orderResults = [];
+    public function updatedCargoTypeFilter($value): void
+    {
+        $this->cargoTypeFilter = $value ? (int) $value : null;
+        $this->refreshOrderResults();
 
-
-            return;
-        }
-
-        $clientId = $this->selectedClient['id'];
-
-        $ordersQuery = Order::query()
-            ->where('client_id', $clientId)
-            ->where(function ($query) {
-                $query->whereNull('status')
-                    ->orWhereNotIn('status', ['cancelled']);
-            })
-            ->whereDoesntHave('invoices', function ($query) {
-                $query->whereIn('status', ['issued', 'paid', 'overdue']);
-            });
-
-        if (strlen($term) >= 2) {
-            $ordersQuery->where(function ($query) use ($term) {
-                $likeTerm = '%'.$term.'%';
-
-                $query->where('reference', 'like', $likeTerm)
-                    ->orWhere('origin', 'like', $likeTerm)
-                    ->orWhere('destination', 'like', $likeTerm);
-
-                if (ctype_digit($term)) {
-                    $query->orWhere('id', (int) $term);
-                }
-            });
-        }
-
-        $this->orderResults = $ordersQuery
-            ->orderByDesc('pickup_date')
-            ->orderByDesc('created_at')
-            ->limit(5)
-            ->get()
-            ->map(function (Order $order) {
-                $estimated = (float) ($order->estimated_cost ?? data_get($order->cost_breakdown, 'total', 0));
-
-                return [
-                    'id' => $order->getKey(),
-                    'reference' => $order->reference ?: sprintf('PED-%s', str_pad((string) $order->getKey(), 5, '0', STR_PAD_LEFT)),
-                    'status' => $order->status,
-                    'status_label' => $order->status ? Str::of($order->status)->replace('_', ' ')->upper() : null,
-                    'pickup_date' => optional($order->pickup_date)->format('d/m/Y'),
-                    'destination' => $order->destination,
-                    'estimated_cost' => $estimated,
-                ];
-            })
-            ->all();
     }
 
     public function addOrder(int $orderId): void
@@ -226,7 +203,9 @@ class CreateInvoice extends Component
             return;
         }
 
-        $order = Order::find($orderId);
+        $order = Order::query()
+            ->with('cargoType')
+            ->find($orderId);
 
         if (! $order || $order->client_id !== $this->selectedClient['id']) {
 
@@ -240,9 +219,13 @@ class CreateInvoice extends Component
             return;
         }
 
+        $cargoTypeName = optional($order->cargoType)->name;
+
         $descriptionParts = array_filter([
             $order->reference ? 'Pedido '.$order->reference : null,
             $order->destination ? 'Destino: '.$order->destination : null,
+            $cargoTypeName ? 'Tipo de carga: '.$cargoTypeName : null,
+
             $order->cargo_details,
         ]);
 
@@ -260,6 +243,9 @@ class CreateInvoice extends Component
             'tax_exemption_reason' => '10',
             'tax_code' => 'S',
             'sku' => 'ORD-'.$order->getKey(),
+            'cargo_type' => $cargoTypeName,
+            'cargo_type_id' => $order->cargo_type_id,
+
         ];
 
         $this->invoiceItems[] = $item;
@@ -267,6 +253,7 @@ class CreateInvoice extends Component
 
         $this->orderSearch = '';
         $this->orderResults = [];
+        $this->refreshOrderResults();
 
         $this->calculateTotals();
     }
@@ -294,6 +281,8 @@ class CreateInvoice extends Component
         $this->invoiceItems = array_values($this->invoiceItems);
 
         $this->calculateTotals();
+        $this->refreshOrderResults();
+
     }
 
     public function saveInvoice(): void
@@ -371,7 +360,7 @@ class CreateInvoice extends Component
                     'tax_amount' => $item['tax_amount'] ?? 0,
                     'taxable_amount' => $item['taxable_amount'] ?? ($item['quantity'] ?? 1) * ($item['unit_price'] ?? 0),
                     'total' => $item['total'] ?? 0,
-                    'metadata' => Arr::only($item, ['sku', 'unit_code', 'price_type_code', 'tax_exemption_reason', 'reference']),
+                    'metadata' => Arr::only($item, ['sku', 'unit_code', 'price_type_code', 'tax_exemption_reason', 'reference', 'cargo_type', 'cargo_type_id']),
 
                 ]);
             }
@@ -408,6 +397,85 @@ class CreateInvoice extends Component
             'documentTypes' => SunatDocumentType::query()->orderBy('code')->get(),
         ]);
     }
+
+    protected function refreshOrderResults(): void
+    {
+        if (! $this->selectedClient) {
+            $this->orderResults = [];
+
+            return;
+        }
+
+        $term = trim($this->orderSearch);
+        $clientId = $this->selectedClient['id'];
+
+        $cancelledStates = ['cancelled', 'cancelado', 'anulado'];
+
+        $ordersQuery = Order::query()
+            ->with('cargoType')
+            ->where('client_id', $clientId)
+            ->where(function ($query) use ($cancelledStates) {
+                $query->whereNull('status')
+                    ->orWhereNotIn('status', $cancelledStates);
+            })
+            ->whereDoesntHave('invoices', function ($query) {
+                $query->whereIn('status', ['issued', 'paid', 'overdue']);
+            });
+
+        $selectedOrderIds = collect($this->invoiceItems)
+            ->pluck('order_id')
+            ->filter()
+            ->all();
+
+        if (! empty($selectedOrderIds)) {
+            $ordersQuery->whereNotIn('id', $selectedOrderIds);
+        }
+
+        if ($this->cargoTypeFilter) {
+            $ordersQuery->where('cargo_type_id', $this->cargoTypeFilter);
+        }
+
+        if ($term !== '') {
+            $ordersQuery->where(function ($query) use ($term) {
+                $likeTerm = '%'.$term.'%';
+
+                $query->where('reference', 'like', $likeTerm)
+                    ->orWhere('origin', 'like', $likeTerm)
+                    ->orWhere('destination', 'like', $likeTerm)
+                    ->orWhere('cargo_details', 'like', $likeTerm);
+
+                if (ctype_digit($term)) {
+                    $query->orWhere('id', (int) $term);
+                }
+            });
+        }
+
+        $this->orderResults = $ordersQuery
+            ->orderByDesc('pickup_date')
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get()
+            ->map(function (Order $order) {
+                $estimated = (float) ($order->estimated_cost ?? data_get($order->cost_breakdown, 'total', 0));
+                $cargoType = optional($order->cargoType);
+
+                return [
+                    'id' => $order->getKey(),
+                    'reference' => $order->reference ?: sprintf('PED-%s', str_pad((string) $order->getKey(), 5, '0', STR_PAD_LEFT)),
+                    'status' => $order->status,
+                    'status_label' => $order->status ? Str::of($order->status)->replace('_', ' ')->upper() : null,
+                    'pickup_date' => optional($order->pickup_date)->format('d/m/Y'),
+                    'destination' => $order->destination,
+                    'origin' => $order->origin,
+                    'estimated_cost' => $estimated,
+                    'cargo_type' => $cargoType?->name,
+                    'cargo_type_code' => $cargoType?->code,
+                    'is_hazardous' => (bool) $cargoType?->is_hazardous,
+                ];
+            })
+            ->all();
+    }
+
 
     protected function recalculateItem(int $index): void
     {
@@ -465,6 +533,9 @@ class CreateInvoice extends Component
                 'tax_exemption_reason' => $item['tax_exemption_reason'] ?? '10',
                 'tax_code' => $item['tax_code'] ?? 'S',
                 'sku' => $item['sku'] ?? ($item['order_id'] ?? null ? 'ORD-'.$item['order_id'] : null),
+                'order_id' => $item['order_id'] ?? null,
+                'cargo_type' => $item['cargo_type'] ?? null,
+                'cargo_type_id' => $item['cargo_type_id'] ?? null,
 
             ])
             ->all();

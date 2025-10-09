@@ -106,41 +106,76 @@
             <div class="surface-card space-y-6 p-6 shadow-lg">
                 <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Pedidos a facturar</h2>
-                    <div class="relative w-full md:w-72">
-                        <input type="text" wire:model.live.debounce.300ms="orderSearch" placeholder="Buscar pedido por referencia, origen o destino"
-                               class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
-                               @disabled(!$selectedClient) />
-                        @if(!$selectedClient)
-                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
-                        @elseif(!empty($orderResults))
-                            <ul class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
-                                @foreach($orderResults as $order)
-                                    <li>
-                                        <button type="button" wire:click="addOrder({{ $order['id'] }})"
-                                                class="flex w-full flex-col gap-0.5 px-4 py-2 text-left text-sm hover:bg-indigo-50 focus:bg-indigo-50 dark:hover:bg-indigo-500/20">
-                                            <span class="font-medium text-slate-800 dark:text-slate-100">Pedido {{ $order['reference'] }}</span>
-                                            @if($order['destination'])
-                                                <span class="text-xs text-slate-500 dark:text-slate-400">Destino: {{ $order['destination'] }}</span>
-                                            @endif
-                                            <span class="text-xs text-slate-500 dark:text-slate-400">{{ $this->currencySymbol }} {{ number_format($order['estimated_cost'], 2) }}</span>
-                                            @if($order['pickup_date'] || $order['status_label'])
-                                                <span class="text-xs text-slate-400 dark:text-slate-500">
-                                                    @if($order['pickup_date'])
-                                                        Recojo: {{ $order['pickup_date'] }}
+                    <div class="grid w-full gap-4 md:w-auto md:grid-cols-[minmax(0,1fr)_220px] md:items-end">
+                        <div class="form-field md:mb-0">
+                            <label class="form-label">Buscar pedido</label>
+                            <div class="relative">
+                                <input type="text" wire:model.live.debounce.300ms="orderSearch" placeholder="Buscar pedido por referencia, origen o destino"
+                                       class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
+                                       @disabled(!$selectedClient) />
+                                @if($selectedClient && !empty($orderResults))
+                                    <ul class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                                        @foreach($orderResults as $order)
+                                            <li>
+                                                <button type="button" wire:click="addOrder({{ $order['id'] }})"
+                                                        class="flex w-full flex-col gap-1 px-4 py-2 text-left text-sm hover:bg-indigo-50 focus:bg-indigo-50 dark:hover:bg-indigo-500/20">
+                                                    <div class="flex flex-wrap items-center gap-2">
+                                                        <span class="font-medium text-slate-800 dark:text-slate-100">Pedido {{ $order['reference'] }}</span>
+                                                        @if($order['cargo_type'])
+                                                            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
+                                                                {{ $order['cargo_type'] }}
+                                                                @if($order['is_hazardous'])
+                                                                    <x-heroicon-o-exclamation-triangle class="h-3 w-3 text-amber-500" />
+                                                                @endif
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    @if($order['destination'] || $order['origin'])
+                                                        <span class="text-xs text-slate-500 dark:text-slate-400">
+                                                            @if($order['origin'])
+                                                                Origen: {{ $order['origin'] }}
+                                                            @endif
+                                                            @if($order['destination'])
+                                                                <span class="ml-1">Destino: {{ $order['destination'] }}</span>
+                                                            @endif
+                                                        </span>
                                                     @endif
-                                                    @if($order['status_label'])
-                                                        <span class="ml-1 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">{{ $order['status_label'] }}</span>
+                                                    <span class="text-xs text-slate-500 dark:text-slate-400">{{ $this->currencySymbol }} {{ number_format($order['estimated_cost'], 2) }}</span>
+                                                    @if($order['pickup_date'] || $order['status_label'])
+                                                        <span class="text-xs text-slate-400 dark:text-slate-500">
+                                                            @if($order['pickup_date'])
+                                                                Recojo: {{ $order['pickup_date'] }}
+                                                            @endif
+                                                            @if($order['status_label'])
+                                                                <span class="ml-1 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">{{ $order['status_label'] }}</span>
+                                                            @endif
+                                                        </span>
                                                     @endif
-                                                </span>
-                                            @endif
-
-                                        </button>
-                                    </li>
+                                                </button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="form-field md:mb-0">
+                            <label class="form-label">Tipo de carga</label>
+                            <select wire:model="cargoTypeFilter" class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}" @disabled(!$selectedClient)>
+                                <option value="">Todos los tipos</option>
+                                @foreach($cargoTypes as $type)
+                                    <option value="{{ $type['id'] }}">{{ $type['name'] }}</option>
                                 @endforeach
-                            </ul>
-                        @endif
+                            </select>
+                        </div>
                     </div>
                 </div>
+
+                @if(!$selectedClient)
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
+                @elseif(empty($orderResults) && ($orderSearch !== '' || $cargoTypeFilter))
+                    <p class="text-xs text-slate-500 dark:text-slate-400">No se encontraron pedidos pendientes que coincidan con los filtros aplicados.</p>
+                @endif
+
 
                 <div class="overflow-hidden rounded-xl border border-slate-200/70 shadow-sm dark:border-slate-700/70">
                     <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
@@ -166,6 +201,11 @@
                                     <td class="px-4 py-3">
                                         <div class="font-medium text-slate-900 dark:text-slate-100">{{ $item['description'] }}</div>
                                         <div class="text-xs text-slate-500 dark:text-slate-400">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
+                                        @if(!empty($item['cargo_type']))
+                                            <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
+                                                {{ $item['cargo_type'] }}
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
                                     <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
