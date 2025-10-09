@@ -133,6 +133,7 @@
                                                     @endif
                                                 </span>
                                             @endif
+
                                         </button>
                                     </li>
                                 @endforeach
@@ -149,12 +150,14 @@
                                 <th class="px-4 py-3 text-left">Descripción</th>
                                 <th class="px-4 py-3 text-right">Precio unit.</th>
                                 <th class="px-4 py-3 text-right">Base imponible</th>
+
                                 <th class="px-4 py-3 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200/70 bg-white text-sm dark:divide-slate-700/70 dark:bg-slate-900/40 dark:text-slate-100">
                             @forelse($invoiceItems as $index => $item)
                                 <tr wire:key="item-{{ $item['order_id'] ?? $index }}">
+
                                     <td class="px-4 py-3">
                                         <input type="number" min="0" step="0.01" wire:model.lazy="invoiceItems.{{ $index }}.quantity"
                                                wire:change="updateQuantity({{ $index }}, $event.target.value)"
@@ -166,6 +169,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
                                     <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
+
                                     <td class="px-4 py-3 text-right">
                                         <button type="button" wire:click="removeItem({{ $index }})"
                                                 class="inline-flex items-center gap-1 rounded-lg bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20">
@@ -178,6 +182,7 @@
                                 <tr>
                                     <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
                                         No se han agregado pedidos. Utilice el buscador para añadir ítems.
+
                                     </td>
                                 </tr>
                             @endforelse
@@ -203,6 +208,7 @@
                     <div class="flex items-center justify-between text-base">
                         <dt class="font-semibold text-slate-600 dark:text-slate-200">Importe total</dt>
                         <dd class="font-bold text-indigo-600 dark:text-indigo-300">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
+
                     </div>
                 </dl>
             </div>

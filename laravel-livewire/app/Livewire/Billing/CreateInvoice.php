@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Order;
+
 use App\Models\SunatDocumentType;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Arr;
@@ -45,10 +46,12 @@ class CreateInvoice extends Component
 
     public string $orderSearch = '';
 
+
     /**
      * @var array<int, array<string, mixed>>
      */
     public array $orderResults = [];
+
 
     /**
      * @var array<int, array<string, mixed>>
@@ -66,6 +69,7 @@ class CreateInvoice extends Component
     public function mount(): void
     {
         $this->taxRate = (float) Config::get('billing.tax_rate', 18);
+
         $this->issueDate = now()->format('Y-m-d');
         $this->dueDate = now()->format('Y-m-d');
 
@@ -163,6 +167,7 @@ class CreateInvoice extends Component
         if (! $this->selectedClient) {
             $this->orderResults = [];
 
+
             return;
         }
 
@@ -224,6 +229,7 @@ class CreateInvoice extends Component
         $order = Order::find($orderId);
 
         if (! $order || $order->client_id !== $this->selectedClient['id']) {
+
             return;
         }
 
@@ -261,6 +267,7 @@ class CreateInvoice extends Component
 
         $this->orderSearch = '';
         $this->orderResults = [];
+
         $this->calculateTotals();
     }
 
@@ -304,6 +311,7 @@ class CreateInvoice extends Component
         if (empty($this->invoiceItems)) {
             $this->addError('invoiceItems', 'Debe agregar al menos un pedido.');
 
+
             return;
         }
 
@@ -322,11 +330,13 @@ class CreateInvoice extends Component
             ->values();
 
         DB::transaction(function () use (&$invoice, $client, $orderIds): void {
+
             $issueDate = Carbon::parse($this->issueDate);
             $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
 
             $invoice = Invoice::create([
                 'order_id' => $orderIds->count() === 1 ? $orderIds->first() : null,
+
                 'client_id' => $client->getKey(),
                 'document_type' => $this->documentType,
                 'series' => $this->series,
@@ -345,6 +355,7 @@ class CreateInvoice extends Component
                 'metadata' => [
                     'items' => $this->invoiceItems,
                     'orders' => $orderIds->all(),
+
                 ],
             ]);
 
@@ -352,6 +363,7 @@ class CreateInvoice extends Component
                 InvoiceDetail::create([
                     'invoice_id' => $invoice->getKey(),
                     'order_id' => $item['order_id'] ?? null,
+
                     'description' => $item['description'] ?? 'Producto',
                     'quantity' => $item['quantity'] ?? 1,
                     'unit_price' => $item['unit_price'] ?? 0,
@@ -360,6 +372,7 @@ class CreateInvoice extends Component
                     'taxable_amount' => $item['taxable_amount'] ?? ($item['quantity'] ?? 1) * ($item['unit_price'] ?? 0),
                     'total' => $item['total'] ?? 0,
                     'metadata' => Arr::only($item, ['sku', 'unit_code', 'price_type_code', 'tax_exemption_reason', 'reference']),
+
                 ]);
             }
         });
@@ -435,6 +448,7 @@ class CreateInvoice extends Component
         return $this->taxRate;
     }
 
+
     protected function formattedItemsForDispatch(): array
     {
         return collect($this->invoiceItems)
@@ -451,6 +465,7 @@ class CreateInvoice extends Component
                 'tax_exemption_reason' => $item['tax_exemption_reason'] ?? '10',
                 'tax_code' => $item['tax_code'] ?? 'S',
                 'sku' => $item['sku'] ?? ($item['order_id'] ?? null ? 'ORD-'.$item['order_id'] : null),
+
             ])
             ->all();
     }
