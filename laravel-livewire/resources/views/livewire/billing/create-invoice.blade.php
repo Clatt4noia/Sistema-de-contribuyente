@@ -105,21 +105,35 @@
 
             <div class="surface-card space-y-6 p-6 shadow-lg">
                 <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                    <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Productos / servicios</h2>
+                    <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Pedidos a facturar</h2>
                     <div class="relative w-full md:w-72">
-                        <input type="text" wire:model.live.debounce.300ms="productSearch" placeholder="Buscar por código o descripción"
-                               class="form-control" />
-                        @if(!empty($productResults))
+                        <input type="text" wire:model.live.debounce.300ms="orderSearch" placeholder="Buscar pedido por referencia, origen o destino"
+                               class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
+                               @disabled(!$selectedClient) />
+                        @if(!$selectedClient)
+                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
+                        @elseif(!empty($orderResults))
                             <ul class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
-                                @foreach($productResults as $product)
+                                @foreach($orderResults as $order)
                                     <li>
-                                        <button type="button" wire:click="addProduct({{ $product['id'] }})"
+                                        <button type="button" wire:click="addOrder({{ $order['id'] }})"
                                                 class="flex w-full flex-col gap-0.5 px-4 py-2 text-left text-sm hover:bg-indigo-50 focus:bg-indigo-50 dark:hover:bg-indigo-500/20">
-                                            <span class="font-medium text-slate-800 dark:text-slate-100">{{ $product['description'] }}</span>
-                                            @if($product['code'])
-                                                <span class="text-xs text-slate-500 dark:text-slate-400">{{ $product['code'] }}</span>
+                                            <span class="font-medium text-slate-800 dark:text-slate-100">Pedido {{ $order['reference'] }}</span>
+                                            @if($order['destination'])
+                                                <span class="text-xs text-slate-500 dark:text-slate-400">Destino: {{ $order['destination'] }}</span>
                                             @endif
-                                            <span class="text-xs text-slate-500 dark:text-slate-400">S/ {{ number_format($product['unit_price'], 2) }}</span>
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">{{ $this->currencySymbol }} {{ number_format($order['estimated_cost'], 2) }}</span>
+                                            @if($order['pickup_date'] || $order['status_label'])
+                                                <span class="text-xs text-slate-400 dark:text-slate-500">
+                                                    @if($order['pickup_date'])
+                                                        Recojo: {{ $order['pickup_date'] }}
+                                                    @endif
+                                                    @if($order['status_label'])
+                                                        <span class="ml-1 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">{{ $order['status_label'] }}</span>
+                                                    @endif
+                                                </span>
+                                            @endif
+
                                         </button>
                                     </li>
                                 @endforeach
@@ -135,13 +149,15 @@
                                 <th class="px-4 py-3 text-left">Cantidad</th>
                                 <th class="px-4 py-3 text-left">Descripción</th>
                                 <th class="px-4 py-3 text-right">Precio unit.</th>
-                                <th class="px-4 py-3 text-right">Subtotal</th>
+                                <th class="px-4 py-3 text-right">Base imponible</th>
+
                                 <th class="px-4 py-3 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200/70 bg-white text-sm dark:divide-slate-700/70 dark:bg-slate-900/40 dark:text-slate-100">
                             @forelse($invoiceItems as $index => $item)
-                                <tr wire:key="item-{{ $index }}">
+                                <tr wire:key="item-{{ $item['order_id'] ?? $index }}">
+
                                     <td class="px-4 py-3">
                                         <input type="number" min="0" step="0.01" wire:model.lazy="invoiceItems.{{ $index }}.quantity"
                                                wire:change="updateQuantity({{ $index }}, $event.target.value)"
@@ -149,10 +165,11 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="font-medium text-slate-900 dark:text-slate-100">{{ $item['description'] }}</div>
-                                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ $item['sku'] ?? '' }}</div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
                                     </td>
-                                    <td class="px-4 py-3 text-right">S/ {{ number_format($item['unit_price'], 2) }}</td>
-                                    <td class="px-4 py-3 text-right">S/ {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
+                                    <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
+                                    <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
+
                                     <td class="px-4 py-3 text-right">
                                         <button type="button" wire:click="removeItem({{ $index }})"
                                                 class="inline-flex items-center gap-1 rounded-lg bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20">
@@ -164,7 +181,8 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-                                        No se han agregado productos. Utilice el buscador para añadir ítems.
+                                        No se han agregado pedidos. Utilice el buscador para añadir ítems.
+
                                     </td>
                                 </tr>
                             @endforelse
@@ -181,15 +199,16 @@
                 <dl class="space-y-3 text-sm">
                     <div class="flex items-center justify-between">
                         <dt class="text-slate-500 dark:text-slate-400">Sub total</dt>
-                        <dd class="font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($subtotal, 2) }}</dd>
+                        <dd class="font-semibold text-slate-900 dark:text-slate-100">{{ $this->currencySymbol }} {{ number_format($subtotal, 2) }}</dd>
                     </div>
                     <div class="flex items-center justify-between">
-                        <dt class="text-slate-500 dark:text-slate-400">IGV (18%)</dt>
-                        <dd class="font-semibold text-slate-900 dark:text-slate-100">S/ {{ number_format($igv, 2) }}</dd>
+                        <dt class="text-slate-500 dark:text-slate-400">IGV ({{ rtrim(rtrim(number_format($this->taxRate, 2), '0'), '.') }}%)</dt>
+                        <dd class="font-semibold text-slate-900 dark:text-slate-100">{{ $this->currencySymbol }} {{ number_format($igv, 2) }}</dd>
                     </div>
                     <div class="flex items-center justify-between text-base">
                         <dt class="font-semibold text-slate-600 dark:text-slate-200">Importe total</dt>
-                        <dd class="font-bold text-indigo-600 dark:text-indigo-300">S/ {{ number_format($total, 2) }}</dd>
+                        <dd class="font-bold text-indigo-600 dark:text-indigo-300">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
+
                     </div>
                 </dl>
             </div>

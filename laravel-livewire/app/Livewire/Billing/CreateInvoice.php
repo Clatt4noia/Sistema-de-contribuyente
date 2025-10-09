@@ -6,7 +6,8 @@ use App\Jobs\SendElectronicInvoice;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
-use App\Models\Product;
+use App\Models\Order;
+
 use App\Models\SunatDocumentType;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Arr;
@@ -43,12 +44,14 @@ class CreateInvoice extends Component
      */
     public ?array $selectedClient = null;
 
-    public string $productSearch = '';
+    public string $orderSearch = '';
+
 
     /**
      * @var array<int, array<string, mixed>>
      */
-    public array $productResults = [];
+    public array $orderResults = [];
+
 
     /**
      * @var array<int, array<string, mixed>>
@@ -61,8 +64,12 @@ class CreateInvoice extends Component
 
     public float $total = 0.0;
 
+    protected float $taxRate;
+
     public function mount(): void
     {
+        $this->taxRate = (float) Config::get('billing.tax_rate', 18);
+
         $this->issueDate = now()->format('Y-m-d');
         $this->dueDate = now()->format('Y-m-d');
 
@@ -147,70 +154,120 @@ class CreateInvoice extends Component
 
         $this->clientSearch = $this->selectedClient['name'];
         $this->clientResults = [];
+        $this->orderSearch = '';
+        $this->orderResults = [];
+        $this->invoiceItems = [];
+        $this->calculateTotals();
     }
 
-    public function updatedProductSearch(): void
+    public function updatedOrderSearch(): void
     {
-        $term = trim($this->productSearch);
+        $term = trim($this->orderSearch);
 
-        if (strlen($term) < 2) {
-            $this->productResults = [];
+        if (! $this->selectedClient) {
+            $this->orderResults = [];
+
 
             return;
         }
 
-        $this->productResults = Product::query()
-            ->where(function ($query) use ($term) {
+        $clientId = $this->selectedClient['id'];
+
+        $ordersQuery = Order::query()
+            ->where('client_id', $clientId)
+            ->where(function ($query) {
+                $query->whereNull('status')
+                    ->orWhereNotIn('status', ['cancelled']);
+            })
+            ->whereDoesntHave('invoices', function ($query) {
+                $query->whereIn('status', ['issued', 'paid', 'overdue']);
+            });
+
+        if (strlen($term) >= 2) {
+            $ordersQuery->where(function ($query) use ($term) {
                 $likeTerm = '%'.$term.'%';
 
-                $query->when(Schema::hasColumn('products', 'code'), fn ($q) => $q->orWhere('code', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('products', 'sku'), fn ($q) => $q->orWhere('sku', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('products', 'name'), fn ($q) => $q->orWhere('name', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('products', 'description'), fn ($q) => $q->orWhere('description', 'like', $likeTerm));
-            })
+                $query->where('reference', 'like', $likeTerm)
+                    ->orWhere('origin', 'like', $likeTerm)
+                    ->orWhere('destination', 'like', $likeTerm);
+
+                if (ctype_digit($term)) {
+                    $query->orWhere('id', (int) $term);
+                }
+            });
+        }
+
+        $this->orderResults = $ordersQuery
+            ->orderByDesc('pickup_date')
+            ->orderByDesc('created_at')
             ->limit(5)
             ->get()
-            ->map(fn (Product $product) => [
-                'id' => $product->getKey(),
-                'code' => $product->code ?? $product->sku ?? null,
-                'description' => $product->description ?? $product->name ?? 'Producto',
-                'unit_price' => (float) ($product->unit_price ?? $product->sale_price ?? 0),
-            ])
+            ->map(function (Order $order) {
+                $estimated = (float) ($order->estimated_cost ?? data_get($order->cost_breakdown, 'total', 0));
+
+                return [
+                    'id' => $order->getKey(),
+                    'reference' => $order->reference ?: sprintf('PED-%s', str_pad((string) $order->getKey(), 5, '0', STR_PAD_LEFT)),
+                    'status' => $order->status,
+                    'status_label' => $order->status ? Str::of($order->status)->replace('_', ' ')->upper() : null,
+                    'pickup_date' => optional($order->pickup_date)->format('d/m/Y'),
+                    'destination' => $order->destination,
+                    'estimated_cost' => $estimated,
+                ];
+            })
             ->all();
     }
 
-    public function addProduct(int $productId): void
+    public function addOrder(int $orderId): void
     {
-        $product = Product::find($productId);
+        if (! $this->selectedClient) {
+            $this->addError('clientSearch', 'Seleccione primero un cliente.');
 
-        if (! $product) {
+            return;
+        }
+
+        $order = Order::find($orderId);
+
+        if (! $order || $order->client_id !== $this->selectedClient['id']) {
+
             return;
         }
 
         $existingIndex = collect($this->invoiceItems)
-            ->search(fn (array $item) => (int) ($item['product_id'] ?? 0) === $product->getKey());
+            ->search(fn (array $item) => (int) ($item['order_id'] ?? 0) === $order->getKey());
 
         if ($existingIndex !== false) {
-            $this->invoiceItems[$existingIndex]['quantity'] = (float) ($this->invoiceItems[$existingIndex]['quantity'] ?? 0) + 1;
-            $this->recalculateItem($existingIndex);
-        } else {
-            $this->invoiceItems[] = [
-                'product_id' => $product->getKey(),
-                'sku' => $product->sku ?? $product->code ?? 'ITEM-'.$product->getKey(),
-                'description' => $product->description ?? $product->name ?? 'Producto',
-                'quantity' => 1,
-                'unit_price' => (float) ($product->unit_price ?? $product->sale_price ?? 0),
-                'unit_code' => 'NIU',
-                'price_type_code' => '01',
-                'tax_percentage' => (float) ($product->tax_percentage ?? 18),
-                'tax_exemption_reason' => '10',
-            ];
-
-            $this->recalculateItem(array_key_last($this->invoiceItems));
+            return;
         }
 
-        $this->productSearch = '';
-        $this->productResults = [];
+        $descriptionParts = array_filter([
+            $order->reference ? 'Pedido '.$order->reference : null,
+            $order->destination ? 'Destino: '.$order->destination : null,
+            $order->cargo_details,
+        ]);
+
+        $unitPrice = (float) ($order->estimated_cost ?? data_get($order->cost_breakdown, 'total', 0));
+
+        $item = [
+            'order_id' => $order->getKey(),
+            'reference' => $order->reference ?: sprintf('PED-%s', str_pad((string) $order->getKey(), 5, '0', STR_PAD_LEFT)),
+            'description' => $descriptionParts ? implode(' • ', $descriptionParts) : 'Servicio logístico',
+            'quantity' => 1,
+            'unit_price' => $unitPrice > 0 ? $unitPrice : 0,
+            'unit_code' => 'ZZ',
+            'price_type_code' => '01',
+            'tax_percentage' => $this->taxRate,
+            'tax_exemption_reason' => '10',
+            'tax_code' => 'S',
+            'sku' => 'ORD-'.$order->getKey(),
+        ];
+
+        $this->invoiceItems[] = $item;
+        $this->recalculateItem(array_key_last($this->invoiceItems));
+
+        $this->orderSearch = '';
+        $this->orderResults = [];
+
         $this->calculateTotals();
     }
 
@@ -252,7 +309,8 @@ class CreateInvoice extends Component
         }
 
         if (empty($this->invoiceItems)) {
-            $this->addError('invoiceItems', 'Debe agregar al menos un producto.');
+            $this->addError('invoiceItems', 'Debe agregar al menos un pedido.');
+
 
             return;
         }
@@ -266,12 +324,19 @@ class CreateInvoice extends Component
         }
 
         $invoice = null;
+        $orderIds = collect($this->invoiceItems)
+            ->pluck('order_id')
+            ->filter()
+            ->values();
 
-        DB::transaction(function () use (&$invoice, $client): void {
+        DB::transaction(function () use (&$invoice, $client, $orderIds): void {
+
             $issueDate = Carbon::parse($this->issueDate);
             $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
 
             $invoice = Invoice::create([
+                'order_id' => $orderIds->count() === 1 ? $orderIds->first() : null,
+
                 'client_id' => $client->getKey(),
                 'document_type' => $this->documentType,
                 'series' => $this->series,
@@ -289,13 +354,16 @@ class CreateInvoice extends Component
                 'status' => 'issued',
                 'metadata' => [
                     'items' => $this->invoiceItems,
+                    'orders' => $orderIds->all(),
+
                 ],
             ]);
 
             foreach ($this->invoiceItems as $item) {
                 InvoiceDetail::create([
                     'invoice_id' => $invoice->getKey(),
-                    'product_id' => $item['product_id'] ?? null,
+                    'order_id' => $item['order_id'] ?? null,
+
                     'description' => $item['description'] ?? 'Producto',
                     'quantity' => $item['quantity'] ?? 1,
                     'unit_price' => $item['unit_price'] ?? 0,
@@ -303,7 +371,8 @@ class CreateInvoice extends Component
                     'tax_amount' => $item['tax_amount'] ?? 0,
                     'taxable_amount' => $item['taxable_amount'] ?? ($item['quantity'] ?? 1) * ($item['unit_price'] ?? 0),
                     'total' => $item['total'] ?? 0,
-                    'metadata' => Arr::only($item, ['sku', 'unit_code', 'price_type_code', 'tax_exemption_reason']),
+                    'metadata' => Arr::only($item, ['sku', 'unit_code', 'price_type_code', 'tax_exemption_reason', 'reference']),
+
                 ]);
             }
         });
@@ -366,22 +435,37 @@ class CreateInvoice extends Component
         $this->total = round($collection->sum('total'), 2);
     }
 
+    public function getCurrencySymbolProperty(): string
+    {
+        return match ($this->currency) {
+            'USD' => '$',
+            default => 'S/',
+        };
+    }
+
+    public function getTaxRateProperty(): float
+    {
+        return $this->taxRate;
+    }
+
+
     protected function formattedItemsForDispatch(): array
     {
         return collect($this->invoiceItems)
             ->map(fn (array $item) => [
-                'description' => $item['description'] ?? 'Producto',
+                'description' => $item['description'] ?? 'Servicio logístico',
                 'quantity' => $item['quantity'] ?? 1,
                 'unit_price' => $item['unit_price'] ?? 0,
-                'tax_percentage' => $item['tax_percentage'] ?? 18,
+                'tax_percentage' => $item['tax_percentage'] ?? $this->taxRate,
                 'tax_amount' => $item['tax_amount'] ?? 0,
                 'taxable_amount' => $item['taxable_amount'] ?? 0,
                 'total' => $item['total'] ?? 0,
-                'unit_code' => $item['unit_code'] ?? 'NIU',
+                'unit_code' => $item['unit_code'] ?? 'ZZ',
                 'price_type_code' => $item['price_type_code'] ?? '01',
                 'tax_exemption_reason' => $item['tax_exemption_reason'] ?? '10',
                 'tax_code' => $item['tax_code'] ?? 'S',
-                'sku' => $item['sku'] ?? null,
+                'sku' => $item['sku'] ?? ($item['order_id'] ?? null ? 'ORD-'.$item['order_id'] : null),
+
             ])
             ->all();
     }

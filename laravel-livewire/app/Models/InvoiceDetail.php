@@ -13,6 +13,8 @@ class InvoiceDetail extends Model
     protected $fillable = [
         'invoice_id',
         'product_id',
+        'order_id',
+
         'description',
         'quantity',
         'unit_price',
@@ -42,4 +44,10 @@ class InvoiceDetail extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
 }
