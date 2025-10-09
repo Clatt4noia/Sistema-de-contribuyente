@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\Invoice::observe(\App\Observers\InvoiceObserver::class);
 
 
-        Date::useLocale('es');
+        Date::setLocale('es');
         Carbon::setLocale('es');
 
         if (function_exists('setlocale')) {
