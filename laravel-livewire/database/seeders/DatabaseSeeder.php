@@ -90,6 +90,7 @@ class DatabaseSeeder extends Seeder
         });
 
         $this->call([
+            CargoTypeSeeder::class,
             SunatBillingCatalogSeeder::class,
         ]);
     }

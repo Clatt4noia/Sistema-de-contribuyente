@@ -4,10 +4,12 @@ namespace App\Livewire\Billing;
 
 use App\Jobs\SendElectronicInvoice;
 use App\Models\CargoType;
+
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Order;
+
 use App\Models\SunatDocumentType;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Arr;
@@ -29,6 +31,7 @@ class CreateInvoice extends Component
     public string $currency = 'PEN';
 
     public string $operationType = '0101';
+
 
     public string $issueDate;
 
@@ -61,14 +64,17 @@ class CreateInvoice extends Component
     ];
 
     /**
+
      * @var array<int, array<string, mixed>>
      */
     public array $cargoTypes = [];
+
 
     /**
      * @var array<int, array<string, mixed>>
      */
     public array $orderResults = [];
+
 
     /**
      * @var array<int, array<string, mixed>>
@@ -91,6 +97,7 @@ class CreateInvoice extends Component
 
         $this->operationType = $this->operationTypes[0]['code'] ?? '0101';
 
+
         $this->cargoTypes = CargoType::query()
             ->orderBy('name')
             ->get(['id', 'name', 'code', 'is_hazardous'])
@@ -101,6 +108,7 @@ class CreateInvoice extends Component
                 'is_hazardous' => $type->is_hazardous,
             ])
             ->all();
+
 
         $this->documentType = SunatDocumentType::query()
             ->orderBy('code')
@@ -189,6 +197,7 @@ class CreateInvoice extends Component
         $this->invoiceItems = [];
         $this->calculateTotals();
         $this->refreshOrderResults();
+
     }
 
     public function updatedOrderSearch(): void
@@ -200,6 +209,7 @@ class CreateInvoice extends Component
     {
         $this->cargoTypeFilter = $value ? (int) $value : null;
         $this->refreshOrderResults();
+
     }
 
     public function addOrder(int $orderId): void
@@ -215,6 +225,7 @@ class CreateInvoice extends Component
             ->find($orderId);
 
         if (! $order || $order->client_id !== $this->selectedClient['id']) {
+
             return;
         }
 
@@ -231,6 +242,7 @@ class CreateInvoice extends Component
             $order->reference ? 'Pedido '.$order->reference : null,
             $order->destination ? 'Destino: '.$order->destination : null,
             $cargoTypeName ? 'Tipo de carga: '.$cargoTypeName : null,
+
             $order->cargo_details,
         ]);
 
@@ -250,6 +262,7 @@ class CreateInvoice extends Component
             'sku' => 'ORD-'.$order->getKey(),
             'cargo_type' => $cargoTypeName,
             'cargo_type_id' => $order->cargo_type_id,
+
         ];
 
         $this->invoiceItems[] = $item;
@@ -258,6 +271,7 @@ class CreateInvoice extends Component
         $this->orderSearch = '';
         $this->orderResults = [];
         $this->refreshOrderResults();
+
         $this->calculateTotals();
     }
 
@@ -285,6 +299,7 @@ class CreateInvoice extends Component
 
         $this->calculateTotals();
         $this->refreshOrderResults();
+
     }
 
     public function saveInvoice(): void
@@ -301,6 +316,7 @@ class CreateInvoice extends Component
 
         if (empty($this->invoiceItems)) {
             $this->addError('invoiceItems', 'Debe agregar al menos un pedido.');
+
 
             return;
         }
@@ -320,11 +336,13 @@ class CreateInvoice extends Component
             ->values();
 
         DB::transaction(function () use (&$invoice, $client, $orderIds): void {
+
             $issueDate = Carbon::parse($this->issueDate);
             $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
 
             $invoice = Invoice::create([
                 'order_id' => $orderIds->count() === 1 ? $orderIds->first() : null,
+
                 'client_id' => $client->getKey(),
                 'document_type' => $this->documentType,
                 'series' => $this->series,
@@ -344,6 +362,7 @@ class CreateInvoice extends Component
                     'operation_type' => $this->operationType,
                     'items' => $this->invoiceItems,
                     'orders' => $orderIds->all(),
+
                 ],
             ]);
 
@@ -351,6 +370,7 @@ class CreateInvoice extends Component
                 InvoiceDetail::create([
                     'invoice_id' => $invoice->getKey(),
                     'order_id' => $item['order_id'] ?? null,
+
                     'description' => $item['description'] ?? 'Producto',
                     'quantity' => $item['quantity'] ?? 1,
                     'unit_price' => $item['unit_price'] ?? 0,
@@ -359,6 +379,7 @@ class CreateInvoice extends Component
                     'taxable_amount' => $item['taxable_amount'] ?? ($item['quantity'] ?? 1) * ($item['unit_price'] ?? 0),
                     'total' => $item['total'] ?? 0,
                     'metadata' => Arr::only($item, ['sku', 'unit_code', 'price_type_code', 'tax_exemption_reason', 'reference', 'cargo_type', 'cargo_type_id']),
+
                 ]);
             }
         });
@@ -473,6 +494,7 @@ class CreateInvoice extends Component
             ->all();
     }
 
+
     protected function recalculateItem(int $index): void
     {
         if (! isset($this->invoiceItems[$index])) {
@@ -512,6 +534,7 @@ class CreateInvoice extends Component
         return $this->taxRate;
     }
 
+
     protected function formattedItemsForDispatch(): array
     {
         return collect($this->invoiceItems)
@@ -531,6 +554,7 @@ class CreateInvoice extends Component
                 'order_id' => $item['order_id'] ?? null,
                 'cargo_type' => $item['cargo_type'] ?? null,
                 'cargo_type_id' => $item['cargo_type_id'] ?? null,
+
             ])
             ->all();
     }
@@ -539,12 +563,14 @@ class CreateInvoice extends Component
     {
         $operationCodes = implode(',', Arr::pluck($this->operationTypes, 'code'));
 
+
         return [
             'documentType' => 'required|string|exists:sunat_document_types,code',
             'series' => 'required|string|max:4',
             'correlative' => 'required|string|max:8',
             'currency' => 'required|string|in:PEN,USD',
             'operationType' => 'required|string|in:'.$operationCodes,
+
             'issueDate' => 'required|date',
             'dueDate' => 'nullable|date|after_or_equal:issueDate',
         ];
