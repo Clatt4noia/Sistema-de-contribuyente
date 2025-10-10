@@ -99,6 +99,11 @@ class Invoice extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function details(): HasMany
+    {
+        return $this->hasMany(InvoiceDetail::class);
+    }
+
     public function audits(): HasMany
     {
         return $this->hasMany(InvoiceAudit::class);

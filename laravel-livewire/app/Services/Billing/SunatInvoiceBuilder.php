@@ -61,8 +61,12 @@ class SunatInvoiceBuilder
         if ($invoice->due_date) {
             $root->appendChild($document->createElement('cbc:DueDate', optional($invoice->due_date)->format('Y-m-d')));
         }
+        $operationType = data_get($invoice->metadata, 'operation_type', '0101');
+
         $typeCode = $document->createElement('cbc:InvoiceTypeCode', $invoice->document_type ?: '01');
-        $typeCode->setAttribute('listID', '0101');
+        $typeCode->setAttribute('listID', $operationType);
+        $typeCode->setAttribute('listAgencyName', 'PE:SUNAT');
+        $typeCode->setAttribute('listName', 'Tipo de Operación');
         $root->appendChild($typeCode);
         $root->appendChild($document->createElement('cbc:DocumentCurrencyCode', $invoice->currency ?? 'PEN'));
     }

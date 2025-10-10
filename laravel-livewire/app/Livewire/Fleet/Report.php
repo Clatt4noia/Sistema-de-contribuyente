@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\Attributes\Layout;
@@ -51,13 +52,46 @@ class Report extends Component
 
     protected function reportData(): array
     {
-        $truckTotals = Truck::selectRaw('status, count(*) as total')
-            ->groupBy('status')
-            ->pluck('total', 'status');
+        $truckTotals = $this->aggregateStatusTotals(
+            Truck::query()
+                ->selectRaw('LOWER(TRIM(status)) as status, COUNT(*) as total')
+                ->groupBy('status')
+                ->pluck('total', 'status'),
+            [
+                'active' => 'available',
+                'available' => 'available',
+                'disponible' => 'available',
+                'en_servicio' => 'in_use',
+                'ocupado' => 'in_use',
+                'in_use' => 'in_use',
+                'maintenance' => 'maintenance',
+                'in_maintenance' => 'maintenance',
+                'mantenimiento' => 'maintenance',
+                'taller' => 'maintenance',
+            ]
+        );
 
-        $driverTotals = Driver::selectRaw('status, count(*) as total')
-            ->groupBy('status')
-            ->pluck('total', 'status');
+        $driverTotals = $this->aggregateStatusTotals(
+            Driver::query()
+                ->selectRaw('LOWER(TRIM(status)) as status, COUNT(*) as total')
+                ->groupBy('status')
+                ->pluck('total', 'status'),
+            [
+                'active' => 'active',
+                'activo' => 'active',
+                'available' => 'active',
+                'assigned' => 'assigned',
+                'asignado' => 'assigned',
+                'inactive' => 'inactive',
+                'inactivo' => 'inactive',
+                'baja' => 'inactive',
+                'desactivado' => 'inactive',
+                'on_leave' => 'on_leave',
+                'permiso' => 'on_leave',
+                'de permiso' => 'on_leave',
+                'leave' => 'on_leave',
+            ]
+        );
 
         $assignmentsByStatus = Assignment::selectRaw('status, count(*) as total')
             ->groupBy('status')
@@ -103,5 +137,22 @@ class Report extends Component
             'orderTotals' => $orderTotals,
             'documentAlerts' => $documentAlerts,
         ];
+    }
+
+    /**
+     * Normaliza los estados provenientes de la base de datos para que coincidan con los alias usados en la vista.
+     */
+    protected function aggregateStatusTotals(Collection $totals, array $aliases = []): Collection
+    {
+        $normalized = [];
+
+        foreach ($totals as $status => $count) {
+            $key = strtolower(trim((string) $status));
+            $target = $aliases[$key] ?? $key;
+
+            $normalized[$target] = ($normalized[$target] ?? 0) + (int) $count;
+        }
+
+        return collect($normalized);
     }
 }
