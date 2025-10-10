@@ -46,6 +46,8 @@ class DatabaseSeeder extends Seeder
             ]);
         });
 
+        $this->call(CargoTypeSeeder::class);
+
         $placeholderDocument = 'fleet-documents/demo/demo.pdf';
         if (! Storage::disk('public')->exists($placeholderDocument)) {
             Storage::disk('public')->put($placeholderDocument, 'Documento de ejemplo de la flota');
@@ -86,5 +88,10 @@ class DatabaseSeeder extends Seeder
             $assignment->order_id = $orders->random()->id;
             $assignment->save();
         });
+
+        $this->call([
+            CargoTypeSeeder::class,
+            SunatBillingCatalogSeeder::class,
+        ]);
     }
 }

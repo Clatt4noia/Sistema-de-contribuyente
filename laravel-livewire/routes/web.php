@@ -27,6 +27,9 @@ use App\Livewire\Orders\OrderForm;
 use App\Livewire\Orders\OrderList;
 use App\Livewire\Clients\ClientForm;
 use App\Livewire\Clients\ClientList;
+use App\Http\Controllers\Billing\InvoiceFileController;
+use App\Livewire\Billing\CreateInvoice;
+use App\Livewire\Billing\ElectronicInvoiceForm;
 use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
@@ -132,12 +135,19 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('billing')->name('billing.')->group(function () {
         Route::get('/invoices', InvoiceList::class)->name('invoices.index');
-        Route::get('/invoices/create', InvoiceForm::class)->name('invoices.create');
+        Route::get('/invoices/create', CreateInvoice::class)->name('invoices.create');
         Route::get('/invoices/{invoice}/edit', InvoiceForm::class)->whereNumber('invoice')->name('invoices.edit');
+        Route::get('/invoices/{invoice}/electronic', ElectronicInvoiceForm::class)->whereNumber('invoice')->name('invoices.electronic');
 
         Route::get('/payments', PaymentList::class)->name('payments.index');
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
         Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
+    });
+
+    Route::middleware('signed')->group(function () {
+        Route::get('/billing/invoices/{invoice}/download/xml', [InvoiceFileController::class, 'xml'])->name('billing.invoices.download.xml');
+        Route::get('/billing/invoices/{invoice}/download/cdr', [InvoiceFileController::class, 'cdr'])->name('billing.invoices.download.cdr');
+        Route::get('/billing/invoices/{invoice}/download/pdf', [InvoiceFileController::class, 'pdf'])->name('billing.invoices.download.pdf');
     });
 
     Route::prefix('portal')->name('portal.')->middleware('can:view-dashboard.client')->group(function () {

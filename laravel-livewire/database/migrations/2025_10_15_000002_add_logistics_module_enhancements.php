@@ -48,16 +48,6 @@ return new class extends Migration
             }
         });
 
-        Schema::create('cargo_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('code')->unique();
-            $table->text('description')->nullable();
-            $table->boolean('requires_refrigeration')->default(false);
-            $table->boolean('is_hazardous')->default(false);
-            $table->timestamps();
-        });
-
         Schema::create('cargo_type_truck', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cargo_type_id')->constrained()->cascadeOnDelete();

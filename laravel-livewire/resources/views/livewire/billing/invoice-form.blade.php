@@ -7,7 +7,7 @@
     <div class="surface-card p-6 shadow-lg">
         <form wire:submit="save" class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div class="form-field">
-                <label class="form-label">Numero de factura *</label>
+                <label class="form-label">Número de comprobante *</label>
                 <input type="text" wire:model.defer="invoice.invoice_number" class="form-control @error('invoice.invoice_number') border-rose-400 dark:border-rose-400 @enderror">
                 @error('invoice.invoice_number') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
@@ -42,6 +42,44 @@
                 @error('invoice.order_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
             <div class="form-field">
+                <label class="form-label">Tipo de documento *</label>
+                <select wire:model.defer="invoice.document_type" class="form-control @error('invoice.document_type') border-rose-400 dark:border-rose-400 @enderror">
+                    <option value="01">Factura</option>
+                    <option value="03">Boleta</option>
+                    <option value="07">Nota de crédito</option>
+                    <option value="08">Nota de débito</option>
+                </select>
+                @error('invoice.document_type') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
+                <label class="form-label">Serie *</label>
+                <input type="text" wire:model.defer="invoice.series" class="form-control uppercase @error('invoice.series') border-rose-400 dark:border-rose-400 @enderror" maxlength="4">
+                @error('invoice.series') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
+                <label class="form-label">Correlativo *</label>
+                <input type="text" wire:model.defer="invoice.correlative" class="form-control @error('invoice.correlative') border-rose-400 dark:border-rose-400 @enderror" maxlength="8">
+                @error('invoice.correlative') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
+                <label class="form-label">RUC emisor *</label>
+                <input type="text" wire:model.defer="invoice.ruc_emisor" class="form-control @error('invoice.ruc_emisor') border-rose-400 dark:border-rose-400 @enderror" maxlength="11">
+                @error('invoice.ruc_emisor') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
+                <label class="form-label">RUC cliente *</label>
+                <input type="text" wire:model.defer="invoice.ruc_receptor" class="form-control @error('invoice.ruc_receptor') border-rose-400 dark:border-rose-400 @enderror" maxlength="11">
+                @error('invoice.ruc_receptor') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
+                <label class="form-label">Moneda *</label>
+                <select wire:model.defer="invoice.currency" class="form-control @error('invoice.currency') border-rose-400 dark:border-rose-400 @enderror">
+                    <option value="PEN">Soles (PEN)</option>
+                    <option value="USD">Dólares (USD)</option>
+                </select>
+                @error('invoice.currency') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
                 <label class="form-label">Fecha de emision *</label>
                 <input type="date" wire:model.defer="invoice.issue_date" class="form-control @error('invoice.issue_date') border-rose-400 dark:border-rose-400 @enderror">
                 @error('invoice.issue_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
@@ -57,9 +95,24 @@
                 @error('invoice.subtotal') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
             <div class="form-field">
+                <label class="form-label">Base imponible *</label>
+                <input type="number" step="0.01" wire:model.defer="invoice.taxable_amount" class="form-control @error('invoice.taxable_amount') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.taxable_amount') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
                 <label class="form-label">Impuestos</label>
                 <input type="number" step="0.01" wire:model.defer="invoice.tax" class="form-control @error('invoice.tax') border-rose-400 dark:border-rose-400 @enderror">
                 @error('invoice.tax') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
+                <label class="form-label">Monto inafecto</label>
+                <input type="number" step="0.01" wire:model.defer="invoice.unaffected_amount" class="form-control @error('invoice.unaffected_amount') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.unaffected_amount') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+            </div>
+            <div class="form-field">
+                <label class="form-label">Monto exonerado</label>
+                <input type="number" step="0.01" wire:model.defer="invoice.exempt_amount" class="form-control @error('invoice.exempt_amount') border-rose-400 dark:border-rose-400 @enderror">
+                @error('invoice.exempt_amount') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
             </div>
             <div class="form-field">
                 <label class="form-label">Total</label>
