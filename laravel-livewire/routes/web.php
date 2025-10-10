@@ -28,6 +28,7 @@ use App\Livewire\Orders\OrderList;
 use App\Livewire\Clients\ClientForm;
 use App\Livewire\Clients\ClientList;
 use App\Http\Controllers\Billing\InvoiceFileController;
+use App\Livewire\Billing\CreateInvoice;
 use App\Livewire\Billing\ElectronicInvoiceForm;
 use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
@@ -134,7 +135,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('billing')->name('billing.')->group(function () {
         Route::get('/invoices', InvoiceList::class)->name('invoices.index');
-        Route::get('/invoices/create', InvoiceForm::class)->name('invoices.create');
+        Route::get('/invoices/create', CreateInvoice::class)->name('invoices.create');
         Route::get('/invoices/{invoice}/edit', InvoiceForm::class)->whereNumber('invoice')->name('invoices.edit');
         Route::get('/invoices/{invoice}/electronic', ElectronicInvoiceForm::class)->whereNumber('invoice')->name('invoices.electronic');
 

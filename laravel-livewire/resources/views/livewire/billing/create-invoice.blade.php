@@ -21,7 +21,8 @@
         <div class="space-y-6">
             <div class="surface-card space-y-6 p-6 shadow-lg">
                 <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Datos del comprobante</h2>
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+
                     <div class="form-field">
                         <label class="form-label">Tipo de comprobante</label>
                         <select wire:model="documentType" class="form-control">
@@ -32,6 +33,16 @@
                         @error('documentType') <span class="form-error">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-field">
+                        <label class="form-label">Tipo de operación</label>
+                        <select wire:model="operationType" class="form-control">
+                            @foreach($operationTypes as $operation)
+                                <option value="{{ $operation['code'] }}">{{ $operation['code'] }} - {{ $operation['label'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('operationType') <span class="form-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-field">
+
                         <label class="form-label">Serie</label>
                         <input type="text" wire:model="series" maxlength="4" class="form-control uppercase" />
                         @error('series') <span class="form-error">{{ $message }}</span> @enderror

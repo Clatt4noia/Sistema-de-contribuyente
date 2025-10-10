@@ -30,6 +30,9 @@ class CreateInvoice extends Component
 
     public string $currency = 'PEN';
 
+    public string $operationType = '0101';
+
+
     public string $issueDate;
 
     public ?string $dueDate = null;
@@ -51,6 +54,17 @@ class CreateInvoice extends Component
     public ?int $cargoTypeFilter = null;
 
     /**
+     * @var array<int, array{code: string, label: string}>
+     */
+    public array $operationTypes = [
+        ['code' => '0101', 'label' => 'Venta interna'],
+        ['code' => '0112', 'label' => 'Servicios prestados en el país'],
+        ['code' => '0126', 'label' => 'Operaciones con zona primaria'],
+        ['code' => '0131', 'label' => 'Otros ingresos'],
+    ];
+
+    /**
+
      * @var array<int, array<string, mixed>>
      */
     public array $cargoTypes = [];
@@ -80,6 +94,9 @@ class CreateInvoice extends Component
         $this->taxRate = (float) Config::get('billing.tax_rate', 18);
         $this->issueDate = now()->format('Y-m-d');
         $this->dueDate = now()->format('Y-m-d');
+
+        $this->operationType = $this->operationTypes[0]['code'] ?? '0101';
+
 
         $this->cargoTypes = CargoType::query()
             ->orderBy('name')
@@ -342,6 +359,7 @@ class CreateInvoice extends Component
                 'total' => $this->total,
                 'status' => 'issued',
                 'metadata' => [
+                    'operation_type' => $this->operationType,
                     'items' => $this->invoiceItems,
                     'orders' => $orderIds->all(),
 
@@ -543,11 +561,16 @@ class CreateInvoice extends Component
 
     protected function rules(): array
     {
+        $operationCodes = implode(',', Arr::pluck($this->operationTypes, 'code'));
+
+
         return [
             'documentType' => 'required|string|exists:sunat_document_types,code',
             'series' => 'required|string|max:4',
             'correlative' => 'required|string|max:8',
             'currency' => 'required|string|in:PEN,USD',
+            'operationType' => 'required|string|in:'.$operationCodes,
+
             'issueDate' => 'required|date',
             'dueDate' => 'nullable|date|after_or_equal:issueDate',
         ];
