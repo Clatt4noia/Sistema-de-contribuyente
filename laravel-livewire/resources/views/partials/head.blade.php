@@ -7,13 +7,14 @@
             return;
         }
 
-        try {
-            var storageKey = 'app:theme';
-            var cookieKey = 'app_theme';
-            var cookieTtl = 60 * 60 * 24 * 365; // 1 year
-            var root = document.documentElement;
+        var storageKey = 'app:theme';
+        var cookieKey = 'app_theme';
+        var cookieTtl = 60 * 60 * 24 * 365; // 1 year
+        var root = document.documentElement;
+        var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-            var readCookie = function (key) {
+        var readCookie = function (key) {
+            try {
                 return document.cookie
                     .split(';')
                     .map(function (entry) {
@@ -22,24 +23,115 @@
                     .find(function (pair) {
                         return pair[0] === key;
                     })?.[1] || null;
-            };
+            } catch (error) {
+                return null;
+            }
+        };
 
-            var storedTheme = window.localStorage.getItem(storageKey);
-            var cookieTheme = readCookie(cookieKey);
-            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            var theme = storedTheme || cookieTheme || (prefersDark ? 'dark' : 'light');
+        var writeCookie = function (theme) {
+            try {
+                document.cookie = cookieKey + '=' + theme + '; path=/; max-age=' + cookieTtl + '; SameSite=Lax';
+            } catch (error) {
+                // Ignore cookie write errors
+            }
+        };
 
-            if (theme === 'dark') {
-                root.classList.add('dark');
+        var readStorage = function () {
+            try {
+                return window.localStorage.getItem(storageKey);
+            } catch (error) {
+                return null;
+            }
+        };
+
+        var writeStorage = function (theme) {
+            try {
+                window.localStorage.setItem(storageKey, theme);
+            } catch (error) {
+                // Ignore storage write errors
+            }
+        };
+
+        var updateToggleState = function (isDark) {
+            try {
+                document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
+                    button.setAttribute('aria-pressed', String(isDark));
+                });
+            } catch (error) {
+                // Ignore DOM access errors
+            }
+        };
+
+        var applyTheme = function (theme) {
+            var normalized = theme === 'dark' ? 'dark' : 'light';
+            var isDark = normalized === 'dark';
+
+            root.classList.toggle('dark', isDark);
+            root.setAttribute('data-theme', normalized);
+            updateToggleState(isDark);
+
+            return normalized;
+        };
+
+        var persistTheme = function (theme) {
+            writeStorage(theme);
+            writeCookie(theme);
+        };
+
+        var syncTheme = function (theme, options) {
+            var normalized = applyTheme(theme);
+
+            if (!options || options.persist !== false) {
+                persistTheme(normalized);
             } else {
-                root.classList.remove('dark');
+                writeCookie(normalized);
+            }
+        };
+
+        var resolveTheme = function () {
+            var storedTheme = readStorage();
+            if (storedTheme === 'light' || storedTheme === 'dark') {
+                return storedTheme;
             }
 
-            root.setAttribute('data-theme', theme);
-            document.cookie = cookieKey + '=' + theme + '; path=/; max-age=' + cookieTtl + '; SameSite=Lax';
-        } catch (error) {
-            // Ignore storage access errors (e.g. private browsing)
-        }
+            var cookieTheme = readCookie(cookieKey);
+            if (cookieTheme === 'light' || cookieTheme === 'dark') {
+                return cookieTheme;
+            }
+
+            return mediaQuery.matches ? 'dark' : 'light';
+        };
+
+        syncTheme(resolveTheme());
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateToggleState(root.classList.contains('dark'));
+        });
+
+        document.addEventListener('click', function (event) {
+            var trigger = event.target.closest('[data-theme-toggle]');
+            if (!trigger) {
+                return;
+            }
+
+            event.preventDefault();
+
+            var nextTheme = root.classList.contains('dark') ? 'light' : 'dark';
+            syncTheme(nextTheme);
+        });
+
+        mediaQuery.addEventListener('change', function (event) {
+            var stored = readStorage();
+            if (stored !== 'light' && stored !== 'dark') {
+                syncTheme(event.matches ? 'dark' : 'light');
+            }
+        });
+
+        window.addEventListener('storage', function (event) {
+            if (event.key === storageKey && event.newValue) {
+                syncTheme(event.newValue, { persist: false });
+            }
+        });
     })();
 </script>
 
