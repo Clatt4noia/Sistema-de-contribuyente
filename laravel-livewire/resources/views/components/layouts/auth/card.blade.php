@@ -1,5 +1,10 @@
+@php
+    $storedTheme = request()->cookie('app_theme');
+    $initialTheme = in_array($storedTheme, ['light', 'dark'], true) ? $storedTheme : null;
+@endphp
+
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $initialTheme === 'dark' ? 'dark' : '' }}" @if($initialTheme) data-theme="{{ $initialTheme }}" @endif>
     <head>
         @include('partials.head')
     </head>
