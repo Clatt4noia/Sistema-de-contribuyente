@@ -153,9 +153,12 @@
 
                     <div class="mt-10 space-y-6 px-4">
                         <button
+                            x-data="appThemeToggle()"
+                            x-effect="$el.setAttribute('aria-pressed', isDark ? 'true' : 'false')"
+                            x-on:destroy="destroy()"
+                            @click.prevent="toggle()"
                             type="button"
-                            data-theme-toggle
-                            aria-pressed="false"
+                            aria-pressed="{{ $initialTheme === 'dark' ? 'true' : 'false' }}"
                             class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
                         >
                             <span class="flex items-center gap-3">
@@ -172,7 +175,10 @@
 
                             <span class="relative inline-flex h-6 w-12 items-center rounded-full bg-slate-900/10 transition dark:bg-white/30">
                                 <span class="sr-only">{{ __('Cambiar tema') }}</span>
-                                <span class="pointer-events-none inline-block h-5 w-5 translate-x-1 rounded-full bg-white shadow transition dark:translate-x-6 dark:bg-slate-900"></span>
+                                <span
+                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transition dark:bg-slate-900"
+                                    :class="{ 'translate-x-6': isDark, 'translate-x-1': !isDark }"
+                                ></span>
                             </span>
                         </button>
 
@@ -229,9 +235,12 @@
                         <flux:spacer />
 
                         <button
+                            x-data="appThemeToggle()"
+                            x-effect="$el.setAttribute('aria-pressed', isDark ? 'true' : 'false')"
+                            x-on:destroy="destroy()"
+                            @click.prevent="toggle()"
                             type="button"
-                            data-theme-toggle
-                            aria-pressed="false"
+                            aria-pressed="{{ $initialTheme === 'dark' ? 'true' : 'false' }}"
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/5 text-slate-600 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
                         >
                             <span class="sr-only">{{ __('Cambiar tema') }}</span>

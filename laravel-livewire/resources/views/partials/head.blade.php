@@ -8,6 +8,8 @@
         }
 
         var storageKey = 'app:theme';
+        var storageSourceKey = storageKey + ':source';
+
         var cookieKey = 'app_theme';
         var cookieTtl = 60 * 60 * 24 * 365; // 1 year
         var root = document.documentElement;
@@ -36,102 +38,235 @@
             }
         };
 
-        var readStorage = function () {
+        var readStorageValue = function (key) {
             try {
-                return window.localStorage.getItem(storageKey);
+                return window.localStorage.getItem(key);
+
             } catch (error) {
                 return null;
             }
         };
 
-        var writeStorage = function (theme) {
+        var writeStorageValue = function (key, value) {
             try {
-                window.localStorage.setItem(storageKey, theme);
+                window.localStorage.setItem(key, value);
             } catch (error) {
                 // Ignore storage write errors
             }
         };
 
-        var updateToggleState = function (isDark) {
-            try {
-                document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
-                    button.setAttribute('aria-pressed', String(isDark));
-                });
-            } catch (error) {
-                // Ignore DOM access errors
-            }
-        };
-
         var applyTheme = function (theme) {
             var normalized = theme === 'dark' ? 'dark' : 'light';
-            var isDark = normalized === 'dark';
-
-            root.classList.toggle('dark', isDark);
+            root.classList.toggle('dark', normalized === 'dark');
             root.setAttribute('data-theme', normalized);
-            updateToggleState(isDark);
 
             return normalized;
         };
 
-        var persistTheme = function (theme) {
-            writeStorage(theme);
-            writeCookie(theme);
+        var storedTheme = readStorageValue(storageKey);
+        var storedSource = readStorageValue(storageSourceKey);
+        var cookieTheme = readCookie(cookieKey);
+
+        var initialTheme = (storedTheme === 'light' || storedTheme === 'dark')
+            ? storedTheme
+            : (cookieTheme === 'light' || cookieTheme === 'dark')
+                ? cookieTheme
+                : mediaQuery.matches
+                    ? 'dark'
+                    : 'light';
+
+        var normalizedInitial = applyTheme(initialTheme);
+
+        var initialSource = storedTheme
+            ? (storedSource === 'system' ? 'system' : 'user')
+            : (cookieTheme ? 'user' : 'system');
+
+        if (!storedTheme && !cookieTheme) {
+            initialSource = 'system';
+        }
+
+        if (cookieTheme !== normalizedInitial) {
+            writeCookie(normalizedInitial);
+        }
+
+        if (storedTheme !== normalizedInitial) {
+            writeStorageValue(storageKey, normalizedInitial);
+        }
+
+        if (storedSource !== initialSource) {
+            writeStorageValue(storageSourceKey, initialSource);
+        }
+
+        var controller = {
+            value: normalizedInitial,
         };
 
-        var syncTheme = function (theme, options) {
+        var listeners = new Set();
+
+        var notify = function () {
+            listeners.forEach(function (callback) {
+                try {
+                    callback(controller.value);
+                } catch (error) {
+                    // Ignore subscriber errors
+                }
+            });
+        };
+
+        var subscribe = function (callback) {
+            if (typeof callback !== 'function') {
+                return function () {};
+            }
+
+            callback(controller.value);
+            listeners.add(callback);
+
+            return function () {
+                listeners.delete(callback);
+            };
+        };
+
+        var preferenceSource = initialSource === 'system' ? 'system' : 'user';
+
+        var setTheme = function (theme, options) {
             var normalized = applyTheme(theme);
+            var changed = controller.value !== normalized;
 
-            if (!options || options.persist !== false) {
-                persistTheme(normalized);
-            } else {
-                writeCookie(normalized);
+            controller.value = normalized;
+
+            if (options && options.persist === false) {
+                if (options && options.source) {
+                    preferenceSource = options.source === 'user' ? 'user' : 'system';
+                }
+
+                if (!options || options.cookie !== false) {
+                    writeCookie(normalized);
+                }
+
+                if (changed || (options && options.notify)) {
+                    notify();
+                }
+
+                return normalized;
             }
+
+            var nextSource = options && options.source === 'system' ? 'system' : 'user';
+
+            if (preferenceSource !== nextSource) {
+                preferenceSource = nextSource;
+            }
+
+            writeStorageValue(storageKey, normalized);
+            writeStorageValue(storageSourceKey, preferenceSource);
+            writeCookie(normalized);
+
+            if (changed || (options && options.notify)) {
+                notify();
+            }
+
+            return normalized;
         };
 
-        var resolveTheme = function () {
-            var storedTheme = readStorage();
-            if (storedTheme === 'light' || storedTheme === 'dark') {
-                return storedTheme;
-            }
-
-            var cookieTheme = readCookie(cookieKey);
-            if (cookieTheme === 'light' || cookieTheme === 'dark') {
-                return cookieTheme;
-            }
-
-            return mediaQuery.matches ? 'dark' : 'light';
+        var toggleTheme = function () {
+            var next = controller.value === 'dark' ? 'light' : 'dark';
+            return setTheme(next);
         };
 
-        syncTheme(resolveTheme());
+        controller.set = setTheme;
+        controller.toggle = toggleTheme;
+        controller.subscribe = subscribe;
 
-        document.addEventListener('DOMContentLoaded', function () {
-            updateToggleState(root.classList.contains('dark'));
-        });
+        window.__appTheme = controller;
 
-        document.addEventListener('click', function (event) {
-            var trigger = event.target.closest('[data-theme-toggle]');
-            if (!trigger) {
+        mediaQuery.addEventListener('change', function (event) {
+            if (preferenceSource === 'user') {
                 return;
             }
 
-            event.preventDefault();
-
-            var nextTheme = root.classList.contains('dark') ? 'light' : 'dark';
-            syncTheme(nextTheme);
-        });
-
-        mediaQuery.addEventListener('change', function (event) {
-            var stored = readStorage();
-            if (stored !== 'light' && stored !== 'dark') {
-                syncTheme(event.matches ? 'dark' : 'light');
-            }
+            setTheme(event.matches ? 'dark' : 'light', { source: 'system' });
         });
 
         window.addEventListener('storage', function (event) {
-            if (event.key === storageKey && event.newValue) {
-                syncTheme(event.newValue, { persist: false });
+            if (event.key === storageKey) {
+                if (event.newValue === 'light' || event.newValue === 'dark') {
+                    var source = readStorageValue(storageSourceKey) === 'system' ? 'system' : 'user';
+                    setTheme(event.newValue, { persist: false, source: source, notify: true });
+                }
+
+                return;
+            }
+
+            if (event.key === storageSourceKey) {
+                preferenceSource = event.newValue === 'system' ? 'system' : 'user';
             }
         });
+
+        document.addEventListener('alpine:init', function () {
+            if (!window.Alpine) {
+                return;
+            }
+
+            var store = {
+                current: controller.value,
+                set: function (theme) {
+                    controller.set(theme);
+                },
+                toggle: function () {
+                    controller.toggle();
+                },
+            };
+
+            Alpine.store('theme', store);
+
+            controller.subscribe(function (theme) {
+                store.current = theme;
+            });
+
+            Alpine.data('appThemeToggle', function () {
+                return {
+                    isDark: controller.value === 'dark',
+                    unsubscribe: null,
+                    init: function () {
+                        var self = this;
+                        this.unsubscribe = controller.subscribe(function (theme) {
+                            self.isDark = theme === 'dark';
+                        });
+                    },
+                    toggle: function () {
+                        controller.toggle();
+                    },
+                    destroy: function () {
+                        if (this.unsubscribe) {
+                            this.unsubscribe();
+                            this.unsubscribe = null;
+                        }
+                    },
+                };
+            });
+        });
+
+        window.appThemeToggle = function () {
+            return {
+                isDark: controller.value === 'dark',
+                unsubscribe: null,
+                init: function () {
+                    var self = this;
+                    this.unsubscribe = controller.subscribe(function (theme) {
+                        self.isDark = theme === 'dark';
+                    });
+                },
+                toggle: function () {
+                    controller.toggle();
+                },
+                destroy: function () {
+                    if (this.unsubscribe) {
+                        this.unsubscribe();
+                        this.unsubscribe = null;
+                    }
+                },
+            };
+        };
+
     })();
 </script>
 
