@@ -9,6 +9,7 @@
 
         var storageKey = 'app:theme';
         var storageSourceKey = storageKey + ':source';
+
         var cookieKey = 'app_theme';
         var cookieTtl = 60 * 60 * 24 * 365; // 1 year
         var root = document.documentElement;
@@ -40,6 +41,7 @@
         var readStorageValue = function (key) {
             try {
                 return window.localStorage.getItem(key);
+
             } catch (error) {
                 return null;
             }
@@ -264,6 +266,7 @@
                 },
             };
         };
+
     })();
 </script>
 
