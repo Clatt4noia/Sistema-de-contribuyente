@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
 
+
 use App\Enums\UserRole;
 use App\Livewire\Dashboards\AdminDashboard;
 use App\Livewire\Dashboards\ClientDashboard;
