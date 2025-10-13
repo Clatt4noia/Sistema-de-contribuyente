@@ -33,11 +33,10 @@
 
         return $fallbackIcon;
     };
-    $initialTheme = Theme::resolve();
-    $isDarkTheme = $initialTheme === 'dark';
 @endphp
 
-<x-theme.html :theme="$initialTheme">
+<x-theme.html>
+
     <head>
         @include('partials.head', ['title' => $title])
     </head>
@@ -152,20 +151,10 @@
                     </nav>
 
                     <div class="mt-10 space-y-6 px-4">
-                        <button
-                            x-data="appThemeToggle()"
-                            x-init="init()"
+                        <div class="flex items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition dark:bg-white/10 dark:text-slate-100">
 
-                            x-on:destroy="destroy()"
-                            @click.prevent="toggle()"
-                            type="button"
-                            aria-pressed="{{ $isDarkTheme ? 'true' : 'false' }}"
-                            :aria-pressed="isDark ? 'true' : 'false'"
-
-                            class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
-                        >
                             <span class="flex items-center gap-3">
-                                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition group-hover:bg-indigo-500/20 group-hover:text-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-200">
+                                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition dark:bg-indigo-500/20 dark:text-indigo-200">
                                     <x-dynamic-component :component="$resolveIcon('heroicon-o-sun')" class="size-5 dark:hidden" />
                                     <x-dynamic-component :component="$resolveIcon('heroicon-o-moon')" class="hidden size-5 dark:block" />
                                 </span>
@@ -176,14 +165,9 @@
                                 </span>
                             </span>
 
-                            <span class="relative inline-flex h-6 w-12 items-center rounded-full bg-slate-900/10 transition dark:bg-white/30">
-                                <span class="sr-only">{{ __('Cambiar tema') }}</span>
-                                <span
-                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transition dark:bg-slate-900"
-                                    :class="{ 'translate-x-6': isDark, 'translate-x-1': !isDark }"
-                                ></span>
-                            </span>
-                        </button>
+                            @include('partials.theme-toggle')
+                        </div>
+
 
                         <div class="flex items-center gap-3 rounded-2xl bg-slate-900/5 px-4 py-4 text-sm text-slate-700 shadow-inner shadow-slate-900/10 dark:bg-white/10 dark:text-slate-100">
                             <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/30 dark:text-indigo-100">
@@ -237,22 +221,8 @@
 
                         <flux:spacer />
 
-                        <button
-                            x-data="appThemeToggle()"
-                            x-init="init()"
+                        @include('partials.theme-toggle')
 
-                            x-on:destroy="destroy()"
-                            @click.prevent="toggle()"
-                            type="button"
-                            aria-pressed="{{ $isDarkTheme ? 'true' : 'false' }}"
-                            :aria-pressed="isDark ? 'true' : 'false'"
-
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/5 text-slate-600 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
-                        >
-                            <span class="sr-only">{{ __('Cambiar tema') }}</span>
-                            <x-dynamic-component :component="$resolveIcon('heroicon-o-sun')" class="size-5 dark:hidden" />
-                            <x-dynamic-component :component="$resolveIcon('heroicon-o-moon')" class="hidden size-5 dark:block" />
-                        </button>
 
                         <flux:dropdown position="bottom" align="end">
                             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
@@ -309,6 +279,7 @@
                     sidebar.setAttribute('data-state', state);
                     shell.setAttribute('data-sidebar-state', state);
 
+
                     if (backdrop) {
                         backdrop.setAttribute('data-state', state);
                     }
@@ -352,6 +323,7 @@
                     } else {
                         lastFocused = null;
                     }
+
 
                     applyState('open');
                     focusFirstItem();

@@ -1,8 +1,4 @@
-@php
-    $initialTheme = \App\Support\Theme::resolve();
-@endphp
-
-<x-theme.html :theme="$initialTheme">
+<x-theme.html>
 
     <head>
         @include('partials.head')

@@ -1,9 +1,16 @@
 @props(['theme' => null])
 
 @php
-    $resolvedTheme = in_array($theme, ['light', 'dark'], true)
-        ? $theme
-        : \App\Support\Theme::resolve();
+    $cookieTheme = request()->cookie('app_theme');
+
+    if (in_array($theme, ['light', 'dark'], true)) {
+        $resolvedTheme = $theme;
+    } elseif (in_array($cookieTheme, ['light', 'dark'], true)) {
+        $resolvedTheme = $cookieTheme;
+    } else {
+        $resolvedTheme = 'light';
+    }
+
 @endphp
 
 <!DOCTYPE html>
