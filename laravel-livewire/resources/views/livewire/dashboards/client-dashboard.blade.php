@@ -95,6 +95,7 @@
  </article>
  </section>
 
+
  <section class="surface-card">
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Transparencia y seguridad') }}</h2>

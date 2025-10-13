@@ -35,6 +35,7 @@
  </div>
  </div>
 
+
  <div class="surface-card overflow-hidden shadow-lg">
  <div class="grid grid-cols-1 gap-4 border-b border-slate-200 px-4 py-4 md:grid-cols-4">
  <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar por numero o cliente..." class="form-control">
@@ -133,6 +134,7 @@
  </tbody>
  </table>
  </div>
+
 
  <div class="border-t border-slate-200 px-4 py-3 ">
  {{ $invoices->links() }}
