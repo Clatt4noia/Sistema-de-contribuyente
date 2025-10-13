@@ -48,6 +48,7 @@ class Theme
         }
 
         return 'light';
+
     }
 
     /**

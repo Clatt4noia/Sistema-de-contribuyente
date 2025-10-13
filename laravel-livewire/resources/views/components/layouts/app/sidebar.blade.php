@@ -155,11 +155,13 @@
                         <button
                             x-data="appThemeToggle()"
                             x-init="init()"
+
                             x-on:destroy="destroy()"
                             @click.prevent="toggle()"
                             type="button"
                             aria-pressed="{{ $isDarkTheme ? 'true' : 'false' }}"
                             :aria-pressed="isDark ? 'true' : 'false'"
+
                             class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
                         >
                             <span class="flex items-center gap-3">
@@ -238,11 +240,13 @@
                         <button
                             x-data="appThemeToggle()"
                             x-init="init()"
+
                             x-on:destroy="destroy()"
                             @click.prevent="toggle()"
                             type="button"
                             aria-pressed="{{ $isDarkTheme ? 'true' : 'false' }}"
                             :aria-pressed="isDark ? 'true' : 'false'"
+
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/5 text-slate-600 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
                         >
                             <span class="sr-only">{{ __('Cambiar tema') }}</span>
@@ -308,6 +312,7 @@
                     if (backdrop) {
                         backdrop.setAttribute('data-state', state);
                     }
+
 
                     toggles.forEach(function (button) {
                         button.setAttribute('aria-expanded', state === 'open' ? 'true' : 'false');

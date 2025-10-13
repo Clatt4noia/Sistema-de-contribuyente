@@ -3,6 +3,7 @@
 
 @include('partials.theme-init')
 
+
 <title>{{ $title ?? config('app.name') }}</title>
 
 <link rel="icon" href="/favicon.ico" sizes="any">
