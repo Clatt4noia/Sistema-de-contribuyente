@@ -3,8 +3,8 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-gradient-to-br from-[#f7faff] via-white to-[#eaf1ff]">
-        <flux:header container class="border-b border-slate-100/80 bg-white/85 shadow-sm backdrop-blur">
+    <body class="min-h-screen bg-slate-50">
+        <flux:header container class="border-b border-slate-200 bg-white shadow-sm">
 
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
@@ -94,7 +94,7 @@
         </flux:header>
 
         <!-- Mobile Menu -->
-        <flux:sidebar stashable sticky class="lg:hidden border-e border-slate-100/80 bg-white/85 shadow-sm backdrop-blur">
+        <flux:sidebar stashable sticky class="lg:hidden border-e border-slate-200 bg-white shadow-sm">
 
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 

@@ -1,141 +1,143 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-        <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">Facturas</h1>
-        <a href="{{ route('billing.invoices.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-indigo-400 dark:text-slate-900 dark:hover:bg-indigo-300">Nueva Factura</a>
-    </div>
+ <div class="flex flex-wrap items-center justify-between gap-4">
+ <h1 class="text-2xl font-semibold text-slate-900 ">Facturas</h1>
+ <a href="{{ route('billing.invoices.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">Nueva Factura</a>
+ </div>
 
-    @if (session()->has('message'))
-        <div class="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 text-sm font-medium text-emerald-700 shadow-sm dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200" role="alert">
-            <p>{{ session('message') }}</p>
-        </div>
-    @endif
+ @if (session()->has('message'))
+ <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm " role="alert">
+ <p>{{ session('message') }}</p>
+ </div>
+ @endif
 
-    @if (session()->has('error'))
-        <div class="rounded-2xl border border-rose-200/70 bg-rose-50/80 p-4 text-sm font-medium text-rose-600 shadow-sm dark:border-rose-500/40 dark:bg-rose-500/10 dark:text-rose-200" role="alert">
-            <p>{{ session('error') }}</p>
-        </div>
-    @endif
+ @if (session()->has('error'))
+ <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-600 shadow-sm " role="alert">
+ <p>{{ session('error') }}</p>
+ </div>
+ @endif
 
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Emisión') }}</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['issued']) }}</p>
-        </div>
-        <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Pagado') }}</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['paid']) }}</p>
-        </div>
-        <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Vencido') }}</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['overdue']) }}</p>
-        </div>
-        <div class="surface-card p-4 shadow-sm">
-            <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Saldo') }}</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['balance']) }}</p>
-        </div>
-    </div>
+ <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+ <div class="surface-card p-4 shadow-sm">
+ <p class="text-sm text-slate-500 ">{{ __('Emisión') }}</p>
+ <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['issued']) }}</p>
+ </div>
+ <div class="surface-card p-4 shadow-sm">
+ <p class="text-sm text-slate-500 ">{{ __('Pagado') }}</p>
+ <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['paid']) }}</p>
+ </div>
+ <div class="surface-card p-4 shadow-sm">
+ <p class="text-sm text-slate-500 ">{{ __('Vencido') }}</p>
+ <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['overdue']) }}</p>
+ </div>
+ <div class="surface-card p-4 shadow-sm">
+ <p class="text-sm text-slate-500 ">{{ __('Saldo') }}</p>
+ <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['balance']) }}</p>
+ </div>
+ </div>
 
-    <div class="surface-card overflow-hidden shadow-lg">
-        <div class="grid grid-cols-1 gap-4 border-b border-slate-200/70 px-4 py-4 dark:border-slate-800/70 md:grid-cols-4">
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar por numero o cliente..." class="form-control">
-            <select wire:model.live="status" class="form-control">
-                <option value="">Todos los estados</option>
-                <option value="draft">Borrador</option>
-                <option value="issued">Emitida</option>
-                <option value="paid">Pagada</option>
-                <option value="overdue">Vencida</option>
-            </select>
-            <select wire:model.live="client_id" class="form-control">
-                <option value="">Todos los clientes</option>
-                @foreach($clients as $client)
-                    <option value="{{ $client->id }}">{{ $client->business_name }}</option>
-                @endforeach
-            </select>
-            <select wire:model.live="order_id" class="form-control">
-                <option value="">Todos los pedidos</option>
-                @foreach($orders as $order)
-                    <option value="{{ $order->id }}">{{ $order->reference }}</option>
-                @endforeach
-            </select>
-        </div>
 
-        <div class="overflow-x-auto">
-            <table class="surface-table">
-                <thead>
-                    <tr>
-                        <th class="px-6 py-3">Factura</th>
-                        <th class="px-6 py-3">Cliente</th>
-                        <th class="px-6 py-3">Pedido</th>
-                        <th class="px-6 py-3">Emision / Venc.</th>
-                        <th class="px-6 py-3">Total</th>
-                        <th class="px-6 py-3">Saldo</th>
-                        <th class="px-6 py-3">Estado</th>
-                        <th class="px-6 py-3">Estado SUNAT</th>
-                        <th class="px-6 py-3">Documentos</th>
-                        <th class="px-6 py-3">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($invoices as $invoice)
-                        @php
-                            $statusStyles = [
-                                'draft' => 'bg-slate-200 text-slate-700 dark:bg-slate-500/20 dark:text-slate-200',
-                                'issued' => 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200',
-                                'paid' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200',
-                                'overdue' => 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-200',
-                            ];
-                            $statusLabel = [
-                                'draft' => 'Borrador',
-                                'issued' => 'Emitida',
-                                'paid' => 'Pagada',
-                                'overdue' => 'Vencida',
-                            ][$invoice->status] ?? 'Emitida';
-                        @endphp
-                        <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">{{ $invoice->numero_completo ?: $invoice->invoice_number }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ $invoice->client->business_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ optional($invoice->order)->reference ?: '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
-                                {{ $invoice->issue_date->format('d/m/Y') }}<br>
-                                {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : '-' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->balance) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ $statusLabel }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <livewire:billing.sunat-status-badge :status="$invoice->sunat_status" :message="$invoice->sunat_response_message" :key="'status-'.$invoice->id" />
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <livewire:billing.invoice-file-downloader :invoice="$invoice" :key="'files-'.$invoice->id" />
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2">
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">Editar</a>
-                                    <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="font-semibold text-cyan-600 transition hover:text-cyan-700 dark:text-cyan-300 dark:hover:text-cyan-200">Registrar pago</a>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <a href="{{ route('billing.invoices.electronic', $invoice->id) }}" class="font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-300 dark:hover:text-emerald-200">Emitir SUNAT</a>
-                                    @if($invoice->balance <= 0 && $invoice->status !== 'paid')
-                                        <button wire:click="markAsPaid({{ $invoice->id }})" class="font-semibold text-slate-700 transition hover:text-slate-900 dark:text-slate-200 dark:hover:text-white">Marcar pagada</button>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="px-6 py-4 text-center text-slate-500 dark:text-slate-400">No se encontraron facturas</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+ <div class="surface-card overflow-hidden shadow-lg">
+ <div class="grid grid-cols-1 gap-4 border-b border-slate-200 px-4 py-4 md:grid-cols-4">
+ <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar por numero o cliente..." class="form-control">
+ <select wire:model.live="status" class="form-control">
+ <option value="">Todos los estados</option>
+ <option value="draft">Borrador</option>
+ <option value="issued">Emitida</option>
+ <option value="paid">Pagada</option>
+ <option value="overdue">Vencida</option>
+ </select>
+ <select wire:model.live="client_id" class="form-control">
+ <option value="">Todos los clientes</option>
+ @foreach($clients as $client)
+ <option value="{{ $client->id }}">{{ $client->business_name }}</option>
+ @endforeach
+ </select>
+ <select wire:model.live="order_id" class="form-control">
+ <option value="">Todos los pedidos</option>
+ @foreach($orders as $order)
+ <option value="{{ $order->id }}">{{ $order->reference }}</option>
+ @endforeach
+ </select>
+ </div>
 
-        <div class="border-t border-slate-200/70 px-4 py-3 dark:border-slate-800/70">
-            {{ $invoices->links() }}
-        </div>
-    </div>
+ <div class="overflow-x-auto">
+ <table class="surface-table">
+ <thead>
+ <tr>
+ <th class="px-6 py-3">Factura</th>
+ <th class="px-6 py-3">Cliente</th>
+ <th class="px-6 py-3">Pedido</th>
+ <th class="px-6 py-3">Emision / Venc.</th>
+ <th class="px-6 py-3">Total</th>
+ <th class="px-6 py-3">Saldo</th>
+ <th class="px-6 py-3">Estado</th>
+ <th class="px-6 py-3">Estado SUNAT</th>
+ <th class="px-6 py-3">Documentos</th>
+ <th class="px-6 py-3">Acciones</th>
+ </tr>
+ </thead>
+ <tbody>
+ @forelse($invoices as $invoice)
+ @php
+ $statusStyles = [
+ 'draft' => 'bg-slate-200 text-slate-700 ',
+ 'issued' => 'bg-sky-100 text-sky-700 ',
+ 'paid' => 'bg-emerald-100 text-emerald-700 ',
+ 'overdue' => 'bg-rose-100 text-rose-700 ',
+ ];
+ $statusLabel = [
+ 'draft' => 'Borrador',
+ 'issued' => 'Emitida',
+ 'paid' => 'Pagada',
+ 'overdue' => 'Vencida',
+ ][$invoice->status] ?? 'Emitida';
+ @endphp
+ <tr class="transition hover:bg-slate-100 ">
+ <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 ">{{ $invoice->numero_completo ?: $invoice->invoice_number }}</td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $invoice->client->business_name }}</td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ optional($invoice->order)->reference ?: '-' }}</td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">
+ {{ $invoice->issue_date->format('d/m/Y') }}<br>
+ {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : '-' }}
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->balance) }}</td>
+ <td class="px-6 py-4 whitespace-nowrap">
+ <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-gray-100 text-gray-800' }}">
+ {{ $statusLabel }}
+ </span>
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm">
+ <livewire:billing.sunat-status-badge :status="$invoice->sunat_status" :message="$invoice->sunat_response_message" :key="'status-'.$invoice->id" />
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm">
+ <livewire:billing.invoice-file-downloader :invoice="$invoice" :key="'files-'.$invoice->id" />
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2">
+ <div class="flex flex-wrap items-center gap-3">
+ <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 ">Editar</a>
+ <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="font-semibold text-cyan-600 transition hover:text-cyan-700 ">Registrar pago</a>
+ </div>
+ <div class="flex flex-wrap items-center gap-3">
+ <a href="{{ route('billing.invoices.electronic', $invoice->id) }}" class="font-semibold text-emerald-600 transition hover:text-emerald-700 ">Emitir SUNAT</a>
+ @if($invoice->balance <= 0 && $invoice->status !== 'paid')
+ <button wire:click="markAsPaid({{ $invoice->id }})" class="font-semibold text-slate-700 transition hover:text-slate-900 ">Marcar pagada</button>
+ @endif
+ </div>
+ </td>
+ </tr>
+ @empty
+ <tr>
+ <td colspan="8" class="px-6 py-4 text-center text-slate-500 ">No se encontraron facturas</td>
+ </tr>
+ @endforelse
+ </tbody>
+ </table>
+ </div>
+
+
+ <div class="border-t border-slate-200 px-4 py-3 ">
+ {{ $invoices->links() }}
+ </div>
+ </div>
 </div>
