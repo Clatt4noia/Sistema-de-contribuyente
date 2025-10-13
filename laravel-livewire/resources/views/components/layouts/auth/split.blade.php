@@ -7,6 +7,7 @@
         <div class="flex min-h-svh flex-col bg-[#f5f8ff] lg:grid lg:grid-cols-2">
             <div class="relative hidden h-dvh flex-col p-10 text-white lg:flex">
                 <div class="absolute inset-0 rounded-br-[3rem] bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-400"></div>
+
                 <div class="relative z-10 flex flex-1 flex-col">
                     <div class="flex items-center gap-2">
                         <span class="flex h-9 w-9 items-center justify-center rounded-md bg-white/10">
@@ -28,4 +29,4 @@
         </div>
         @fluxScripts
     </body>
-</html>
+</x-theme.html>

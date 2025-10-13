@@ -4,6 +4,7 @@
 ])
 
 @php
+
     $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
     $navItems = $menu
         ?? (class_exists($menuBuilder)
@@ -56,12 +57,14 @@
                             </div>
                         </a>
 
+
                         <button
                             type="button"
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 lg:hidden"
+
                         >
                             <span class="sr-only">{{ __('Cerrar menú') }}</span>
                             <x-dynamic-component :component="$resolveIcon('heroicon-o-x-mark')" class="size-5" />
@@ -152,6 +155,7 @@
                     <div class="mt-10 space-y-6 px-4">
                         <div class="flex items-center gap-3 rounded-2xl bg-sky-50 px-4 py-4 text-sm text-slate-600 shadow-inner shadow-slate-200/50">
                             <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-100 text-indigo-500">
+
                                 {{ auth()->user()->initials() }}
                             </span>
 
@@ -167,6 +171,7 @@
                                 <flux:menu class="w-48 rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-lg backdrop-blur">
                                     <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
                                     <flux:menu.separator class="border-slate-100" />
+
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">{{ __('Cerrar sesión') }}</flux:menu.item>
@@ -182,12 +187,14 @@
                 <div class="flex min-h-screen flex-col bg-transparent">
                     <header class="flex items-center gap-3 border-b border-slate-200/80 bg-white/80 px-4 py-3 text-slate-600 shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-white/70">
 
+
                         <button
                             type="button"
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+
                         >
                             <span class="sr-only">{{ __('Abrir menú') }}</span>
                             <x-dynamic-component :component="$resolveIcon('heroicon-o-bars-2')" class="size-5" />
@@ -201,6 +208,7 @@
                         </a>
 
                         <flux:spacer />
+
 
                         <flux:dropdown position="bottom" align="end">
                             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
@@ -257,9 +265,11 @@
                     sidebar.setAttribute('data-state', state);
                     shell.setAttribute('data-sidebar-state', state);
 
+
                     if (backdrop) {
                         backdrop.setAttribute('data-state', state);
                     }
+
 
                     toggles.forEach(function (button) {
                         button.setAttribute('aria-expanded', state === 'open' ? 'true' : 'false');
@@ -299,6 +309,7 @@
                     } else {
                         lastFocused = null;
                     }
+
 
                     applyState('open');
                     focusFirstItem();
@@ -365,4 +376,6 @@
         </script>
 
     </body>
+
 </html>
+
