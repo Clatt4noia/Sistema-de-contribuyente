@@ -6,11 +6,9 @@
 ])
 
 @php
-    use Illuminate\Support\Facades\View;
-
     $requestedComponent = 'flux.icon.' . $icon;
     $componentView = 'components.' . str_replace('.', '/', $requestedComponent);
-    $iconComponent = View::exists($componentView) ? $requestedComponent : 'flux.icon.bar-chart-3';
+    $iconComponent = \Illuminate\Support\Facades\View::exists($componentView) ? $requestedComponent : 'flux.icon.bar-chart-3';
     $displayValue = is_numeric($value) ? number_format((float) $value, $decimals) : $value;
 @endphp
 

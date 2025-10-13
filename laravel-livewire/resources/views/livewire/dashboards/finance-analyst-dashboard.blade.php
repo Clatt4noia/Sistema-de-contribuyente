@@ -1,7 +1,3 @@
-@php
-    use App\Support\Formatters\MoneyFormatter;
-@endphp
-
 <div class="space-y-6">
     <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
         <article class="surface-card">
@@ -13,7 +9,7 @@
             </header>
             <div class="grid gap-4 p-6 sm:grid-cols-3">
                 <x-dashboard.stat :label="__('Facturas pendientes')" :value="$metrics['pendingCount']" icon="receipt" />
-                <x-dashboard.stat :label="__('Pagos por conciliar')" :value="MoneyFormatter::pen($metrics['recentPayments'])" icon="alert-circle" />
+                <x-dashboard.stat :label="__('Pagos por conciliar')" :value="\App\Support\Formatters\MoneyFormatter::pen($metrics['recentPayments'])" icon="alert-circle" />
                 <x-dashboard.stat :label="__('Facturas vencidas')" :value="$metrics['overdueCount']" icon="badge-check" />
             </div>
         </article>
@@ -51,7 +47,7 @@
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
                                     {{ optional($invoice->client)->business_name ?? optional($invoice->client)->contact_name ?? '—' }}
                                 </td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ MoneyFormatter::pen($invoice->total) }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
                                     @php($days = optional($invoice->due_date)?->diffInDays(now(), false))
                                     {{ $days === null ? '—' : max($days, 0) }}
@@ -88,7 +84,7 @@
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
                                     {{ optional($payment->invoice?->client)->business_name ?? optional($payment->invoice?->client)->contact_name ?? '—' }}
                                 </td>
-                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ MoneyFormatter::pen($payment->amount) }}</td>
+                                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ \App\Support\Formatters\MoneyFormatter::pen($payment->amount) }}</td>
                                 <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ optional($payment->paid_at)?->format('d/m/Y') ?? '—' }}</td>
                             </tr>
                         @empty

@@ -1,46 +1,31 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
-        <div class="relative grid h-dvh lg:grid-cols-2">
-            <div class="relative hidden lg:flex flex-col p-10 text-white h-dvh dark:border-e dark:border-neutral-800">
-                <div class="absolute inset-0 bg-purple-600 dark:bg-purple-900"></div>
-
-                    <a href="{{ route('home') }}" class="relative z-20 flex items-center text-lg font-medium">
-
-                        {{ config('app.name', 'bryanmenu') }}
-                    </a>
-
-                    @php
-                        [$message, $author] = str(Illuminate\Foundation\Inspiring::quotes()->random())->explode('-');
-                    @endphp
-
-                    <div class="relative z-20 mt-auto">
-                        <blockquote class="space-y-2">
-                            <flux:heading size="lg">&ldquo;{{ __('Entorno sofisticado') }}&rdquo;</flux:heading>
-                            <footer><flux:heading>{{ __('Bryan Soberón') }}</flux:heading></footer>
-                        </blockquote>
+    <body class="min-h-screen bg-white antialiased">
+        <div class="flex min-h-svh flex-col bg-white lg:grid lg:grid-cols-2">
+            <div class="relative hidden flex-col p-10 text-white lg:flex h-dvh">
+                <div class="absolute inset-0 bg-purple-600"></div>
+                <div class="relative z-10 flex flex-1 flex-col">
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-md bg-white/10">
+                            <x-app-logo-icon class="size-9 fill-current text-white" />
+                        </span>
+                        <span class="text-lg font-semibold">{{ config('app.name', 'Laravel') }}</span>
+                    </div>
+                    <div class="mt-auto">
+                        {{ $aside ?? '' }}
                     </div>
                 </div>
-                <div class="w-full lg:p-8 flex items-center justify-center">
-                    <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                        <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                                <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
-                            </span>
+            </div>
 
-                            <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
-                        </a>
-                        {{ $slot }}
-                    </div>
+            <div class="flex items-center justify-center p-6">
+                <div class="w-full max-w-md rounded-xl border bg-white text-stone-800 shadow-xs">
+                    <div class="px-10 py-8">{{ $slot }}</div>
                 </div>
-
             </div>
         </div>
-
         @fluxScripts
-
     </body>
 </html>
