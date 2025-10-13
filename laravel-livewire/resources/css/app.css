@@ -121,6 +121,15 @@
     @apply text-slate-800;
 }
 
+.surface-card > header {
+    @apply border-b border-slate-200 bg-white;
+}
+
+.surface-card > header h1,
+.surface-card > header h2 {
+    @apply text-slate-800;
+}
+
 [data-flux-label] {
     @apply !mb-0 !leading-tight;
 }

@@ -29,6 +29,7 @@
  <article class="surface-card">
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Servicios recientes') }}</h2>
+
  </header>
  <div class="overflow-x-auto">
  <table class="min-w-full divide-y divide-slate-200 text-sm ">
@@ -53,6 +54,7 @@
  @empty
  <tr>
  <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('No tienes servicios activos en este momento.') }}</td>
+
  </tr>
  @endforelse
  </tbody>
