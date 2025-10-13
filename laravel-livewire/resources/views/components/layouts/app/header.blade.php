@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
     <head>
         @include('partials.head')
     </head>
@@ -42,6 +43,10 @@
                     />
                 </flux:tooltip>
             </flux:navbar>
+
+            <div class="hidden lg:flex items-center ps-3">
+                @include('partials.theme-toggle')
+            </div>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="top" align="end">
@@ -104,12 +109,14 @@
                 </flux:navlist.group>
             </flux:navlist>
 
-            <flux:spacer />
+
+        <flux:spacer />
 
             <flux:navlist variant="outline">
                 <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
                     {{ __('Repository') }}
                 </flux:navlist.item>
+
 
                 <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
                     {{ __('Documentation') }}
@@ -121,4 +128,4 @@
 
         @fluxScripts
     </body>
-</html>
+</x-theme.html>

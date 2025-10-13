@@ -4,6 +4,7 @@
 ])
 
 @php
+    use App\Support\Theme;
     use Illuminate\Support\Facades\View;
 
     $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
@@ -41,6 +42,7 @@
     </head>
     <body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
         <div class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200/80">
+
             <div data-app-shell data-sidebar-state="auto" class="relative min-h-screen transition-[padding-left] duration-300 lg:pl-[18rem] data-[sidebar-state=closed]:lg:pl-0">
                 <aside id="app-sidebar" data-app-sidebar data-state="auto" class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col overflow-y-auto border-r border-slate-200/70 bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-6 text-slate-700 shadow-2xl shadow-indigo-900/30 transition-transform duration-300 data-[state=open]:translate-x-0 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-950/90 dark:to-slate-950/85 dark:text-slate-100 lg:translate-x-0 lg:data-[state=closed]:-translate-x-full">
                     <div class="flex items-center justify-between gap-3">
@@ -54,6 +56,7 @@
                                 <span class="block text-xs text-indigo-500 dark:text-indigo-200/80">{{ __('Panel de control') }}</span>
                             </div>
                         </a>
+
 
                         <button
                             type="button"
@@ -151,6 +154,7 @@
 
                     <div class="mt-10 space-y-6 px-4">
                         <div class="flex items-center gap-3 rounded-2xl bg-slate-900/5 px-4 py-4 text-sm text-slate-700 shadow-inner shadow-slate-900/10">
+
                             <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/30 dark:text-indigo-100">
                                 {{ auth()->user()->initials() }}
                             </span>
@@ -201,6 +205,7 @@
                         </a>
 
                         <flux:spacer />
+
 
                         <flux:dropdown position="bottom" align="end">
                             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
@@ -257,9 +262,11 @@
                     sidebar.setAttribute('data-state', state);
                     shell.setAttribute('data-sidebar-state', state);
 
+
                     if (backdrop) {
                         backdrop.setAttribute('data-state', state);
                     }
+
 
                     toggles.forEach(function (button) {
                         button.setAttribute('aria-expanded', state === 'open' ? 'true' : 'false');
@@ -299,6 +306,7 @@
                     } else {
                         lastFocused = null;
                     }
+
 
                     applyState('open');
                     focusFirstItem();
@@ -365,4 +373,4 @@
         </script>
 
     </body>
-</html>
+</x-theme.html>
