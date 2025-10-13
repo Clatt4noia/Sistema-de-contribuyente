@@ -5,6 +5,7 @@
     </head>
     <body class="min-h-screen bg-gradient-to-br from-[#f7faff] via-white to-[#eaf1ff]">
         <flux:header container class="border-b border-slate-100/80 bg-white/85 shadow-sm backdrop-blur">
+
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <a href="{{ route('dashboard') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0">
@@ -42,6 +43,10 @@
                     />
                 </flux:tooltip>
             </flux:navbar>
+
+            <div class="hidden lg:flex items-center ps-3">
+                @include('partials.theme-toggle')
+            </div>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="top" align="end">
@@ -90,6 +95,7 @@
 
         <!-- Mobile Menu -->
         <flux:sidebar stashable sticky class="lg:hidden border-e border-slate-100/80 bg-white/85 shadow-sm backdrop-blur">
+
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
             <a href="{{ route('dashboard') }}" class="ms-1 flex items-center space-x-2 rtl:space-x-reverse">
@@ -104,12 +110,14 @@
                 </flux:navlist.group>
             </flux:navlist>
 
-            <flux:spacer />
+
+        <flux:spacer />
 
             <flux:navlist variant="outline">
                 <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
                     {{ __('Repository') }}
                 </flux:navlist.item>
+
 
                 <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
                     {{ __('Documentation') }}
@@ -121,4 +129,4 @@
 
         @fluxScripts
     </body>
-</html>
+</x-theme.html>

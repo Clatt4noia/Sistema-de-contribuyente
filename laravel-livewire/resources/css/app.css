@@ -43,6 +43,7 @@
 
     ::selection {
         @apply bg-sky-200 text-slate-800;
+
     }
 
     *,
@@ -57,6 +58,7 @@
     textarea,
     select {
         @apply rounded-xl border border-slate-200 bg-white text-slate-700 transition duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-200/70;
+
     }
 
     [data-flux-control] {
@@ -76,10 +78,12 @@
     .surface-muted {
         @apply rounded-2xl border border-slate-100/80 bg-white/85 text-slate-600 shadow-sm shadow-slate-200/70 backdrop-blur;
 
+
     }
 
     .surface-pill {
         @apply inline-flex items-center gap-2 rounded-full border border-slate-100/80 bg-white/90 px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm;
+
     }
 
     .surface-table {
@@ -106,6 +110,7 @@
         @apply w-full rounded-xl border border-slate-200 bg-white/95 px-4 py-2 text-sm text-slate-600 placeholder:text-slate-400 transition focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200/80;
 
     }
+
 
     .stat-card {
         @apply rounded-2xl border border-slate-100/80 bg-white/90 p-5 shadow-md shadow-slate-200/70 backdrop-blur;
