@@ -4,6 +4,7 @@
 ])
 
 @php
+
     $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
     $navItems = $menu
         ?? (class_exists($menuBuilder)
@@ -37,6 +38,7 @@
     </head>
     <body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
         <div class="min-h-screen bg-white">
+
             <div data-app-shell data-sidebar-state="auto" class="relative min-h-screen transition-[padding-left] duration-300 lg:pl-[19rem] data-[sidebar-state=closed]:lg:pl-0">
                 <aside
                     id="app-sidebar"
@@ -56,12 +58,14 @@
                             </div>
                         </a>
 
+
                         <button
                             type="button"
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-sky-200 hover:text-slate-700 lg:hidden"
+
                         >
                             <span class="sr-only">{{ __('Cerrar menú') }}</span>
                             <x-dynamic-component :component="$resolveIcon('heroicon-o-x-mark')" class="size-5" />
@@ -78,6 +82,7 @@
                                 type="search"
                                 placeholder="{{ __('Buscar...') }}"
                                 class="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
+
                             />
                         </label>
                     </div>
@@ -97,6 +102,7 @@
                                 <summary class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold">
                                     <span class="flex items-center gap-3">
                                         <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 transition group-open/nav:bg-sky-100">
+
                                             @php($summaryIcon = $resolveIcon($groupIcon))
                                             <x-dynamic-component :component="$summaryIcon" class="size-5" />
                                         </span>
@@ -106,6 +112,7 @@
                                 </summary>
 
                                 <div class="space-y-1 border-t border-slate-200 bg-white px-2 py-2">
+
                                     @foreach ($items as $item)
                                         <a
                                             href="{{ $item['href'] }}"
@@ -113,6 +120,7 @@
                                                 'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
                                                 'bg-sky-500 text-white shadow-lg shadow-sky-200 ring-1 ring-sky-200' => $item['current'],
                                                 'text-slate-600 hover:bg-sky-50 hover:text-slate-900' => ! $item['current'],
+
                                             ])
                                             aria-current="{{ $item['current'] ? 'page' : 'false' }}"
                                         >
@@ -121,6 +129,7 @@
                                                     'flex h-9 w-9 items-center justify-center rounded-xl transition',
                                                     'bg-sky-500/20 text-white' => $item['current'],
                                                     'bg-sky-50 text-sky-600 group-hover:bg-sky-100 group-hover:text-sky-700' => ! $item['current'],
+
                                                 ])
                                             >
                                                 @php($iconComponent = $resolveIcon($item['icon'] ?? null))
@@ -136,6 +145,7 @@
                                                             'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
                                                             $item['badge_style'] ?? 'bg-sky-50 text-sky-600',
                                                             'shadow-sky-200' => $item['current'],
+
                                                         ])
                                                     >
                                                         {{ $item['badge'] }}
@@ -152,6 +162,7 @@
                     <div class="mt-10 space-y-6 px-4">
                         <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600 shadow-inner shadow-slate-200">
                             <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-sky-100 text-sky-600">
+
                                 {{ auth()->user()->initials() }}
                             </span>
 
@@ -167,6 +178,7 @@
                                 <flux:menu class="w-48 rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-lg">
                                     <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
                                     <flux:menu.separator class="border-slate-200" />
+
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">{{ __('Cerrar sesión') }}</flux:menu.item>
@@ -182,12 +194,14 @@
                 <div class="flex min-h-screen flex-col bg-slate-50">
                     <header class="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 text-slate-600 shadow-sm">
 
+
                         <button
                             type="button"
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-sky-200 hover:text-slate-700"
+
                         >
                             <span class="sr-only">{{ __('Abrir menú') }}</span>
                             <x-dynamic-component :component="$resolveIcon('heroicon-o-bars-2')" class="size-5" />
@@ -195,6 +209,7 @@
 
                         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-lg font-semibold">
                             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+
                                 <x-app-logo-icon class="h-6 w-6" />
                             </span>
                             <span class="text-sm font-semibold text-slate-600">{{ config('app.name') }}</span>
@@ -209,6 +224,7 @@
 
                                 <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
                                 <flux:menu.separator class="border-slate-200" />
+
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">{{ __('Cerrar sesión') }}</flux:menu.item>
@@ -257,9 +273,11 @@
                     sidebar.setAttribute('data-state', state);
                     shell.setAttribute('data-sidebar-state', state);
 
+
                     if (backdrop) {
                         backdrop.setAttribute('data-state', state);
                     }
+
 
                     toggles.forEach(function (button) {
                         button.setAttribute('aria-expanded', state === 'open' ? 'true' : 'false');
@@ -299,6 +317,7 @@
                     } else {
                         lastFocused = null;
                     }
+
 
                     applyState('open');
                     focusFirstItem();
@@ -365,4 +384,6 @@
         </script>
 
     </body>
+
 </html>
+

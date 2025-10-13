@@ -3,6 +3,7 @@
     <!-- Visión general de la operación -->
     <section class="surface-card w-full max-w-6xl mx-auto">
         <header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 px-6 py-5">
+
             <div>
                 <h1 class="text-2xl font-semibold text-slate-900">
                     {{ __('Visión general de la operación') }}
@@ -23,6 +24,7 @@
     <!-- Accesos rápidos -->
     <section class="surface-card w-full max-w-6xl mx-auto">
         <header class="border-b border-slate-200 px-6 py-5">
+
             <h2 class="text-lg font-semibold text-slate-900">
                 {{ __('Accesos rápidos') }}
             </h2>

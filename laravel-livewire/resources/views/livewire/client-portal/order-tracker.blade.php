@@ -54,6 +54,7 @@
  </div>
  </dl>
 
+
  <dl class="space-y-1 text-sm text-slate-600 ">
  <div>
  <dt class="font-medium text-slate-500 ">{{ __('Recolección') }}</dt>

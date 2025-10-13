@@ -110,6 +110,7 @@
  </table>
  </div>
 
+
  <div class="border-t border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 ">
  {{ $maintenances->links() }}
  </div>
