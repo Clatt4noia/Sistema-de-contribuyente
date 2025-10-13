@@ -4,6 +4,7 @@
 ])
 
 @php
+    use App\Support\Theme;
     use Illuminate\Support\Facades\View;
 
     $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
@@ -13,7 +14,7 @@
             : \App\Support\Navigation\MainMenu::for(auth()->user()));
     $fallbackIcon = 'heroicon-o-squares-2x2';
 
-     $resolveIcon = static function (?string $icon) use ($fallbackIcon) {
+    $resolveIcon = static function (?string $icon) use ($fallbackIcon) {
         if (! $icon) {
             return $fallbackIcon;
         }
@@ -32,12 +33,11 @@
 
         return $fallbackIcon;
     };
-    $storedTheme = request()->cookie('app_theme');
-    $initialTheme = in_array($storedTheme, ['light', 'dark'], true) ? $storedTheme : null;
+    $initialTheme = Theme::resolve();
+    $isDarkTheme = $initialTheme === 'dark';
 @endphp
 
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $initialTheme === 'dark' ? 'dark' : '' }}" @if($initialTheme) data-theme="{{ $initialTheme }}" @endif>
+<x-theme.html :theme="$initialTheme">
     <head>
         @include('partials.head', ['title' => $title])
     </head>
@@ -158,7 +158,8 @@
                             x-on:destroy="destroy()"
                             @click.prevent="toggle()"
                             type="button"
-                            aria-pressed="{{ $initialTheme === 'dark' ? 'true' : 'false' }}"
+                            aria-pressed="{{ $isDarkTheme ? 'true' : 'false' }}"
+
                             class="group flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
                         >
                             <span class="flex items-center gap-3">
@@ -240,7 +241,8 @@
                             x-on:destroy="destroy()"
                             @click.prevent="toggle()"
                             type="button"
-                            aria-pressed="{{ $initialTheme === 'dark' ? 'true' : 'false' }}"
+                            aria-pressed="{{ $isDarkTheme ? 'true' : 'false' }}"
+
                             class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/5 text-slate-600 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20"
                         >
                             <span class="sr-only">{{ __('Cambiar tema') }}</span>
@@ -411,4 +413,4 @@
         </script>
 
     </body>
-</html>
+</x-theme.html>

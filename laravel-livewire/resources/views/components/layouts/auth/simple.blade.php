@@ -1,10 +1,9 @@
 @php
-    $storedTheme = request()->cookie('app_theme');
-    $initialTheme = in_array($storedTheme, ['light', 'dark'], true) ? $storedTheme : null;
+    $initialTheme = \App\Support\Theme::resolve();
 @endphp
 
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $initialTheme === 'dark' ? 'dark' : '' }}" @if($initialTheme) data-theme="{{ $initialTheme }}" @endif>
+<x-theme.html :theme="$initialTheme">
+
     <head>
         @include('partials.head')
     </head>
@@ -24,4 +23,4 @@
         </div>
         @fluxScripts
     </body>
-</html>
+</x-theme.html>

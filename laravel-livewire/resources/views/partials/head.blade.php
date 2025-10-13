@@ -9,11 +9,11 @@
 
         var storageKey = 'app:theme';
         var storageSourceKey = storageKey + ':source';
-
         var cookieKey = 'app_theme';
         var cookieTtl = 60 * 60 * 24 * 365; // 1 year
         var root = document.documentElement;
         var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
 
         var readCookie = function (key) {
             try {
@@ -97,6 +97,7 @@
             writeStorageValue(storageSourceKey, initialSource);
         }
 
+
         var controller = {
             value: normalizedInitial,
         };
@@ -172,6 +173,10 @@
             return setTheme(next);
         };
 
+        controller.get = function () {
+            return controller.value;
+        };
+
         controller.set = setTheme;
         controller.toggle = toggleTheme;
         controller.subscribe = subscribe;
@@ -208,12 +213,20 @@
 
             var store = {
                 current: controller.value,
+                get isDark() {
+                    return this.current === 'dark';
+                },
+
                 set: function (theme) {
                     controller.set(theme);
                 },
                 toggle: function () {
                     controller.toggle();
                 },
+                subscribe: function (callback) {
+                    return controller.subscribe(callback);
+                },
+
             };
 
             Alpine.store('theme', store);
