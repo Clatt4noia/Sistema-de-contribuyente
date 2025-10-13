@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<x-theme.html>
     <head>
         @include('partials.head')
     </head>
@@ -43,4 +42,4 @@
         @fluxScripts
 
     </body>
-</html>
+</x-theme.html>

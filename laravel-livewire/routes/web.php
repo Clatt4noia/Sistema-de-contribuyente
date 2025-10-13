@@ -2,8 +2,11 @@
 
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ThemeController;
 
 require __DIR__.'/auth.php';
+
+Route::post('/theme', [ThemeController::class, 'update'])->name('theme.update');
 
 use App\Enums\UserRole;
 use App\Livewire\Dashboards\AdminDashboard;
