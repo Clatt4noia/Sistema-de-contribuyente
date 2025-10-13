@@ -20,6 +20,18 @@
 }
 
 @layer base {
+    :root {
+        --flux-color-surface: var(--color-surface);
+        --flux-color-surface-muted: var(--color-surface-muted);
+        --flux-color-border: var(--color-border);
+        --flux-color-text: var(--color-text);
+        --flux-color-text-muted: var(--color-text-muted);
+        --flux-color-accent: var(--color-accent);
+        --flux-color-accent-hover: var(--color-accent-hover);
+        --flux-color-accent-foreground: var(--color-accent-foreground);
+    }
+
+
     body {
         @apply bg-slate-50 text-slate-700 antialiased;
 
@@ -130,6 +142,15 @@
     @apply text-slate-800;
 }
 
+.surface-card > header {
+    @apply border-b border-slate-200 bg-white;
+}
+
+.surface-card > header h1,
+.surface-card > header h2 {
+    @apply text-slate-800;
+}
+
 [data-flux-label] {
     @apply !mb-0 !leading-tight;
 }
@@ -138,6 +159,86 @@ input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-white;
+}
+
+@layer components {
+    [data-flux-component] {
+        color: var(--color-text);
+    }
+
+    [data-flux-component] [data-flux-label],
+    [data-flux-label] {
+        color: var(--color-text);
+    }
+
+    [data-flux-component] [data-flux-description],
+    [data-flux-component] [data-flux-hint],
+    [data-flux-component] small,
+    [data-flux-component] p[role='note'] {
+        color: var(--color-text-muted);
+    }
+
+    [data-flux-control] {
+        @apply border-slate-200 bg-white text-slate-700 placeholder:text-slate-400;
+        box-shadow: none;
+    }
+
+    [data-flux-control]:focus-visible {
+        @apply border-sky-400 ring-2 ring-sky-200/70 outline-none;
+    }
+
+    [data-flux-control]::placeholder {
+        color: var(--color-text-muted);
+        opacity: 1;
+    }
+
+    [data-flux-component] [variant='primary'],
+    [variant='primary'],
+    [data-variant='primary'],
+    .ui-button[variant='primary'],
+    .ui-button[data-variant='primary'] {
+        background-color: var(--color-accent);
+        border-color: var(--color-accent);
+        color: var(--color-accent-foreground);
+        transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+    }
+
+    [data-flux-component] [variant='primary']:hover,
+    [variant='primary']:hover,
+    [data-variant='primary']:hover,
+    .ui-button[variant='primary']:hover,
+    .ui-button[data-variant='primary']:hover {
+        background-color: var(--color-accent-hover);
+        border-color: var(--color-accent-hover);
+    }
+
+    [data-flux-component] [variant='primary']:focus-visible,
+    [variant='primary']:focus-visible,
+    [data-variant='primary']:focus-visible,
+    .ui-button[variant='primary']:focus-visible,
+    .ui-button[data-variant='primary']:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+    }
+
+    [data-flux-component] [variant='secondary'],
+    [variant='secondary'],
+    [data-variant='secondary'],
+    .ui-button[variant='secondary'],
+    .ui-button[data-variant='secondary'] {
+        background-color: var(--color-surface);
+        border-color: var(--color-border);
+        color: var(--color-text);
+    }
+
+    [data-flux-component] [variant='secondary']:hover,
+    [variant='secondary']:hover,
+    [data-variant='secondary']:hover,
+    .ui-button[variant='secondary']:hover,
+    .ui-button[data-variant='secondary']:hover {
+        background-color: var(--color-surface-muted);
+    }
+
 }
 
 /* \[:where(&)\]:size-4 {
