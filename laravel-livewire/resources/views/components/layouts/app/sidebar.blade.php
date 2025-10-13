@@ -4,8 +4,6 @@
 ])
 
 @php
-    use App\Support\Theme;
-    use Illuminate\Support\Facades\View;
 
     $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
     $navItems = $menu
@@ -27,7 +25,7 @@
         // comprobamos si existe la vista del componente
         $viewName = 'components.' . str_replace('-', '.', $component);
 
-        if (View::exists($viewName)) {
+        if (\Illuminate\Support\Facades\View::exists($viewName)) {
             return $component;
         }
 

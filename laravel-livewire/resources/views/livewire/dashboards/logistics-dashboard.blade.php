@@ -1,7 +1,3 @@
-@php
-    use App\Support\Formatters\MoneyFormatter;
-@endphp
-
 <div class="space-y-6">
     <section class="grid gap-6 xl:grid-cols-[2fr_1fr]">
         <article class="surface-card">
@@ -34,7 +30,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <span>{{ __('Costo promedio por envío') }}</span>
-                    <span class="text-base font-semibold">{{ $averageCost ? MoneyFormatter::pen($averageCost) : '—' }}</span>
+                    <span class="text-base font-semibold">{{ $averageCost ? \App\Support\Formatters\MoneyFormatter::pen($averageCost) : '—' }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span>{{ __('Incidencias activas') }}</span>
