@@ -1,4 +1,5 @@
 <x-theme.html>
+
     <head>
         @include('partials.head')
     </head>

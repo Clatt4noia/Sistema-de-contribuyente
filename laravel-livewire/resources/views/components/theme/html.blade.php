@@ -10,6 +10,7 @@
     } else {
         $resolvedTheme = 'light';
     }
+
 @endphp
 
 <!DOCTYPE html>

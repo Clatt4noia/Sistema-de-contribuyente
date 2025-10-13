@@ -4,6 +4,7 @@
 ])
 
 @php
+    use App\Support\Theme;
     use Illuminate\Support\Facades\View;
 
     $menuBuilder = \App\Support\Navigation\MainMenuV2::class;
@@ -35,6 +36,7 @@
 @endphp
 
 <x-theme.html>
+
     <head>
         @include('partials.head', ['title' => $title])
     </head>
@@ -150,6 +152,7 @@
 
                     <div class="mt-10 space-y-6 px-4">
                         <div class="flex items-center justify-between gap-3 rounded-2xl bg-slate-900/5 px-4 py-3 text-sm font-medium text-slate-700 transition dark:bg-white/10 dark:text-slate-100">
+
                             <span class="flex items-center gap-3">
                                 <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition dark:bg-indigo-500/20 dark:text-indigo-200">
                                     <x-dynamic-component :component="$resolveIcon('heroicon-o-sun')" class="size-5 dark:hidden" />
@@ -164,6 +167,7 @@
 
                             @include('partials.theme-toggle')
                         </div>
+
 
                         <div class="flex items-center gap-3 rounded-2xl bg-slate-900/5 px-4 py-4 text-sm text-slate-700 shadow-inner shadow-slate-900/10 dark:bg-white/10 dark:text-slate-100">
                             <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/30 dark:text-indigo-100">
@@ -218,6 +222,7 @@
                         <flux:spacer />
 
                         @include('partials.theme-toggle')
+
 
                         <flux:dropdown position="bottom" align="end">
                             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
@@ -274,9 +279,11 @@
                     sidebar.setAttribute('data-state', state);
                     shell.setAttribute('data-sidebar-state', state);
 
+
                     if (backdrop) {
                         backdrop.setAttribute('data-state', state);
                     }
+
 
                     toggles.forEach(function (button) {
                         button.setAttribute('aria-expanded', state === 'open' ? 'true' : 'false');
@@ -316,6 +323,7 @@
                     } else {
                         lastFocused = null;
                     }
+
 
                     applyState('open');
                     focusFirstItem();

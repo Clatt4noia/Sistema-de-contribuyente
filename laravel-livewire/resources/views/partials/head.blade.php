@@ -3,6 +3,7 @@
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+
 <title>{{ $title ?? config('app.name') }}</title>
 
 <link rel="icon" href="/favicon.ico" sizes="any">
