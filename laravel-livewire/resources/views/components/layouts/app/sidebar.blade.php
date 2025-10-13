@@ -369,6 +369,6 @@
                 breakpoint.addEventListener('change', syncWithViewport);
             })();
         </script>
+</body>
+</html>
 
-    </body>
-</x-theme.html>
