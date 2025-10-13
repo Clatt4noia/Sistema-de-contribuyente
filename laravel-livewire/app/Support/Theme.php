@@ -19,7 +19,36 @@ class Theme
 
         $value = $request->cookie('app_theme');
 
-        return in_array($value, ['light', 'dark'], true) ? $value : 'light';
+        if (in_array($value, ['light', 'dark'], true)) {
+            return $value;
+        }
+
+        $headerPreference = $request->header('Sec-CH-Prefers-Color-Scheme')
+            ?? $request->header('sec-ch-prefers-color-scheme')
+            ?? $request->header('Prefer-Color-Scheme');
+
+        if (is_array($headerPreference)) {
+            $headerPreference = reset($headerPreference) ?: null;
+        }
+
+        if (is_string($headerPreference)) {
+            $headerPreference = strtolower(trim($headerPreference));
+
+            if (in_array($headerPreference, ['dark', 'light'], true)) {
+                return $headerPreference;
+            }
+
+            if (str_contains($headerPreference, 'dark')) {
+                return 'dark';
+            }
+
+            if (str_contains($headerPreference, 'light')) {
+                return 'light';
+            }
+        }
+
+        return 'light';
+
     }
 
     /**
