@@ -38,7 +38,7 @@
 
 @layer base {
     body {
-        @apply bg-slate-50 text-slate-800 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+        @apply bg-[#f5f8ff] text-slate-800 antialiased;
     }
 
     *,
@@ -52,15 +52,11 @@
     input:not([type='checkbox']):not([type='radio']):not([type='range']),
     textarea,
     select {
-        @apply border border-slate-200 bg-white text-slate-800 transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-100;
+        @apply border border-slate-200 bg-white text-slate-700 transition-colors duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-200/70;
     }
 
     [data-flux-control] {
-        @apply transition-colors duration-300;
-    }
-
-    .dark [data-flux-control] {
-        @apply border-slate-700/70 bg-slate-900/60 text-slate-100 placeholder:text-slate-500;
+        @apply transition-colors duration-200;
     }
 }
 
@@ -70,28 +66,28 @@
 
 @layer components {
     .surface-card {
-        @apply rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-lg transition-colors duration-300 dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-100;
+        @apply rounded-3xl border border-slate-100 bg-white/95 text-slate-700 shadow-xl shadow-slate-200/60;
     }
 
     .surface-muted {
-        @apply rounded-2xl border border-slate-200/80 bg-white/95 text-slate-700 transition-colors duration-300 dark:border-slate-800/60 dark:bg-slate-900/70 dark:text-slate-200;
+        @apply rounded-2xl border border-slate-100 bg-white/90 text-slate-600 shadow-sm shadow-slate-200/70;
 
     }
 
     .surface-pill {
-        @apply inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-200;
+        @apply inline-flex items-center gap-2 rounded-full border border-slate-100 bg-white px-4 py-2 text-sm font-semibold text-slate-600;
     }
 
     .surface-table {
-        @apply min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800;
+        @apply min-w-full divide-y divide-slate-100 text-sm;
     }
 
     .surface-table thead {
-        @apply bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900/60 dark:text-slate-400;
+        @apply bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500;
     }
 
     .surface-table tbody {
-        @apply divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950/40;
+        @apply divide-y divide-slate-100 bg-white;
     }
 
     .form-field {
@@ -99,11 +95,11 @@
     }
 
     .form-label {
-        @apply block text-sm font-medium text-slate-700 dark:text-slate-200;
+        @apply block text-sm font-medium text-slate-600;
     }
 
     .form-control {
-        @apply w-full rounded-xl border border-slate-200/70 bg-white/90 px-4 py-2 text-sm text-slate-700 placeholder:text-slate-400 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/20 dark:border-slate-700/70 dark:bg-slate-950/40 dark:text-slate-100 dark:placeholder:text-slate-500;
+        @apply w-full rounded-xl border border-slate-200 bg-white/95 px-4 py-2 text-sm text-slate-600 placeholder:text-slate-400 transition focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200/80;
 
     }
 }

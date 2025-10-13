@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white">
-        <flux:header container class="border-b border-zinc-200 bg-zinc-50">
+    <body class="min-h-screen bg-[#f5f8ff]">
+        <flux:header container class="border-b border-slate-200 bg-white/90 backdrop-blur">
+
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <a href="{{ route('dashboard') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0">
@@ -94,7 +94,8 @@
         </flux:header>
 
         <!-- Mobile Menu -->
-        <flux:sidebar stashable sticky class="lg:hidden border-e border-zinc-200 bg-zinc-50">
+        <flux:sidebar stashable sticky class="lg:hidden border-e border-slate-200 bg-white/90 backdrop-blur">
+
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
             <a href="{{ route('dashboard') }}" class="ms-1 flex items-center space-x-2 rtl:space-x-reverse">
