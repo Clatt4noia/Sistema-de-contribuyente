@@ -69,51 +69,69 @@ new class extends Component {
  }
 }; ?>
 
-<section class="w-full">
+<section class="w-full text-slate-800 [&_*]:!text-slate-800">
     @include('partials.settings-heading')
 
-    <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
+    <x-settings.layout
+        :heading="__('Profile')"
+        :subheading="__('Update your name and email address')"
+        class="text-slate-800"
+    >
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
-            <div>
-                <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
+            <flux:input
+                wire:model="name"
+                :label="__('Name')"
+                type="text"
+                class="text-slate-800 !placeholder-slate-500"
+                required
+                autofocus
+                autocomplete="name"
+            />
 
-                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                    <div class="mt-4 space-y-2 text-sm text-slate-600">
-                        <p>{{ __('Your email address is unverified.') }}</p>
+            <flux:input
+                wire:model="email"
+                :label="__('Email')"
+                type="email"
+                class="text-slate-800 !placeholder-slate-500"
+                required
+                autocomplete="email"
+            />
 
-                        <button
-                            type="button"
-                            class="text-sm font-medium text-sky-600 hover:text-sky-700"
-                            wire:click.prevent="resendVerificationNotification"
-                        >
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
+            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
+                <div class="mt-4 space-y-2 text-sm text-slate-600">
+                    <p>Your email address is unverified.</p>
 
-                        @if (session('status') === 'verification-link-sent')
-                            <p class="text-sm font-medium text-green-600">
-                                {{ __('A new verification link has been sent to your email address.') }}
-                            </p>
-                        @endif
-                    </div>
-                @endif
-            </div>
+                    <button
+                        type="button"
+                        class="text-sm font-medium text-sky-600 hover:text-sky-700"
+                        wire:click.prevent="resendVerificationNotification"
+                    >
+                        Click here to re-send the verification email.
+                    </button>
+
+                    @if (session('status') === 'verification-link-sent')
+                        <p class="text-sm font-medium text-green-600">
+                            A new verification link has been sent to your email address.
+                        </p>
+                    @endif
+                </div>
+            @endif
 
             <div class="flex items-center gap-4">
-                <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full" data-test="update-profile-button">
-                        {{ __('Save') }}
-                    </flux:button>
-                </div>
+              <flux:button
+                variant="primary"
+                type="submit"
+                class="!bg-sky-600 hover:!bg-sky-700 !text-white"
+            >
+                Save
+            </flux:button>
 
-                <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
-                </x-action-message>
+
             </div>
         </form>
 
         <livewire:settings.delete-user-form />
     </x-settings.layout>
-
 </section>
+
