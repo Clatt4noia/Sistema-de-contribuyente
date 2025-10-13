@@ -14,6 +14,7 @@
         var root = document.documentElement;
         var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
+
         var readCookie = function (key) {
             try {
                 return document.cookie
@@ -40,6 +41,7 @@
         var readStorageValue = function (key) {
             try {
                 return window.localStorage.getItem(key);
+
             } catch (error) {
                 return null;
             }
@@ -94,6 +96,7 @@
         if (storedSource !== initialSource) {
             writeStorageValue(storageSourceKey, initialSource);
         }
+
 
         var controller = {
             value: normalizedInitial,
@@ -173,6 +176,7 @@
         controller.get = function () {
             return controller.value;
         };
+
         controller.set = setTheme;
         controller.toggle = toggleTheme;
         controller.subscribe = subscribe;
@@ -212,6 +216,7 @@
                 get isDark() {
                     return this.current === 'dark';
                 },
+
                 set: function (theme) {
                     controller.set(theme);
                 },
@@ -221,6 +226,7 @@
                 subscribe: function (callback) {
                     return controller.subscribe(callback);
                 },
+
             };
 
             Alpine.store('theme', store);
@@ -273,6 +279,7 @@
                 },
             };
         };
+
     })();
 </script>
 

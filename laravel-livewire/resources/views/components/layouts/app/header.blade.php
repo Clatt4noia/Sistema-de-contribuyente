@@ -3,6 +3,7 @@
 @endphp
 
 <x-theme.html :theme="$initialTheme">
+
     <head>
         @include('partials.head')
     </head>
