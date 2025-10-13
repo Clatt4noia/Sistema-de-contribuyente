@@ -1,7 +1,3 @@
-@php
-    use App\Support\Formatters\MoneyFormatter;
-@endphp
-
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">Pagos</h1>
@@ -17,7 +13,7 @@
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div class="surface-card p-4 shadow-sm">
             <p class="text-sm text-slate-500 dark:text-slate-300">{{ __('Pagos recibidos') }}</p>
-            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($totals['received']) }}</p>
+            <p class="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['received']) }}</p>
         </div>
         <div class="surface-card p-4 shadow-sm">
             <p class="text-sm text-slate-500 dark:text-slate-300">Numero de pagos</p>
@@ -55,7 +51,7 @@
                         <tr class="transition hover:bg-slate-900/5 dark:hover:bg-white/10">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">{{ $payment->invoice->invoice_number }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ $payment->invoice->client->business_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">{{ MoneyFormatter::pen($payment->amount) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">{{ \App\Support\Formatters\MoneyFormatter::pen($payment->amount) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ $payment->paid_at->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ $payment->method ?: '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">{{ $payment->reference ?: '-' }}</td>
