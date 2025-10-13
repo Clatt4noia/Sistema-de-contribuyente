@@ -134,6 +134,7 @@
  </table>
  </div>
 
+
  <div class="border-t border-slate-200 px-4 py-3 ">
  {{ $invoices->links() }}
  </div>

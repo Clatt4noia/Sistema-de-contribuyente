@@ -31,12 +31,15 @@
         --flux-color-accent-foreground: var(--color-accent-foreground);
     }
 
+
     body {
         @apply bg-slate-50 text-slate-700 antialiased;
+
     }
 
     ::selection {
         @apply bg-sky-200 text-slate-800;
+
     }
 
     *,
@@ -52,6 +55,7 @@
     select {
         @apply rounded-xl border border-slate-200 bg-white text-slate-700 transition duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-200/70;
     }
+
 
     [data-flux-control] {
         @apply transition-colors duration-200;
@@ -81,6 +85,7 @@
 
     .surface-table thead {
         @apply bg-slate-100 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500;
+
     }
 
     .surface-table tbody {
@@ -99,9 +104,42 @@
         @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 placeholder:text-slate-400 transition focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200/80;
     }
 
+
     .stat-card {
         @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/70;
     }
+
+
+    .stat-card {
+        @apply rounded-2xl border border-slate-100/80 bg-white/90 p-5 shadow-md shadow-slate-200/70 backdrop-blur;
+    }
+}
+
+.surface-card > header {
+    @apply border-b border-slate-200/70 bg-white/60 backdrop-blur-sm;
+}
+
+.surface-card > header h1,
+.surface-card > header h2 {
+    @apply text-slate-800;
+}
+
+.surface-card > header {
+    @apply border-b border-slate-200 bg-white;
+}
+
+.surface-card > header h1,
+.surface-card > header h2 {
+    @apply text-slate-800;
+}
+
+.surface-card > header {
+    @apply border-b border-slate-200 bg-white;
+}
+
+.surface-card > header h1,
+.surface-card > header h2 {
+    @apply text-slate-800;
 }
 
 .surface-card > header {
@@ -200,6 +238,7 @@ select:focus[data-flux-control] {
     .ui-button[data-variant='secondary']:hover {
         background-color: var(--color-surface-muted);
     }
+
 }
 
 /* \[:where(&)\]:size-4 {
