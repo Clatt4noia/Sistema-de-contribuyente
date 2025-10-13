@@ -36,24 +36,26 @@
     <head>
         @include('partials.head', ['title' => $title])
     </head>
-    <body class="min-h-screen bg-[#f5f8ff] text-slate-700 antialiased">
-        <div class="min-h-screen bg-gradient-to-br from-white via-sky-50 to-indigo-50/70">
+    <body class="min-h-screen bg-gradient-to-br from-[#f7faff] via-white to-[#e8f1ff] text-slate-700 antialiased">
+        <div class="min-h-screen bg-gradient-to-br from-white via-slate-50 to-sky-50/60">
+
             <div data-app-shell data-sidebar-state="auto" class="relative min-h-screen transition-[padding-left] duration-300 lg:pl-[19rem] data-[sidebar-state=closed]:lg:pl-0">
                 <aside
                     id="app-sidebar"
                     data-app-sidebar
                     data-state="auto"
-                    class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col overflow-y-auto border-r border-slate-200 bg-white/95 px-5 py-6 text-slate-600 shadow-2xl shadow-indigo-200/50 backdrop-blur-sm transition-transform duration-300 data-[state=open]:translate-x-0 lg:translate-x-0 lg:data-[state=closed]:-translate-x-full"
+                    class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col overflow-y-auto border-r border-slate-100/80 bg-white/85 px-5 py-6 text-slate-600 shadow-xl shadow-slate-200/70 backdrop-blur-lg transition-transform duration-300 data-[state=open]:translate-x-0 lg:translate-x-0 lg:data-[state=closed]:-translate-x-full"
                 >
                     <div class="flex items-center justify-between gap-3">
-                        <a href="{{ route('dashboard') }}" class="flex flex-1 items-center gap-3 rounded-2xl px-4 py-4 transition hover:bg-sky-50">
-                            <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-500">
+                        <a href="{{ route('dashboard') }}" class="flex flex-1 items-center gap-3 rounded-2xl px-4 py-4 transition hover:bg-sky-50/80">
+                            <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-600">
+
                                 <x-app-logo-icon class="h-7 w-7" />
                             </span>
 
                             <div class="hidden text-sm font-medium leading-tight text-slate-600 xl:block">
                                 <span class="text-base font-semibold text-slate-900">{{ config('app.name') }}</span>
-                                <span class="block text-xs text-indigo-500/80">{{ __('Panel de control') }}</span>
+                                <span class="block text-xs text-sky-500/80">{{ __('Panel de control') }}</span>
                             </div>
                         </a>
 
@@ -63,7 +65,7 @@
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 lg:hidden"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white/90 text-slate-500 transition hover:border-sky-200 hover:text-slate-700 lg:hidden"
 
                         >
                             <span class="sr-only">{{ __('Cerrar menú') }}</span>
@@ -80,7 +82,8 @@
                             <input
                                 type="search"
                                 placeholder="{{ __('Buscar...') }}"
-                                class="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-200/80"
+                                class="h-12 w-full rounded-2xl border border-slate-200/80 bg-white/90 pl-11 pr-4 text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-200/80"
+
                             />
                         </label>
                     </div>
@@ -96,34 +99,38 @@
                                 $groupIcon = $items->first()['icon'] ?? null;
                             @endphp
 
-                            <details @class(['group/nav overflow-hidden rounded-2xl border border-slate-200 bg-white/90 text-slate-600 shadow-sm transition']) {{ $isOpen ? 'open' : '' }}>
+                            <details @class(['group/nav overflow-hidden rounded-2xl border border-slate-100/80 bg-white/80 text-slate-600 shadow-sm transition']) {{ $isOpen ? 'open' : '' }}>
                                 <summary class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold">
                                     <span class="flex items-center gap-3">
-                                        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-indigo-500 transition group-open/nav:bg-indigo-100">
+                                        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 transition group-open/nav:bg-sky-100">
+
                                             @php($summaryIcon = $resolveIcon($groupIcon))
                                             <x-dynamic-component :component="$summaryIcon" class="size-5" />
                                         </span>
                                         <span>{{ $group }}</span>
                                     </span>
-                                    <x-dynamic-component :component="$resolveIcon('heroicon-o-chevron-down')" class="size-4 transition group-open/nav:rotate-180" />
+                                    <x-dynamic-component :component="$resolveIcon('heroicon-o-chevron-down')" class="size-4 text-slate-400 transition group-open/nav:rotate-180" />
                                 </summary>
 
-                                <div class="space-y-1 border-t border-slate-100 bg-white/80 px-2 py-2">
+                                <div class="space-y-1 border-t border-slate-100/80 bg-white/70 px-2 py-2">
+
                                     @foreach ($items as $item)
                                         <a
                                             href="{{ $item['href'] }}"
                                             @class([
                                                 'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
-                                                'bg-indigo-500 text-white shadow-lg shadow-indigo-200/60 ring-1 ring-indigo-200/60' => $item['current'],
-                                                'text-slate-600 hover:bg-slate-100 hover:text-slate-900' => ! $item['current'],
+                                                'bg-sky-500 text-white shadow-lg shadow-sky-200/70 ring-1 ring-sky-200/70' => $item['current'],
+                                                'text-slate-600 hover:bg-sky-50 hover:text-slate-900' => ! $item['current'],
+
                                             ])
                                             aria-current="{{ $item['current'] ? 'page' : 'false' }}"
                                         >
                                             <span
                                                 @class([
                                                     'flex h-9 w-9 items-center justify-center rounded-xl transition',
-                                                    'bg-indigo-500/20 text-white' => $item['current'],
-                                                    'bg-slate-100 text-indigo-500' => ! $item['current'],
+                                                    'bg-sky-500/20 text-white' => $item['current'],
+                                                    'bg-sky-50 text-sky-600 group-hover:bg-sky-100 group-hover:text-sky-700' => ! $item['current'],
+
                                                 ])
                                             >
                                                 @php($iconComponent = $resolveIcon($item['icon'] ?? null))
@@ -137,8 +144,9 @@
                                                     <span
                                                         @class([
                                                             'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
-                                                            $item['badge_style'] ?? 'bg-slate-100 text-slate-600',
-                                                            'shadow-indigo-200/50' => $item['current'],
+                                                            $item['badge_style'] ?? 'bg-sky-50 text-sky-600',
+                                                            'shadow-sky-200/60' => $item['current'],
+
                                                         ])
                                                     >
                                                         {{ $item['badge'] }}
@@ -153,8 +161,8 @@
                     </nav>
 
                     <div class="mt-10 space-y-6 px-4">
-                        <div class="flex items-center gap-3 rounded-2xl bg-sky-50 px-4 py-4 text-sm text-slate-600 shadow-inner shadow-slate-200/50">
-                            <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-indigo-100 text-indigo-500">
+                        <div class="flex items-center gap-3 rounded-2xl border border-slate-100/80 bg-white/85 px-4 py-4 text-sm text-slate-600 shadow-inner shadow-slate-200/60">
+                            <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-sky-100 text-sky-600">
 
                                 {{ auth()->user()->initials() }}
                             </span>
@@ -168,9 +176,9 @@
                             <flux:dropdown position="bottom" align="end">
                                 <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                                <flux:menu class="w-48 rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-lg backdrop-blur">
+                                <flux:menu class="w-48 rounded-2xl border border-slate-100/80 bg-white/95 text-slate-600 shadow-lg backdrop-blur">
                                     <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
-                                    <flux:menu.separator class="border-slate-100" />
+                                    <flux:menu.separator class="border-slate-100/80" />
 
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
@@ -182,18 +190,17 @@
                     </div>
                 </aside>
 
-                <div data-app-sidebar-backdrop data-state="closed" class="fixed inset-0 z-40 bg-slate-900/20 opacity-0 transition-opacity duration-300 pointer-events-none data-[state=open]:opacity-100 data-[state=open]:pointer-events-auto lg:hidden"></div>
+                <div data-app-sidebar-backdrop data-state="closed" class="fixed inset-0 z-40 bg-slate-900/30 opacity-0 transition-opacity duration-300 pointer-events-none data-[state=open]:opacity-100 data-[state=open]:pointer-events-auto lg:hidden"></div>
 
                 <div class="flex min-h-screen flex-col bg-transparent">
-                    <header class="flex items-center gap-3 border-b border-slate-200/80 bg-white/80 px-4 py-3 text-slate-600 shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-white/70">
-
+                    <header class="flex items-center gap-3 border-b border-slate-100/80 bg-white/80 px-4 py-3 text-slate-600 shadow-sm backdrop-blur">
 
                         <button
                             type="button"
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white/90 text-slate-500 transition hover:border-sky-200 hover:text-slate-700"
 
                         >
                             <span class="sr-only">{{ __('Abrir menú') }}</span>
@@ -201,7 +208,8 @@
                         </button>
 
                         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-lg font-semibold">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-500">
+                            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+
                                 <x-app-logo-icon class="h-6 w-6" />
                             </span>
                             <span class="text-sm font-semibold text-slate-600">{{ config('app.name') }}</span>
@@ -209,14 +217,14 @@
 
                         <flux:spacer />
 
-
                         <flux:dropdown position="bottom" align="end">
                             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                            <flux:menu class="w-48 rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-lg backdrop-blur">
+                            <flux:menu class="w-48 rounded-2xl border border-slate-100/80 bg-white/95 text-slate-600 shadow-lg backdrop-blur">
 
                                 <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
-                                <flux:menu.separator class="border-slate-100" />
+                                <flux:menu.separator class="border-slate-100/80" />
+
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">{{ __('Cerrar sesión') }}</flux:menu.item>

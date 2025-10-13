@@ -12,10 +12,11 @@
     $displayValue = is_numeric($value) ? number_format((float) $value, $decimals) : $value;
 @endphp
 
-<div class="surface-muted flex flex-col gap-3 rounded-2xl bg-white/90 p-4">
-    <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-slate-400">
+<div class="stat-card flex flex-col gap-4">
+    <div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-slate-400">
         <span>{{ $label }}</span>
-        <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-sky-100 text-sky-500">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+
             <x-dynamic-component :component="$iconComponent" class="size-4" />
         </span>
     </div>

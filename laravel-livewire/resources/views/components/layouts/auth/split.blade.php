@@ -3,8 +3,8 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-[#f5f8ff] antialiased">
-        <div class="flex min-h-svh flex-col bg-[#f5f8ff] lg:grid lg:grid-cols-2">
+    <body class="min-h-screen bg-gradient-to-br from-[#f7faff] via-white to-[#eaf1ff] antialiased">
+        <div class="flex min-h-svh flex-col bg-gradient-to-br from-white via-slate-50 to-sky-50/70 lg:grid lg:grid-cols-2">
             <div class="relative hidden h-dvh flex-col p-10 text-white lg:flex">
                 <div class="absolute inset-0 rounded-br-[3rem] bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-400"></div>
 
@@ -22,7 +22,8 @@
             </div>
 
             <div class="flex items-center justify-center p-6">
-                <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white/95 text-slate-700 shadow-xl shadow-slate-200/60">
+                <div class="w-full max-w-md rounded-2xl border border-slate-100/80 bg-white/95 text-slate-700 shadow-xl shadow-slate-200/60 backdrop-blur">
+
                     <div class="px-10 py-8">{{ $slot }}</div>
                 </div>
             </div>
