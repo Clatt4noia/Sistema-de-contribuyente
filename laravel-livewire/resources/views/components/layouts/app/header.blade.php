@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+@php
+    $initialTheme = \App\Support\Theme::resolve();
+@endphp
+
+<x-theme.html :theme="$initialTheme">
     <head>
         @include('partials.head')
     </head>
@@ -121,4 +124,4 @@
 
         @fluxScripts
     </body>
-</html>
+</x-theme.html>
