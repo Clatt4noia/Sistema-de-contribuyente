@@ -7,7 +7,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm " role="alert">
+ <div class="alert alert-success " role="alert">
  <p>{{ session('message') }}</p>
  </div>
  @endif
@@ -47,10 +47,11 @@
           @forelse ($drivers as $driver)
             @php
               $statusStyles = [
-                'active' => ['label' => 'Activo', 'class' => 'bg-emerald-100 text-emerald-700 '],
-                'inactive' => ['label' => 'Inactivo', 'class' => 'bg-rose-100 text-rose-700 '],
-                'on_leave' => ['label' => 'De permiso', 'class' => 'bg-amber-100 text-amber-700 '],
-                'assigned' => ['label' => 'Asignado', 'class' => 'bg-sky-100 text-sky-700 '],
+                'active' => ['label' => 'Activo', 'class' => 'bg-success-soft text-success-strong '],
+                'inactive' => ['label' => 'Inactivo', 'class' => 'bg-danger-soft text-danger-strong '],
+                'on_leave' => ['label' => 'De permiso', 'class' => 'bg-warning-soft text-warning '],
+                'assigned' => ['label' => 'Asignado', 'class' => 'bg-accent-soft text-accent '],
+
               ];
               $statusConfig = $statusStyles[$driver->status] ?? $statusStyles['active'];
               $scheduleSummary = $driver->schedules->map(fn ($schedule) => substr($schedule->day_of_week, 0, 3) . ' ' . ($schedule->start_time?->format('H:i') ?? '') . '-' . ($schedule->end_time?->format('H:i') ?? ''))->filter()->implode(', ');
@@ -65,9 +66,10 @@
               <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">
                 {{ $driver->license_expiration->format('d/m/Y') }}
                 @if($driver->license_expiration->isPast())
-                  <span class="ml-2 font-semibold text-rose-500 ">VENCIDA</span>
+                  <span class="ml-2 font-semibold text-danger-strong ">VENCIDA</span>
                 @elseif($driver->license_expiration->diffInDays(now()) < 30)
-                  <span class="ml-2 font-semibold text-amber-500 ">PROXIMA A VENCER</span>
+                  <span class="ml-2 font-semibold text-warning ">PROXIMA A VENCER</span>
+
                 @endif
               </td>
               <td class="table-cell text-sm text-slate-600 ">
@@ -79,12 +81,13 @@
               <td class="table-cell text-sm text-slate-600 ">
                 <div class="flex flex-col gap-1">
                   <span class="inline-flex items-center gap-2 text-xs font-semibold">
-                    <span class="inline-flex h-2 w-2 rounded-full bg-indigo-500"></span>
+                    <span class="inline-flex h-2 w-2 rounded-full bg-[color:var(--color-primary)]"></span>
                     {{ $validTrainings->count() }} vigentes
                   </span>
                   @if ($expiringTraining)
-                    <span class="inline-flex items-center gap-2 text-xs font-medium text-amber-600 ">
-                      <span class="inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
+                    <span class="inline-flex items-center gap-2 text-xs font-medium text-warning ">
+                      <span class="inline-flex h-2 w-2 rounded-full bg-warning-soft0"></span>
+
                       {{ $expiringTraining->name }} vence {{ $expiringTraining->expires_at?->format('d/m/Y') }}
                     </span>
                   @endif

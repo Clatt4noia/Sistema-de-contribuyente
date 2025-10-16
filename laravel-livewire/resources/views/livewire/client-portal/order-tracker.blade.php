@@ -10,7 +10,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-sm ">
+ <div class="alert alert-success">
  {{ session('message') }}
  </div>
  @endif
@@ -23,7 +23,7 @@
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Pedido :reference', ['reference' => $order->reference]) }}</h2>
  <p class="text-sm text-slate-500 ">{{ optional($order->client)->business_name ?? optional($order->client)->contact_name }}</p>
  </div>
- <span class="inline-flex items-center gap-2 rounded-full bg-sky-100 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700 ">
+ <span class="badge badge-accent">
  {{ __($order->status) }}
  </span>
  </header>
@@ -113,18 +113,18 @@
  <div>
  <label class="form-label" for="window-start-{{ $order->id }}">{{ __('Inicio') }}</label>
  <input id="window-start-{{ $order->id }}" type="datetime-local" class="form-control" wire:model.defer="windowUpdates.{{ $order->id }}.delivery_window_start">
- @error('windowUpdates.' . $order->id . '.delivery_window_start') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('windowUpdates.' . $order->id . '.delivery_window_start') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div>
  <label class="form-label" for="window-end-{{ $order->id }}">{{ __('Fin') }}</label>
  <input id="window-end-{{ $order->id }}" type="datetime-local" class="form-control" wire:model.defer="windowUpdates.{{ $order->id }}.delivery_window_end">
- @error('windowUpdates.' . $order->id . '.delivery_window_end') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('windowUpdates.' . $order->id . '.delivery_window_end') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  </div>
  <div>
  <label class="form-label" for="window-notes-{{ $order->id }}">{{ __('Comentarios adicionales') }}</label>
  <textarea id="window-notes-{{ $order->id }}" rows="2" class="form-control" wire:model.defer="windowUpdates.{{ $order->id }}.notes"></textarea>
- @error('windowUpdates.' . $order->id . '.notes') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('windowUpdates.' . $order->id . '.notes') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="flex justify-end">
         <button type="submit" class="btn btn-primary">

@@ -10,7 +10,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm ">
+ <div class="alert alert-success ">
  {{ session('message') }}
  </div>
  @endif
@@ -74,10 +74,11 @@
                 <span
                   @class([
                     'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm transition',
-                    'bg-emerald-100 text-emerald-700 ' => $maintenance->status === 'completed',
-                    'bg-sky-100 text-sky-700 ' => $maintenance->status === 'in_progress',
-                    'bg-amber-100 text-amber-700 ' => $maintenance->status === 'scheduled',
-                    'bg-rose-100 text-rose-700 ' => $maintenance->status === 'cancelled',
+                    'bg-success-soft text-success-strong ' => $maintenance->status === 'completed',
+                    'bg-accent-soft text-accent ' => $maintenance->status === 'in_progress',
+                    'bg-warning-soft text-warning ' => $maintenance->status === 'scheduled',
+                    'bg-danger-soft text-danger-strong ' => $maintenance->status === 'cancelled',
+
                   ])
                 >
                   {{ $maintenance->status === 'completed' ? 'Completado' : ($maintenance->status === 'in_progress' ? 'En progreso' : ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}

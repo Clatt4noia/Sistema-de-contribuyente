@@ -11,13 +11,13 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-sm ">
+ <div class="rounded-2xl border border-success-soft bg-success-soft px-4 py-3 text-sm text-success-strong shadow-sm ">
  <p>{{ session('message') }}</p>
  </div>
  @endif
 
  @if (session()->has('error'))
- <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 shadow-sm ">
+ <div class="rounded-2xl border border-danger-soft bg-danger-soft px-4 py-3 text-sm text-danger-strong shadow-sm ">
  <p>{{ session('error') }}</p>
  </div>
  @endif

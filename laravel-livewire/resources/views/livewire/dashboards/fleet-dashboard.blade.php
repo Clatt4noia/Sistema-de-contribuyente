@@ -31,7 +31,7 @@
  <div class="md:col-span-2 xl:col-span-1">
  <div class="flex items-center justify-between">
  <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 ">{{ __('Asignaciones por chofer') }}</h3>
- <span class="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-600 ">{{ __('Promedio: :value', ['value' => $assignmentsAverage]) }}</span>
+ <span class="rounded-full bg-[color:var(--color-primary)] bg-opacity-10 px-3 py-1 text-xs font-semibold text-accent ">{{ __('Promedio: :value', ['value' => $assignmentsAverage]) }}</span>
  </div>
  <div class="relative mt-4 h-60">
  <canvas id="driver-assignments-chart" aria-label="{{ __('Top de asignaciones por chofer') }}" role="img"></canvas>
@@ -103,9 +103,10 @@
         <tbody>
           @php
             $badgeStyles = [
-              \App\Models\Document::STATUS_VALID => 'bg-emerald-100 text-emerald-700 ',
-              \App\Models\Document::STATUS_WARNING => 'bg-amber-100 text-amber-700 ',
-              \App\Models\Document::STATUS_EXPIRED => 'bg-rose-100 text-rose-700 ',
+              \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong ',
+              \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning ',
+              \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong ',
+
             ];
           @endphp
           @forelse ($expiringDocuments as $document)

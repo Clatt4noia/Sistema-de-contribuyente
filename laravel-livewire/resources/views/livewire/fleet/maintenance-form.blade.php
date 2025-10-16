@@ -20,13 +20,13 @@
  <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }}</option>
  @endforeach
  </select>
- @error('form.truck_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.truck_id') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="maintenance_date" class="form-label">Fecha de mantenimiento *</label>
  <input type="date" id="maintenance_date" wire:model="form.maintenance_date" class="form-control">
- @error('form.maintenance_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.maintenance_date') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
@@ -42,19 +42,19 @@
  <option value="Reparación">Reparación</option>
  <option value="Otro">Otro</option>
  </select>
- @error('form.maintenance_type') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.maintenance_type') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="cost" class="form-label">Costo *</label>
  <input type="number" step="0.01" id="cost" wire:model="form.cost" class="form-control">
- @error('form.cost') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.cost') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="odometer" class="form-label">Odómetro (km)</label>
  <input type="number" id="odometer" wire:model="form.odometer" class="form-control" placeholder="{{ __('Lectura actual del vehículo') }}">
- @error('form.odometer') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.odometer') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
@@ -66,20 +66,20 @@
  <option value="completed">Completado</option>
  <option value="cancelled">Cancelado</option>
  </select>
- @error('form.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.status') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  </div>
 
  <div class="form-field">
  <label for="description" class="form-label">Descripción</label>
  <textarea id="description" wire:model="form.description" rows="3" class="form-control"></textarea>
- @error('form.description') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.description') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="notes" class="form-label">Notas adicionales</label>
  <textarea id="notes" wire:model="form.notes" rows="3" class="form-control"></textarea>
- @error('form.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.notes') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="flex flex-wrap items-center justify-end gap-3">

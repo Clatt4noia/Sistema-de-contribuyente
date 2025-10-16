@@ -22,7 +22,8 @@
               {{ optional($invoice->client)->business_name ?? optional($invoice->client)->contact_name ?? '—' }}
             </td>
             <td class="table-cell">
-              <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 ">
+              <span class="rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success-strong ">
+
                 {{ $invoice->status ? __($invoice->status) : __('pendiente') }}
               </span>
             </td>

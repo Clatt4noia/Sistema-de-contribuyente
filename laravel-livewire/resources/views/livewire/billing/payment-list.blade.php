@@ -5,7 +5,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm " role="alert">
+ <div class="alert alert-success " role="alert">
  <p>{{ session('message') }}</p>
  </div>
  @endif

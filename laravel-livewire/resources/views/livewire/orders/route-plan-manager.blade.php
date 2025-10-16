@@ -6,7 +6,7 @@
  </div>
 
  @if (session()->has('message'))
- <span class="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ">{{ session('message') }}</span>
+ <span class="alert alert-success">{{ session('message') }}</span>
  @endif
  </div>
 
@@ -14,25 +14,25 @@
  <div class="form-field">
  <label for="planner" class="form-label">Planificador</label>
  <input id="planner" type="text" wire:model.defer="planner" class="form-control" placeholder="Operador a cargo">
- @error('planner') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('planner') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="map_url" class="form-label">URL del mapa</label>
  <input id="map_url" type="url" wire:model.defer="map_url" class="form-control" placeholder="https://maps...">
- @error('map_url') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('map_url') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field md:col-span-2">
  <label for="route_summary" class="form-label">Resumen *</label>
  <textarea id="route_summary" rows="3" wire:model.defer="route_summary" class="form-control" placeholder="Puntos clave, carreteras, riesgos..."></textarea>
- @error('route_summary') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('route_summary') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field md:col-span-2">
  <label for="route_data" class="form-label">Datos JSON</label>
  <textarea id="route_data" rows="3" wire:model.defer="route_data" class="form-control" placeholder='{"waypoints": []}'></textarea>
- @error('route_data') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('route_data') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="md:col-span-2 flex justify-end">

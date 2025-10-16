@@ -20,7 +20,7 @@
  </header>
  <div class="space-y-3 p-6 text-sm text-slate-600 ">
  <p>{{ __('Si necesitas soporte inmediato puedes escribir a nuestro equipo de operaciones o llamar al ejecutivo asignado.') }}</p>
- <p class="font-medium text-slate-900 ">{{ __('Correo de contacto:') }} <span class="font-semibold text-indigo-500 ">{{ $contactEmail }}</span></p>
+ <p class="font-medium text-slate-900 ">{{ __('Correo de contacto:') }} <span class="font-semibold text-accent-soft ">{{ $contactEmail }}</span></p>
  </div>
  </article>
  </section>
@@ -81,7 +81,8 @@
               <td class="table-cell text-sm font-medium text-slate-900 ">{{ $invoice->invoice_number ?? '—' }}</td>
               <td class="table-cell text-sm text-slate-600 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
               <td class="table-cell">
-                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 ">{{ $invoice->status ? __($invoice->status) : __('pendiente') }}</span>
+                <span class="rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success-strong ">{{ $invoice->status ? __($invoice->status) : __('pendiente') }}</span>
+
               </td>
               <td class="table-cell text-sm text-slate-600 ">{{ optional($invoice->issue_date)?->format('d/m/Y') ?? '—' }}</td>
             </tr>

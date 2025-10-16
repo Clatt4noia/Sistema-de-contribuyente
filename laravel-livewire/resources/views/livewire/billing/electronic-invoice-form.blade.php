@@ -49,7 +49,7 @@
  </div>
  <div class="flex items-center justify-between text-lg">
  <dt>Total</dt>
- <dd class="font-bold text-emerald-600 ">S/ {{ number_format($totals['total'], 2) }}</dd>
+ <dd class="font-bold text-success ">S/ {{ number_format($totals['total'], 2) }}</dd>
  </div>
  </dl>
  </div>

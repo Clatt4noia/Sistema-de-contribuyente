@@ -136,7 +136,7 @@
  <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 ">
  {{ $order['cargo_type'] }}
  @if($order['is_hazardous'])
- <x-heroicon-o-exclamation-triangle class="h-3 w-3 text-amber-500" />
+ <x-heroicon-o-exclamation-triangle class="h-3 w-3 text-warning" />
  @endif
  </span>
  @endif
@@ -257,7 +257,7 @@
  </div>
  <div class="flex items-center justify-between text-base">
  <dt class="font-semibold text-slate-600 ">Importe total</dt>
- <dd class="font-bold text-indigo-600 ">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
+ <dd class="font-bold text-accent ">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
 
  </div>
  </dl>

@@ -22,7 +22,7 @@
  <div class="space-y-4 p-6 text-sm text-slate-600 ">
  <div class="flex items-center justify-between">
  <span>{{ __('Disponibilidad de flota') }}</span>
- <span class="text-base font-semibold text-emerald-500 ">{{ number_format($availableTrucks) }}</span>
+ <span class="text-base font-semibold text-success ">{{ number_format($availableTrucks) }}</span>
  </div>
  <div class="flex items-center justify-between">
  <span>{{ __('Entregas a tiempo') }}</span>
@@ -34,11 +34,11 @@
  </div>
  <div class="flex items-center justify-between">
  <span>{{ __('Incidencias activas') }}</span>
- <span class="text-base font-semibold text-amber-500">{{ $activeIncidents }}</span>
+ <span class="text-base font-semibold text-warning">{{ $activeIncidents }}</span>
  </div>
  <div class="flex items-center justify-between">
  <span>{{ __('Reservas de inventario confirmadas') }}</span>
- <span class="text-base font-semibold text-sky-500">{{ $openReservations }}</span>
+ <span class="text-base font-semibold text-accent-soft">{{ $openReservations }}</span>
  </div>
  </div>
  </article>
@@ -107,7 +107,8 @@
                       ];
                     @endphp
 
-                    <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 ">
+                    <span class="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent ">
+
                       {{ $statusMap[$order->status ?? 'pending'] ?? 'Desconocido' }}
                     </span>
                   </td>
@@ -144,7 +145,8 @@
                 <tr class="table-row table-row-hover">
                   <td class="table-cell text-sm font-medium text-slate-900 ">{{ __($incident->type) }}</td>
                   <td class="table-cell">
-                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 ">{{ __($incident->severity) }}</span>
+                    <span class="rounded-full bg-warning-soft px-3 py-1 text-xs font-semibold text-warning ">{{ __($incident->severity) }}</span>
+
                   </td>
                   <td class="table-cell text-sm text-slate-600 ">
                     {{ optional($incident->assignment?->order)->reference ?? '—' }} · {{ optional($incident->assignment?->truck)->plate_number ?? '—' }}

@@ -3,11 +3,11 @@
  <h1 class="text-2xl font-semibold text-slate-900 ">Reporte de Flota</h1>
  <div class="flex flex-wrap items-center gap-3">
     <button type="button" wire:click="exportPdf" class="btn btn-secondary">
-        <i class="fas fa-file-pdf text-rose-500"></i>
+        <i class="fas fa-file-pdf text-danger"></i>
         PDF
     </button>
     <button type="button" wire:click="exportExcel" class="btn btn-secondary">
-        <i class="fas fa-file-excel text-emerald-500"></i>
+        <i class="fas fa-file-excel text-success"></i>
         Excel
     </button>
     <a href="{{ route('fleet.assignments.index') }}" class="btn btn-primary">Ver asignaciones</a>
@@ -91,7 +91,8 @@
  @forelse($licenseAlerts as $driver)
  <tr class="table-row table-row-hover">
  <td class="table-cell text-slate-700 ">{{ $driver->full_name }}</td>
- <td class="table-cell {{ $driver->license_expiration->isPast() ? 'text-rose-500 font-semibold ' : 'text-amber-500 font-semibold' }}">
+ <td class="table-cell {{ $driver->license_expiration->isPast() ? 'text-danger-strong font-semibold ' : 'text-warning font-semibold' }}">
+
  {{ $driver->license_expiration->format('d/m/Y') }}
  </td>
  </tr>
@@ -143,9 +144,9 @@
  <tbody>
  @php
  $statusClasses = [
- \App\Models\Document::STATUS_WARNING => 'bg-amber-100 text-amber-700 ',
- \App\Models\Document::STATUS_EXPIRED => 'bg-rose-100 text-rose-700 ',
- \App\Models\Document::STATUS_VALID => 'bg-emerald-100 text-emerald-700 ',
+ \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning ',
+ \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong ',
+ \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong ',
  ];
  @endphp
  @forelse($documentAlerts as $document)

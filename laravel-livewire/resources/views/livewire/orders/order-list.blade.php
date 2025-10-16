@@ -16,29 +16,29 @@
  </div>
  <div class="surface-card p-4 shadow-sm">
  <p class="text-sm text-slate-500 ">Pendientes</p>
- <p class="mt-1 text-2xl font-semibold text-amber-600 ">{{ $metrics['pending'] }}</p>
+ <p class="mt-1 text-2xl font-semibold text-warning ">{{ $metrics['pending'] }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
  <p class="text-sm text-slate-500 ">En ruta</p>
- <p class="mt-1 text-2xl font-semibold text-sky-600 ">{{ $metrics['en_route'] }}</p>
+ <p class="mt-1 text-2xl font-semibold text-accent ">{{ $metrics['en_route'] }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
  <p class="text-sm text-slate-500 ">Entregados</p>
- <p class="mt-1 text-2xl font-semibold text-emerald-600 ">{{ $metrics['delivered'] }}</p>
+ <p class="mt-1 text-2xl font-semibold text-success ">{{ $metrics['delivered'] }}</p>
  </div>
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-sm " role="alert">
+ <div class="alert alert-success" role="alert">
  {{ session('message') }}
- </div>
- @endif
+</div>
+@endif
 
- @if (session()->has('error'))
- <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 shadow-sm " role="alert">
+@if (session()->has('error'))
+ <div class="alert alert-danger" role="alert">
  {{ session('error') }}
- </div>
- @endif
+</div>
+@endif
 
  <div class="surface-card shadow-lg">
  <div class="grid grid-cols-1 gap-4 border-b border-slate-200 px-4 py-4 md:grid-cols-4">
@@ -78,10 +78,11 @@
           @forelse($orders as $order)
             @php
               $statusStyles = [
-                'pending' => 'bg-amber-100 text-amber-700 ',
-                'en_route' => 'bg-sky-100 text-sky-700 ',
-                'delivered' => 'bg-emerald-100 text-emerald-700 ',
-                'cancelled' => 'bg-rose-100 text-rose-700 ',
+                'pending' => 'badge badge-warning',
+                'en_route' => 'badge badge-accent',
+                'delivered' => 'badge badge-success',
+                'cancelled' => 'badge badge-danger',
+
               ];
               $statusLabel = [
                 'pending' => 'Pendiente',
@@ -102,7 +103,8 @@
                 <div>Entrega: {{ optional($order->delivery_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
               </td>
               <td class="table-cell whitespace-nowrap">
-                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusStyles[$order->status] ?? 'bg-slate-100 text-slate-700 ' }}">
+                <span class="{{ $statusStyles[$order->status] ?? 'badge badge-accent' }}">
+
                   {{ $statusLabel }}
                 </span>
               </td>

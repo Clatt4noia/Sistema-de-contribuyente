@@ -5,13 +5,13 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm " role="alert">
+ <div class="alert alert-success " role="alert">
  <p>{{ session('message') }}</p>
  </div>
  @endif
 
  @if (session()->has('error'))
- <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-600 shadow-sm " role="alert">
+ <div class="alert alert-danger " role="alert">
  <p>{{ session('error') }}</p>
  </div>
  @endif
@@ -80,9 +80,10 @@
               @php
                 $statusStyles = [
                   'draft' => 'bg-slate-200 text-slate-700 ',
-                  'issued' => 'bg-sky-100 text-sky-700 ',
-                  'paid' => 'bg-emerald-100 text-emerald-700 ',
-                  'overdue' => 'bg-rose-100 text-rose-700 ',
+                  'issued' => 'bg-accent-soft text-accent ',
+                  'paid' => 'bg-success-soft text-success-strong ',
+                  'overdue' => 'bg-danger-soft text-danger-strong ',
+
                 ];
                 $statusLabel = [
                   'draft' => 'Borrador',
@@ -102,7 +103,8 @@
                 <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
                 <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->balance) }}</td>
                 <td class="table-cell whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-gray-100 text-gray-800' }}">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-accent-soft text-accent' }}">
+
                     {{ $statusLabel }}
                   </span>
                 </td>

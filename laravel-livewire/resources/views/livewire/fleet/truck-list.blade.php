@@ -11,7 +11,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-sm ">
+ <div class="alert alert-success ">
  {{ session('message') }}
  </div>
  @endif
@@ -19,19 +19,19 @@
  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
  <div class="surface-card p-4 shadow-sm">
  <p class="text-sm text-slate-500 ">Camiones disponibles</p>
- <p class="mt-1 text-2xl font-semibold text-emerald-600 ">{{ $statusTotals['available'] ?? 0 }}</p>
+ <p class="mt-1 text-2xl font-semibold text-success ">{{ $statusTotals['available'] ?? 0 }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
  <p class="text-sm text-slate-500 ">Camiones en uso</p>
- <p class="mt-1 text-2xl font-semibold text-sky-600 ">{{ $statusTotals['in_use'] ?? 0 }}</p>
+ <p class="mt-1 text-2xl font-semibold text-accent ">{{ $statusTotals['in_use'] ?? 0 }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
  <p class="text-sm text-slate-500 ">En mantenimiento</p>
- <p class="mt-1 text-2xl font-semibold text-amber-600 ">{{ $statusTotals['maintenance'] ?? 0 }}</p>
+ <p class="mt-1 text-2xl font-semibold text-warning ">{{ $statusTotals['maintenance'] ?? 0 }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
  <p class="text-sm text-slate-500 ">Mantenimientos proximos (30 dias)</p>
- <p class="mt-1 text-2xl font-semibold text-rose-600 ">{{ $maintenanceDueSoon }}</p>
+ <p class="mt-1 text-2xl font-semibold text-danger ">{{ $maintenanceDueSoon }}</p>
  </div>
  </div>
 
@@ -49,7 +49,7 @@
  <option value="maintenance">En mantenimiento</option>
  <option value="out_of_service">Fuera de servicio</option>
  </select>
- <button type="button" wire:click="$set('status', '')" class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 ">
+ <button type="button" wire:click="$set('status', '')" class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:[background-color:var(--color-surface-muted)] ">
  Limpiar
  </button>
  </div>
@@ -75,19 +75,21 @@
         @forelse ($trucks as $truck)
           @php
             $statusStyles = [
-              'available' => ['label' => 'Disponible', 'class' => 'bg-emerald-100 text-emerald-700 '],
-              'in_use' => ['label' => 'En uso', 'class' => 'bg-sky-100 text-sky-700 '],
-              'maintenance' => ['label' => 'En mantenimiento', 'class' => 'bg-amber-100 text-amber-700 '],
-              'out_of_service' => ['label' => 'Fuera de servicio', 'class' => 'bg-rose-100 text-rose-700 '],
+              'available' => ['label' => 'Disponible', 'class' => 'bg-success-soft text-success-strong '],
+              'in_use' => ['label' => 'En uso', 'class' => 'bg-accent-soft text-accent '],
+              'maintenance' => ['label' => 'En mantenimiento', 'class' => 'bg-warning-soft text-warning '],
+              'out_of_service' => ['label' => 'Fuera de servicio', 'class' => 'bg-danger-soft text-danger-strong '],
+
             ];
             $statusConfig = $statusStyles[$truck->status] ?? $statusStyles['available'];
             $nextMaintenance = $truck->next_maintenance;
             $isPastDue = $nextMaintenance && $nextMaintenance->isPast();
             $isDueSoon = $nextMaintenance && !$isPastDue && $nextMaintenance->lessThanOrEqualTo(now()->addDays(30));
             $nextClass = $isPastDue
-              ? 'text-rose-600 font-semibold '
+              ? 'text-danger font-semibold '
               : ($isDueSoon
-                ? 'text-amber-600 font-semibold '
+                ? 'text-warning font-semibold '
+
                 : 'text-slate-700 ');
             $alertLevel = $truck->maintenanceAlertLevel();
           @endphp
@@ -108,9 +110,10 @@
             <td class="table-cell">
               <span @class([
                 'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold',
-                'bg-emerald-100 text-emerald-700 ' => $alertLevel === 'ok',
-                'bg-amber-100 text-amber-700 ' => $alertLevel === 'warning',
-                'bg-rose-100 text-rose-700 ' => $alertLevel === 'danger',
+                'bg-success-soft text-success-strong ' => $alertLevel === 'ok',
+                'bg-warning-soft text-warning ' => $alertLevel === 'warning',
+                'bg-danger-soft text-danger-strong ' => $alertLevel === 'danger',
+
               ])>
                 @switch($alertLevel)
                   @case('danger') Requiere mantenimiento @break
@@ -121,8 +124,9 @@
             </td>
             <td class="table-cell text-center text-slate-600 ">{{ $truck->pending_maintenances_count ?? 0 }}</td>
             <td class="table-cell text-right">
-              <a href="{{ route('fleet.trucks.edit', $truck) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 ">Editar</a>
-              <button wire:click="deleteTruck({{ $truck->id }})" wire:confirm="Esta seguro de eliminar este camion?" class="ml-3 font-semibold text-rose-600 transition hover:text-rose-700 ">Eliminar</button>
+              <a href="{{ route('fleet.trucks.edit', $truck) }}" class="font-semibold text-accent transition hover:text-[color:var(--color-primary-emphasis)] ">Editar</a>
+              <button wire:click="deleteTruck({{ $truck->id }})" wire:confirm="Esta seguro de eliminar este camion?" class="ml-3 font-semibold text-danger transition hover:text-danger-strong ">Eliminar</button>
+
             </td>
           </tr>
         @empty

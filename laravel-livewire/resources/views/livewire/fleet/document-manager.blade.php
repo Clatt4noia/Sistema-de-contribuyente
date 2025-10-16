@@ -17,38 +17,38 @@
  <option value="{{ $value }}">{{ $label }}</option>
  @endforeach
  </select>
- @error('form.document_type') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.document_type') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label class="form-label" for="document_title">Nombre</label>
  <input type="text" id="document_title" wire:model.defer="form.title" class="form-control" placeholder="Ej. SOAT 2025">
- @error('form.title') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.title') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label class="form-label" for="issued_at">Emitido</label>
  <input type="date" id="issued_at" wire:model.defer="form.issued_at" class="form-control">
- @error('form.issued_at') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.issued_at') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label class="form-label" for="expires_at">Vence</label>
  <input type="date" id="expires_at" wire:model.defer="form.expires_at" class="form-control">
- @error('form.expires_at') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.expires_at') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field md:col-span-2">
  <label class="form-label" for="document_notes">Notas</label>
  <textarea id="document_notes" wire:model.defer="form.notes" rows="3" class="form-control" placeholder="Observaciones opcionales"></textarea>
- @error('form.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.notes') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field md:col-span-2">
  <label class="form-label" for="document_file">Archivo</label>
  <input type="file" id="document_file" wire:model="file" class="form-control" accept="application/pdf,image/*">
  <p class="mt-1 text-xs text-slate-500 ">Formatos permitidos: PDF, JPG, PNG (máx. 10 MB).</p>
- @error('file') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('file') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="md:col-span-2 flex items-center justify-end gap-3">
@@ -77,9 +77,10 @@
       <tbody>
         @php
           $statusClasses = [
-            'valid' => 'bg-emerald-100 text-emerald-700 ',
-            'warning' => 'bg-amber-100 text-amber-700 ',
-            'expired' => 'bg-rose-100 text-rose-700 ',
+            'valid' => 'bg-success-soft text-success-strong ',
+            'warning' => 'bg-warning-soft text-warning ',
+            'expired' => 'bg-danger-soft text-danger-strong ',
+
           ];
         @endphp
         @forelse($documents as $document)

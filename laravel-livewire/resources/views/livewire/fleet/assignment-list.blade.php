@@ -8,7 +8,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm " role="alert">
+ <div class="alert alert-success " role="alert">
  <p>{{ session('message') }}</p>
  </div>
  @endif
@@ -72,10 +72,12 @@
           @forelse($assignments as $assignment)
             @php
               $statusStyles = [
-                'scheduled' => ['label' => 'Programada', 'class' => 'bg-amber-100 text-amber-700 '],
-                'in_progress' => ['label' => 'En ruta', 'class' => 'bg-sky-100 text-sky-700 '],
-                'completed' => ['label' => 'Completada', 'class' => 'bg-emerald-100 text-emerald-700 '],
-                'cancelled' => ['label' => 'Cancelada', 'class' => 'bg-rose-100 text-rose-700 '],
+                'scheduled' => ['label' => 'Programada', 'class' => 'bg-warning-soft text-warning '],
+                'in_progress' => ['label' => 'En ruta', 'class' => 'bg-accent-soft text-accent '],
+                'completed' => ['label' => 'Completada', 'class' => 'bg-success-soft text-success-strong '],
+                'cancelled' => ['label' => 'Cancelada', 'class' => 'bg-danger-soft text-danger-strong '],
+
+
               ];
               $statusConfig = $statusStyles[$assignment->status] ?? $statusStyles['scheduled'];
             @endphp
