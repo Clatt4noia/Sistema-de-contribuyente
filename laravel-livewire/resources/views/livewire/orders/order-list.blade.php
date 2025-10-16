@@ -61,80 +61,80 @@
  </div>
  </div>
 
- <div class="overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-6 py-3">Referencia</th>
- <th class="px-6 py-3">Cliente</th>
- <th class="px-6 py-3">Ruta</th>
- <th class="px-6 py-3">Fechas</th>
- <th class="px-6 py-3">Estado</th>
- <th class="px-6 py-3">Asignacion</th>
- <th class="px-6 py-3">Acciones</th>
- </tr>
- </thead>
- <tbody>
- @forelse($orders as $order)
- @php
- $statusStyles = [
- 'pending' => 'bg-amber-100 text-amber-700 ',
- 'en_route' => 'bg-sky-100 text-sky-700 ',
- 'delivered' => 'bg-emerald-100 text-emerald-700 ',
- 'cancelled' => 'bg-rose-100 text-rose-700 ',
- ];
- $statusLabel = [
- 'pending' => 'Pendiente',
- 'en_route' => 'En ruta',
- 'delivered' => 'Entregado',
- 'cancelled' => 'Cancelado',
- ][$order->status] ?? 'Pendiente';
- @endphp
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ $order->reference }}</td>
- <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $order->client->business_name }}</td>
- <td class="px-6 py-4 text-sm text-slate-600 ">
- <div>{{ $order->origin }} → {{ $order->destination }}</div>
- <div class="text-xs text-slate-400 ">{{ \Illuminate\Support\Str::limit($order->cargo_details, 60) }}</div>
- </td>
- <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">
- <div>Recojo: {{ optional($order->pickup_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
- <div>Entrega: {{ optional($order->delivery_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
- </td>
- <td class="px-6 py-4 whitespace-nowrap">
- <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusStyles[$order->status] ?? 'bg-slate-100 text-slate-700 ' }}">
- {{ $statusLabel }}
- </span>
- </td>
- <td class="px-6 py-4 text-sm text-slate-600 ">
- @if($order->activeAssignment)
- <div>{{ $order->activeAssignment->truck->plate_number }} / {{ $order->activeAssignment->driver->name }}</div>
- <div class="text-xs text-slate-400 ">{{ $order->activeAssignment->status }}</div>
- @else
- <span class="text-xs text-slate-400 ">Sin asignacion activa</span>
- @endif
- </td>
- <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
- <div class="flex flex-wrap items-center gap-3">
-        <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-ghost btn-sm">Editar</a>
-        <a href="{{ route('fleet.assignments.index', ['order' => $order->id]) }}" class="btn btn-secondary btn-sm">Asignaciones</a>
-        <button wire:click="updateOrderStatus({{ $order->id }}, 'en_route')" class="btn btn-secondary btn-sm">Marcar en ruta</button>
-        <button wire:click="updateOrderStatus({{ $order->id }}, 'delivered')" class="btn btn-primary btn-sm">Marcar entregado</button>
-        <button wire:click="deleteOrder({{ $order->id }})" wire:confirm="Esta seguro de eliminar el pedido?" class="btn btn-danger btn-sm">Eliminar</button>
- </div>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="7" class="px-6 py-4 text-center text-sm text-slate-500 ">No se encontraron pedidos</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">Referencia</th>
+            <th class="table-header">Cliente</th>
+            <th class="table-header">Ruta</th>
+            <th class="table-header">Fechas</th>
+            <th class="table-header">Estado</th>
+            <th class="table-header">Asignacion</th>
+            <th class="table-header">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($orders as $order)
+            @php
+              $statusStyles = [
+                'pending' => 'bg-amber-100 text-amber-700 ',
+                'en_route' => 'bg-sky-100 text-sky-700 ',
+                'delivered' => 'bg-emerald-100 text-emerald-700 ',
+                'cancelled' => 'bg-rose-100 text-rose-700 ',
+              ];
+              $statusLabel = [
+                'pending' => 'Pendiente',
+                'en_route' => 'En ruta',
+                'delivered' => 'Entregado',
+                'cancelled' => 'Cancelado',
+              ][$order->status] ?? 'Pendiente';
+            @endphp
+            <tr class="table-row table-row-hover">
+              <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ $order->reference }}</td>
+              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $order->client->business_name }}</td>
+              <td class="table-cell text-sm text-slate-600 ">
+                <div>{{ $order->origin }} → {{ $order->destination }}</div>
+                <div class="text-xs text-slate-400 ">{{ \Illuminate\Support\Str::limit($order->cargo_details, 60) }}</div>
+              </td>
+              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">
+                <div>Recojo: {{ optional($order->pickup_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
+                <div>Entrega: {{ optional($order->delivery_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
+              </td>
+              <td class="table-cell whitespace-nowrap">
+                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusStyles[$order->status] ?? 'bg-slate-100 text-slate-700 ' }}">
+                  {{ $statusLabel }}
+                </span>
+              </td>
+              <td class="table-cell text-sm text-slate-600 ">
+                @if($order->activeAssignment)
+                  <div>{{ $order->activeAssignment->truck->plate_number }} / {{ $order->activeAssignment->driver->name }}</div>
+                  <div class="text-xs text-slate-400 ">{{ $order->activeAssignment->status }}</div>
+                @else
+                  <span class="text-xs text-slate-400 ">Sin asignacion activa</span>
+                @endif
+              </td>
+              <td class="table-cell whitespace-nowrap text-sm font-medium">
+                <div class="flex flex-wrap items-center gap-3">
+                  <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-ghost btn-sm">Editar</a>
+                  <a href="{{ route('fleet.assignments.index', ['order' => $order->id]) }}" class="btn btn-secondary btn-sm">Asignaciones</a>
+                  <button wire:click="updateOrderStatus({{ $order->id }}, 'en_route')" class="btn btn-secondary btn-sm">Marcar en ruta</button>
+                  <button wire:click="updateOrderStatus({{ $order->id }}, 'delivered')" class="btn btn-primary btn-sm">Marcar entregado</button>
+                  <button wire:click="deleteOrder({{ $order->id }})" wire:confirm="Esta seguro de eliminar el pedido?" class="btn btn-danger btn-sm">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="7" class="table-empty">No se encontraron pedidos</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
 
- <div class="border-t border-slate-200 bg-slate-50 px-4 py-3 ">
- {{ $orders->links() }}
- </div>
+    <div class="table-footer">
+      {{ $orders->links() }}
+    </div>
  </div>
 </div>

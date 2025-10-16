@@ -135,35 +135,35 @@
  'cancelled' => ['label' => 'Cancelado', 'class' => 'bg-rose-100 text-rose-700 '],
  ];
  @endphp
- <div class="mt-6 overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-4 py-2">Fecha</th>
- <th class="px-4 py-2">Tipo</th>
- <th class="px-4 py-2">Estado</th>
- <th class="px-4 py-2">Costo</th>
- </tr>
- </thead>
- <tbody>
- @foreach($maintenanceHistory as $history)
- @php($status = $statusTags[$history['status']] ?? $statusTags['scheduled'])
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-4 py-2 text-slate-700 ">{{ $history['date'] }}</td>
- <td class="px-4 py-2 text-slate-700 ">{{ $history['type'] }}</td>
- <td class="px-4 py-2">
- <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $status['class'] }}">
- {{ $status['label'] }}
- </span>
- </td>
- <td class="px-4 py-2 text-slate-700 ">
- {{ $history['cost'] !== null ? \App\Support\Formatters\MoneyFormatter::pen((float) $history['cost']) : 'Sin costo' }}
- </td>
- </tr>
- @endforeach
- </tbody>
- </table>
- </div>
+    <div class="mt-6 overflow-x-auto">
+      <table class="table table-sm">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">Fecha</th>
+            <th class="table-header">Tipo</th>
+            <th class="table-header">Estado</th>
+            <th class="table-header">Costo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($maintenanceHistory as $history)
+            @php($status = $statusTags[$history['status']] ?? $statusTags['scheduled'])
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-slate-700 ">{{ $history['date'] }}</td>
+              <td class="table-cell text-slate-700 ">{{ $history['type'] }}</td>
+              <td class="table-cell">
+                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $status['class'] }}">
+                  {{ $status['label'] }}
+                </span>
+              </td>
+              <td class="table-cell text-slate-700 ">
+                {{ $history['cost'] !== null ? \App\Support\Formatters\MoneyFormatter::pen((float) $history['cost']) : 'Sin costo' }}
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
  @else
  <p class="mt-6 text-sm text-slate-500 ">Sin registros de mantenimiento para este vehiculo.</p>
  @endif
