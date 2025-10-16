@@ -50,79 +50,77 @@
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Próximas asignaciones') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Camión') }}</th>
- <th class="px-4 py-3">{{ __('Chofer') }}</th>
- <th class="px-4 py-3">{{ __('Orden') }}</th>
- <th class="px-4 py-3">{{ __('Inicio') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($upcomingAssignments as $assignment)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ optional($assignment->truck)->plate_number ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($assignment->driver)->full_name ?? optional($assignment->driver)->name ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($assignment->order)->reference ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($assignment->start_date)?->format('d/m/Y H:i') ?? '—' }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('Sin asignaciones próximas.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+        <div class="overflow-x-auto">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">{{ __('Camión') }}</th>
+                <th class="table-header">{{ __('Chofer') }}</th>
+                <th class="table-header">{{ __('Orden') }}</th>
+                <th class="table-header">{{ __('Inicio') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse ($upcomingAssignments as $assignment)
+                <tr class="table-row table-row-hover">
+                  <td class="table-cell text-sm font-medium text-slate-900 ">{{ optional($assignment->truck)->plate_number ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($assignment->driver)->full_name ?? optional($assignment->driver)->name ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($assignment->order)->reference ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($assignment->start_date)?->format('d/m/Y H:i') ?? '—' }}</td>
+                </tr>
+              @empty
+                <tr class="table-row">
+                  <td colspan="4" class="table-empty">{{ __('Sin asignaciones próximas.') }}</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
  </article>
 
  <article class="surface-card">
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Órdenes recientes') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Referencia') }}</th>
- <th class="px-4 py-3">{{ __('Cliente') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- <th class="px-4 py-3">{{ __('Recolección') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($recentOrders as $order)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ $order->reference ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($order->client)->business_name ?? optional($order->client)->contact_name ?? '—' }}</td>
- <td class="px-4 py-3">
- @php
- $statusMap = [
- 'pending' => 'Pendiente',
- 'en_route' => 'En ruta',
- 'delivered' => 'Entregado',
- 'cancelled' => 'Cancelado',
- ];
- @endphp
+        <div class="overflow-x-auto">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">{{ __('Referencia') }}</th>
+                <th class="table-header">{{ __('Cliente') }}</th>
+                <th class="table-header">{{ __('Estado') }}</th>
+                <th class="table-header">{{ __('Recolección') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse ($recentOrders as $order)
+                <tr class="table-row table-row-hover">
+                  <td class="table-cell text-sm font-medium text-slate-900 ">{{ $order->reference ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($order->client)->business_name ?? optional($order->client)->contact_name ?? '—' }}</td>
+                  <td class="table-cell">
+                    @php
+                      $statusMap = [
+                        'pending' => 'Pendiente',
+                        'en_route' => 'En ruta',
+                        'delivered' => 'Entregado',
+                        'cancelled' => 'Cancelado',
+                      ];
+                    @endphp
 
- <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 ">
- {{ $statusMap[$order->status ?? 'pending'] ?? 'Desconocido' }}
- </span>
- </td>
-
-
- <td class="px-4 py-3 text-slate-600 ">{{ optional($order->pickup_date)?->format('d/m/Y') ?? '—' }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('Registra órdenes para visualizar actividad reciente.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+                    <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 ">
+                      {{ $statusMap[$order->status ?? 'pending'] ?? 'Desconocido' }}
+                    </span>
+                  </td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($order->pickup_date)?->format('d/m/Y') ?? '—' }}</td>
+                </tr>
+              @empty
+                <tr class="table-row">
+                  <td colspan="4" class="table-empty">{{ __('Registra órdenes para visualizar actividad reciente.') }}</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
  </article>
  </section>
 
@@ -131,68 +129,68 @@
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Incidencias en ruta') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Tipo') }}</th>
- <th class="px-4 py-3">{{ __('Severidad') }}</th>
- <th class="px-4 py-3">{{ __('Asignación') }}</th>
- <th class="px-4 py-3">{{ __('Reportado') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($recentIncidents as $incident)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ __($incident->type) }}</td>
- <td class="px-4 py-3">
- <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 ">{{ __($incident->severity) }}</span>
- </td>
- <td class="px-4 py-3 text-slate-600 ">
- {{ optional($incident->assignment?->order)->reference ?? '—' }} · {{ optional($incident->assignment?->truck)->plate_number ?? '—' }}
- </td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($incident->reported_at)?->format('d/m/Y H:i') ?? '—' }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('No hay incidencias registradas recientemente.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+        <div class="overflow-x-auto">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">{{ __('Tipo') }}</th>
+                <th class="table-header">{{ __('Severidad') }}</th>
+                <th class="table-header">{{ __('Asignación') }}</th>
+                <th class="table-header">{{ __('Reportado') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse ($recentIncidents as $incident)
+                <tr class="table-row table-row-hover">
+                  <td class="table-cell text-sm font-medium text-slate-900 ">{{ __($incident->type) }}</td>
+                  <td class="table-cell">
+                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 ">{{ __($incident->severity) }}</span>
+                  </td>
+                  <td class="table-cell text-sm text-slate-600 ">
+                    {{ optional($incident->assignment?->order)->reference ?? '—' }} · {{ optional($incident->assignment?->truck)->plate_number ?? '—' }}
+                  </td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($incident->reported_at)?->format('d/m/Y H:i') ?? '—' }}</td>
+                </tr>
+              @empty
+                <tr class="table-row">
+                  <td colspan="4" class="table-empty">{{ __('No hay incidencias registradas recientemente.') }}</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
  </article>
 
  <article class="surface-card">
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Historial de rutas') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Pedido') }}</th>
- <th class="px-4 py-3">{{ __('Planificador') }}</th>
- <th class="px-4 py-3">{{ __('Distancia (km)') }}</th>
- <th class="px-4 py-3">{{ __('Actualizado') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($routeHistory as $plan)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ optional($plan->order)->reference ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $plan->planner ?? __('Sistema') }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ data_get($plan->route_data, 'distance_km') ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($plan->updated_at)?->diffForHumans() }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('No se han registrado rutas aún.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+        <div class="overflow-x-auto">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">{{ __('Pedido') }}</th>
+                <th class="table-header">{{ __('Planificador') }}</th>
+                <th class="table-header">{{ __('Distancia (km)') }}</th>
+                <th class="table-header">{{ __('Actualizado') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse ($routeHistory as $plan)
+                <tr class="table-row table-row-hover">
+                  <td class="table-cell text-sm font-medium text-slate-900 ">{{ optional($plan->order)->reference ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ $plan->planner ?? __('Sistema') }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ data_get($plan->route_data, 'distance_km') ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($plan->updated_at)?->diffForHumans() }}</td>
+                </tr>
+              @empty
+                <tr class="table-row">
+                  <td colspan="4" class="table-empty">{{ __('No se han registrado rutas aún.') }}</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
  </article>
  </section>
 
@@ -210,32 +208,32 @@
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Últimas posiciones reportadas') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Vehículo') }}</th>
- <th class="px-4 py-3">{{ __('Pedido') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- <th class="px-4 py-3">{{ __('Reportado') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($latestTracking as $tracking)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ optional($tracking->truck)->plate_number ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($tracking->assignment?->order)->reference ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ __($tracking->status) }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($tracking->reported_at)?->format('d/m/Y H:i') ?? '—' }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('Sin reportes recientes de GPS.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+        <div class="overflow-x-auto">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">{{ __('Vehículo') }}</th>
+                <th class="table-header">{{ __('Pedido') }}</th>
+                <th class="table-header">{{ __('Estado') }}</th>
+                <th class="table-header">{{ __('Reportado') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse ($latestTracking as $tracking)
+                <tr class="table-row table-row-hover">
+                  <td class="table-cell text-sm font-medium text-slate-900 ">{{ optional($tracking->truck)->plate_number ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($tracking->assignment?->order)->reference ?? '—' }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ __($tracking->status) }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ optional($tracking->reported_at)?->format('d/m/Y H:i') ?? '—' }}</td>
+                </tr>
+              @empty
+                <tr class="table-row">
+                  <td colspan="4" class="table-empty">{{ __('Sin reportes recientes de GPS.') }}</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
  </article>
  </section>
 </div>

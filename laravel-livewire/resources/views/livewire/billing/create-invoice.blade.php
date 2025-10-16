@@ -188,58 +188,57 @@
  @endif
 
 
- <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm ">
- <table class="min-w-full divide-y divide-slate-200 ">
- <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3 text-left">Cantidad</th>
- <th class="px-4 py-3 text-left">Descripción</th>
- <th class="px-4 py-3 text-right">Precio unit.</th>
- <th class="px-4 py-3 text-right">Base imponible</th>
+      <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm ">
+        <table class="table table-md">
+          <thead>
+            <tr class="table-row">
+              <th class="table-header text-left">Cantidad</th>
+              <th class="table-header text-left">Descripción</th>
+              <th class="table-header text-right">Precio unit.</th>
+              <th class="table-header text-right">Base imponible</th>
 
- <th class="px-4 py-3 text-right">Acciones</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-200/70 bg-white text-sm ">
- @forelse($invoiceItems as $index => $item)
- <tr wire:key="item-{{ $item['order_id'] ?? $index }}">
+              <th class="table-header text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white text-sm">
+            @forelse($invoiceItems as $index => $item)
+              <tr class="table-row" wire:key="item-{{ $item['order_id'] ?? $index }}">
 
- <td class="px-4 py-3">
- <input type="number" min="0" step="0.01" wire:model.lazy="invoiceItems.{{ $index }}.quantity"
- wire:change="updateQuantity({{ $index }}, $event.target.value)"
- class="form-control text-right" />
- </td>
- <td class="px-4 py-3">
- <div class="font-medium text-slate-900 ">{{ $item['description'] }}</div>
- <div class="text-xs text-slate-500 ">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
- @if(!empty($item['cargo_type']))
- <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 ">
- {{ $item['cargo_type'] }}
- </div>
- @endif
- </td>
- <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
- <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
+                <td class="table-cell">
+                  <input type="number" min="0" step="0.01" wire:model.lazy="invoiceItems.{{ $index }}.quantity"
+                    wire:change="updateQuantity({{ $index }}, $event.target.value)"
+                    class="form-control text-right" />
+                </td>
+                <td class="table-cell">
+                  <div class="font-medium text-slate-900 ">{{ $item['description'] }}</div>
+                  <div class="text-xs text-slate-500 ">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
+                  @if(!empty($item['cargo_type']))
+                    <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 ">
+                      {{ $item['cargo_type'] }}
+                    </div>
+                  @endif
+                </td>
+                <td class="table-cell text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
+                <td class="table-cell text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
 
- <td class="px-4 py-3 text-right">
-        <button type="button" wire:click="removeItem({{ $index }})"
-            class="btn btn-danger btn-sm">
-            <x-heroicon-o-trash class="h-4 w-4" />
-            Eliminar
-        </button>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500 ">
- No se han agregado pedidos. Utilice el buscador para añadir ítems.
-
- </td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+                <td class="table-cell text-right">
+                  <button type="button" wire:click="removeItem({{ $index }})"
+                    class="btn btn-danger btn-sm">
+                    <x-heroicon-o-trash class="h-4 w-4" />
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            @empty
+              <tr class="table-row">
+                <td colspan="5" class="table-empty">
+                  No se han agregado pedidos. Utilice el buscador para añadir ítems.
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
  @error('invoiceItems') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  </div>

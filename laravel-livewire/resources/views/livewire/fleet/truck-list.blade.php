@@ -55,87 +55,87 @@
  </div>
  </div>
 
- <div class="overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-6 py-3">Placa</th>
- <th class="px-6 py-3">Marca/Modelo</th>
- <th class="px-6 py-3">Ano</th>
- <th class="px-6 py-3">Tipo</th>
- <th class="px-6 py-3">Kilometraje</th>
- <th class="px-6 py-3">Estado</th>
- <th class="px-6 py-3">Prox. Mant.</th>
- <th class="px-6 py-3">Alerta</th>
- <th class="px-6 py-3 text-center">Pend. Mant.</th>
- <th class="px-6 py-3 text-right">Acciones</th>
- </tr>
- </thead>
- <tbody>
- @forelse ($trucks as $truck)
- @php
- $statusStyles = [
- 'available' => ['label' => 'Disponible', 'class' => 'bg-emerald-100 text-emerald-700 '],
- 'in_use' => ['label' => 'En uso', 'class' => 'bg-sky-100 text-sky-700 '],
- 'maintenance' => ['label' => 'En mantenimiento', 'class' => 'bg-amber-100 text-amber-700 '],
- 'out_of_service' => ['label' => 'Fuera de servicio', 'class' => 'bg-rose-100 text-rose-700 '],
- ];
- $statusConfig = $statusStyles[$truck->status] ?? $statusStyles['available'];
- $nextMaintenance = $truck->next_maintenance;
- $isPastDue = $nextMaintenance && $nextMaintenance->isPast();
- $isDueSoon = $nextMaintenance && !$isPastDue && $nextMaintenance->lessThanOrEqualTo(now()->addDays(30));
- $nextClass = $isPastDue
- ? 'text-rose-600 font-semibold '
- : ($isDueSoon
- ? 'text-amber-600 font-semibold '
- : 'text-slate-700 ');
- $alertLevel = $truck->maintenanceAlertLevel();
- @endphp
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-6 py-3 font-medium text-slate-900 ">{{ $truck->plate_number }}</td>
- <td class="px-6 py-3 text-slate-600 ">{{ $truck->brand }} {{ $truck->model }}</td>
- <td class="px-6 py-3 text-slate-600 ">{{ $truck->year }}</td>
- <td class="px-6 py-3 text-slate-600 ">{{ $truck->type }}</td>
- <td class="px-6 py-3 text-slate-600 ">{{ number_format($truck->mileage ?? 0) }} km</td>
- <td class="px-6 py-3">
- <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusConfig['class'] }}">
- {{ $statusConfig['label'] }}
- </span>
- </td>
- <td class="px-6 py-3 {{ $nextClass }}">
- {{ $nextMaintenance ? $nextMaintenance->format('d/m/Y') : 'No programado' }}
- </td>
- <td class="px-6 py-3">
- <span @class([
- 'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold',
- 'bg-emerald-100 text-emerald-700 ' => $alertLevel === 'ok',
- 'bg-amber-100 text-amber-700 ' => $alertLevel === 'warning',
- 'bg-rose-100 text-rose-700 ' => $alertLevel === 'danger',
- ])>
- @switch($alertLevel)
- @case('danger') Requiere mantenimiento @break
- @case('warning') Revisar pronto @break
- @default Sin alertas
- @endswitch
- </span>
- </td>
- <td class="px-6 py-3 text-center text-slate-600 ">{{ $truck->pending_maintenances_count ?? 0 }}</td>
- <td class="px-6 py-3 text-right">
- <a href="{{ route('fleet.trucks.edit', $truck) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 ">Editar</a>
- <button wire:click="deleteTruck({{ $truck->id }})" wire:confirm="Esta seguro de eliminar este camion?" class="ml-3 font-semibold text-rose-600 transition hover:text-rose-700 ">Eliminar</button>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="10" class="px-6 py-6 text-center text-slate-500 ">No hay camiones registrados.</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+  <div class="overflow-x-auto">
+    <table class="table table-md">
+      <thead>
+        <tr class="table-row">
+          <th class="table-header">Placa</th>
+          <th class="table-header">Marca/Modelo</th>
+          <th class="table-header">Ano</th>
+          <th class="table-header">Tipo</th>
+          <th class="table-header">Kilometraje</th>
+          <th class="table-header">Estado</th>
+          <th class="table-header">Prox. Mant.</th>
+          <th class="table-header">Alerta</th>
+          <th class="table-header text-center">Pend. Mant.</th>
+          <th class="table-header text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @forelse ($trucks as $truck)
+          @php
+            $statusStyles = [
+              'available' => ['label' => 'Disponible', 'class' => 'bg-emerald-100 text-emerald-700 '],
+              'in_use' => ['label' => 'En uso', 'class' => 'bg-sky-100 text-sky-700 '],
+              'maintenance' => ['label' => 'En mantenimiento', 'class' => 'bg-amber-100 text-amber-700 '],
+              'out_of_service' => ['label' => 'Fuera de servicio', 'class' => 'bg-rose-100 text-rose-700 '],
+            ];
+            $statusConfig = $statusStyles[$truck->status] ?? $statusStyles['available'];
+            $nextMaintenance = $truck->next_maintenance;
+            $isPastDue = $nextMaintenance && $nextMaintenance->isPast();
+            $isDueSoon = $nextMaintenance && !$isPastDue && $nextMaintenance->lessThanOrEqualTo(now()->addDays(30));
+            $nextClass = $isPastDue
+              ? 'text-rose-600 font-semibold '
+              : ($isDueSoon
+                ? 'text-amber-600 font-semibold '
+                : 'text-slate-700 ');
+            $alertLevel = $truck->maintenanceAlertLevel();
+          @endphp
+          <tr class="table-row table-row-hover">
+            <td class="table-cell font-medium text-slate-900 ">{{ $truck->plate_number }}</td>
+            <td class="table-cell text-slate-600 ">{{ $truck->brand }} {{ $truck->model }}</td>
+            <td class="table-cell text-slate-600 ">{{ $truck->year }}</td>
+            <td class="table-cell text-slate-600 ">{{ $truck->type }}</td>
+            <td class="table-cell text-slate-600 ">{{ number_format($truck->mileage ?? 0) }} km</td>
+            <td class="table-cell">
+              <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusConfig['class'] }}">
+                {{ $statusConfig['label'] }}
+              </span>
+            </td>
+            <td class="table-cell {{ $nextClass }}">
+              {{ $nextMaintenance ? $nextMaintenance->format('d/m/Y') : 'No programado' }}
+            </td>
+            <td class="table-cell">
+              <span @class([
+                'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold',
+                'bg-emerald-100 text-emerald-700 ' => $alertLevel === 'ok',
+                'bg-amber-100 text-amber-700 ' => $alertLevel === 'warning',
+                'bg-rose-100 text-rose-700 ' => $alertLevel === 'danger',
+              ])>
+                @switch($alertLevel)
+                  @case('danger') Requiere mantenimiento @break
+                  @case('warning') Revisar pronto @break
+                  @default Sin alertas
+                @endswitch
+              </span>
+            </td>
+            <td class="table-cell text-center text-slate-600 ">{{ $truck->pending_maintenances_count ?? 0 }}</td>
+            <td class="table-cell text-right">
+              <a href="{{ route('fleet.trucks.edit', $truck) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 ">Editar</a>
+              <button wire:click="deleteTruck({{ $truck->id }})" wire:confirm="Esta seguro de eliminar este camion?" class="ml-3 font-semibold text-rose-600 transition hover:text-rose-700 ">Eliminar</button>
+            </td>
+          </tr>
+        @empty
+          <tr class="table-row">
+            <td colspan="10" class="table-empty">No hay camiones registrados.</td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 
- <div class="border-t border-slate-200 px-4 py-3 ">
- {{ $trucks->links() }}
- </div>
+  <div class="table-footer">
+      {{ $trucks->links() }}
+    </div>
  </div>
 </div>

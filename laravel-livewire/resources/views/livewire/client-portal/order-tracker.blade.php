@@ -83,28 +83,28 @@
  @endif
 
  @if ($order->assignments->isNotEmpty())
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Vehículo') }}</th>
- <th class="px-4 py-3">{{ __('Conductor') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- <th class="px-4 py-3">{{ __('Inicio') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @foreach ($order->assignments as $assignment)
- <tr>
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ optional($assignment->truck)->plate_number ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($assignment->driver)->full_name ?? optional($assignment->driver)->name ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ __($assignment->status) }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($assignment->start_date)?->format('d/m/Y H:i') ?? '—' }}</td>
- </tr>
- @endforeach
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-sm text-sm">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Vehículo') }}</th>
+            <th class="table-header">{{ __('Conductor') }}</th>
+            <th class="table-header">{{ __('Estado') }}</th>
+            <th class="table-header">{{ __('Inicio') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($order->assignments as $assignment)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell font-medium text-slate-900 ">{{ optional($assignment->truck)->plate_number ?? '—' }}</td>
+              <td class="table-cell text-slate-600 ">{{ optional($assignment->driver)->full_name ?? optional($assignment->driver)->name ?? '—' }}</td>
+              <td class="table-cell text-slate-600 ">{{ __($assignment->status) }}</td>
+              <td class="table-cell text-slate-600 ">{{ optional($assignment->start_date)?->format('d/m/Y H:i') ?? '—' }}</td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
  @endif
 
  <form wire:submit.prevent="updateWindow({{ $order->id }})" class="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 ">

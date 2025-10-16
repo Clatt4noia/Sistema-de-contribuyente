@@ -58,73 +58,73 @@
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Mantenimientos próximos') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Camión') }}</th>
- <th class="px-4 py-3">{{ __('Tipo') }}</th>
- <th class="px-4 py-3">{{ __('Fecha') }}</th>
- <th class="px-4 py-3">{{ __('Responsable') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($upcomingMaintenances as $maintenance)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ optional($maintenance->truck)->plate_number ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $maintenance->type ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($maintenance->scheduled_at)?->format('d/m/Y') ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($maintenance->responsible)->name ?? '—' }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('No hay mantenimientos programados.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Camión') }}</th>
+            <th class="table-header">{{ __('Tipo') }}</th>
+            <th class="table-header">{{ __('Fecha') }}</th>
+            <th class="table-header">{{ __('Responsable') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse ($upcomingMaintenances as $maintenance)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-sm font-medium text-slate-900 ">{{ optional($maintenance->truck)->plate_number ?? '—' }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ $maintenance->type ?? '—' }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ optional($maintenance->scheduled_at)?->format('d/m/Y') ?? '—' }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ optional($maintenance->responsible)->name ?? '—' }}</td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="4" class="table-empty">{{ __('No hay mantenimientos programados.') }}</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
  </article>
 
  <article class="surface-card">
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Documentos próximos a vencer') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Recurso') }}</th>
- <th class="px-4 py-3">{{ __('Documento') }}</th>
- <th class="px-4 py-3">{{ __('Vencimiento') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @php
- $badgeStyles = [
- \App\Models\Document::STATUS_VALID => 'bg-emerald-100 text-emerald-700 ',
- \App\Models\Document::STATUS_WARNING => 'bg-amber-100 text-amber-700 ',
- \App\Models\Document::STATUS_EXPIRED => 'bg-rose-100 text-rose-700 ',
- ];
- @endphp
- @forelse ($expiringDocuments as $document)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ $document->resource_label }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $document->name ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($document->expires_at)?->format('d/m/Y') ?? '—' }}</td>
- <td class="px-4 py-3">
- <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $badgeStyles[$document->status] ?? $badgeStyles[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label ?? __('Pendiente') }}</span>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('Registra documentos para mantener trazabilidad.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Recurso') }}</th>
+            <th class="table-header">{{ __('Documento') }}</th>
+            <th class="table-header">{{ __('Vencimiento') }}</th>
+            <th class="table-header">{{ __('Estado') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @php
+            $badgeStyles = [
+              \App\Models\Document::STATUS_VALID => 'bg-emerald-100 text-emerald-700 ',
+              \App\Models\Document::STATUS_WARNING => 'bg-amber-100 text-amber-700 ',
+              \App\Models\Document::STATUS_EXPIRED => 'bg-rose-100 text-rose-700 ',
+            ];
+          @endphp
+          @forelse ($expiringDocuments as $document)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-sm font-medium text-slate-900 ">{{ $document->resource_label }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ $document->name ?? '—' }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ optional($document->expires_at)?->format('d/m/Y') ?? '—' }}</td>
+              <td class="table-cell">
+                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $badgeStyles[$document->status] ?? $badgeStyles[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label ?? __('Pendiente') }}</span>
+              </td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="4" class="table-empty">{{ __('Registra documentos para mantener trazabilidad.') }}</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
  </article>
  </section>
 

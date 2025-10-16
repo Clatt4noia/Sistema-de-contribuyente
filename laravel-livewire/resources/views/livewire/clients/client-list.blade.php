@@ -33,65 +33,65 @@
  <div class="text-sm font-medium text-slate-500 ">Total: {{ $clients->total() }}</div>
  </div>
 
- <div class="overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-6 py-3">Razón social</th>
- <th class="px-6 py-3">RUC</th>
- <th class="px-6 py-3">Contacto</th>
- <th class="px-6 py-3">Teléfono</th>
- <th class="px-6 py-3">Notas</th>
- <th class="px-6 py-3">Acciones</th>
- </tr>
- </thead>
- <tbody>
- @forelse($clients as $client)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-6 py-4 text-sm font-semibold text-slate-900 ">
- {{ $client->business_name }}
- </td>
- <td class="px-6 py-4 text-sm text-slate-600 ">{{ $client->tax_id }}</td>
- <td class="px-6 py-4 text-sm text-slate-600 ">
- <div>{{ $client->contact_name ?: 'Sin contacto' }}</div>
- <div class="text-xs text-slate-400 ">{{ $client->email }}</div>
- </td>
- <td class="px-6 py-4 text-sm text-slate-600 ">{{ $client->phone ?: '-' }}</td>
- <td class="px-6 py-4 text-sm text-slate-600 ">
- {{ \Illuminate\Support\Str::limit($client->notes, 60) }}
- </td>
- <td class="px-6 py-4 text-sm font-semibold text-slate-600 ">
- <div class="flex flex-wrap items-center gap-3">
-        <a
-            href="{{ route('clients.edit', $client->id) }}"
-            class="btn btn-ghost btn-sm"
-        >
-            Editar
-        </a>
-        <button
-            type="button"
-            wire:click="deleteClient({{ $client->id }})"
-            wire:confirm="Eliminar este cliente?"
-            class="btn btn-danger btn-sm"
-        >
-            Eliminar
-        </button>
- </div>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="6" class="px-6 py-8 text-center text-sm font-medium text-slate-500 ">
- No se encontraron clientes
- </td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+  <div class="overflow-x-auto">
+    <table class="table table-md">
+      <thead>
+        <tr class="table-row">
+          <th class="table-header">Razón social</th>
+          <th class="table-header">RUC</th>
+          <th class="table-header">Contacto</th>
+          <th class="table-header">Teléfono</th>
+          <th class="table-header">Notas</th>
+          <th class="table-header">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @forelse($clients as $client)
+          <tr class="table-row table-row-hover">
+            <td class="table-cell text-sm font-semibold text-slate-900 ">
+              {{ $client->business_name }}
+            </td>
+            <td class="table-cell text-sm text-slate-600 ">{{ $client->tax_id }}</td>
+            <td class="table-cell text-sm text-slate-600 ">
+              <div>{{ $client->contact_name ?: 'Sin contacto' }}</div>
+              <div class="text-xs text-slate-400 ">{{ $client->email }}</div>
+            </td>
+            <td class="table-cell text-sm text-slate-600 ">{{ $client->phone ?: '-' }}</td>
+            <td class="table-cell text-sm text-slate-600 ">
+              {{ \Illuminate\Support\Str::limit($client->notes, 60) }}
+            </td>
+            <td class="table-cell text-sm font-semibold text-slate-600 ">
+              <div class="flex flex-wrap items-center gap-3">
+                <a
+                  href="{{ route('clients.edit', $client->id) }}"
+                  class="btn btn-ghost btn-sm"
+                >
+                  Editar
+                </a>
+                <button
+                  type="button"
+                  wire:click="deleteClient({{ $client->id }})"
+                  wire:confirm="Eliminar este cliente?"
+                  class="btn btn-danger btn-sm"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        @empty
+          <tr class="table-row">
+            <td colspan="6" class="table-empty">
+              No se encontraron clientes
+            </td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 
- <div class="border-t border-slate-200 bg-slate-50 px-6 py-4 ">
- {{ $clients->links() }}
- </div>
+  <div class="table-footer bg-slate-50">
+      {{ $clients->links() }}
+    </div>
  </div>
 </div>

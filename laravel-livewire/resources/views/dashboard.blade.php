@@ -191,30 +191,30 @@
  </div>
  <span class="surface-pill border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700 ">Stock</span>
  </div>
- <div class="mt-4 overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">Placa</th>
- <th class="px-4 py-3">Modelo</th>
- <th class="px-4 py-3">Estado</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @foreach(\App\Models\Truck::where('status', 'available')->orderBy('plate_number')->take(5)->get() as $truck)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ $truck->plate_number }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $truck->brand }} {{ $truck->model }}</td>
- <td class="px-4 py-3">
- <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 ">
- Disponible
- </span>
- </td>
- </tr>
- @endforeach
- </tbody>
- </table>
- </div>
+        <div class="mt-4 overflow-x-auto">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">Placa</th>
+                <th class="table-header">Modelo</th>
+                <th class="table-header">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach(\App\Models\Truck::where('status', 'available')->orderBy('plate_number')->take(5)->get() as $truck)
+                <tr class="table-row table-row-hover">
+                  <td class="table-cell text-sm font-medium text-slate-900 ">{{ $truck->plate_number }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ $truck->brand }} {{ $truck->model }}</td>
+                  <td class="table-cell">
+                    <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 ">
+                      Disponible
+                    </span>
+                  </td>
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
  <div class="mt-4 flex justify-end">
  <a href="{{ route('fleet.trucks.index') }}" class="surface-pill transform border-cyan-200 text-cyan-700 transition hover:-translate-y-0.5 hover:border-cyan-300 hover:bg-white ">
  Ver todos
@@ -231,26 +231,26 @@
  </div>
  <span class="surface-pill border-amber-200 bg-amber-50 text-xs font-semibold text-amber-700 ">Agenda</span>
  </div>
- <div class="mt-4 overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">Vehículo</th>
- <th class="px-4 py-3">Fecha</th>
- <th class="px-4 py-3">Tipo</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @foreach(\App\Models\Maintenance::where('status', 'scheduled')->with('truck')->orderBy('maintenance_date')->take(5)->get() as $maintenance)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ $maintenance->truck->plate_number }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $maintenance->maintenance_date->format('d/m/Y') }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $maintenance->maintenance_type }}</td>
- </tr>
- @endforeach
- </tbody>
- </table>
- </div>
+        <div class="mt-4 overflow-x-auto">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">Vehículo</th>
+                <th class="table-header">Fecha</th>
+                <th class="table-header">Tipo</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach(\App\Models\Maintenance::where('status', 'scheduled')->with('truck')->orderBy('maintenance_date')->take(5)->get() as $maintenance)
+                <tr class="table-row table-row-hover">
+                  <td class="table-cell text-sm font-medium text-slate-900 ">{{ $maintenance->truck->plate_number }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ $maintenance->maintenance_date->format('d/m/Y') }}</td>
+                  <td class="table-cell text-sm text-slate-600 ">{{ $maintenance->maintenance_type }}</td>
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
  <div class="mt-4 flex justify-end">
  <a href="{{ route('fleet.maintenance.index') }}" class="surface-pill transform border-cyan-200 text-cyan-700 transition hover:-translate-y-0.5 hover:border-cyan-300 hover:bg-white ">
  Ver todos

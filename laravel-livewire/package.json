@@ -3,7 +3,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "ui:scan": "grep -RInE --exclude-dir=node_modules --exclude-dir=vendor --include='*.blade.php' '(#[0-9a-fA-F]{3,6})|(dark:)|(text-(indigo|sky|emerald|rose)-[0-9]{3})' resources/views || true"
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.1.11",

@@ -62,58 +62,58 @@
  </div>
  </form>
 
- <div class="overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-4 py-2">Tipo</th>
- <th class="px-4 py-2">Nombre</th>
- <th class="px-4 py-2">Emitido</th>
- <th class="px-4 py-2">Vencimiento</th>
- <th class="px-4 py-2">Estado</th>
- <th class="px-4 py-2 text-right">Acciones</th>
- </tr>
- </thead>
- <tbody>
- @php
- $statusClasses = [
- 'valid' => 'bg-emerald-100 text-emerald-700 ',
- 'warning' => 'bg-amber-100 text-amber-700 ',
- 'expired' => 'bg-rose-100 text-rose-700 ',
- ];
- @endphp
- @forelse($documents as $document)
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-4 py-2 text-sm text-slate-600 ">{{ $document['type_label'] }}</td>
- <td class="px-4 py-2 text-sm font-medium text-slate-900 ">{{ $document['title'] }}</td>
- <td class="px-4 py-2 text-sm text-slate-600 ">{{ $document['issued_at'] ?? '—' }}</td>
- <td class="px-4 py-2 text-sm text-slate-600 ">{{ $document['expires_at'] ?? '—' }}</td>
- <td class="px-4 py-2">
- <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document['status']] ?? $statusClasses['valid'] }}">
- {{ $document['status_label'] }}
- </span>
- </td>
- <td class="px-4 py-2 text-right text-sm">
- <div class="flex items-center justify-end gap-2">
- @if($document['file_url'])
-        <a href="{{ $document['file_url'] }}" target="_blank" class="btn btn-secondary btn-sm">
-            <i class="fas fa-file-download"></i>
-            {{ __('Descargar') }}
-        </a>
-    @endif
-        <button type="button" wire:click="deleteDocument({{ $document['id'] }})" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i>
-            {{ __('Eliminar') }}
-        </button>
- </div>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('Aún no hay documentos registrados.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+  <div class="overflow-x-auto">
+    <table class="table table-md">
+      <thead>
+        <tr class="table-row">
+          <th class="table-header">Tipo</th>
+          <th class="table-header">Nombre</th>
+          <th class="table-header">Emitido</th>
+          <th class="table-header">Vencimiento</th>
+          <th class="table-header">Estado</th>
+          <th class="table-header text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @php
+          $statusClasses = [
+            'valid' => 'bg-emerald-100 text-emerald-700 ',
+            'warning' => 'bg-amber-100 text-amber-700 ',
+            'expired' => 'bg-rose-100 text-rose-700 ',
+          ];
+        @endphp
+        @forelse($documents as $document)
+        <tr class="table-row table-row-hover">
+          <td class="table-cell text-sm text-slate-600 ">{{ $document['type_label'] }}</td>
+          <td class="table-cell text-sm font-medium text-slate-900 ">{{ $document['title'] }}</td>
+          <td class="table-cell text-sm text-slate-600 ">{{ $document['issued_at'] ?? '—' }}</td>
+          <td class="table-cell text-sm text-slate-600 ">{{ $document['expires_at'] ?? '—' }}</td>
+          <td class="table-cell">
+            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document['status']] ?? $statusClasses['valid'] }}">
+              {{ $document['status_label'] }}
+            </span>
+          </td>
+          <td class="table-cell text-right text-sm">
+            <div class="flex items-center justify-end gap-2">
+              @if($document['file_url'])
+                <a href="{{ $document['file_url'] }}" target="_blank" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-file-download"></i>
+                  {{ __('Descargar') }}
+                </a>
+              @endif
+              <button type="button" wire:click="deleteDocument({{ $document['id'] }})" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash"></i>
+                {{ __('Eliminar') }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      @empty
+        <tr class="table-row">
+          <td colspan="6" class="table-empty">{{ __('Aún no hay documentos registrados.') }}</td>
+        </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 </div>
