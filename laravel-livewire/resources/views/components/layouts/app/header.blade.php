@@ -3,8 +3,8 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-slate-50">
-        <flux:header container class="border-b border-slate-200 bg-white shadow-sm">
+    <body class="min-h-screen bg-surface">
+        <flux:header container class="border-b border-token bg-elevated shadow-sm">
 
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
@@ -61,7 +61,7 @@
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
                                     <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black"
+                                        class="flex h-full w-full items-center justify-center rounded-lg bg-surface-muted text-token"
                                     >
                                         {{ auth()->user()->initials() }}
                                     </span>
@@ -94,7 +94,7 @@
         </flux:header>
 
         <!-- Mobile Menu -->
-        <flux:sidebar stashable sticky class="lg:hidden border-e border-slate-200 bg-white shadow-sm">
+        <flux:sidebar stashable sticky class="lg:hidden border-e border-token bg-elevated shadow-sm">
 
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 

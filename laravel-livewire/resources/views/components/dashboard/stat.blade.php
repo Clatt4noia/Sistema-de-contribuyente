@@ -13,12 +13,12 @@
 @endphp
 
 <div class="stat-card flex flex-col gap-4">
-    <div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+    <div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-token-muted">
         <span>{{ $label }}</span>
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-accent">
 
             <x-dynamic-component :component="$iconComponent" class="size-4" />
         </span>
     </div>
-    <p class="text-2xl font-semibold text-slate-800">{{ $displayValue }}</p>
+    <p class="text-2xl font-semibold text-token">{{ $displayValue }}</p>
 </div>

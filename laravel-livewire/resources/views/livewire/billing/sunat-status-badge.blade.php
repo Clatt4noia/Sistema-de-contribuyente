@@ -11,6 +11,6 @@
  <span class="inline-block h-2 w-2 rounded-full bg-{{ $variant }}-500"></span>
  {{ $labels[$status] ?? ucfirst($status) }}
  @if($message)
- <span class="hidden text-[10px] text-slate-500 sm:inline">{{ $message }}</span>
+ <span class="hidden text-[10px] text-token sm:inline">{{ $message }}</span>
  @endif
 </span>

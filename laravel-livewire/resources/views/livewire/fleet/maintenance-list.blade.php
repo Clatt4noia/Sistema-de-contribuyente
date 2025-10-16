@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h1 class="text-2xl font-semibold text-slate-900 ">Mantenimientos de Vehículos</h1>
+ <h1 class="text-2xl font-semibold text-token ">Mantenimientos de Vehículos</h1>
     <a
         href="{{ route('fleet.maintenance.create') }}"
         class="btn btn-primary"
@@ -10,13 +10,13 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm ">
+ <div class="alert alert-success ">
  {{ session('message') }}
  </div>
  @endif
 
  <div class="surface-card overflow-hidden">
- <div class="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 p-4 md:flex-row md:items-center md:justify-between">
+ <div class="flex flex-col gap-4 border-b border-token bg-surface p-4 md:flex-row md:items-center md:justify-between">
  <div class="flex-1 md:max-w-md">
  <input
  type="text"
@@ -42,77 +42,77 @@
  </div>
  </div>
 
- <div class="overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-6 py-3">Vehículo</th>
- <th class="px-6 py-3">Fecha</th>
- <th class="px-6 py-3">Tipo</th>
- <th class="px-6 py-3">Costo</th>
- <th class="px-6 py-3">Estado</th>
- <th class="px-6 py-3">Acciones</th>
- </tr>
- </thead>
- <tbody>
- @forelse ($maintenances as $maintenance)
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-6 py-4">
- <div class="text-sm font-semibold text-slate-800 ">{{ $maintenance->truck->plate_number }}</div>
- <div class="text-xs text-slate-500 ">{{ $maintenance->truck->brand }} {{ $maintenance->truck->model }}</div>
- </td>
- <td class="px-6 py-4 text-sm text-slate-600 ">
- {{ $maintenance->maintenance_date->format('d/m/Y') }}
- </td>
- <td class="px-6 py-4 text-sm text-slate-600 ">
- {{ $maintenance->maintenance_type }}
- </td>
- <td class="px-6 py-4 text-sm text-slate-600 ">
- {{ \App\Support\Formatters\MoneyFormatter::pen($maintenance->cost) }}
- </td>
- <td class="px-6 py-4">
- <span
- @class([
- 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm transition',
- 'bg-emerald-100 text-emerald-700 ' => $maintenance->status === 'completed',
- 'bg-sky-100 text-sky-700 ' => $maintenance->status === 'in_progress',
- 'bg-amber-100 text-amber-700 ' => $maintenance->status === 'scheduled',
- 'bg-rose-100 text-rose-700 ' => $maintenance->status === 'cancelled',
- ])
- >
- {{ $maintenance->status === 'completed' ? 'Completado' : ($maintenance->status === 'in_progress' ? 'En progreso' : ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}
- </span>
- </td>
- <td class="px-6 py-4 text-sm font-semibold">
-    <a
-        href="{{ route('fleet.maintenance.edit', $maintenance) }}"
-        class="btn btn-ghost btn-sm mr-2"
-    >
-        Editar
-    </a>
-    <button
-        wire:click="deleteMaintenance({{ $maintenance->id }})"
-        wire:confirm="¿Está seguro de eliminar este registro?"
-        class="btn btn-danger btn-sm"
-    >
-        Eliminar
-    </button>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="6" class="px-6 py-6 text-center text-sm text-slate-500 ">
- No se encontraron registros de mantenimiento.
- </td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">Vehículo</th>
+            <th class="table-header">Fecha</th>
+            <th class="table-header">Tipo</th>
+            <th class="table-header">Costo</th>
+            <th class="table-header">Estado</th>
+            <th class="table-header">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse ($maintenances as $maintenance)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell">
+                <div class="text-sm font-semibold text-token ">{{ $maintenance->truck->plate_number }}</div>
+                <div class="text-xs text-token ">{{ $maintenance->truck->brand }} {{ $maintenance->truck->model }}</div>
+              </td>
+              <td class="table-cell text-sm text-token ">
+                {{ $maintenance->maintenance_date->format('d/m/Y') }}
+              </td>
+              <td class="table-cell text-sm text-token ">
+                {{ $maintenance->maintenance_type }}
+              </td>
+              <td class="table-cell text-sm text-token ">
+                {{ \App\Support\Formatters\MoneyFormatter::pen($maintenance->cost) }}
+              </td>
+              <td class="table-cell">
+                <span
+                  @class([
+                    'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm transition',
+                    'bg-success-soft text-success-strong ' => $maintenance->status === 'completed',
+                    'bg-accent-soft text-accent ' => $maintenance->status === 'in_progress',
+                    'bg-warning-soft text-warning ' => $maintenance->status === 'scheduled',
+                    'bg-danger-soft text-danger-strong ' => $maintenance->status === 'cancelled',
+                  ])
+                >
+                  {{ $maintenance->status === 'completed' ? 'Completado' : ($maintenance->status === 'in_progress' ? 'En progreso' : ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}
+                </span>
+              </td>
+              <td class="table-cell text-sm font-semibold">
+                <a
+                  href="{{ route('fleet.maintenance.edit', $maintenance) }}"
+                  class="btn btn-ghost btn-sm mr-2"
+                >
+                  Editar
+                </a>
+                <button
+                  wire:click="deleteMaintenance({{ $maintenance->id }})"
+                  wire:confirm="¿Está seguro de eliminar este registro?"
+                  class="btn btn-danger btn-sm"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="6" class="table-empty">
+                No se encontraron registros de mantenimiento.
+              </td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
 
 
- <div class="border-t border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 ">
- {{ $maintenances->links() }}
- </div>
+    <div class="table-footer text-sm text-token ">
+      {{ $maintenances->links() }}
+    </div>
  </div>
 </div>

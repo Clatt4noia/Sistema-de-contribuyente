@@ -1,8 +1,8 @@
 <div class="space-y-6">
  <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
  <div>
- <h1 class="text-2xl font-semibold text-slate-900 ">Emitir comprobante SUNAT</h1>
- <p class="text-sm text-slate-500 ">Complete los datos para generar la factura electrónica.</p>
+ <h1 class="text-2xl font-semibold text-token ">Emitir comprobante SUNAT</h1>
+    <p class="text-sm text-token-muted ">Complete los datos para generar la factura electrónica.</p>
  </div>
  <div class="flex flex-wrap items-center gap-3">
     <button type="button" wire:click="$dispatch('open-client-modal')"
@@ -20,7 +20,7 @@
  <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
  <div class="space-y-6">
  <div class="surface-card space-y-6 p-6 shadow-lg">
- <h2 class="text-lg font-semibold text-slate-800 ">Datos del comprobante</h2>
+ <h2 class="text-lg font-semibold text-token ">Datos del comprobante</h2>
  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 
  <div class="form-field">
@@ -49,7 +49,7 @@
  </div>
  <div class="form-field">
  <label class="form-label">Correlativo</label>
- <input type="text" value="{{ $correlative }}" readonly class="form-control cursor-not-allowed bg-slate-100 text-slate-500 " />
+    <input type="text" value="{{ $correlative }}" readonly class="form-control cursor-not-allowed bg-surface-muted text-token-muted" />
  </div>
  <div class="form-field">
  <label class="form-label">Moneda</label>
@@ -73,19 +73,19 @@
  </div>
 
  <div class="surface-card space-y-6 p-6 shadow-lg">
- <h2 class="text-lg font-semibold text-slate-800 ">Cliente</h2>
+ <h2 class="text-lg font-semibold text-token ">Cliente</h2>
  <div class="space-y-3">
  <div class="relative">
  <input type="text" wire:model.live.debounce.300ms="clientSearch" placeholder="Buscar por RUC o razón social"
  class="form-control" />
  @if(!empty($clientResults))
- <ul class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg ">
+        <ul class="absolute z-20 mt-1 w-full rounded-xl border border-token bg-elevated shadow-lg ">
  @foreach($clientResults as $client)
  <li>
                     <button type="button" wire:click="selectClient({{ $client['id'] }})"
                         class="btn btn-ghost btn-sm w-full justify-start text-left">
-                        <div class="font-medium text-slate-800 ">{{ $client['name'] }}</div>
-                        <div class="text-xs text-slate-500 ">{{ $client['document'] }}</div>
+                        <div class="font-medium text-token ">{{ $client['name'] }}</div>
+                        <div class="text-xs text-token-muted ">{{ $client['document'] }}</div>
                     </button>
  </li>
  @endforeach
@@ -95,9 +95,9 @@
  @error('clientSearch') <span class="form-error">{{ $message }}</span> @enderror
 
  @if($selectedClient)
- <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 ">
- <div class="font-semibold text-slate-900 ">{{ $selectedClient['name'] }}</div>
- <div class="text-xs uppercase tracking-wide text-slate-500 ">{{ $selectedClient['document'] }}</div>
+        <div class="rounded-xl border border-token bg-surface p-4 text-sm text-token ">
+          <div class="font-semibold text-token ">{{ $selectedClient['name'] }}</div>
+          <div class="text-xs uppercase tracking-wide text-token-muted ">{{ $selectedClient['document'] }}</div>
  @if($selectedClient['billing_address'])
  <p class="mt-2 text-xs">{{ $selectedClient['billing_address'] }}</p>
  @endif
@@ -116,7 +116,7 @@
 
  <div class="surface-card space-y-6 p-6 shadow-lg">
  <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
- <h2 class="text-lg font-semibold text-slate-800 ">Pedidos a facturar</h2>
+ <h2 class="text-lg font-semibold text-token ">Pedidos a facturar</h2>
  <div class="grid w-full gap-4 md:w-auto md:grid-cols-[minmax(0,1fr)_220px] md:items-end">
  <div class="form-field md:mb-0">
  <label class="form-label">Buscar pedido</label>
@@ -125,24 +125,24 @@
  class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
  @disabled(!$selectedClient) />
  @if($selectedClient && !empty($orderResults))
- <ul class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg ">
+        <ul class="absolute z-20 mt-1 w-full rounded-xl border border-token bg-elevated shadow-lg ">
  @foreach($orderResults as $order)
  <li>
                     <button type="button" wire:click="addOrder({{ $order['id'] }})"
                         class="btn btn-ghost btn-sm w-full flex-col items-start gap-1 text-left">
                 <div class="flex flex-wrap items-center gap-2">
- <span class="font-medium text-slate-800 ">Pedido {{ $order['reference'] }}</span>
+ <span class="font-medium text-token ">Pedido {{ $order['reference'] }}</span>
  @if($order['cargo_type'])
- <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 ">
+ <span class="inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-token ">
  {{ $order['cargo_type'] }}
  @if($order['is_hazardous'])
- <x-heroicon-o-exclamation-triangle class="h-3 w-3 text-amber-500" />
+ <x-heroicon-o-exclamation-triangle class="h-3 w-3 text-warning" />
  @endif
  </span>
  @endif
  </div>
  @if($order['destination'] || $order['origin'])
- <span class="text-xs text-slate-500 ">
+ <span class="text-xs text-token ">
  @if($order['origin'])
  Origen: {{ $order['origin'] }}
  @endif
@@ -151,14 +151,14 @@
  @endif
  </span>
  @endif
- <span class="text-xs text-slate-500 ">{{ $this->currencySymbol }} {{ number_format($order['estimated_cost'], 2) }}</span>
+ <span class="text-xs text-token ">{{ $this->currencySymbol }} {{ number_format($order['estimated_cost'], 2) }}</span>
  @if($order['pickup_date'] || $order['status_label'])
- <span class="text-xs text-slate-400 ">
+ <span class="text-xs text-token-muted ">
  @if($order['pickup_date'])
  Recojo: {{ $order['pickup_date'] }}
  @endif
  @if($order['status_label'])
- <span class="ml-1 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 ">{{ $order['status_label'] }}</span>
+ <span class="ml-1 inline-flex items-center rounded-full bg-surface-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-token ">{{ $order['status_label'] }}</span>
  @endif
  </span>
  @endif
@@ -182,83 +182,82 @@
  </div>
 
  @if(!$selectedClient)
- <p class="text-xs text-slate-500 ">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
+ <p class="text-xs text-token ">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
  @elseif(empty($orderResults) && ($orderSearch !== '' || $cargoTypeFilter))
- <p class="text-xs text-slate-500 ">No se encontraron pedidos pendientes que coincidan con los filtros aplicados.</p>
+ <p class="text-xs text-token ">No se encontraron pedidos pendientes que coincidan con los filtros aplicados.</p>
  @endif
 
 
- <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm ">
- <table class="min-w-full divide-y divide-slate-200 ">
- <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3 text-left">Cantidad</th>
- <th class="px-4 py-3 text-left">Descripción</th>
- <th class="px-4 py-3 text-right">Precio unit.</th>
- <th class="px-4 py-3 text-right">Base imponible</th>
+      <div class="overflow-hidden rounded-xl border border-token shadow-sm ">
+        <table class="table table-md">
+          <thead>
+            <tr class="table-row">
+              <th class="table-header text-left">Cantidad</th>
+              <th class="table-header text-left">Descripción</th>
+              <th class="table-header text-right">Precio unit.</th>
+              <th class="table-header text-right">Base imponible</th>
 
- <th class="px-4 py-3 text-right">Acciones</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-200/70 bg-white text-sm ">
- @forelse($invoiceItems as $index => $item)
- <tr wire:key="item-{{ $item['order_id'] ?? $index }}">
+              <th class="table-header text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-elevated text-sm">
+            @forelse($invoiceItems as $index => $item)
+              <tr class="table-row" wire:key="item-{{ $item['order_id'] ?? $index }}">
 
- <td class="px-4 py-3">
- <input type="number" min="0" step="0.01" wire:model.lazy="invoiceItems.{{ $index }}.quantity"
- wire:change="updateQuantity({{ $index }}, $event.target.value)"
- class="form-control text-right" />
- </td>
- <td class="px-4 py-3">
- <div class="font-medium text-slate-900 ">{{ $item['description'] }}</div>
- <div class="text-xs text-slate-500 ">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
- @if(!empty($item['cargo_type']))
- <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 ">
- {{ $item['cargo_type'] }}
- </div>
- @endif
- </td>
- <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
- <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
+                <td class="table-cell">
+                  <input type="number" min="0" step="0.01" wire:model.lazy="invoiceItems.{{ $index }}.quantity"
+                    wire:change="updateQuantity({{ $index }}, $event.target.value)"
+                    class="form-control text-right" />
+                </td>
+                <td class="table-cell">
+                  <div class="font-medium text-token ">{{ $item['description'] }}</div>
+                  <div class="text-xs text-token ">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
+                  @if(!empty($item['cargo_type']))
+                    <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-token ">
+                      {{ $item['cargo_type'] }}
+                    </div>
+                  @endif
+                </td>
+                <td class="table-cell text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
+                <td class="table-cell text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
 
- <td class="px-4 py-3 text-right">
-        <button type="button" wire:click="removeItem({{ $index }})"
-            class="btn btn-danger btn-sm">
-            <x-heroicon-o-trash class="h-4 w-4" />
-            Eliminar
-        </button>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500 ">
- No se han agregado pedidos. Utilice el buscador para añadir ítems.
-
- </td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+                <td class="table-cell text-right">
+                  <button type="button" wire:click="removeItem({{ $index }})"
+                    class="btn btn-danger btn-sm">
+                    <x-heroicon-o-trash class="h-4 w-4" />
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            @empty
+              <tr class="table-row">
+                <td colspan="5" class="table-empty">
+                  No se han agregado pedidos. Utilice el buscador para añadir ítems.
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
  @error('invoiceItems') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  </div>
 
  <div class="space-y-6">
  <div class="surface-card space-y-4 p-6 shadow-lg">
- <h2 class="text-lg font-semibold text-slate-800 ">Totales</h2>
+ <h2 class="text-lg font-semibold text-token ">Totales</h2>
  <dl class="space-y-3 text-sm">
  <div class="flex items-center justify-between">
- <dt class="text-slate-500 ">Sub total</dt>
- <dd class="font-semibold text-slate-900 ">{{ $this->currencySymbol }} {{ number_format($subtotal, 2) }}</dd>
+ <dt class="text-token ">Sub total</dt>
+ <dd class="font-semibold text-token ">{{ $this->currencySymbol }} {{ number_format($subtotal, 2) }}</dd>
  </div>
  <div class="flex items-center justify-between">
- <dt class="text-slate-500 ">IGV ({{ rtrim(rtrim(number_format($this->taxRate, 2), '0'), '.') }}%)</dt>
- <dd class="font-semibold text-slate-900 ">{{ $this->currencySymbol }} {{ number_format($igv, 2) }}</dd>
+ <dt class="text-token ">IGV ({{ rtrim(rtrim(number_format($this->taxRate, 2), '0'), '.') }}%)</dt>
+ <dd class="font-semibold text-token ">{{ $this->currencySymbol }} {{ number_format($igv, 2) }}</dd>
  </div>
  <div class="flex items-center justify-between text-base">
- <dt class="font-semibold text-slate-600 ">Importe total</dt>
- <dd class="font-bold text-indigo-600 ">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
+ <dt class="font-semibold text-token ">Importe total</dt>
+ <dd class="font-bold text-accent ">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
 
  </div>
  </dl>

@@ -15,7 +15,7 @@ new class extends Component {
             <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
                 <flux:radio value="light" icon="sun">{{ __('Light') }}</flux:radio>
             </flux:radio.group>
-            <p class="text-sm text-slate-500">
+            <p class="text-sm text-token-muted">
                 {{ __('The interface now uses a single light theme across all módulos to keep the experience consistent.') }}
             </p>
         </div>

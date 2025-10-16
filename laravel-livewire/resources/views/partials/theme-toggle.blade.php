@@ -23,9 +23,9 @@
         }).catch(() => {});
     "
     :aria-pressed="isDark"
-    class="inline-flex items-center w-12 h-6 rounded-full bg-gray-300 dark:bg-gray-700 transition"
+    class="inline-flex h-6 w-12 items-center rounded-full bg-[color:var(--color-border-strong)] transition"
 >
-    <span class="inline-block w-5 h-5 bg-white rounded-full transform transition"
+    <span class="inline-block h-5 w-5 rounded-full bg-[color:var(--color-elevated)] transform transition"
           :class="isDark ? 'translate-x-6' : 'translate-x-1'"></span>
     <span class="sr-only">{{ __('Cambiar tema') }}</span>
 </button>

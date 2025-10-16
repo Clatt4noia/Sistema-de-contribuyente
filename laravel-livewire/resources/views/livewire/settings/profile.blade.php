@@ -69,13 +69,13 @@ new class extends Component {
  }
 }; ?>
 
-<section class="w-full text-slate-800 [&_*]:!text-slate-800">
+<section class="w-full text-token [&_*]:!text-token">
     @include('partials.settings-heading')
 
     <x-settings.layout
         :heading="__('Profile')"
         :subheading="__('Update your name and email address')"
-        class="text-slate-800"
+        class="text-token"
     >
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
 
@@ -83,7 +83,7 @@ new class extends Component {
                 wire:model="name"
                 :label="__('Name')"
                 type="text"
-                class="text-slate-800 !placeholder-slate-500"
+                class="text-token !placeholder:text-token-muted"
                 required
                 autofocus
                 autocomplete="name"
@@ -93,13 +93,13 @@ new class extends Component {
                 wire:model="email"
                 :label="__('Email')"
                 type="email"
-                class="text-slate-800 !placeholder-slate-500"
+                class="text-token !placeholder:text-token-muted"
                 required
                 autocomplete="email"
             />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div class="mt-4 space-y-2 text-sm text-slate-600">
+                <div class="mt-4 space-y-2 text-sm text-token">
                     <p>Your email address is unverified.</p>
 
                     <button
@@ -111,7 +111,7 @@ new class extends Component {
                     </button>
 
                     @if (session('status') === 'verification-link-sent')
-                        <p class="text-sm font-medium text-green-600">
+                        <p class="text-sm font-medium text-success">
                             A new verification link has been sent to your email address.
                         </p>
                     @endif

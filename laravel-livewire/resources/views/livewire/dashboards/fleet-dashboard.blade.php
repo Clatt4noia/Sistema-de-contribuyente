@@ -1,10 +1,10 @@
 <div class="space-y-6">
  <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
  <article class="surface-card">
- <header class="flex items-center justify-between border-b border-slate-200 px-6 py-5 ">
+ <header class="flex items-center justify-between border-b border-token px-6 py-5 ">
  <div>
- <h1 class="text-2xl font-semibold text-slate-900 ">{{ __('Salud de la flota') }}</h1>
- <p class="mt-1 text-sm text-slate-600 ">{{ __('Disponibilidad, mantenimientos y documentos clave.') }}</p>
+ <h1 class="text-2xl font-semibold text-token ">{{ __('Salud de la flota') }}</h1>
+ <p class="mt-1 text-sm text-token ">{{ __('Disponibilidad, mantenimientos y documentos clave.') }}</p>
  </div>
  </header>
  <div class="grid gap-4 p-6 sm:grid-cols-3">
@@ -12,17 +12,17 @@
  <x-dashboard.stat :label="__('En mantenimiento')" :value="$fleetStats['inMaintenance']" icon="timer" />
  <x-dashboard.stat :label="__('Documentos por vencer')" :value="$fleetStats['expiringDocuments']" icon="alert-circle" />
  </div>
- <div class="border-t border-slate-200 px-6 py-6 ">
+ <div class="border-t border-token px-6 py-6 ">
  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
  <div class="xl:col-span-1">
- <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 ">{{ __('Distribución de la flota') }}</h3>
+ <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-token0 ">{{ __('Distribución de la flota') }}</h3>
  <div class="relative h-60">
  <canvas id="fleet-status-chart" aria-label="{{ __('Distribución de estados de la flota') }}" role="img"></canvas>
  </div>
  </div>
 
  <div class="md:col-span-2 xl:col-span-1">
- <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 ">{{ __('Mantenimientos por mes') }}</h3>
+ <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-token0 ">{{ __('Mantenimientos por mes') }}</h3>
  <div class="relative h-60">
  <canvas id="maintenance-trend-chart" aria-label="{{ __('Tendencia de mantenimientos programados') }}" role="img"></canvas>
  </div>
@@ -30,23 +30,23 @@
 
  <div class="md:col-span-2 xl:col-span-1">
  <div class="flex items-center justify-between">
- <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500 ">{{ __('Asignaciones por chofer') }}</h3>
- <span class="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-600 ">{{ __('Promedio: :value', ['value' => $assignmentsAverage]) }}</span>
+ <h3 class="text-sm font-semibold uppercase tracking-wide text-token0 ">{{ __('Asignaciones por chofer') }}</h3>
+ <span class="rounded-full bg-[color:var(--color-primary)] bg-opacity-10 px-3 py-1 text-xs font-semibold text-accent ">{{ __('Promedio: :value', ['value' => $assignmentsAverage]) }}</span>
  </div>
  <div class="relative mt-4 h-60">
  <canvas id="driver-assignments-chart" aria-label="{{ __('Top de asignaciones por chofer') }}" role="img"></canvas>
  </div>
- <p class="mt-3 text-xs text-slate-500 ">{{ __('Basado en los últimos 90 días de operaciones.') }}</p>
+ <p class="mt-3 text-xs text-token0 ">{{ __('Basado en los últimos 90 días de operaciones.') }}</p>
  </div>
  </div>
  </div>
  </article>
 
  <article class="surface-card">
- <header class="border-b border-slate-200 px-6 py-5 ">
- <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Checklist rápido') }}</h2>
+ <header class="border-b border-token px-6 py-5 ">
+ <h2 class="text-lg font-semibold text-token ">{{ __('Checklist rápido') }}</h2>
  </header>
- <div class="space-y-3 p-6 text-sm text-slate-600 ">
+ <div class="space-y-3 p-6 text-sm text-token ">
  <p>{{ __('Confirma SOAT y revisiones técnicas antes de liberar unidades.') }}</p>
  <p>{{ __('Coordina con logística asignaciones según capacidad disponible.') }}</p>
  </div>
@@ -55,84 +55,84 @@
 
  <section class="grid gap-6 lg:grid-cols-2">
  <article class="surface-card">
- <header class="border-b border-slate-200 px-6 py-5 ">
- <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Mantenimientos próximos') }}</h2>
+ <header class="border-b border-token px-6 py-5 ">
+ <h2 class="text-lg font-semibold text-token ">{{ __('Mantenimientos próximos') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Camión') }}</th>
- <th class="px-4 py-3">{{ __('Tipo') }}</th>
- <th class="px-4 py-3">{{ __('Fecha') }}</th>
- <th class="px-4 py-3">{{ __('Responsable') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($upcomingMaintenances as $maintenance)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ optional($maintenance->truck)->plate_number ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $maintenance->type ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($maintenance->scheduled_at)?->format('d/m/Y') ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($maintenance->responsible)->name ?? '—' }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('No hay mantenimientos programados.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Camión') }}</th>
+            <th class="table-header">{{ __('Tipo') }}</th>
+            <th class="table-header">{{ __('Fecha') }}</th>
+            <th class="table-header">{{ __('Responsable') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse ($upcomingMaintenances as $maintenance)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-sm font-medium text-token ">{{ optional($maintenance->truck)->plate_number ?? '—' }}</td>
+              <td class="table-cell text-sm text-token ">{{ $maintenance->type ?? '—' }}</td>
+              <td class="table-cell text-sm text-token ">{{ optional($maintenance->scheduled_at)?->format('d/m/Y') ?? '—' }}</td>
+              <td class="table-cell text-sm text-token ">{{ optional($maintenance->responsible)->name ?? '—' }}</td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="4" class="table-empty">{{ __('No hay mantenimientos programados.') }}</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
  </article>
 
  <article class="surface-card">
- <header class="border-b border-slate-200 px-6 py-5 ">
- <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Documentos próximos a vencer') }}</h2>
+ <header class="border-b border-token px-6 py-5 ">
+ <h2 class="text-lg font-semibold text-token ">{{ __('Documentos próximos a vencer') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Recurso') }}</th>
- <th class="px-4 py-3">{{ __('Documento') }}</th>
- <th class="px-4 py-3">{{ __('Vencimiento') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @php
- $badgeStyles = [
- \App\Models\Document::STATUS_VALID => 'bg-emerald-100 text-emerald-700 ',
- \App\Models\Document::STATUS_WARNING => 'bg-amber-100 text-amber-700 ',
- \App\Models\Document::STATUS_EXPIRED => 'bg-rose-100 text-rose-700 ',
- ];
- @endphp
- @forelse ($expiringDocuments as $document)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ $document->resource_label }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $document->name ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($document->expires_at)?->format('d/m/Y') ?? '—' }}</td>
- <td class="px-4 py-3">
- <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $badgeStyles[$document->status] ?? $badgeStyles[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label ?? __('Pendiente') }}</span>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('Registra documentos para mantener trazabilidad.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Recurso') }}</th>
+            <th class="table-header">{{ __('Documento') }}</th>
+            <th class="table-header">{{ __('Vencimiento') }}</th>
+            <th class="table-header">{{ __('Estado') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @php
+            $badgeStyles = [
+              \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong ',
+              \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning ',
+              \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong ',
+            ];
+          @endphp
+          @forelse ($expiringDocuments as $document)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-sm font-medium text-token ">{{ $document->resource_label }}</td>
+              <td class="table-cell text-sm text-token ">{{ $document->name ?? '—' }}</td>
+              <td class="table-cell text-sm text-token ">{{ optional($document->expires_at)?->format('d/m/Y') ?? '—' }}</td>
+              <td class="table-cell">
+                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $badgeStyles[$document->status] ?? $badgeStyles[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label ?? __('Pendiente') }}</span>
+              </td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="4" class="table-empty">{{ __('Registra documentos para mantener trazabilidad.') }}</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
  </article>
  </section>
 
  <section class="surface-card">
- <header class="border-b border-slate-200 px-6 py-5 ">
- <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Por qué separar paneles') }}</h2>
+ <header class="border-b border-token px-6 py-5 ">
+ <h2 class="text-lg font-semibold text-token ">{{ __('Por qué separar paneles') }}</h2>
  </header>
- <div class="space-y-3 p-6 text-sm text-slate-600 ">
+ <div class="space-y-3 p-6 text-sm text-token ">
  <p>{{ __('Operaciones de flota requieren foco en disponibilidad y cumplimiento legal.') }}</p>
  <p>{{ __('La segmentación evita que logística altere mantenimientos sin aprobación.') }}</p>
  </div>

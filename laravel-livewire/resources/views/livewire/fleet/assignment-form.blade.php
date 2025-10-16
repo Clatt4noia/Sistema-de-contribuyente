@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h2 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Asignacion' : 'Nueva Asignacion' }}</h2>
+ <h2 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Asignacion' : 'Nueva Asignacion' }}</h2>
     <a href="{{ route('fleet.assignments.index') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i>
         Volver
@@ -53,7 +53,7 @@
             Buscar recursos disponibles
         </button>
                     @if ($autoAssignAlert)
-                        <p class="mt-2 form-help text-amber-600">{{ $autoAssignAlert }}</p>
+                        <p class="mt-2 form-help text-warning">{{ $autoAssignAlert }}</p>
                     @endif
                 @endif
             </div>
@@ -81,9 +81,9 @@
                         $selectedTruck = $trucks->firstWhere('id', (int) $form['truck_id']);
  @endphp
  @if ($selectedTruck)
-                        <div class="mt-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-xs text-neutral-600">
-                            <p><span class="font-semibold text-neutral-800">Mantenimiento prox.:</span> {{ optional($selectedTruck->next_maintenance)->format('d/m/Y') ?? 'No definido' }}</p>
-                            <p><span class="font-semibold text-neutral-800">Km acumulado:</span> {{ number_format($selectedTruck->mileage) }} km</p>
+                        <div class="mt-3 rounded-lg border border-token bg-surface p-3 text-xs text-token-muted">
+                            <p><span class="font-semibold text-token">Mantenimiento prox.:</span> {{ optional($selectedTruck->next_maintenance)->format('d/m/Y') ?? 'No definido' }}</p>
+                            <p><span class="font-semibold text-token">Km acumulado:</span> {{ number_format($selectedTruck->mileage) }} km</p>
                         </div>
                     @endif
                 @endif
@@ -112,9 +112,9 @@
                         $selectedDriver = $drivers->firstWhere('id', (int) $form['driver_id']);
  @endphp
  @if ($selectedDriver)
-                        <div class="mt-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-xs text-neutral-600">
-                            <p><span class="font-semibold text-neutral-800">Licencia:</span> {{ optional($selectedDriver->license_expiration)->format('d/m/Y') }}</p>
-                            <p><span class="font-semibold text-neutral-800">Capacitaciones vigentes:</span> {{ $selectedDriver->trainings->filter(fn($training) => ! $training->expires_at || $training->expires_at->isFuture())->count() }}</p>
+                        <div class="mt-3 rounded-lg border border-token bg-surface p-3 text-xs text-token-muted">
+                            <p><span class="font-semibold text-token">Licencia:</span> {{ optional($selectedDriver->license_expiration)->format('d/m/Y') }}</p>
+                            <p><span class="font-semibold text-token">Capacitaciones vigentes:</span> {{ $selectedDriver->trainings->filter(fn($training) => ! $training->expires_at || $training->expires_at->isFuture())->count() }}</p>
                         </div>
                     @endif
                 @endif
@@ -217,18 +217,18 @@
 
  @if($orderPreview)
  <div class="surface-card p-6 shadow-lg">
- <h3 class="text-lg font-semibold text-slate-900 ">Resumen del pedido</h3>
- <dl class="mt-4 space-y-2 text-sm text-slate-600 ">
+ <h3 class="text-lg font-semibold text-token ">Resumen del pedido</h3>
+ <dl class="mt-4 space-y-2 text-sm text-token ">
  <div class="flex items-center gap-2">
- <dt class="font-semibold text-slate-800 ">Ruta:</dt>
+ <dt class="font-semibold text-token ">Ruta:</dt>
  <dd>{{ $orderPreview->origin }} -> {{ $orderPreview->destination }}</dd>
  </div>
  <div class="flex items-center gap-2">
- <dt class="font-semibold text-slate-800 ">Estado actual:</dt>
+ <dt class="font-semibold text-token ">Estado actual:</dt>
  <dd>{{ __($orderPreview->status) }}</dd>
  </div>
  <div>
- <dt class="font-semibold text-slate-800 ">Detalle:</dt>
+ <dt class="font-semibold text-token ">Detalle:</dt>
  <dd>{{ $orderPreview->cargo_details ?: 'Sin detalle de carga' }}</dd>
  </div>
  </dl>
