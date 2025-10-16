@@ -2,13 +2,13 @@
 
     <!-- Visión general de la operación -->
     <section class="surface-card w-full max-w-6xl mx-auto">
-        <header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 px-6 py-5">
+        <header class="flex flex-wrap items-center justify-between gap-4 border-b border-token px-6 py-5">
 
             <div>
-                <h1 class="text-2xl font-semibold text-slate-900">
+                <h1 class="text-2xl font-semibold text-token">
                     {{ __('Visión general de la operación') }}
                 </h1>
-                <p class="mt-1 text-sm text-slate-500">
+                <p class="mt-1 text-sm text-token0">
                     {{ __('Consolida logística, flota y finanzas para tomar decisiones en segundos.') }}
                 </p>
             </div>
@@ -23,27 +23,27 @@
 
     <!-- Accesos rápidos -->
     <section class="surface-card w-full max-w-6xl mx-auto">
-        <header class="border-b border-slate-200 px-6 py-5">
+        <header class="border-b border-token px-6 py-5">
 
-            <h2 class="text-lg font-semibold text-slate-900">
+            <h2 class="text-lg font-semibold text-token">
                 {{ __('Accesos rápidos') }}
             </h2>
-            <p class="mt-1 text-sm text-slate-500">
+            <p class="mt-1 text-sm text-token0">
                 {{ __('Llega directo a los módulos críticos según la prioridad del día.') }}
             </p>
         </header>
-        <nav class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3 text-sm font-semibold text-slate-600">
-            <a href="{{ route('dashboards.logistics') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
+        <nav class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3 text-sm font-semibold text-token">
+            <a href="{{ route('dashboards.logistics') }}" class="group flex items-center justify-between rounded-xl border border-token px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel logístico') }}</span>
                 <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-accent-soft group-hover:translate-x-0.5" />
             </a>
 
-            <a href="{{ route('dashboards.fleet') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
+            <a href="{{ route('dashboards.fleet') }}" class="group flex items-center justify-between rounded-xl border border-token px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel de flota') }}</span>
                 <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-accent-soft group-hover:translate-x-0.5" />
             </a>
 
-            <a href="{{ route('dashboards.finance') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
+            <a href="{{ route('dashboards.finance') }}" class="group flex items-center justify-between rounded-xl border border-token px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel financiero') }}</span>
                 <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-accent-soft group-hover:translate-x-0.5" />
             </a>

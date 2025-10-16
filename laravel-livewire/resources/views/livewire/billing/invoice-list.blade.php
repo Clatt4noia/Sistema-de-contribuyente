@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h1 class="text-2xl font-semibold text-slate-900 ">Facturas</h1>
+ <h1 class="text-2xl font-semibold text-token ">Facturas</h1>
     <a href="{{ route('billing.invoices.create') }}" class="btn btn-primary">Nueva Factura</a>
  </div>
 
@@ -18,25 +18,25 @@
 
  <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">{{ __('Emisión') }}</p>
- <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['issued']) }}</p>
+ <p class="text-sm text-token ">{{ __('Emisión') }}</p>
+ <p class="mt-1 text-xl font-semibold text-token ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['issued']) }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">{{ __('Pagado') }}</p>
- <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['paid']) }}</p>
+ <p class="text-sm text-token ">{{ __('Pagado') }}</p>
+ <p class="mt-1 text-xl font-semibold text-token ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['paid']) }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">{{ __('Vencido') }}</p>
- <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['overdue']) }}</p>
+ <p class="text-sm text-token ">{{ __('Vencido') }}</p>
+ <p class="mt-1 text-xl font-semibold text-token ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['overdue']) }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">{{ __('Saldo') }}</p>
- <p class="mt-1 text-xl font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['balance']) }}</p>
+ <p class="text-sm text-token ">{{ __('Saldo') }}</p>
+ <p class="mt-1 text-xl font-semibold text-token ">{{ \App\Support\Formatters\MoneyFormatter::pen($totals['balance']) }}</p>
  </div>
  </div>
 
  <div class="surface-card overflow-hidden shadow-lg">
- <div class="grid grid-cols-1 gap-4 border-b border-slate-200 px-4 py-4 md:grid-cols-4">
+ <div class="grid grid-cols-1 gap-4 border-b border-token px-4 py-4 md:grid-cols-4">
  <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar por numero o cliente..." class="form-control">
  <select wire:model.live="status" class="form-control">
  <option value="">Todos los estados</option>
@@ -79,11 +79,10 @@
             @forelse($invoices as $invoice)
               @php
                 $statusStyles = [
-                  'draft' => 'bg-slate-200 text-slate-700 ',
+                  'draft' => 'bg-surface-strong text-token ',
                   'issued' => 'bg-accent-soft text-accent ',
                   'paid' => 'bg-success-soft text-success-strong ',
                   'overdue' => 'bg-danger-soft text-danger-strong ',
-
                 ];
                 $statusLabel = [
                   'draft' => 'Borrador',
@@ -93,18 +92,17 @@
                 ][$invoice->status] ?? 'Emitida';
               @endphp
               <tr class="table-row table-row-hover">
-                <td class="table-cell whitespace-nowrap text-sm font-medium text-slate-900 ">{{ $invoice->numero_completo ?: $invoice->invoice_number }}</td>
-                <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $invoice->client->business_name }}</td>
-                <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ optional($invoice->order)->reference ?: '-' }}</td>
-                <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">
+                <td class="table-cell whitespace-nowrap text-sm font-medium text-token ">{{ $invoice->numero_completo ?: $invoice->invoice_number }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-token ">{{ $invoice->client->business_name }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-token ">{{ optional($invoice->order)->reference ?: '-' }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-token ">
                   {{ $invoice->issue_date->format('d/m/Y') }}<br>
                   {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : '-' }}
                 </td>
-                <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
-                <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->balance) }}</td>
+                <td class="table-cell whitespace-nowrap text-sm font-semibold text-token ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
+                <td class="table-cell whitespace-nowrap text-sm font-semibold text-token ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->balance) }}</td>
                 <td class="table-cell whitespace-nowrap">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-accent-soft text-accent' }}">
-
                     {{ $statusLabel }}
                   </span>
                 </td>

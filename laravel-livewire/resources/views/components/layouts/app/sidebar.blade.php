@@ -36,15 +36,15 @@
     <head>
         @include('partials.head', ['title' => $title])
     </head>
-    <body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
-        <div class="min-h-screen bg-white">
+    <body class="min-h-screen bg-surface text-token antialiased">
+        <div class="min-h-screen bg-elevated">
 
             <div data-app-shell data-sidebar-state="auto" class="relative min-h-screen transition-[padding-left] duration-300 lg:pl-[19rem] data-[sidebar-state=closed]:lg:pl-0">
                 <aside
                     id="app-sidebar"
                     data-app-sidebar
                     data-state="auto"
-                    class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col overflow-y-auto border-r border-slate-200 bg-white px-5 py-6 text-slate-600 shadow-xl shadow-slate-200 transition-transform duration-300 data-[state=open]:translate-x-0 lg:translate-x-0 lg:data-[state=closed]:-translate-x-full"
+                    class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col overflow-y-auto border-r border-token bg-elevated px-5 py-6 text-token shadow-xl transition-transform duration-300 data-[state=open]:translate-x-0 lg:translate-x-0 lg:data-[state=closed]:-translate-x-full"
                 >
                     <div class="flex items-center justify-between gap-3">
                         <a href="{{ route('dashboard') }}" class="flex flex-1 items-center gap-3 rounded-2xl px-4 py-4 transition hover:[background-color:var(--color-primary-muted)]">
@@ -52,8 +52,8 @@
                                 <x-app-logo-icon class="h-7 w-7" />
                             </span>
 
-                            <div class="hidden text-sm font-medium leading-tight text-slate-600 xl:block">
-                                <span class="text-base font-semibold text-slate-900">{{ config('app.name') }}</span>
+                            <div class="hidden text-sm font-medium leading-tight text-token xl:block">
+                                <span class="text-base font-semibold text-token">{{ config('app.name') }}</span>
                                 <span class="block text-xs text-accent-soft">{{ __('Panel de control') }}</span>
                             </div>
                         </a>
@@ -73,14 +73,14 @@
 
                     <div class="mt-8 px-4">
                         <label class="relative flex h-12 w-full items-center">
-                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-token-muted">
                                 <x-dynamic-component :component="$resolveIcon('heroicon-o-magnifying-glass')" class="size-5" />
                             </span>
 
                             <input
                                 type="search"
                                 placeholder="{{ __('Buscar...') }}"
-                                class="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none transition focus:border-[color:var(--color-primary)] focus:ring-2 focus:ring-primary-200"
+                                class="h-12 w-full rounded-2xl border border-token bg-surface pl-11 pr-4 text-sm font-medium text-token placeholder:text-token-muted outline-none transition focus:border-[color:var(--color-primary)] focus:ring-2 focus:ring-primary-200"
 
                             />
                         </label>
@@ -97,7 +97,7 @@
                                 $groupIcon = $items->first()['icon'] ?? null;
                             @endphp
 
-                            <details @class(['group/nav overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition']) {{ $isOpen ? 'open' : '' }}>
+                            <details @class(['group/nav overflow-hidden rounded-2xl border border-token bg-elevated text-token shadow-sm transition']) {{ $isOpen ? 'open' : '' }}>
                                 <summary class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold">
                                     <span class="flex items-center gap-3">
                                         <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-accent transition group-open/nav:bg-accent-soft">
@@ -107,18 +107,18 @@
                                         </span>
                                         <span>{{ $group }}</span>
                                     </span>
-                                    <x-dynamic-component :component="$resolveIcon('heroicon-o-chevron-down')" class="size-4 text-slate-400 transition group-open/nav:rotate-180" />
+                                    <x-dynamic-component :component="$resolveIcon('heroicon-o-chevron-down')" class="size-4 text-token-muted transition group-open/nav:rotate-180" />
                                 </summary>
 
-                                <div class="space-y-1 border-t border-slate-200 bg-white px-2 py-2">
+                                <div class="space-y-1 border-t border-token bg-elevated px-2 py-2">
 
                                     @foreach ($items as $item)
                                         <a
                                             href="{{ $item['href'] }}"
                                             @class([
                                                 'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
-                                                'bg-accent-soft0 text-white shadow-lg ring-1 ring-primary-200' => $item['current'],
-                                                'text-slate-600 hover:[background-color:var(--color-primary-muted)] hover:text-slate-900' => ! $item['current'],
+                                                '[background-color:var(--color-primary-600)] [color:var(--color-primary-foreground)] shadow-lg ring-1 [--tw-ring-color:var(--color-primary-border)]' => $item['current'],
+                                                'text-token hover:[background-color:var(--color-primary-muted)] hover:text-token' => ! $item['current'],
 
                                             ])
                                             aria-current="{{ $item['current'] ? 'page' : 'false' }}"
@@ -126,7 +126,7 @@
                                             <span
                                                 @class([
                                                     'flex h-9 w-9 items-center justify-center rounded-xl transition',
-                                                    'bg-accent-soft0/20 text-white' => $item['current'],
+                                                    '[background-color:var(--color-primary-500)] [color:var(--color-primary-foreground)]' => $item['current'],
                                                     'bg-accent-soft text-accent group-hover:[background-color:var(--color-primary-muted)] group-hover:text-accent' => ! $item['current'],
 
                                                 ])
@@ -157,24 +157,24 @@
                     </nav>
 
                     <div class="mt-10 space-y-6 px-4">
-                        <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600 shadow-inner shadow-slate-200">
+                        <div class="flex items-center gap-3 rounded-2xl border border-token bg-elevated px-4 py-4 text-sm text-token shadow-inner">
                             <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent-soft text-accent">
 
                                 {{ auth()->user()->initials() }}
                             </span>
 
                             <div class="min-w-0 flex-1">
-                                <p class="truncate text-sm font-semibold text-slate-700">{{ auth()->user()->name }}</p>
-                                <p class="truncate text-xs text-slate-400">{{ auth()->user()->email }}</p>
+                                <p class="truncate text-sm font-semibold text-token">{{ auth()->user()->name }}</p>
+                                <p class="truncate text-xs text-token-muted">{{ auth()->user()->email }}</p>
 
                             </div>
 
                             <flux:dropdown position="bottom" align="end">
                                 <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                                <flux:menu class="w-48 rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-lg">
+                                <flux:menu class="w-48 rounded-2xl border border-token bg-elevated text-token shadow-lg">
                                     <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
-                                    <flux:menu.separator class="border-slate-200" />
+                                    <flux:menu.separator class="border-token" />
 
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
@@ -186,10 +186,10 @@
                     </div>
                 </aside>
 
-                <div data-app-sidebar-backdrop data-state="closed" class="fixed inset-0 z-40 bg-slate-200 opacity-0 transition-opacity duration-300 pointer-events-none data-[state=open]:opacity-100 data-[state=open]:pointer-events-auto lg:hidden"></div>
+                <div data-app-sidebar-backdrop data-state="closed" class="fixed inset-0 z-40 bg-surface-strong opacity-0 transition-opacity duration-300 pointer-events-none data-[state=open]:opacity-100 data-[state=open]:pointer-events-auto lg:hidden"></div>
 
-                <div class="flex min-h-screen flex-col bg-slate-50">
-                    <header class="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 text-slate-600 shadow-sm">
+                <div class="flex min-h-screen flex-col bg-surface">
+                    <header class="flex items-center gap-3 border-b border-token bg-elevated px-4 py-3 text-token shadow-sm">
 
 
                         <button
@@ -208,7 +208,7 @@
 
                                 <x-app-logo-icon class="h-6 w-6" />
                             </span>
-                            <span class="text-sm font-semibold text-slate-600">{{ config('app.name') }}</span>
+                            <span class="text-sm font-semibold text-token">{{ config('app.name') }}</span>
                         </a>
 
                         <flux:spacer />
@@ -216,10 +216,10 @@
                         <flux:dropdown position="bottom" align="end">
                             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                            <flux:menu class="w-48 rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-lg">
+                            <flux:menu class="w-48 rounded-2xl border border-token bg-elevated text-token shadow-lg">
 
                                 <flux:menu.item :href="route('profile.edit')" icon="cog">{{ __('Configuración') }}</flux:menu.item>
-                                <flux:menu.separator class="border-slate-200" />
+                                <flux:menu.separator class="border-token" />
 
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf

@@ -1,10 +1,10 @@
 <div class="surface-card space-y-6 p-6 shadow-lg">
  <div class="flex flex-wrap items-center justify-between gap-3">
  <div>
- <h2 class="text-lg font-semibold text-slate-900 ">Expediente digital</h2>
- <p class="text-sm text-slate-500 ">Centraliza pólizas, SOAT, licencias y certificados.</p>
+ <h2 class="text-lg font-semibold text-token ">Expediente digital</h2>
+ <p class="text-sm text-token ">Centraliza pólizas, SOAT, licencias y certificados.</p>
  </div>
- <div class="text-sm text-slate-500 ">
+ <div class="text-sm text-token ">
  {{ __('Documentos registrados: :total', ['total' => count($documents)]) }}
  </div>
  </div>
@@ -47,12 +47,12 @@
  <div class="form-field md:col-span-2">
  <label class="form-label" for="document_file">Archivo</label>
  <input type="file" id="document_file" wire:model="file" class="form-control" accept="application/pdf,image/*">
- <p class="mt-1 text-xs text-slate-500 ">Formatos permitidos: PDF, JPG, PNG (máx. 10 MB).</p>
+ <p class="mt-1 text-xs text-token ">Formatos permitidos: PDF, JPG, PNG (máx. 10 MB).</p>
  @error('file') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="md:col-span-2 flex items-center justify-end gap-3">
- <div wire:loading wire:target="file" class="text-sm text-slate-500 ">
+ <div wire:loading wire:target="file" class="text-sm text-token ">
  {{ __('Subiendo archivo...') }}
  </div>
     <button type="submit" class="btn btn-primary">
@@ -80,15 +80,14 @@
             'valid' => 'bg-success-soft text-success-strong ',
             'warning' => 'bg-warning-soft text-warning ',
             'expired' => 'bg-danger-soft text-danger-strong ',
-
           ];
         @endphp
         @forelse($documents as $document)
         <tr class="table-row table-row-hover">
-          <td class="table-cell text-sm text-slate-600 ">{{ $document['type_label'] }}</td>
-          <td class="table-cell text-sm font-medium text-slate-900 ">{{ $document['title'] }}</td>
-          <td class="table-cell text-sm text-slate-600 ">{{ $document['issued_at'] ?? '—' }}</td>
-          <td class="table-cell text-sm text-slate-600 ">{{ $document['expires_at'] ?? '—' }}</td>
+          <td class="table-cell text-sm text-token ">{{ $document['type_label'] }}</td>
+          <td class="table-cell text-sm font-medium text-token ">{{ $document['title'] }}</td>
+          <td class="table-cell text-sm text-token ">{{ $document['issued_at'] ?? '—' }}</td>
+          <td class="table-cell text-sm text-token ">{{ $document['expires_at'] ?? '—' }}</td>
           <td class="table-cell">
             <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document['status']] ?? $statusClasses['valid'] }}">
               {{ $document['status_label'] }}

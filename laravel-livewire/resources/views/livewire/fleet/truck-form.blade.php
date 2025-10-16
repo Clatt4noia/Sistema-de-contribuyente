@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h1 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Camion' : 'Registrar Camion' }}</h1>
+ <h1 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Camion' : 'Registrar Camion' }}</h1>
     <a href="{{ route('fleet.trucks.index') }}" class="btn btn-secondary">
         Volver
     </a>
@@ -106,13 +106,13 @@
  :key="'truck-documents-' . $truck->id"
  />
  @else
- <div class="surface-card border border-dashed border-slate-300 p-6 text-sm text-slate-600 ">
+ <div class="surface-card border border-dashed border-token-strong p-6 text-sm text-token ">
  Guarda el camión para poder adjuntar pólizas, SOAT u otros documentos.
  </div>
  @endif
 
  @else
- <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500 ">
+    <div class="rounded-2xl border border-dashed border-token bg-surface p-6 text-sm text-token ">
  Guarda el camión para habilitar la carga de documentos (SOAT, pólizas, revisiones técnicas).
  </div>
  @endif
@@ -120,7 +120,7 @@
  @if($isEdit)
  <div class="surface-card p-6 shadow-lg">
  <div class="flex flex-wrap items-center justify-between gap-3">
- <h2 class="text-lg font-semibold text-slate-900 ">Historial de mantenimiento</h2>
+ <h2 class="text-lg font-semibold text-token ">Historial de mantenimiento</h2>
     <a href="{{ route('fleet.maintenance.create') }}" class="btn btn-primary">
         Programar mantenimiento
     </a>
@@ -149,14 +149,14 @@
           @foreach($maintenanceHistory as $history)
             @php($status = $statusTags[$history['status']] ?? $statusTags['scheduled'])
             <tr class="table-row table-row-hover">
-              <td class="table-cell text-slate-700 ">{{ $history['date'] }}</td>
-              <td class="table-cell text-slate-700 ">{{ $history['type'] }}</td>
+              <td class="table-cell text-token ">{{ $history['date'] }}</td>
+              <td class="table-cell text-token ">{{ $history['type'] }}</td>
               <td class="table-cell">
                 <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $status['class'] }}">
                   {{ $status['label'] }}
                 </span>
               </td>
-              <td class="table-cell text-slate-700 ">
+              <td class="table-cell text-token ">
                 {{ $history['cost'] !== null ? \App\Support\Formatters\MoneyFormatter::pen((float) $history['cost']) : 'Sin costo' }}
               </td>
             </tr>
@@ -165,7 +165,7 @@
       </table>
     </div>
  @else
- <p class="mt-6 text-sm text-slate-500 ">Sin registros de mantenimiento para este vehiculo.</p>
+ <p class="mt-6 text-sm text-token ">Sin registros de mantenimiento para este vehiculo.</p>
  @endif
  </div>
  @endif

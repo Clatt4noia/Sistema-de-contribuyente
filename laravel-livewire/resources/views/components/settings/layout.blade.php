@@ -16,11 +16,11 @@
 
     <div class="flex-1 self-stretch max-md:pt-6">
         @if (! empty($headingText))
-            <h2 class="text-xl font-semibold text-slate-800">{{ $headingText }}</h2>
+            <h2 class="text-xl font-semibold text-token">{{ $headingText }}</h2>
         @endif
 
         @if (! empty($subheadingText))
-            <p class="mt-1 text-sm text-slate-500">{{ $subheadingText }}</p>
+            <p class="mt-1 text-sm text-token">{{ $subheadingText }}</p>
         @endif
 
         <div class="mt-5 w-full max-w-lg">

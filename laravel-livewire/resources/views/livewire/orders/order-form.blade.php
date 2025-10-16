@@ -1,8 +1,8 @@
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div class="space-y-1">
- <h1 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Pedido' : 'Nuevo Pedido' }}</h1>
- <p class="text-sm text-slate-500 ">Gestiona la informacion clave del pedido y planifica su ruta principal.</p>
+ <h1 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Pedido' : 'Nuevo Pedido' }}</h1>
+ <p class="text-sm text-token ">Gestiona la informacion clave del pedido y planifica su ruta principal.</p>
  </div>
     <a href="{{ route('orders.index') }}" class="btn btn-secondary">
         Volver
@@ -150,10 +150,10 @@
  @error('form.notes') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
- <div class="space-y-4 rounded-2xl border border-slate-200 p-4 ">
+ <div class="space-y-4 rounded-2xl border border-token p-4 ">
  <div class="flex flex-wrap items-center justify-between gap-2">
- <h2 class="text-lg font-semibold text-slate-900 ">Plan de ruta principal</h2>
- <span class="text-sm text-slate-500 ">Sincroniza la ruta base del pedido con las asignaciones.</span>
+ <h2 class="text-lg font-semibold text-token ">Plan de ruta principal</h2>
+ <span class="text-sm text-token ">Sincroniza la ruta base del pedido con las asignaciones.</span>
  </div>
 
  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -183,7 +183,7 @@
  </div>
 
  <div class="flex items-center justify-end gap-3">
- <a href="{{ route('orders.index') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:[background-color:var(--color-surface-muted)] hover:text-slate-900 ">
+ <a href="{{ route('orders.index') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-token px-4 py-2 text-sm font-semibold text-token transition hover:[background-color:var(--color-surface-muted)] hover:text-token ">
  Cancelar
  </a>
     <button type="submit" class="btn btn-primary">

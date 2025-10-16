@@ -111,6 +111,9 @@
         --color-accent-muted: var(--color-primary-muted);
         --color-accent-foreground: var(--color-primary-foreground);
 
+        --shadow-soft: 0 18px 32px -20px color-mix(in srgb, var(--color-text) 14%, transparent);
+        --shadow-elevated: 0 28px 48px -24px color-mix(in srgb, var(--color-text) 18%, transparent);
+
         --flux-color-surface: var(--color-surface);
         --flux-color-surface-muted: var(--color-surface-muted);
         --flux-color-border: var(--color-border);
@@ -123,7 +126,9 @@
     }
 
     body {
-        @apply bg-neutral-50 font-sans text-neutral-900 antialiased;
+        @apply font-sans antialiased;
+        background-color: var(--color-surface);
+        color: var(--color-text);
     }
 
     ::selection {
@@ -141,10 +146,11 @@
     input:not([type='checkbox']):not([type='radio']):not([type='range']),
     textarea,
     select {
-        @apply rounded-lg border bg-white text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+        @apply rounded-lg border text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2;
         background-color: var(--color-surface);
         border-color: var(--color-border);
         color: var(--color-text);
+        --tw-ring-offset-color: var(--color-elevated);
     }
 
     input:not([type='checkbox']):not([type='radio']):not([type='range']):hover,
@@ -245,7 +251,7 @@
 
     .form-control,
     [data-flux-control] {
-        @apply w-full rounded-lg border bg-white text-sm transition-colors duration-200;
+        @apply w-full rounded-lg border text-sm transition-colors duration-200;
         background-color: var(--color-surface);
         border-color: var(--color-border);
         color: var(--color-text);
@@ -261,8 +267,9 @@
 
     .form-control:focus-visible,
     [data-flux-control]:focus-visible {
-        @apply outline-none ring-2 ring-primary-200 ring-offset-2 ring-offset-white;
+        @apply outline-none ring-2 ring-primary-200 ring-offset-2;
         border-color: var(--color-primary);
+        --tw-ring-offset-color: var(--color-elevated);
     }
 
     .form-control::placeholder,
@@ -285,8 +292,9 @@
 
     .form-control:is(.is-invalid, [aria-invalid='true']):focus-visible,
     [data-flux-control]:is(.is-invalid, [aria-invalid='true']):focus-visible {
-        @apply ring-danger-200 ring-offset-white;
+        @apply ring-danger-200 ring-offset-2;
         border-color: var(--color-danger);
+        --tw-ring-offset-color: var(--color-elevated);
     }
 
     .form-control:disabled,
@@ -346,12 +354,13 @@
     }
 
     .btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60;
+        @apply inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
         background-color: var(--color-surface);
         border-color: var(--color-border);
         color: var(--color-text);
         box-shadow: 0 3px 12px -8px rgba(15, 23, 42, 0.18);
         border-radius: var(--radius-lg);
+        --tw-ring-offset-color: var(--color-elevated);
     }
 
     .btn:hover {
@@ -439,18 +448,173 @@
     }
 
     .surface-card {
-        @apply border border-neutral-200 bg-white text-neutral-800 shadow-lg shadow-neutral-200/60;
-        border-radius: var(--radius-lg);
+        @apply border rounded-2xl;
+        border-color: var(--color-border);
+        background-color: var(--color-elevated);
+        color: var(--color-text);
+        box-shadow: var(--shadow-elevated);
         overflow: hidden;
     }
 
     .surface-muted {
-        @apply border border-neutral-200 bg-white text-neutral-700 shadow-sm shadow-neutral-200/70;
-        border-radius: var(--radius-lg);
+        @apply border rounded-2xl;
+        border-color: var(--color-border);
+        background-color: var(--color-surface);
+        color: var(--color-text-subtle);
+        box-shadow: var(--shadow-soft);
     }
 
     .surface-pill {
-        @apply inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 shadow-sm;
+        @apply inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold shadow-sm;
+        border-color: var(--color-border);
+        background-color: var(--color-elevated);
+        color: var(--color-text-subtle);
+    }
+
+    .text-accent {
+        color: var(--color-primary);
+    }
+
+    .text-accent-soft {
+        color: var(--color-primary-600);
+    }
+
+    .text-success {
+        color: var(--color-success-600);
+    }
+
+    .text-success-strong {
+        color: var(--color-success-700);
+    }
+
+    .text-warning {
+        color: var(--color-warning-600);
+    }
+
+    .text-danger {
+        color: var(--color-danger-600);
+    }
+
+    .text-danger-strong {
+        color: var(--color-danger-700);
+    }
+
+    .bg-accent-soft {
+        background-color: var(--color-primary-muted);
+    }
+
+    .bg-success-soft {
+        background-color: var(--color-success-50);
+    }
+
+    .bg-warning-soft {
+        background-color: var(--color-warning-50);
+    }
+
+    .bg-danger-soft {
+        background-color: var(--color-danger-50);
+    }
+
+    .border-accent-soft {
+        border-color: var(--color-primary-border);
+    }
+
+    .border-success-soft {
+        border-color: var(--color-success-200);
+    }
+
+    .border-warning-soft {
+        border-color: var(--color-warning-200);
+    }
+
+    .border-danger-soft {
+        border-color: var(--color-danger-200);
+    }
+
+    .badge {
+        @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide;
+    }
+
+    .badge-accent {
+        background-color: var(--color-primary-muted);
+        border-color: var(--color-primary-border);
+        color: var(--color-primary);
+    }
+
+    .badge-success {
+        background-color: var(--color-success-50);
+        border-color: var(--color-success-200);
+        color: var(--color-success-700);
+    }
+
+    .badge-warning {
+        background-color: var(--color-warning-50);
+        border-color: var(--color-warning-200);
+        color: var(--color-warning-700);
+    }
+
+    .badge-danger {
+        background-color: var(--color-danger-50);
+        border-color: var(--color-danger-200);
+        color: var(--color-danger-700);
+    }
+
+    .pill {
+        @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold;
+    }
+
+    .pill-accent {
+        background-color: var(--color-primary-muted);
+        border-color: var(--color-primary-border);
+        color: var(--color-primary);
+    }
+
+    .pill-success {
+        background-color: var(--color-success-50);
+        border-color: var(--color-success-200);
+        color: var(--color-success-700);
+    }
+
+    .pill-warning {
+        background-color: var(--color-warning-50);
+        border-color: var(--color-warning-200);
+        color: var(--color-warning-700);
+    }
+
+    .pill-danger {
+        background-color: var(--color-danger-50);
+        border-color: var(--color-danger-200);
+        color: var(--color-danger-700);
+    }
+
+    .alert {
+        @apply rounded-2xl px-4 py-3 text-sm font-medium shadow-sm;
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    .alert-accent {
+        background-color: var(--color-primary-muted);
+        border-color: var(--color-primary-border);
+        color: var(--color-primary);
+    }
+
+    .alert-success {
+        background-color: var(--color-success-50);
+        border-color: var(--color-success-200);
+        color: var(--color-success-700);
+    }
+
+    .alert-warning {
+        background-color: var(--color-warning-50);
+        border-color: var(--color-warning-200);
+        color: var(--color-warning-700);
+    }
+
+    .alert-danger {
+        background-color: var(--color-danger-50);
+        border-color: var(--color-danger-200);
+        color: var(--color-danger-700);
     }
 
     .text-accent {
@@ -600,28 +764,43 @@
     }
 
     .surface-table {
-        @apply min-w-full divide-y divide-neutral-200 text-sm;
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        font-size: 0.875rem;
     }
 
     .surface-table thead {
-        @apply bg-neutral-100 text-left text-[11px] font-semibold uppercase tracking-wide text-neutral-500;
+        background-color: var(--color-surface-muted);
+        text-align: left;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
     }
 
     .surface-table tbody {
-        @apply divide-y divide-neutral-100 bg-white;
+        background-color: var(--color-elevated);
     }
 
     .stat-card {
-        @apply rounded-2xl border border-neutral-200 bg-white/95 p-5 shadow-md shadow-neutral-200/70 backdrop-blur;
+        @apply rounded-2xl border p-5 backdrop-blur;
+        border-color: var(--color-border);
+        background-color: color-mix(in srgb, var(--color-elevated) 95%, transparent);
+        color: var(--color-text);
+        box-shadow: var(--shadow-soft);
     }
 
     .surface-card > header {
-        @apply border-b border-neutral-200/80 bg-white/80 backdrop-blur-sm;
+        border-bottom: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+        background-color: color-mix(in srgb, var(--color-elevated) 85%, transparent);
+        backdrop-filter: blur(6px);
     }
 
     .surface-card > header h1,
     .surface-card > header h2 {
-        @apply text-neutral-900;
+        color: var(--color-text);
         margin: 0;
     }
 
@@ -694,7 +873,8 @@
     }
 
     .table-footer {
-        @apply flex flex-wrap items-center justify-between gap-4 bg-white;
+        @apply flex flex-wrap items-center justify-between gap-4;
+        background-color: var(--color-elevated);
         border: 1px solid var(--color-border);
         border-top: none;
         border-bottom-left-radius: var(--radius-lg);
@@ -709,7 +889,8 @@
     .table a:not(.btn),
     .table button:not(.btn),
     .table [role='button'] {
-        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-md;
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 rounded-md;
+        --tw-ring-offset-color: var(--color-elevated);
     }
 
     [data-flux-component] [variant],
@@ -717,11 +898,12 @@
     [data-variant],
     .ui-button[variant],
     .ui-button[data-variant] {
-        @apply inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60;
+        @apply inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
         background-color: var(--color-surface);
         border-color: var(--color-border);
         color: var(--color-text);
         box-shadow: 0 4px 16px -10px rgba(15, 23, 42, 0.18);
+        --tw-ring-offset-color: var(--color-elevated);
     }
 
     [data-flux-component] [variant]:hover,
@@ -852,6 +1034,52 @@
     }
 }
 
+@layer utilities {
+    .text-token {
+        color: var(--color-text);
+    }
+
+    .text-token-subtle {
+        color: var(--color-text-subtle);
+    }
+
+    .text-token-muted {
+        color: var(--color-text-muted);
+    }
+
+    .bg-surface {
+        background-color: var(--color-surface);
+    }
+
+    .bg-surface-muted {
+        background-color: var(--color-surface-muted);
+    }
+
+    .bg-surface-strong {
+        background-color: var(--color-surface-strong);
+    }
+
+    .bg-elevated {
+        background-color: var(--color-elevated);
+    }
+
+    .border-token {
+        border-color: var(--color-border);
+    }
+
+    .border-token-strong {
+        border-color: var(--color-border-strong);
+    }
+
+    .hover\:bg-surface-muted:hover {
+        background-color: var(--color-surface-muted);
+    }
+
+    .placeholder\:text-token-muted::placeholder {
+        color: var(--color-text-muted);
+    }
+}
+
 [data-flux-label] {
     @apply !mb-0 !leading-tight;
 }
@@ -860,7 +1088,8 @@
 input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-primary-200/70 ring-offset-2 ring-offset-white;
+    @apply outline-hidden ring-2 ring-primary-200/70 ring-offset-2;
+    --tw-ring-offset-color: var(--color-elevated);
 }
 
 /* Utility override kept for future reference */

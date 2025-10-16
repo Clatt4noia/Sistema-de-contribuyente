@@ -1,9 +1,9 @@
 <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
  <article class="surface-card">
- <header class="flex items-center justify-between border-b border-slate-200 px-6 py-5 ">
+ <header class="flex items-center justify-between border-b border-token px-6 py-5 ">
  <div>
- <h1 class="text-2xl font-semibold text-slate-900 ">{{ __('Resumen financiero') }}</h1>
- <p class="mt-1 text-sm text-slate-600 ">{{ __('Cobros, pagos y facturación para la toma de decisiones.') }}</p>
+ <h1 class="text-2xl font-semibold text-token ">{{ __('Resumen financiero') }}</h1>
+ <p class="mt-1 text-sm text-token ">{{ __('Cobros, pagos y facturación para la toma de decisiones.') }}</p>
  </div>
  </header>
 
@@ -15,10 +15,10 @@
  </article>
 
  <article class="surface-card">
- <header class="border-b border-slate-200 px-6 py-5 ">
- <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Alertas') }}</h2>
+ <header class="border-b border-token px-6 py-5 ">
+ <h2 class="text-lg font-semibold text-token ">{{ __('Alertas') }}</h2>
  </header>
- <div class="space-y-3 p-6 text-sm text-slate-600 ">
+ <div class="space-y-3 p-6 text-sm text-token ">
  <p>{{ __('Revisa facturas con más de 15 días vencidas y coordina con logística antes de retener servicios.') }}</p>
  <p>{{ __('Activa recordatorios automáticos para clientes con historial de mora.') }}</p>
  </div>

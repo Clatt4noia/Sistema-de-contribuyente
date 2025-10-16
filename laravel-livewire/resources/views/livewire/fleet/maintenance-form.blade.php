@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h1 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Mantenimiento' : 'Registrar Mantenimiento' }}</h1>
+ <h1 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Mantenimiento' : 'Registrar Mantenimiento' }}</h1>
     <a
         href="{{ route('fleet.maintenance.index') }}"
         class="btn btn-secondary"

@@ -1,13 +1,13 @@
 <div class="space-y-4">
- <div wire:ignore id="live-tracking-map" class="h-80 w-full rounded-2xl border border-slate-200 bg-slate-100 "></div>
+ <div wire:ignore id="live-tracking-map" class="h-80 w-full rounded-2xl border border-token bg-surface-muted "></div>
 
  @if(empty($markers))
- <p class="text-sm text-slate-600 ">{{ __('Sin posiciones recientes para visualizar en el mapa.') }}</p>
+ <p class="text-sm text-token ">{{ __('Sin posiciones recientes para visualizar en el mapa.') }}</p>
  @else
- <ul class="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+ <ul class="grid gap-3 text-sm text-token sm:grid-cols-2">
  @foreach ($markers as $marker)
- <li class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm ">
- <p class="font-semibold text-slate-900 ">{{ $marker['truck'] ?? __('Vehículo sin placa') }}</p>
+ <li class="rounded-xl border border-token bg-elevated p-3 shadow-sm ">
+ <p class="font-semibold text-token ">{{ $marker['truck'] ?? __('Vehículo sin placa') }}</p>
  <p>{{ __('Pedido') }}: <span class="font-medium">{{ $marker['order'] ?? '—' }}</span></p>
  <p>{{ __('Estado') }}: <span class="capitalize">{{ __($marker['status'] ?? 'on_route') }}</span></p>
  <p>{{ __('Reportado') }}: {{ $marker['reported_at'] }}</p>

@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h2 class="text-2xl font-semibold text-slate-900 ">Asignaciones de Vehiculos</h2>
+ <h2 class="text-2xl font-semibold text-token ">Asignaciones de Vehiculos</h2>
     <a href="{{ route('fleet.assignments.create') }}" class="btn btn-primary">
         <i class="fas fa-plus"></i>
         Nueva Asignacion
@@ -14,7 +14,7 @@
  @endif
 
  <div class="surface-card overflow-hidden shadow-lg">
- <div class="grid grid-cols-1 gap-4 border-b border-slate-200 px-4 py-4 md:grid-cols-4">
+ <div class="grid grid-cols-1 gap-4 border-b border-token px-4 py-4 md:grid-cols-4">
  <div class="md:col-span-2">
  <input wire:model.live.debounce.300ms="search" type="text" placeholder="Buscar por descripcion, pedido, vehiculo o chofer..." class="form-control">
  </div>
@@ -76,14 +76,13 @@
                 'in_progress' => ['label' => 'En ruta', 'class' => 'bg-accent-soft text-accent '],
                 'completed' => ['label' => 'Completada', 'class' => 'bg-success-soft text-success-strong '],
                 'cancelled' => ['label' => 'Cancelada', 'class' => 'bg-danger-soft text-danger-strong '],
-
               ];
               $statusConfig = $statusStyles[$assignment->status] ?? $statusStyles['scheduled'];
             @endphp
             <tr class="table-row table-row-hover">
               <td class="table-cell whitespace-nowrap">
-                <div class="text-sm font-medium text-slate-900 ">{{ optional($assignment->order)->reference ?? 'Sin pedido' }}</div>
-                <div class="text-sm text-slate-600 ">
+                <div class="text-sm font-medium text-token ">{{ optional($assignment->order)->reference ?? 'Sin pedido' }}</div>
+                <div class="text-sm text-token ">
                   @if($assignment->order)
                     {{ $assignment->order->origin }} -> {{ $assignment->order->destination }}
                   @else
@@ -92,17 +91,17 @@
                 </div>
               </td>
               <td class="table-cell whitespace-nowrap">
-                <div class="text-sm font-medium text-slate-900 ">{{ $assignment->truck->plate_number }}</div>
-                <div class="text-sm text-slate-600 ">{{ $assignment->truck->brand }} {{ $assignment->truck->model }}</div>
+                <div class="text-sm font-medium text-token ">{{ $assignment->truck->plate_number }}</div>
+                <div class="text-sm text-token ">{{ $assignment->truck->brand }} {{ $assignment->truck->model }}</div>
               </td>
               <td class="table-cell whitespace-nowrap">
-                <div class="text-sm font-medium text-slate-900 ">{{ $assignment->driver->name }} {{ $assignment->driver->last_name }}</div>
-                <div class="text-sm text-slate-600 ">{{ $assignment->driver->document_number }}</div>
+                <div class="text-sm font-medium text-token ">{{ $assignment->driver->name }} {{ $assignment->driver->last_name }}</div>
+                <div class="text-sm text-token ">{{ $assignment->driver->document_number }}</div>
               </td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-900 ">
+              <td class="table-cell whitespace-nowrap text-sm text-token ">
                 {{ $assignment->start_date?->format('d/m/Y H:i') }}
               </td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-900 ">
+              <td class="table-cell whitespace-nowrap text-sm text-token ">
                 {{ $assignment->end_date ? $assignment->end_date->format('d/m/Y H:i') : 'En curso' }}
               </td>
               <td class="table-cell whitespace-nowrap">

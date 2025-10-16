@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div>
- <h1 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Chofer' : 'Registrar Chofer' }}</h1>
+ <h1 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Chofer' : 'Registrar Chofer' }}</h1>
 
  @if ($form['license_expiration'])
  @php
@@ -9,15 +9,15 @@
  $daysLeft = now()->diffInDays($expiresAt, false);
  @endphp
 
- <p class="mt-2 text-sm text-slate-600 ">
+ <p class="mt-2 text-sm text-token ">
  <span class="font-medium">Vigencia de licencia:</span>
  <span
- @class([
- 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm transition',
- 'bg-red-100 text-red-700 ' => $daysLeft < 0,
- 'bg-yellow-100 text-yellow-700 ' => $daysLeft >= 0 && $daysLeft <= 30,
- 'bg-green-100 text-green-700 ' => $daysLeft > 30,
- ])
+            @class([
+                'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm transition border',
+                'border-danger-soft bg-danger-soft text-danger-strong' => $daysLeft < 0,
+                'border-warning-soft bg-warning-soft text-warning-strong' => $daysLeft >= 0 && $daysLeft <= 30,
+                'border-success-soft bg-success-soft text-success-strong' => $daysLeft > 30,
+            ])
  >
 
  {{ $expiresAt->format('d/m/Y') }}
@@ -105,9 +105,9 @@
  @error('form.notes') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
- <div class="space-y-6 border-t border-slate-200 pt-6 ">
+ <div class="space-y-6 border-t border-token pt-6 ">
  <div class="flex flex-wrap items-center justify-between gap-3">
- <h2 class="text-lg font-semibold text-slate-900 ">Horarios</h2>
+ <h2 class="text-lg font-semibold text-token ">Horarios</h2>
  <button
  type="button"
  wire:click="addSchedule"
@@ -125,10 +125,10 @@
  @forelse ($schedules as $index => $schedule)
  <div
  wire:key="schedule-{{ $index }}"
- class="grid grid-cols-1 items-end gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition md:grid-cols-4"
+ class="grid grid-cols-1 items-end gap-4 rounded-2xl border border-token bg-surface p-4 transition md:grid-cols-4"
  >
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Día</label>
+ <label class="text-xs font-medium text-token ">Día</label>
  <select wire:model.defer="schedules.{{ $index }}.day_of_week" class="form-control text-sm">
  <option value="Lunes">Lunes</option>
  <option value="Martes">Martes</option>
@@ -141,12 +141,12 @@
  @error('schedules.' . $index . '.day_of_week') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Inicio</label>
+ <label class="text-xs font-medium text-token ">Inicio</label>
  <input type="time" wire:model.defer="schedules.{{ $index }}.start_time" class="form-control text-sm">
  @error('schedules.' . $index . '.start_time') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Fin</label>
+ <label class="text-xs font-medium text-token ">Fin</label>
  <input type="time" wire:model.defer="schedules.{{ $index }}.end_time" class="form-control text-sm">
  @error('schedules.' . $index . '.end_time') <span class="form-error">{{ $message }}</span> @enderror
  </div>
@@ -161,14 +161,14 @@
  </div>
  </div>
  @empty
- <p class="text-sm text-slate-500 ">No se han definido horarios. Agrega al menos uno para planificar disponibilidad.</p>
+ <p class="text-sm text-token ">No se han definido horarios. Agrega al menos uno para planificar disponibilidad.</p>
  @endforelse
  </div>
  </div>
 
- <div class="space-y-6 border-t border-slate-200 pt-6 ">
+ <div class="space-y-6 border-t border-token pt-6 ">
  <div class="flex flex-wrap items-center justify-between gap-3">
- <h2 class="text-lg font-semibold text-slate-900 ">Capacitaciones</h2>
+ <h2 class="text-lg font-semibold text-token ">Capacitaciones</h2>
  <button
  type="button"
  wire:click="addTraining"
@@ -186,32 +186,32 @@
  class="grid grid-cols-1 gap-4 rounded-2xl border border-accent-soft bg-accent-soft p-4 transition md:grid-cols-6"
  >
  <div class="md:col-span-2 space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Nombre *</label>
+ <label class="text-xs font-medium text-token ">Nombre *</label>
  <input type="text" wire:model.defer="trainings.{{ $index }}.name" class="form-control text-sm">
  @error('trainings.' . $index . '.name') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Proveedor</label>
+ <label class="text-xs font-medium text-token ">Proveedor</label>
  <input type="text" wire:model.defer="trainings.{{ $index }}.provider" class="form-control text-sm">
  @error('trainings.' . $index . '.provider') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Emitida</label>
+ <label class="text-xs font-medium text-token ">Emitida</label>
  <input type="date" wire:model.defer="trainings.{{ $index }}.issued_at" class="form-control text-sm">
  @error('trainings.' . $index . '.issued_at') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Vence</label>
+ <label class="text-xs font-medium text-token ">Vence</label>
  <input type="date" wire:model.defer="trainings.{{ $index }}.expires_at" class="form-control text-sm">
  @error('trainings.' . $index . '.expires_at') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Horas</label>
+ <label class="text-xs font-medium text-token ">Horas</label>
  <input type="number" min="0" wire:model.defer="trainings.{{ $index }}.hours" class="form-control text-sm">
  @error('trainings.' . $index . '.hours') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Estado</label>
+ <label class="text-xs font-medium text-token ">Estado</label>
  <select wire:model.defer="trainings.{{ $index }}.status" class="form-control text-sm">
  <option value="valid">Vigente</option>
  <option value="in_progress">En curso</option>
@@ -220,7 +220,7 @@
  @error('trainings.' . $index . '.status') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="md:col-span-2 space-y-2">
- <label class="text-xs font-medium text-slate-600 ">Certificado (URL)</label>
+ <label class="text-xs font-medium text-token ">Certificado (URL)</label>
  <input type="url" wire:model.defer="trainings.{{ $index }}.certificate_url" class="form-control text-sm">
  @error('trainings.' . $index . '.certificate_url') <span class="form-error">{{ $message }}</span> @enderror
  </div>
@@ -235,7 +235,7 @@
  </div>
  </div>
  @empty
- <p class="text-sm text-slate-500 ">No se han registrado capacitaciones.</p>
+ <p class="text-sm text-token ">No se han registrado capacitaciones.</p>
  @endforelse
  </div>
  </div>
@@ -265,13 +265,13 @@
  :key="'driver-documents-' . $driver->id"
  />
  @else
- <div class="surface-card border border-dashed border-slate-300 p-6 text-sm text-slate-600 ">
+ <div class="surface-card border border-dashed border-token-strong p-6 text-sm text-token ">
  Guarda el chofer para habilitar la carga de documentos (licencia, certificados, etc.).
  </div>
  @endif
 
  @else
- <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500 ">
+    <div class="rounded-2xl border border-dashed border-token bg-surface p-6 text-sm text-token ">
  Guarda el registro del chofer para adjuntar licencias escaneadas, certificados médicos o constancias de capacitación.
  </div>
  @endif

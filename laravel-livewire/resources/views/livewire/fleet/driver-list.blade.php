@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h1 class="text-2xl font-semibold text-slate-900 ">Gestion de Choferes</h1>
+ <h1 class="text-2xl font-semibold text-token ">Gestion de Choferes</h1>
     <a href="{{ route('fleet.drivers.create') }}" class="btn btn-primary">
         Agregar Chofer
     </a>
@@ -13,7 +13,7 @@
  @endif
 
  <div class="surface-card overflow-hidden shadow-lg">
- <div class="flex flex-col gap-4 border-b border-slate-200 px-4 py-4 md:flex-row md:items-center md:justify-between">
+ <div class="flex flex-col gap-4 border-b border-token px-4 py-4 md:flex-row md:items-center md:justify-between">
  <div class="w-full md:max-w-md">
  <input type="text" wire:model.live="search" placeholder="Buscar por nombre, documento o licencia..." class="form-control">
  </div>
@@ -59,10 +59,10 @@
               $expiringTraining = $driver->trainings->first(fn($training) => $training->expires_at && $training->expires_at->diffInDays(now(), false) >= -30 && $training->expires_at->isFuture());
             @endphp
             <tr class="table-row table-row-hover">
-              <td class="table-cell whitespace-nowrap text-sm font-medium text-slate-900 ">{{ $driver->full_name }}</td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $driver->document_number }}</td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $driver->license_number }}</td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">
+              <td class="table-cell whitespace-nowrap text-sm font-medium text-token ">{{ $driver->full_name }}</td>
+              <td class="table-cell whitespace-nowrap text-sm text-token ">{{ $driver->document_number }}</td>
+              <td class="table-cell whitespace-nowrap text-sm text-token ">{{ $driver->license_number }}</td>
+              <td class="table-cell whitespace-nowrap text-sm text-token ">
                 {{ $driver->license_expiration->format('d/m/Y') }}
                 @if($driver->license_expiration->isPast())
                   <span class="ml-2 font-semibold text-danger-strong ">VENCIDA</span>
@@ -70,13 +70,13 @@
                   <span class="ml-2 font-semibold text-warning ">PROXIMA A VENCER</span>
                 @endif
               </td>
-              <td class="table-cell text-sm text-slate-600 ">
+              <td class="table-cell text-sm text-token ">
                 {{ $scheduleSummary ?: 'Sin horarios' }}
               </td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">
+              <td class="table-cell whitespace-nowrap text-sm text-token ">
                 {{ $averageScore ? $averageScore . ' / 5' : 'Sin evaluaciones' }}
               </td>
-              <td class="table-cell text-sm text-slate-600 ">
+              <td class="table-cell text-sm text-token ">
                 <div class="flex flex-col gap-1">
                   <span class="inline-flex items-center gap-2 text-xs font-semibold">
                     <span class="inline-flex h-2 w-2 rounded-full bg-[color:var(--color-primary)]"></span>
@@ -108,7 +108,6 @@
         </tbody>
       </table>
     </div>
-
 
     <div class="table-footer">
       {{ $drivers->links() }}

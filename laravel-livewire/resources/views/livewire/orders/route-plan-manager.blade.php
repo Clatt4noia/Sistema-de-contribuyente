@@ -1,8 +1,8 @@
 <div class="space-y-6">
  <div class="flex flex-wrap items-center justify-between gap-3">
  <div>
- <h2 class="text-lg font-semibold text-slate-900 ">Rutas adicionales</h2>
- <p class="text-sm text-slate-500 ">Documenta alternativas, desvíos y datos complementarios al plan principal.</p>
+ <h2 class="text-lg font-semibold text-token ">Rutas adicionales</h2>
+ <p class="text-sm text-token ">Documenta alternativas, desvíos y datos complementarios al plan principal.</p>
  </div>
 
  @if (session()->has('message'))
@@ -42,7 +42,7 @@
  </div>
  </form>
 
-  <div class="rounded-2xl border border-slate-200 shadow-sm ">
+  <div class="rounded-2xl border border-token shadow-sm ">
     <table class="table table-md">
       <thead>
         <tr class="table-row">
@@ -55,13 +55,13 @@
       <tbody>
         @forelse($plans as $plan)
           <tr class="table-row table-row-hover">
-            <td class="table-cell text-sm text-slate-700 ">{{ $plan->planner ?: 'No definido' }}</td>
-            <td class="table-cell text-sm text-slate-700 ">{{ \Illuminate\Support\Str::limit($plan->route_summary, 80) }}</td>
+            <td class="table-cell text-sm text-token ">{{ $plan->planner ?: 'No definido' }}</td>
+            <td class="table-cell text-sm text-token ">{{ \Illuminate\Support\Str::limit($plan->route_summary, 80) }}</td>
             <td class="table-cell text-sm">
               @if($plan->map_url)
                 <a href="{{ $plan->map_url }}" target="_blank" class="btn btn-secondary btn-sm">Ver mapa</a>
               @else
-                <span class="text-sm text-slate-400 ">Sin enlace</span>
+                <span class="text-sm text-token-muted ">Sin enlace</span>
               @endif
             </td>
             <td class="table-cell text-sm">

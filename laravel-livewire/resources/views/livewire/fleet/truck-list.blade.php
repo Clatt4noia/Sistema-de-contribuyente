@@ -1,8 +1,8 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div class="space-y-1">
- <h1 class="text-2xl font-semibold text-slate-900 ">Gestion de Camiones</h1>
- <p class="text-sm text-slate-500 ">Monitorea disponibilidad, mantenimientos y asignaciones de la flota.</p>
+ <h1 class="text-2xl font-semibold text-token ">Gestion de Camiones</h1>
+ <p class="text-sm text-token ">Monitorea disponibilidad, mantenimientos y asignaciones de la flota.</p>
  </div>
     <a href="{{ route('fleet.trucks.create') }}" class="btn btn-primary">
         <span class="text-lg leading-none">+</span>
@@ -18,25 +18,25 @@
 
  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">Camiones disponibles</p>
+ <p class="text-sm text-token ">Camiones disponibles</p>
  <p class="mt-1 text-2xl font-semibold text-success ">{{ $statusTotals['available'] ?? 0 }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">Camiones en uso</p>
+ <p class="text-sm text-token ">Camiones en uso</p>
  <p class="mt-1 text-2xl font-semibold text-accent ">{{ $statusTotals['in_use'] ?? 0 }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">En mantenimiento</p>
+ <p class="text-sm text-token ">En mantenimiento</p>
  <p class="mt-1 text-2xl font-semibold text-warning ">{{ $statusTotals['maintenance'] ?? 0 }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">Mantenimientos proximos (30 dias)</p>
+ <p class="text-sm text-token ">Mantenimientos proximos (30 dias)</p>
  <p class="mt-1 text-2xl font-semibold text-danger ">{{ $maintenanceDueSoon }}</p>
  </div>
  </div>
 
  <div class="surface-card shadow-lg">
- <div class="flex flex-col gap-4 border-b border-slate-200 px-4 py-4 md:flex-row md:items-center md:justify-between">
+ <div class="flex flex-col gap-4 border-b border-token px-4 py-4 md:flex-row md:items-center md:justify-between">
  <div class="w-full md:max-w-md">
  <label class="sr-only" for="truck-search">Buscar</label>
  <input id="truck-search" wire:model.live="search" type="text" placeholder="Buscar por placa, marca o modelo..." class="form-control">
@@ -49,7 +49,7 @@
  <option value="maintenance">En mantenimiento</option>
  <option value="out_of_service">Fuera de servicio</option>
  </select>
- <button type="button" wire:click="$set('status', '')" class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:[background-color:var(--color-surface-muted)] ">
+ <button type="button" wire:click="$set('status', '')" class="inline-flex items-center rounded-xl border border-token px-4 py-2 text-sm font-medium text-token transition hover:[background-color:var(--color-surface-muted)] ">
  Limpiar
  </button>
  </div>
@@ -88,15 +88,15 @@
               ? 'text-danger font-semibold '
               : ($isDueSoon
                 ? 'text-warning font-semibold '
-                : 'text-slate-700 ');
+                : 'text-token ');
             $alertLevel = $truck->maintenanceAlertLevel();
           @endphp
           <tr class="table-row table-row-hover">
-            <td class="table-cell font-medium text-slate-900 ">{{ $truck->plate_number }}</td>
-            <td class="table-cell text-slate-600 ">{{ $truck->brand }} {{ $truck->model }}</td>
-            <td class="table-cell text-slate-600 ">{{ $truck->year }}</td>
-            <td class="table-cell text-slate-600 ">{{ $truck->type }}</td>
-            <td class="table-cell text-slate-600 ">{{ number_format($truck->mileage ?? 0) }} km</td>
+            <td class="table-cell font-medium text-token ">{{ $truck->plate_number }}</td>
+            <td class="table-cell text-token ">{{ $truck->brand }} {{ $truck->model }}</td>
+            <td class="table-cell text-token ">{{ $truck->year }}</td>
+            <td class="table-cell text-token ">{{ $truck->type }}</td>
+            <td class="table-cell text-token ">{{ number_format($truck->mileage ?? 0) }} km</td>
             <td class="table-cell">
               <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusConfig['class'] }}">
                 {{ $statusConfig['label'] }}
@@ -119,7 +119,7 @@
                 @endswitch
               </span>
             </td>
-            <td class="table-cell text-center text-slate-600 ">{{ $truck->pending_maintenances_count ?? 0 }}</td>
+            <td class="table-cell text-center text-token ">{{ $truck->pending_maintenances_count ?? 0 }}</td>
             <td class="table-cell text-right">
               <a href="{{ route('fleet.trucks.edit', $truck) }}" class="font-semibold text-accent transition hover:text-[color:var(--color-primary-emphasis)] ">Editar</a>
               <button wire:click="deleteTruck({{ $truck->id }})" wire:confirm="Esta seguro de eliminar este camion?" class="ml-3 font-semibold text-danger transition hover:text-danger-strong ">Eliminar</button>
@@ -133,7 +133,6 @@
       </tbody>
     </table>
   </div>
-
 
   <div class="table-footer">
       {{ $trucks->links() }}

@@ -1,6 +1,6 @@
 <section class="surface-card">
- <header class="border-b border-slate-200 px-6 py-5 ">
- <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Pagos recientes') }}</h2>
+ <header class="border-b border-token px-6 py-5 ">
+ <h2 class="text-lg font-semibold text-token ">{{ __('Pagos recientes') }}</h2>
  </header>
 
   <div class="overflow-x-auto">
@@ -16,12 +16,12 @@
       <tbody>
         @forelse ($this->payments as $payment)
           <tr class="table-row table-row-hover">
-            <td class="table-cell text-sm font-medium text-slate-900 ">{{ $payment->reference ?? '—' }}</td>
-            <td class="table-cell text-sm text-slate-600 ">
+            <td class="table-cell text-sm font-medium text-token ">{{ $payment->reference ?? '—' }}</td>
+            <td class="table-cell text-sm text-token ">
               {{ optional($payment->invoice?->client)->business_name ?? optional($payment->invoice?->client)->contact_name ?? '—' }}
             </td>
-            <td class="table-cell text-sm text-slate-600 ">{{ $payment->formatted_amount }}</td>
-            <td class="table-cell text-sm text-slate-600 ">{{ optional($payment->paid_at)?->format('d/m/Y') ?? '—' }}</td>
+            <td class="table-cell text-sm text-token ">{{ $payment->formatted_amount }}</td>
+            <td class="table-cell text-sm text-token ">{{ optional($payment->paid_at)?->format('d/m/Y') ?? '—' }}</td>
           </tr>
         @empty
           <tr class="table-row">

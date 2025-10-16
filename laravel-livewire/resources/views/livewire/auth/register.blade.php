@@ -162,5 +162,4 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <span>{{ __('Ya tienes una cuenta?') }}</span>
         <a class="font-semibold text-accent hover:underline" href="{{ route('login') }}">{{ __('Iniciar Sesión') }}</a>
     </div>
-
 </div>

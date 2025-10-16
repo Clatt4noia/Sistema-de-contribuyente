@@ -1,8 +1,8 @@
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div>
- <h1 class="text-2xl font-semibold text-slate-900 ">Emisión electrónica</h1>
- <p class="text-sm text-slate-600 ">SUNAT - {{ strtoupper(config('billing.sunat.mode')) }}</p>
+ <h1 class="text-2xl font-semibold text-token ">Emisión electrónica</h1>
+ <p class="text-sm text-token ">SUNAT - {{ strtoupper(config('billing.sunat.mode')) }}</p>
  </div>
  <div class="flex items-center gap-3">
     <a href="{{ route('billing.invoices.index') }}" class="btn btn-secondary">Volver</a>
@@ -16,8 +16,8 @@
  <div class="surface-card space-y-6 p-6 shadow-lg">
  <section class="grid grid-cols-1 gap-6 md:grid-cols-2">
  <div>
- <h2 class="text-lg font-semibold text-slate-900 ">Datos del comprobante</h2>
- <dl class="mt-3 space-y-2 text-sm text-slate-700 ">
+ <h2 class="text-lg font-semibold text-token ">Datos del comprobante</h2>
+ <dl class="mt-3 space-y-2 text-sm text-token ">
  <div class="flex items-center justify-between">
  <dt>Serie</dt>
  <dd class="font-medium">{{ $invoice->series }}</dd>
@@ -37,8 +37,8 @@
  </dl>
  </div>
  <div>
- <h2 class="text-lg font-semibold text-slate-900 ">Totales</h2>
- <dl class="mt-3 space-y-2 text-sm text-slate-700 ">
+ <h2 class="text-lg font-semibold text-token ">Totales</h2>
+ <dl class="mt-3 space-y-2 text-sm text-token ">
  <div class="flex items-center justify-between">
  <dt>Base imponible</dt>
  <dd class="font-semibold">S/ {{ number_format($totals['subtotal'], 2) }}</dd>
@@ -56,7 +56,7 @@
  </section>
 
  <section class="space-y-4">
- <h2 class="text-lg font-semibold text-slate-900 ">Detalle de ítems</h2>
+ <h2 class="text-lg font-semibold text-token ">Detalle de ítems</h2>
 
  @error('items')
     <div class="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700 ">
@@ -64,7 +64,7 @@
  </div>
  @enderror
 
-        <div class="overflow-hidden rounded-xl border border-slate-200 ">
+        <div class="overflow-hidden rounded-xl border border-token ">
           <table class="table table-md">
             <thead>
               <tr class="table-row">
@@ -78,10 +78,10 @@
             </thead>
             <tbody>
               @forelse($items as $index => $item)
-                <tr class="table-row text-sm text-slate-700 ">
+                <tr class="table-row text-sm text-token ">
                   <td class="table-cell">
                     <p class="font-semibold">{{ $item['description'] }}</p>
-                    <p class="text-xs text-slate-500">{{ $item['unit_code'] }} • Excepción {{ $item['tax_exemption_reason'] }}</p>
+                    <p class="text-xs text-token">{{ $item['unit_code'] }} • Excepción {{ $item['tax_exemption_reason'] }}</p>
                   </td>
                   <td class="table-cell">{{ number_format($item['quantity'], 2) }}</td>
                   <td class="table-cell">S/ {{ number_format($item['unit_price'], 2) }}</td>
@@ -104,7 +104,7 @@
  </section>
 
  <section class="space-y-4">
- <h2 class="text-lg font-semibold text-slate-900 ">Agregar ítem</h2>
+ <h2 class="text-lg font-semibold text-token ">Agregar ítem</h2>
  <div class="grid grid-cols-1 gap-4 md:grid-cols-6">
         <div class="md:col-span-2 form-field">
             <label for="item_description" class="form-label">
@@ -219,10 +219,10 @@
  </div>
 
  @if($confirmationOpen)
- <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-300 px-4 py-8">
- <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl ">
- <h2 class="text-lg font-semibold text-slate-900 ">Confirmar envío</h2>
- <p class="mt-3 text-sm text-slate-600 ">¿Confirmas que deseas enviar el comprobante {{ $invoice->numero_completo }} a SUNAT? Asegúrate de que la información sea correcta antes de proceder.</p>
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-surface-strong px-4 py-8">
+        <div class="w-full max-w-lg rounded-2xl bg-elevated p-6 shadow-2xl ">
+ <h2 class="text-lg font-semibold text-token ">Confirmar envío</h2>
+ <p class="mt-3 text-sm text-token ">¿Confirmas que deseas enviar el comprobante {{ $invoice->numero_completo }} a SUNAT? Asegúrate de que la información sea correcta antes de proceder.</p>
  <div class="mt-6 flex justify-end gap-3">
     <button type="button" wire:click="$set('confirmationOpen', false)" class="btn btn-secondary">Cancelar</button>
     <button type="button" wire:click="sendToSunat" class="btn btn-primary">Enviar ahora</button>

@@ -1,6 +1,6 @@
 <section class="surface-card">
- <header class="border-b border-slate-200 px-6 py-5 ">
- <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Facturas recientes') }}</h2>
+ <header class="border-b border-token px-6 py-5 ">
+ <h2 class="text-lg font-semibold text-token ">{{ __('Facturas recientes') }}</h2>
  </header>
 
   <div class="overflow-x-auto">
@@ -17,18 +17,17 @@
       <tbody>
         @forelse ($this->invoices as $invoice)
           <tr class="table-row table-row-hover">
-            <td class="table-cell text-sm font-medium text-slate-900 ">{{ $invoice->invoice_number ?? '—' }}</td>
-            <td class="table-cell text-sm text-slate-600 ">
+            <td class="table-cell text-sm font-medium text-token ">{{ $invoice->invoice_number ?? '—' }}</td>
+            <td class="table-cell text-sm text-token ">
               {{ optional($invoice->client)->business_name ?? optional($invoice->client)->contact_name ?? '—' }}
             </td>
             <td class="table-cell">
               <span class="rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success-strong ">
-
                 {{ $invoice->status ? __($invoice->status) : __('pendiente') }}
               </span>
             </td>
-            <td class="table-cell text-sm text-slate-600 ">{{ $invoice->formatted_total }}</td>
-            <td class="table-cell text-sm text-slate-600 ">{{ optional($invoice->issue_date)?->format('d/m/Y') ?? '—' }}</td>
+            <td class="table-cell text-sm text-token ">{{ $invoice->formatted_total }}</td>
+            <td class="table-cell text-sm text-token ">{{ optional($invoice->issue_date)?->format('d/m/Y') ?? '—' }}</td>
           </tr>
         @empty
           <tr class="table-row">

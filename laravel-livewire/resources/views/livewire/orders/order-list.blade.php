@@ -1,8 +1,8 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div class="space-y-1">
- <h1 class="text-2xl font-semibold text-slate-900 ">Gestion de Pedidos</h1>
- <p class="text-sm text-slate-500 ">Controla solicitudes de transporte, monitorea estados y sincroniza asignaciones.</p>
+ <h1 class="text-2xl font-semibold text-token ">Gestion de Pedidos</h1>
+ <p class="text-sm text-token ">Controla solicitudes de transporte, monitorea estados y sincroniza asignaciones.</p>
  </div>
     <a href="{{ route('orders.create') }}" class="btn btn-primary">
         Nuevo Pedido
@@ -11,19 +11,19 @@
 
  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">Total</p>
- <p class="mt-1 text-2xl font-semibold text-slate-900 ">{{ $metrics['total'] }}</p>
+ <p class="text-sm text-token ">Total</p>
+ <p class="mt-1 text-2xl font-semibold text-token ">{{ $metrics['total'] }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">Pendientes</p>
+ <p class="text-sm text-token ">Pendientes</p>
  <p class="mt-1 text-2xl font-semibold text-warning ">{{ $metrics['pending'] }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">En ruta</p>
+ <p class="text-sm text-token ">En ruta</p>
  <p class="mt-1 text-2xl font-semibold text-accent ">{{ $metrics['en_route'] }}</p>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-slate-500 ">Entregados</p>
+ <p class="text-sm text-token ">Entregados</p>
  <p class="mt-1 text-2xl font-semibold text-success ">{{ $metrics['delivered'] }}</p>
  </div>
  </div>
@@ -41,7 +41,7 @@
 @endif
 
  <div class="surface-card shadow-lg">
- <div class="grid grid-cols-1 gap-4 border-b border-slate-200 px-4 py-4 md:grid-cols-4">
+ <div class="grid grid-cols-1 gap-4 border-b border-token px-4 py-4 md:grid-cols-4">
  <input type="text" wire:model.live.debounce.300ms="search" placeholder="Buscar por referencia, origen, destino..." class="form-control">
  <select wire:model.live="status" class="form-control">
  <option value="">Todos los estados</option>
@@ -56,7 +56,7 @@
  <option value="{{ $client->id }}">{{ $client->business_name }}</option>
  @endforeach
  </select>
- <div class="self-center text-sm text-slate-500 ">
+ <div class="self-center text-sm text-token ">
  Resultados: {{ $orders->total() }}
  </div>
  </div>
@@ -91,13 +91,13 @@
               ][$order->status] ?? 'Pendiente';
             @endphp
             <tr class="table-row table-row-hover">
-              <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ $order->reference }}</td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $order->client->business_name }}</td>
-              <td class="table-cell text-sm text-slate-600 ">
+              <td class="table-cell whitespace-nowrap text-sm font-semibold text-token ">{{ $order->reference }}</td>
+              <td class="table-cell whitespace-nowrap text-sm text-token ">{{ $order->client->business_name }}</td>
+              <td class="table-cell text-sm text-token ">
                 <div>{{ $order->origin }} → {{ $order->destination }}</div>
-                <div class="text-xs text-slate-400 ">{{ \Illuminate\Support\Str::limit($order->cargo_details, 60) }}</div>
+                <div class="text-xs text-token-muted ">{{ \Illuminate\Support\Str::limit($order->cargo_details, 60) }}</div>
               </td>
-              <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">
+              <td class="table-cell whitespace-nowrap text-sm text-token ">
                 <div>Recojo: {{ optional($order->pickup_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
                 <div>Entrega: {{ optional($order->delivery_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
               </td>
@@ -106,12 +106,12 @@
                   {{ $statusLabel }}
                 </span>
               </td>
-              <td class="table-cell text-sm text-slate-600 ">
+              <td class="table-cell text-sm text-token ">
                 @if($order->activeAssignment)
                   <div>{{ $order->activeAssignment->truck->plate_number }} / {{ $order->activeAssignment->driver->name }}</div>
-                  <div class="text-xs text-slate-400 ">{{ $order->activeAssignment->status }}</div>
+                  <div class="text-xs text-token-muted ">{{ $order->activeAssignment->status }}</div>
                 @else
-                  <span class="text-xs text-slate-400 ">Sin asignacion activa</span>
+                  <span class="text-xs text-token-muted ">Sin asignacion activa</span>
                 @endif
               </td>
               <td class="table-cell whitespace-nowrap text-sm font-medium">
@@ -132,7 +132,6 @@
         </tbody>
       </table>
     </div>
-
 
     <div class="table-footer">
       {{ $orders->links() }}
