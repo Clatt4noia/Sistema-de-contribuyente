@@ -12,25 +12,25 @@
  <div class="form-field">
  <label for="plate_number" class="form-label">Placa</label>
  <input type="text" id="plate_number" wire:model.defer="form.plate_number" class="form-control">
- @error('form.plate_number') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.plate_number') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="brand" class="form-label">Marca</label>
  <input type="text" id="brand" wire:model.defer="form.brand" class="form-control">
- @error('form.brand') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.brand') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="model" class="form-label">Modelo</label>
  <input type="text" id="model" wire:model.defer="form.model" class="form-control">
- @error('form.model') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.model') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="year" class="form-label">Ano</label>
  <input type="number" id="year" wire:model.defer="form.year" class="form-control">
- @error('form.year') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.year') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
@@ -43,19 +43,19 @@
  <option value="Cisterna">Cisterna</option>
  <option value="Volquete">Volquete</option>
  </select>
- @error('form.type') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.type') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="capacity" class="form-label">Capacidad (Ton)</label>
  <input type="number" step="0.01" id="capacity" wire:model.defer="form.capacity" class="form-control">
- @error('form.capacity') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.capacity') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="mileage" class="form-label">Kilometraje</label>
  <input type="number" id="mileage" wire:model.defer="form.mileage" class="form-control">
- @error('form.mileage') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.mileage') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
@@ -65,26 +65,26 @@
  <option value="{{ $value }}">{{ $label }}</option>
  @endforeach
  </select>
- @error('form.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.status') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="last_maintenance" class="form-label">Ultimo mantenimiento</label>
  <input type="date" id="last_maintenance" wire:model.defer="form.last_maintenance" class="form-control">
- @error('form.last_maintenance') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.last_maintenance') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="next_maintenance" class="form-label">Proximo mantenimiento</label>
  <input type="date" id="next_maintenance" wire:model.defer="form.next_maintenance" class="form-control">
- @error('form.next_maintenance') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.next_maintenance') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  </div>
 
  <div class="form-field">
  <label for="technical_details" class="form-label">Detalles tecnicos</label>
  <textarea id="technical_details" wire:model.defer="form.technical_details" rows="4" class="form-control"></textarea>
- @error('form.technical_details') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.technical_details') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="flex items-center justify-end gap-3">
@@ -129,41 +129,41 @@
  @if(!empty($maintenanceHistory))
  @php
  $statusTags = [
- 'scheduled' => ['label' => 'Programado', 'class' => 'bg-amber-100 text-amber-700 '],
- 'in_progress' => ['label' => 'En progreso', 'class' => 'bg-sky-100 text-sky-700 '],
- 'completed' => ['label' => 'Completado', 'class' => 'bg-emerald-100 text-emerald-700 '],
- 'cancelled' => ['label' => 'Cancelado', 'class' => 'bg-rose-100 text-rose-700 '],
+ 'scheduled' => ['label' => 'Programado', 'class' => 'bg-warning-soft text-warning '],
+ 'in_progress' => ['label' => 'En progreso', 'class' => 'bg-accent-soft text-accent '],
+ 'completed' => ['label' => 'Completado', 'class' => 'bg-success-soft text-success-strong '],
+ 'cancelled' => ['label' => 'Cancelado', 'class' => 'bg-danger-soft text-danger-strong '],
  ];
  @endphp
- <div class="mt-6 overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-4 py-2">Fecha</th>
- <th class="px-4 py-2">Tipo</th>
- <th class="px-4 py-2">Estado</th>
- <th class="px-4 py-2">Costo</th>
- </tr>
- </thead>
- <tbody>
- @foreach($maintenanceHistory as $history)
- @php($status = $statusTags[$history['status']] ?? $statusTags['scheduled'])
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-4 py-2 text-slate-700 ">{{ $history['date'] }}</td>
- <td class="px-4 py-2 text-slate-700 ">{{ $history['type'] }}</td>
- <td class="px-4 py-2">
- <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $status['class'] }}">
- {{ $status['label'] }}
- </span>
- </td>
- <td class="px-4 py-2 text-slate-700 ">
- {{ $history['cost'] !== null ? \App\Support\Formatters\MoneyFormatter::pen((float) $history['cost']) : 'Sin costo' }}
- </td>
- </tr>
- @endforeach
- </tbody>
- </table>
- </div>
+    <div class="mt-6 overflow-x-auto">
+      <table class="table table-sm">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">Fecha</th>
+            <th class="table-header">Tipo</th>
+            <th class="table-header">Estado</th>
+            <th class="table-header">Costo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($maintenanceHistory as $history)
+            @php($status = $statusTags[$history['status']] ?? $statusTags['scheduled'])
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-slate-700 ">{{ $history['date'] }}</td>
+              <td class="table-cell text-slate-700 ">{{ $history['type'] }}</td>
+              <td class="table-cell">
+                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $status['class'] }}">
+                  {{ $status['label'] }}
+                </span>
+              </td>
+              <td class="table-cell text-slate-700 ">
+                {{ $history['cost'] !== null ? \App\Support\Formatters\MoneyFormatter::pen((float) $history['cost']) : 'Sin costo' }}
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
  @else
  <p class="mt-6 text-sm text-slate-500 ">Sin registros de mantenimiento para este vehiculo.</p>
  @endif

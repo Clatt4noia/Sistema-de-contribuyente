@@ -20,7 +20,7 @@
  </header>
  <div class="space-y-3 p-6 text-sm text-slate-600 ">
  <p>{{ __('Si necesitas soporte inmediato puedes escribir a nuestro equipo de operaciones o llamar al ejecutivo asignado.') }}</p>
- <p class="font-medium text-slate-900 ">{{ __('Correo de contacto:') }} <span class="font-semibold text-indigo-500 ">{{ $contactEmail }}</span></p>
+ <p class="font-medium text-slate-900 ">{{ __('Correo de contacto:') }} <span class="font-semibold text-accent-soft ">{{ $contactEmail }}</span></p>
  </div>
  </article>
  </section>
@@ -31,69 +31,68 @@
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Servicios recientes') }}</h2>
 
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Referencia') }}</th>
- <th class="px-4 py-3">{{ __('Origen') }}</th>
- <th class="px-4 py-3">{{ __('Destino') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($orders as $order)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ $order->reference ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $order->origin ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ $order->destination ?? '—' }}</td>
- <td class="px-4 py-3">
- <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 ">{{ $order->status ? __($order->status) : __('pendiente') }}</span>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('No tienes servicios activos en este momento.') }}</td>
-
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Referencia') }}</th>
+            <th class="table-header">{{ __('Origen') }}</th>
+            <th class="table-header">{{ __('Destino') }}</th>
+            <th class="table-header">{{ __('Estado') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse ($orders as $order)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-sm font-medium text-slate-900 ">{{ $order->reference ?? '—' }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ $order->origin ?? '—' }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ $order->destination ?? '—' }}</td>
+              <td class="table-cell">
+                <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 ">{{ $order->status ? __($order->status) : __('pendiente') }}</span>
+              </td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="4" class="table-empty">{{ __('No tienes servicios activos en este momento.') }}</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
  </article>
 
  <article class="surface-card">
  <header class="border-b border-slate-200 px-6 py-5 ">
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Facturas recientes') }}</h2>
  </header>
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Número') }}</th>
- <th class="px-4 py-3">{{ __('Monto') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- <th class="px-4 py-3">{{ __('Emisión') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @forelse ($invoices as $invoice)
- <tr class="transition hover:bg-slate-50 ">
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ $invoice->invoice_number ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
- <td class="px-4 py-3">
- <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 ">{{ $invoice->status ? __($invoice->status) : __('pendiente') }}</span>
- </td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($invoice->issue_date)?->format('d/m/Y') ?? '—' }}</td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500 ">{{ __('No hay facturas registradas aún.') }}</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-md">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Número') }}</th>
+            <th class="table-header">{{ __('Monto') }}</th>
+            <th class="table-header">{{ __('Estado') }}</th>
+            <th class="table-header">{{ __('Emisión') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse ($invoices as $invoice)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell text-sm font-medium text-slate-900 ">{{ $invoice->invoice_number ?? '—' }}</td>
+              <td class="table-cell text-sm text-slate-600 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->total) }}</td>
+              <td class="table-cell">
+                <span class="rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success-strong ">{{ $invoice->status ? __($invoice->status) : __('pendiente') }}</span>
+              </td>
+              <td class="table-cell text-sm text-slate-600 ">{{ optional($invoice->issue_date)?->format('d/m/Y') ?? '—' }}</td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="4" class="table-empty">{{ __('No hay facturas registradas aún.') }}</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
  </article>
  </section>
 

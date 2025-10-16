@@ -13,16 +13,16 @@
  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
  @php
  $truckStates = [
- 'available' => ['label' => 'Disponibles', 'icon' => 'fa-truck', 'class' => 'bg-emerald-100 text-emerald-700 '],
- 'in_use' => ['label' => 'En ruta', 'icon' => 'fa-road', 'class' => 'bg-sky-100 text-sky-700 '],
- 'maintenance' => ['label' => 'En mantenimiento', 'icon' => 'fa-screwdriver-wrench', 'class' => 'bg-amber-100 text-amber-700 '],
- 'out_of_service' => ['label' => 'Fuera de servicio', 'icon' => 'fa-ban', 'class' => 'bg-rose-100 text-rose-700 '],
+ 'available' => ['label' => 'Disponibles', 'icon' => 'fa-truck', 'class' => 'bg-success-soft text-success-strong '],
+ 'in_use' => ['label' => 'En ruta', 'icon' => 'fa-road', 'class' => 'bg-accent-soft text-accent '],
+ 'maintenance' => ['label' => 'En mantenimiento', 'icon' => 'fa-screwdriver-wrench', 'class' => 'bg-warning-soft text-warning '],
+ 'out_of_service' => ['label' => 'Fuera de servicio', 'icon' => 'fa-ban', 'class' => 'bg-danger-soft text-danger-strong '],
  ];
 
  $driverStates = [
- 'active' => ['label' => 'Disponibles', 'icon' => 'fa-id-badge', 'class' => 'bg-emerald-100 text-emerald-700 '],
- 'assigned' => ['label' => 'Asignados', 'icon' => 'fa-route', 'class' => 'bg-sky-100 text-sky-700 '],
- 'on_leave' => ['label' => 'En permiso', 'icon' => 'fa-plane-departure', 'class' => 'bg-amber-100 text-amber-700 '],
+ 'active' => ['label' => 'Disponibles', 'icon' => 'fa-id-badge', 'class' => 'bg-success-soft text-success-strong '],
+ 'assigned' => ['label' => 'Asignados', 'icon' => 'fa-route', 'class' => 'bg-accent-soft text-accent '],
+ 'on_leave' => ['label' => 'En permiso', 'icon' => 'fa-plane-departure', 'class' => 'bg-warning-soft text-warning '],
  'inactive' => ['label' => 'Inactivos', 'icon' => 'fa-user-slash', 'class' => 'bg-slate-200 text-slate-700 '],
  ];
  @endphp
@@ -76,7 +76,7 @@
 
  <div class="space-y-3">
  @forelse ($trucks as $truck)
- <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:shadow-md ">
+<article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[color:var(--color-primary-border)] hover:shadow-md ">
  <div class="flex items-center justify-between">
  <div>
  <h3 class="text-base font-semibold text-slate-900 ">{{ $truck->plate_number }} · {{ $truck->brand }} {{ $truck->model }}</h3>
@@ -84,9 +84,9 @@
  </div>
  <span @class([
  'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
- 'bg-emerald-100 text-emerald-700 ' => $truck->alert_level === 'ok',
- 'bg-amber-100 text-amber-700 ' => $truck->alert_level === 'warning',
- 'bg-rose-100 text-rose-700 ' => $truck->alert_level === 'danger',
+ 'bg-success-soft text-success-strong ' => $truck->alert_level === 'ok',
+ 'bg-warning-soft text-warning ' => $truck->alert_level === 'warning',
+ 'bg-danger-soft text-danger-strong ' => $truck->alert_level === 'danger',
  ])>
  @switch($truck->alert_level)
  @case('danger') Requiere mantenimiento inmediato @break
@@ -106,7 +106,7 @@
  </div>
  </div>
  @if($truck->document_alerts->isNotEmpty())
- <div class="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 ">
+ <div class="mt-3 alert alert-warning ">
  <p class="font-semibold">Documentos por atender:</p>
  <ul class="mt-1 list-disc space-y-1 pl-4">
  @foreach($truck->document_alerts as $document)
@@ -143,7 +143,7 @@
 
  <div class="space-y-3">
  @forelse ($drivers as $driver)
- <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:shadow-md ">
+<article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[color:var(--color-primary-border)] hover:shadow-md ">
  <div class="flex items-center justify-between">
  <div>
  <h3 class="text-base font-semibold text-slate-900 ">{{ $driver->full_name }}</h3>
@@ -170,7 +170,7 @@
  </div>
  </div>
  @if($driver->document_alerts->isNotEmpty())
- <div class="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 ">
+ <div class="mt-3 alert alert-warning ">
  <p class="font-semibold">Alertas de documentación:</p>
  <ul class="mt-1 list-disc space-y-1 pl-4">
  @foreach($driver->document_alerts as $document)

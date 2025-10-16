@@ -6,7 +6,7 @@
  </div>
 
  @if (session()->has('message'))
- <span class="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ">{{ session('message') }}</span>
+ <span class="alert alert-success">{{ session('message') }}</span>
  @endif
  </div>
 
@@ -14,25 +14,25 @@
  <div class="form-field">
  <label for="planner" class="form-label">Planificador</label>
  <input id="planner" type="text" wire:model.defer="planner" class="form-control" placeholder="Operador a cargo">
- @error('planner') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('planner') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="map_url" class="form-label">URL del mapa</label>
  <input id="map_url" type="url" wire:model.defer="map_url" class="form-control" placeholder="https://maps...">
- @error('map_url') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('map_url') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field md:col-span-2">
  <label for="route_summary" class="form-label">Resumen *</label>
  <textarea id="route_summary" rows="3" wire:model.defer="route_summary" class="form-control" placeholder="Puntos clave, carreteras, riesgos..."></textarea>
- @error('route_summary') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('route_summary') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field md:col-span-2">
  <label for="route_data" class="form-label">Datos JSON</label>
  <textarea id="route_data" rows="3" wire:model.defer="route_data" class="form-control" placeholder='{"waypoints": []}'></textarea>
- @error('route_data') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('route_data') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="md:col-span-2 flex justify-end">
@@ -42,38 +42,38 @@
  </div>
  </form>
 
- <div class="rounded-2xl border border-slate-200 shadow-sm ">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-4 py-2">Planificador</th>
- <th class="px-4 py-2">Resumen</th>
- <th class="px-4 py-2">Mapa</th>
- <th class="px-4 py-2">Acciones</th>
- </tr>
- </thead>
- <tbody>
- @forelse($plans as $plan)
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-4 py-2 text-sm text-slate-700 ">{{ $plan->planner ?: 'No definido' }}</td>
- <td class="px-4 py-2 text-sm text-slate-700 ">{{ \Illuminate\Support\Str::limit($plan->route_summary, 80) }}</td>
- <td class="px-4 py-2 text-sm">
- @if($plan->map_url)
-        <a href="{{ $plan->map_url }}" target="_blank" class="btn btn-secondary btn-sm">Ver mapa</a>
- @else
- <span class="text-sm text-slate-400 ">Sin enlace</span>
- @endif
- </td>
- <td class="px-4 py-2 text-sm">
-    <button wire:click="delete({{ $plan->id }})" wire:confirm="Eliminar esta ruta?" class="btn btn-danger btn-sm">Eliminar</button>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="4" class="px-4 py-3 text-center text-sm text-slate-500 ">No hay rutas adicionales registradas.</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+  <div class="rounded-2xl border border-slate-200 shadow-sm ">
+    <table class="table table-md">
+      <thead>
+        <tr class="table-row">
+          <th class="table-header">Planificador</th>
+          <th class="table-header">Resumen</th>
+          <th class="table-header">Mapa</th>
+          <th class="table-header">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @forelse($plans as $plan)
+          <tr class="table-row table-row-hover">
+            <td class="table-cell text-sm text-slate-700 ">{{ $plan->planner ?: 'No definido' }}</td>
+            <td class="table-cell text-sm text-slate-700 ">{{ \Illuminate\Support\Str::limit($plan->route_summary, 80) }}</td>
+            <td class="table-cell text-sm">
+              @if($plan->map_url)
+                <a href="{{ $plan->map_url }}" target="_blank" class="btn btn-secondary btn-sm">Ver mapa</a>
+              @else
+                <span class="text-sm text-slate-400 ">Sin enlace</span>
+              @endif
+            </td>
+            <td class="table-cell text-sm">
+              <button wire:click="delete({{ $plan->id }})" wire:confirm="Eliminar esta ruta?" class="btn btn-danger btn-sm">Eliminar</button>
+            </td>
+          </tr>
+        @empty
+          <tr class="table-row">
+            <td colspan="4" class="table-empty">No hay rutas adicionales registradas.</td>
+          </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 </div>

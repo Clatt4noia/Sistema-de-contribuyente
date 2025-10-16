@@ -53,7 +53,7 @@
             Buscar recursos disponibles
         </button>
                     @if ($autoAssignAlert)
-                        <p class="mt-2 form-help text-amber-600">{{ $autoAssignAlert }}</p>
+                        <p class="mt-2 form-help text-warning">{{ $autoAssignAlert }}</p>
                     @endif
                 @endif
             </div>

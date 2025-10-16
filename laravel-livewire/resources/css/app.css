@@ -187,6 +187,8 @@
     @apply grid gap-2;
 }
 
+/* Components reference tokens declared in the @theme block above.
+   See resources/README-UI.md for usage patterns and commit conventions. */
 @layer components {
     [data-flux-component] {
         color: var(--color-text);
@@ -204,9 +206,14 @@
         color: var(--color-text-muted);
     }
 
-    .form-group,
+    .form-group {
+        @apply space-y-4;
+        margin: 0;
+    }
+
     .form-field {
         @apply space-y-2;
+        margin: 0;
     }
 
     .form-label {
@@ -232,7 +239,7 @@
     }
 
     .form-error {
-        @apply text-xs font-semibold;
+        @apply text-sm font-medium;
         color: var(--color-danger);
     }
 
@@ -243,6 +250,7 @@
         border-color: var(--color-border);
         color: var(--color-text);
         box-shadow: none;
+        border-radius: var(--radius-lg);
     }
 
     .form-control:hover,
@@ -342,7 +350,8 @@
         background-color: var(--color-surface);
         border-color: var(--color-border);
         color: var(--color-text);
-        box-shadow: 0 4px 16px -10px rgba(15, 23, 42, 0.18);
+        box-shadow: 0 3px 12px -8px rgba(15, 23, 42, 0.18);
+        border-radius: var(--radius-lg);
     }
 
     .btn:hover {
@@ -430,15 +439,164 @@
     }
 
     .surface-card {
-        @apply rounded-3xl border border-neutral-200 bg-white text-neutral-800 shadow-lg shadow-neutral-200/60;
+        @apply border border-neutral-200 bg-white text-neutral-800 shadow-lg shadow-neutral-200/60;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
     }
 
     .surface-muted {
-        @apply rounded-2xl border border-neutral-200 bg-white text-neutral-700 shadow-sm shadow-neutral-200/70;
+        @apply border border-neutral-200 bg-white text-neutral-700 shadow-sm shadow-neutral-200/70;
+        border-radius: var(--radius-lg);
     }
 
     .surface-pill {
         @apply inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-600 shadow-sm;
+    }
+
+    .text-accent {
+        color: var(--color-primary);
+    }
+
+    .text-accent-soft {
+        color: var(--color-primary-600);
+    }
+
+    .text-success {
+        color: var(--color-success-600);
+    }
+
+    .text-success-strong {
+        color: var(--color-success-700);
+    }
+
+    .text-warning {
+        color: var(--color-warning-600);
+    }
+
+    .text-danger {
+        color: var(--color-danger-600);
+    }
+
+    .text-danger-strong {
+        color: var(--color-danger-700);
+    }
+
+    .bg-accent-soft {
+        background-color: var(--color-primary-muted);
+    }
+
+    .bg-success-soft {
+        background-color: var(--color-success-50);
+    }
+
+    .bg-warning-soft {
+        background-color: var(--color-warning-50);
+    }
+
+    .bg-danger-soft {
+        background-color: var(--color-danger-50);
+    }
+
+    .border-accent-soft {
+        border-color: var(--color-primary-border);
+    }
+
+    .border-success-soft {
+        border-color: var(--color-success-200);
+    }
+
+    .border-warning-soft {
+        border-color: var(--color-warning-200);
+    }
+
+    .border-danger-soft {
+        border-color: var(--color-danger-200);
+    }
+
+    .badge {
+        @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide;
+    }
+
+    .badge-accent {
+        background-color: var(--color-primary-muted);
+        border-color: var(--color-primary-border);
+        color: var(--color-primary);
+    }
+
+    .badge-success {
+        background-color: var(--color-success-50);
+        border-color: var(--color-success-200);
+        color: var(--color-success-700);
+    }
+
+    .badge-warning {
+        background-color: var(--color-warning-50);
+        border-color: var(--color-warning-200);
+        color: var(--color-warning-700);
+    }
+
+    .badge-danger {
+        background-color: var(--color-danger-50);
+        border-color: var(--color-danger-200);
+        color: var(--color-danger-700);
+    }
+
+    .pill {
+        @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold;
+    }
+
+    .pill-accent {
+        background-color: var(--color-primary-muted);
+        border-color: var(--color-primary-border);
+        color: var(--color-primary);
+    }
+
+    .pill-success {
+        background-color: var(--color-success-50);
+        border-color: var(--color-success-200);
+        color: var(--color-success-700);
+    }
+
+    .pill-warning {
+        background-color: var(--color-warning-50);
+        border-color: var(--color-warning-200);
+        color: var(--color-warning-700);
+    }
+
+    .pill-danger {
+        background-color: var(--color-danger-50);
+        border-color: var(--color-danger-200);
+        color: var(--color-danger-700);
+    }
+
+    .alert {
+        @apply rounded-2xl px-4 py-3 text-sm font-medium shadow-sm;
+        border-width: 1px;
+        border-style: solid;
+    }
+
+    .alert-accent {
+        background-color: var(--color-primary-muted);
+        border-color: var(--color-primary-border);
+        color: var(--color-primary);
+    }
+
+    .alert-success {
+        background-color: var(--color-success-50);
+        border-color: var(--color-success-200);
+        color: var(--color-success-700);
+    }
+
+    .alert-warning {
+        background-color: var(--color-warning-50);
+        border-color: var(--color-warning-200);
+        color: var(--color-warning-700);
+    }
+
+    .alert-danger {
+        background-color: var(--color-danger-50);
+        border-color: var(--color-danger-200);
+        color: var(--color-danger-700);
     }
 
     .surface-table {
@@ -464,6 +622,94 @@
     .surface-card > header h1,
     .surface-card > header h2 {
         @apply text-neutral-900;
+        margin: 0;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid var(--color-border);
+        background-color: var(--color-elevated);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .table thead {
+        background-color: var(--color-surface-muted);
+    }
+
+    .table tbody {
+        background-color: var(--color-elevated);
+    }
+
+    .table-row {
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .table tbody .table-row:last-child {
+        border-bottom: none;
+    }
+
+    .table-header {
+        @apply text-left text-xs font-semibold uppercase tracking-wide;
+        padding: 0.75rem 1rem;
+        color: var(--color-text-muted);
+    }
+
+    .table-cell {
+        @apply align-middle;
+        padding: 0.75rem 1rem;
+        color: var(--color-text);
+    }
+
+    .table-sm .table-header,
+    .table-sm .table-cell {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .table-lg .table-header,
+    .table-lg .table-cell {
+        padding: 1rem 1.25rem;
+    }
+
+    .table-row-hover {
+        @apply transition-colors duration-150;
+    }
+
+    .table-row-hover:hover {
+        background-color: var(--color-surface-muted);
+    }
+
+    .table-row-hover:focus-visible,
+    .table-row-hover:focus-within {
+        outline: 2px solid var(--color-primary-200);
+        outline-offset: 2px;
+    }
+
+    .table-empty {
+        @apply text-center text-sm;
+        padding: 2.5rem 1.5rem;
+        color: var(--color-text-muted);
+    }
+
+    .table-footer {
+        @apply flex flex-wrap items-center justify-between gap-4 bg-white;
+        border: 1px solid var(--color-border);
+        border-top: none;
+        border-bottom-left-radius: var(--radius-lg);
+        border-bottom-right-radius: var(--radius-lg);
+        padding: 0.75rem 1rem;
+    }
+
+    .table + .table-footer {
+        margin-top: -1px;
+    }
+
+    .table a:not(.btn),
+    .table button:not(.btn),
+    .table [role='button'] {
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-md;
     }
 
     [data-flux-component] [variant],
@@ -585,13 +831,7 @@
         border-color: transparent;
         color: var(--color-text-muted);
         box-shadow: none;
-
     }
-}
-
-[data-flux-label] {
-    @apply !mb-0 !leading-tight;
-}
 
     [data-flux-component] [variant='ghost']:hover,
     [variant='ghost']:hover,

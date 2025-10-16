@@ -47,14 +47,14 @@
                     class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col overflow-y-auto border-r border-slate-200 bg-white px-5 py-6 text-slate-600 shadow-xl shadow-slate-200 transition-transform duration-300 data-[state=open]:translate-x-0 lg:translate-x-0 lg:data-[state=closed]:-translate-x-full"
                 >
                     <div class="flex items-center justify-between gap-3">
-                        <a href="{{ route('dashboard') }}" class="flex flex-1 items-center gap-3 rounded-2xl px-4 py-4 transition hover:bg-sky-50">
-                            <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-600">
+                        <a href="{{ route('dashboard') }}" class="flex flex-1 items-center gap-3 rounded-2xl px-4 py-4 transition hover:[background-color:var(--color-primary-muted)]">
+                            <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-soft text-accent">
                                 <x-app-logo-icon class="h-7 w-7" />
                             </span>
 
                             <div class="hidden text-sm font-medium leading-tight text-slate-600 xl:block">
                                 <span class="text-base font-semibold text-slate-900">{{ config('app.name') }}</span>
-                                <span class="block text-xs text-sky-500">{{ __('Panel de control') }}</span>
+                                <span class="block text-xs text-accent-soft">{{ __('Panel de control') }}</span>
                             </div>
                         </a>
 
@@ -80,7 +80,7 @@
                             <input
                                 type="search"
                                 placeholder="{{ __('Buscar...') }}"
-                                class="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none transition focus:border-sky-300 focus:ring-2 focus:ring-sky-200"
+                                class="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none transition focus:border-[color:var(--color-primary)] focus:ring-2 focus:ring-primary-200"
 
                             />
                         </label>
@@ -100,7 +100,7 @@
                             <details @class(['group/nav overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition']) {{ $isOpen ? 'open' : '' }}>
                                 <summary class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold">
                                     <span class="flex items-center gap-3">
-                                        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 transition group-open/nav:bg-sky-100">
+                                        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-accent transition group-open/nav:bg-accent-soft">
 
                                             @php($summaryIcon = $resolveIcon($groupIcon))
                                             <x-dynamic-component :component="$summaryIcon" class="size-5" />
@@ -117,8 +117,8 @@
                                             href="{{ $item['href'] }}"
                                             @class([
                                                 'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
-                                                'bg-sky-500 text-white shadow-lg shadow-sky-200 ring-1 ring-sky-200' => $item['current'],
-                                                'text-slate-600 hover:bg-sky-50 hover:text-slate-900' => ! $item['current'],
+                                                'bg-accent-soft0 text-white shadow-lg ring-1 ring-primary-200' => $item['current'],
+                                                'text-slate-600 hover:[background-color:var(--color-primary-muted)] hover:text-slate-900' => ! $item['current'],
 
                                             ])
                                             aria-current="{{ $item['current'] ? 'page' : 'false' }}"
@@ -126,8 +126,8 @@
                                             <span
                                                 @class([
                                                     'flex h-9 w-9 items-center justify-center rounded-xl transition',
-                                                    'bg-sky-500/20 text-white' => $item['current'],
-                                                    'bg-sky-50 text-sky-600 group-hover:bg-sky-100 group-hover:text-sky-700' => ! $item['current'],
+                                                    'bg-accent-soft0/20 text-white' => $item['current'],
+                                                    'bg-accent-soft text-accent group-hover:[background-color:var(--color-primary-muted)] group-hover:text-accent' => ! $item['current'],
 
                                                 ])
                                             >
@@ -142,9 +142,7 @@
                                                     <span
                                                         @class([
                                                             'ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm',
-                                                            $item['badge_style'] ?? 'bg-sky-50 text-sky-600',
-                                                            'shadow-sky-200' => $item['current'],
-
+                                                            $item['badge_style'] ?? 'bg-accent-soft text-accent',
                                                         ])
                                                     >
                                                         {{ $item['badge'] }}
@@ -160,7 +158,7 @@
 
                     <div class="mt-10 space-y-6 px-4">
                         <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600 shadow-inner shadow-slate-200">
-                            <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-sky-100 text-sky-600">
+                            <span class="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent-soft text-accent">
 
                                 {{ auth()->user()->initials() }}
                             </span>
@@ -206,7 +204,7 @@
                         </button>
 
                         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-lg font-semibold">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+                            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
 
                                 <x-app-logo-icon class="h-6 w-6" />
                             </span>

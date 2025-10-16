@@ -13,7 +13,7 @@
 >
  <button
  type="button"
- class="group/disclosure-button mb-[2px] flex h-10 w-full items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 lg:h-8 "
+ class="group/disclosure-button mb-[2px] flex h-10 w-full items-center rounded-lg text-slate-500 hover:[background-color:var(--color-surface-muted)] hover:text-slate-800 lg:h-8 "
  >
  <div class="ps-3 pe-4">
  <flux:icon.chevron-down class="hidden size-3! group-data-open/disclosure-button:block" />

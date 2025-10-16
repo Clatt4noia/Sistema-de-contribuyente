@@ -114,7 +114,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
  @endforeach
  </select>
  @error('role')
- <p class="text-sm text-rose-500">{{ $message }}</p>
+            <p class="form-error">{{ $message }}</p>
  @enderror
  </div>
 
