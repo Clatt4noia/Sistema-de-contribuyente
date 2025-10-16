@@ -78,6 +78,38 @@
                     'bg-accent-soft text-accent ' => $maintenance->status === 'in_progress',
                     'bg-warning-soft text-warning ' => $maintenance->status === 'scheduled',
                     'bg-danger-soft text-danger-strong ' => $maintenance->status === 'cancelled',
+                  ])
+                >
+                  {{ $maintenance->status === 'completed' ? 'Completado' : ($maintenance->status === 'in_progress' ? 'En progreso' : ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}
+                </span>
+              </td>
+              <td class="table-cell text-sm font-semibold">
+                <a
+                  href="{{ route('fleet.maintenance.edit', $maintenance) }}"
+                  class="btn btn-ghost btn-sm mr-2"
+                >
+                  Editar
+                </a>
+                <button
+                  wire:click="deleteMaintenance({{ $maintenance->id }})"
+                  wire:confirm="¿Está seguro de eliminar este registro?"
+                  class="btn btn-danger btn-sm"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          @empty
+            <tr class="table-row">
+              <td colspan="6" class="table-empty">
+                No se encontraron registros de mantenimiento.
+              </td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+
 
                   ])
                 >
