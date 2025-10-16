@@ -36,9 +36,9 @@
  </div>
 
  <div class="md:col-span-2 flex justify-end">
- <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">
- Agregar ruta
- </button>
+    <button type="submit" class="btn btn-primary">
+        Agregar ruta
+    </button>
  </div>
  </form>
 
@@ -59,13 +59,13 @@
  <td class="px-4 py-2 text-sm text-slate-700 ">{{ \Illuminate\Support\Str::limit($plan->route_summary, 80) }}</td>
  <td class="px-4 py-2 text-sm">
  @if($plan->map_url)
- <a href="{{ $plan->map_url }}" target="_blank" class="font-medium text-indigo-600 transition hover:text-indigo-700 ">Ver mapa</a>
+        <a href="{{ $plan->map_url }}" target="_blank" class="btn btn-secondary btn-sm">Ver mapa</a>
  @else
  <span class="text-sm text-slate-400 ">Sin enlace</span>
  @endif
  </td>
  <td class="px-4 py-2 text-sm">
- <button wire:click="delete({{ $plan->id }})" wire:confirm="Eliminar esta ruta?" class="font-semibold text-rose-600 transition hover:text-rose-700 ">Eliminar</button>
+    <button wire:click="delete({{ $plan->id }})" wire:confirm="Eliminar esta ruta?" class="btn btn-danger btn-sm">Eliminar</button>
  </td>
  </tr>
  @empty

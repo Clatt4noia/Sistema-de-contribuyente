@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <h1 class="text-2xl font-semibold text-slate-900 ">Facturas</h1>
- <a href="{{ route('billing.invoices.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">Nueva Factura</a>
+    <a href="{{ route('billing.invoices.create') }}" class="btn btn-primary">Nueva Factura</a>
  </div>
 
  @if (session()->has('message'))
@@ -114,14 +114,14 @@
  </td>
  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2">
  <div class="flex flex-wrap items-center gap-3">
- <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 ">Editar</a>
- <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="font-semibold text-cyan-600 transition hover:text-cyan-700 ">Registrar pago</a>
- </div>
- <div class="flex flex-wrap items-center gap-3">
- <a href="{{ route('billing.invoices.electronic', $invoice->id) }}" class="font-semibold text-emerald-600 transition hover:text-emerald-700 ">Emitir SUNAT</a>
- @if($invoice->balance <= 0 && $invoice->status !== 'paid')
- <button wire:click="markAsPaid({{ $invoice->id }})" class="font-semibold text-slate-700 transition hover:text-slate-900 ">Marcar pagada</button>
- @endif
+        <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="btn btn-ghost btn-sm">Editar</a>
+        <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="btn btn-primary btn-sm">Registrar pago</a>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+        <a href="{{ route('billing.invoices.electronic', $invoice->id) }}" class="btn btn-secondary btn-sm">Emitir SUNAT</a>
+        @if($invoice->balance <= 0 && $invoice->status !== 'paid')
+            <button wire:click="markAsPaid({{ $invoice->id }})" class="btn btn-primary btn-sm">Marcar pagada</button>
+        @endif
  </div>
  </td>
  </tr>

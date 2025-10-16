@@ -5,15 +5,15 @@
  <p class="text-sm text-slate-500 ">Complete los datos para generar la factura electrónica.</p>
  </div>
  <div class="flex flex-wrap items-center gap-3">
- <button type="button" wire:click="$dispatch('open-client-modal')"
- class="inline-flex items-center gap-2 rounded-xl border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">
- <x-heroicon-o-user-plus class="h-4 w-4" />
- Nuevo cliente
- </button>
- <a href="{{ route('billing.invoices.index') }}"
- class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400 ">
- Volver
- </a>
+    <button type="button" wire:click="$dispatch('open-client-modal')"
+        class="btn btn-primary">
+        <x-heroicon-o-user-plus class="h-4 w-4" />
+        Nuevo cliente
+    </button>
+    <a href="{{ route('billing.invoices.index') }}"
+        class="btn btn-secondary">
+        Volver
+    </a>
  </div>
  </div>
 
@@ -82,11 +82,11 @@
  <ul class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg ">
  @foreach($clientResults as $client)
  <li>
- <button type="button" wire:click="selectClient({{ $client['id'] }})"
- class="flex w-full items-start gap-2 px-4 py-2 text-left text-sm hover:bg-indigo-50 focus:bg-indigo-50 ">
- <div class="font-medium text-slate-800 ">{{ $client['name'] }}</div>
- <div class="text-xs text-slate-500 ">{{ $client['document'] }}</div>
- </button>
+                    <button type="button" wire:click="selectClient({{ $client['id'] }})"
+                        class="btn btn-ghost btn-sm w-full justify-start text-left">
+                        <div class="font-medium text-slate-800 ">{{ $client['name'] }}</div>
+                        <div class="text-xs text-slate-500 ">{{ $client['document'] }}</div>
+                    </button>
  </li>
  @endforeach
  </ul>
@@ -128,9 +128,9 @@
  <ul class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg ">
  @foreach($orderResults as $order)
  <li>
- <button type="button" wire:click="addOrder({{ $order['id'] }})"
- class="flex w-full flex-col gap-1 px-4 py-2 text-left text-sm hover:bg-indigo-50 focus:bg-indigo-50 ">
- <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" wire:click="addOrder({{ $order['id'] }})"
+                        class="btn btn-ghost btn-sm w-full flex-col items-start gap-1 text-left">
+                <div class="flex flex-wrap items-center gap-2">
  <span class="font-medium text-slate-800 ">Pedido {{ $order['reference'] }}</span>
  @if($order['cargo_type'])
  <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600 ">
@@ -222,11 +222,11 @@
  <td class="px-4 py-3 text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
 
  <td class="px-4 py-3 text-right">
- <button type="button" wire:click="removeItem({{ $index }})"
- class="inline-flex items-center gap-1 rounded-lg bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 ">
- <x-heroicon-o-trash class="h-4 w-4" />
- Eliminar
- </button>
+        <button type="button" wire:click="removeItem({{ $index }})"
+            class="btn btn-danger btn-sm">
+            <x-heroicon-o-trash class="h-4 w-4" />
+            Eliminar
+        </button>
  </td>
  </tr>
  @empty
@@ -265,10 +265,10 @@
  </div>
 
  <div class="surface-card p-6 shadow-lg">
- <button type="button" wire:click="saveInvoice" wire:loading.attr="disabled"
- class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-60 ">
- <span wire:loading.remove>Guardar y enviar</span>
- <span wire:loading class="flex items-center gap-2">
+    <button type="button" wire:click="saveInvoice" wire:loading.attr="disabled"
+        class="btn btn-primary btn-lg w-full">
+        <span wire:loading.remove>Guardar y enviar</span>
+        <span wire:loading class="flex items-center gap-2">
  <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"></path>

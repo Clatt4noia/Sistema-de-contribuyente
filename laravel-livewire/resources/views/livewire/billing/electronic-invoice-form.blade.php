@@ -5,11 +5,11 @@
  <p class="text-sm text-slate-600 ">SUNAT - {{ strtoupper(config('billing.sunat.mode')) }}</p>
  </div>
  <div class="flex items-center gap-3">
- <a href="{{ route('billing.invoices.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">Volver</a>
- <button type="button" wire:click="confirmSend" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 ">
- <x-heroicon-o-paper-airplane class="h-4 w-4" />
- Enviar a SUNAT
- </button>
+    <a href="{{ route('billing.invoices.index') }}" class="btn btn-secondary">Volver</a>
+    <button type="button" wire:click="confirmSend" class="btn btn-primary">
+        <x-heroicon-o-paper-airplane class="h-4 w-4" />
+        Enviar a SUNAT
+    </button>
  </div>
  </div>
 
@@ -88,9 +88,9 @@
  <td class="px-4 py-3">S/ {{ number_format($item['tax_amount'], 2) }}</td>
  <td class="px-4 py-3 font-semibold">S/ {{ number_format($item['taxable_amount'] + $item['tax_amount'], 2) }}</td>
  <td class="px-4 py-3 text-right">
- <button type="button" wire:click="removeItem({{ $index }})" class="inline-flex items-center gap-2 rounded-lg border border-rose-300 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-50 ">
- Quitar
- </button>
+        <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger btn-sm">
+            Quitar
+        </button>
  </td>
  </tr>
  @empty
@@ -142,9 +142,9 @@
  @error('newItem.tax_exemption_reason') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
  </div>
  <div class="md:col-span-2 flex items-end">
- <button type="button" wire:click="addItem" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ">
- <x-heroicon-o-plus-small class="h-4 w-4" /> Agregar
- </button>
+    <button type="button" wire:click="addItem" class="btn btn-primary w-full">
+        <x-heroicon-o-plus-small class="h-4 w-4" /> Agregar
+    </button>
  </div>
  </div>
  </section>
@@ -156,8 +156,8 @@
  <h2 class="text-lg font-semibold text-slate-900 ">Confirmar envío</h2>
  <p class="mt-3 text-sm text-slate-600 ">¿Confirmas que deseas enviar el comprobante {{ $invoice->numero_completo }} a SUNAT? Asegúrate de que la información sea correcta antes de proceder.</p>
  <div class="mt-6 flex justify-end gap-3">
- <button type="button" wire:click="$set('confirmationOpen', false)" class="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 ">Cancelar</button>
- <button type="button" wire:click="sendToSunat" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 ">Enviar ahora</button>
+    <button type="button" wire:click="$set('confirmationOpen', false)" class="btn btn-secondary">Cancelar</button>
+    <button type="button" wire:click="sendToSunat" class="btn btn-primary">Enviar ahora</button>
  </div>
  </div>
  </div>

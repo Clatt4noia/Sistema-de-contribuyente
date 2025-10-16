@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <h1 class="text-2xl font-semibold text-slate-900 ">Pagos</h1>
- <a href="{{ route('billing.payments.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">Registrar Pago</a>
+    <a href="{{ route('billing.payments.create') }}" class="btn btn-primary">Registrar Pago</a>
  </div>
 
  @if (session()->has('message'))
@@ -56,8 +56,8 @@
  <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $payment->method ?: '-' }}</td>
  <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $payment->reference ?: '-' }}</td>
  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
- <a href="{{ route('billing.payments.edit', $payment->id) }}" class="mr-3 font-semibold text-indigo-600 transition hover:text-indigo-700 ">Editar</a>
- <button wire:click="deletePayment({{ $payment->id }})" wire:confirm="Eliminar este pago?" class="font-semibold text-rose-600 transition hover:text-rose-700 ">Eliminar</button>
+        <a href="{{ route('billing.payments.edit', $payment->id) }}" class="btn btn-ghost btn-sm mr-2">Editar</a>
+        <button wire:click="deletePayment({{ $payment->id }})" wire:confirm="Eliminar este pago?" class="btn btn-danger btn-sm">Eliminar</button>
  </td>
  </tr>
  @empty

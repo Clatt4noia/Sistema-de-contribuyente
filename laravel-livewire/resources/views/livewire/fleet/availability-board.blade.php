@@ -4,10 +4,10 @@
  <h1 class="text-2xl font-semibold text-slate-900 ">Disponibilidad de recursos</h1>
  <p class="mt-1 text-sm text-slate-500 ">Actualiza automáticamente cada 20 segundos.</p>
  </div>
- <a href="{{ route('fleet.assignments.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-600 ">
- <i class="fas fa-plus"></i>
- Crear asignación
- </a>
+    <a href="{{ route('fleet.assignments.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Crear asignación
+    </a>
  </div>
 
  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -104,7 +104,7 @@ new class extends Component {
 
                     <button
                         type="button"
-                        class="text-sm font-medium text-sky-600 hover:text-sky-700"
+                        class="btn btn-ghost btn-sm"
                         wire:click.prevent="resendVerificationNotification"
                     >
                         Click here to re-send the verification email.
@@ -122,7 +122,7 @@ new class extends Component {
               <flux:button
                 variant="primary"
                 type="submit"
-                class="!bg-sky-600 hover:!bg-sky-700 !text-white"
+                class="btn btn-primary"
             >
                 Save
             </flux:button>

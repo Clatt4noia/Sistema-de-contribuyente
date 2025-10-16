@@ -4,9 +4,9 @@
  <h1 class="text-2xl font-semibold text-slate-900 ">Gestion de Pedidos</h1>
  <p class="text-sm text-slate-500 ">Controla solicitudes de transporte, monitorea estados y sincroniza asignaciones.</p>
  </div>
- <a href="{{ route('orders.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">
- Nuevo Pedido
- </a>
+    <a href="{{ route('orders.create') }}" class="btn btn-primary">
+        Nuevo Pedido
+    </a>
  </div>
 
  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -116,11 +116,11 @@
  </td>
  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
  <div class="flex flex-wrap items-center gap-3">
- <a href="{{ route('orders.edit', $order->id) }}" class="font-semibold text-indigo-600 transition hover:text-indigo-700 ">Editar</a>
- <a href="{{ route('fleet.assignments.index', ['order' => $order->id]) }}" class="font-semibold text-sky-600 transition hover:text-sky-700 ">Asignaciones</a>
- <button wire:click="updateOrderStatus({{ $order->id }}, 'en_route')" class="font-semibold text-amber-600 transition hover:text-amber-700 ">Marcar en ruta</button>
- <button wire:click="updateOrderStatus({{ $order->id }}, 'delivered')" class="font-semibold text-emerald-600 transition hover:text-emerald-700 ">Marcar entregado</button>
- <button wire:click="deleteOrder({{ $order->id }})" wire:confirm="Esta seguro de eliminar el pedido?" class="font-semibold text-rose-600 transition hover:text-rose-700 ">Eliminar</button>
+        <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-ghost btn-sm">Editar</a>
+        <a href="{{ route('fleet.assignments.index', ['order' => $order->id]) }}" class="btn btn-secondary btn-sm">Asignaciones</a>
+        <button wire:click="updateOrderStatus({{ $order->id }}, 'en_route')" class="btn btn-secondary btn-sm">Marcar en ruta</button>
+        <button wire:click="updateOrderStatus({{ $order->id }}, 'delivered')" class="btn btn-primary btn-sm">Marcar entregado</button>
+        <button wire:click="deleteOrder({{ $order->id }})" wire:confirm="Esta seguro de eliminar el pedido?" class="btn btn-danger btn-sm">Eliminar</button>
  </div>
  </td>
  </tr>

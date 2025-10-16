@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <h1 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Pago' : 'Registrar Pago' }}</h1>
- <a href="{{ route('billing.payments.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">Volver</a>
+    <a href="{{ route('billing.payments.index') }}" class="btn btn-secondary">Volver</a>
  </div>
 
  <div class="surface-card p-6 shadow-lg">
@@ -42,7 +42,7 @@
  @error('payment.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
  </div>
  <div class="md:col-span-2 flex justify-end">
- <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">{{ $isEdit ? 'Actualizar' : 'Guardar' }}</button>
+        <button type="submit" class="btn btn-primary">{{ $isEdit ? 'Actualizar' : 'Guardar' }}</button>
  </div>
  </form>
  </div>

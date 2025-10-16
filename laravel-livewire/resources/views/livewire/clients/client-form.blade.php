@@ -4,12 +4,12 @@
  {{ $isEdit ? 'Editar Cliente' : 'Registrar Cliente' }}
  </h1>
 
- <a
- href="{{ route('clients.index') }}"
- class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 "
- >
- Volver
- </a>
+    <a
+        href="{{ route('clients.index') }}"
+        class="btn btn-secondary"
+    >
+        Volver
+    </a>
  </div>
 
  <div class="surface-card p-6">
@@ -144,12 +144,12 @@
  </div>
 
  <div class="md:col-span-2 flex justify-end">
- <button
- type="submit"
- class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 "
- >
- {{ $isEdit ? 'Actualizar' : 'Guardar' }}
- </button>
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        {{ $isEdit ? 'Actualizar' : 'Guardar' }}
+    </button>
  </div>
  </form>
  </div>
