@@ -83,6 +83,7 @@
                   'issued' => 'bg-accent-soft text-accent ',
                   'paid' => 'bg-success-soft text-success-strong ',
                   'overdue' => 'bg-danger-soft text-danger-strong ',
+
                 ];
                 $statusLabel = [
                   'draft' => 'Borrador',
@@ -103,6 +104,7 @@
                 <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($invoice->balance) }}</td>
                 <td class="table-cell whitespace-nowrap">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusStyles[$invoice->status] ?? 'bg-accent-soft text-accent' }}">
+
                     {{ $statusLabel }}
                   </span>
                 </td>

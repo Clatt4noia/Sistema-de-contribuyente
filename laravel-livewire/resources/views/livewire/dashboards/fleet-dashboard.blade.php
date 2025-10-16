@@ -106,6 +106,7 @@
               \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong ',
               \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning ',
               \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong ',
+
             ];
           @endphp
           @forelse ($expiringDocuments as $document)

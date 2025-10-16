@@ -82,6 +82,7 @@
                 'en_route' => 'badge badge-accent',
                 'delivered' => 'badge badge-success',
                 'cancelled' => 'badge badge-danger',
+
               ];
               $statusLabel = [
                 'pending' => 'Pendiente',
@@ -103,6 +104,7 @@
               </td>
               <td class="table-cell whitespace-nowrap">
                 <span class="{{ $statusStyles[$order->status] ?? 'badge badge-accent' }}">
+
                   {{ $statusLabel }}
                 </span>
               </td>

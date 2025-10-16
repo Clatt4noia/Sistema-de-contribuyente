@@ -51,6 +51,7 @@
                 'inactive' => ['label' => 'Inactivo', 'class' => 'bg-danger-soft text-danger-strong '],
                 'on_leave' => ['label' => 'De permiso', 'class' => 'bg-warning-soft text-warning '],
                 'assigned' => ['label' => 'Asignado', 'class' => 'bg-accent-soft text-accent '],
+
               ];
               $statusConfig = $statusStyles[$driver->status] ?? $statusStyles['active'];
               $scheduleSummary = $driver->schedules->map(fn ($schedule) => substr($schedule->day_of_week, 0, 3) . ' ' . ($schedule->start_time?->format('H:i') ?? '') . '-' . ($schedule->end_time?->format('H:i') ?? ''))->filter()->implode(', ');
@@ -68,6 +69,7 @@
                   <span class="ml-2 font-semibold text-danger-strong ">VENCIDA</span>
                 @elseif($driver->license_expiration->diffInDays(now()) < 30)
                   <span class="ml-2 font-semibold text-warning ">PROXIMA A VENCER</span>
+
                 @endif
               </td>
               <td class="table-cell text-sm text-slate-600 ">
@@ -85,6 +87,7 @@
                   @if ($expiringTraining)
                     <span class="inline-flex items-center gap-2 text-xs font-medium text-warning ">
                       <span class="inline-flex h-2 w-2 rounded-full bg-warning-soft0"></span>
+
                       {{ $expiringTraining->name }} vence {{ $expiringTraining->expires_at?->format('d/m/Y') }}
                     </span>
                   @endif

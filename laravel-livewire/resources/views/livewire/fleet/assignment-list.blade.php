@@ -76,6 +76,8 @@
                 'in_progress' => ['label' => 'En ruta', 'class' => 'bg-accent-soft text-accent '],
                 'completed' => ['label' => 'Completada', 'class' => 'bg-success-soft text-success-strong '],
                 'cancelled' => ['label' => 'Cancelada', 'class' => 'bg-danger-soft text-danger-strong '],
+
+
               ];
               $statusConfig = $statusStyles[$assignment->status] ?? $statusStyles['scheduled'];
             @endphp

@@ -78,6 +78,7 @@
                     'bg-accent-soft text-accent ' => $maintenance->status === 'in_progress',
                     'bg-warning-soft text-warning ' => $maintenance->status === 'scheduled',
                     'bg-danger-soft text-danger-strong ' => $maintenance->status === 'cancelled',
+
                   ])
                 >
                   {{ $maintenance->status === 'completed' ? 'Completado' : ($maintenance->status === 'in_progress' ? 'En progreso' : ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}

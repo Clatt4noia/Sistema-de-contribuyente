@@ -92,6 +92,7 @@
  <tr class="table-row table-row-hover">
  <td class="table-cell text-slate-700 ">{{ $driver->full_name }}</td>
  <td class="table-cell {{ $driver->license_expiration->isPast() ? 'text-danger-strong font-semibold ' : 'text-warning font-semibold' }}">
+
  {{ $driver->license_expiration->format('d/m/Y') }}
  </td>
  </tr>

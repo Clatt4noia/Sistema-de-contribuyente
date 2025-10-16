@@ -79,6 +79,7 @@
               'in_use' => ['label' => 'En uso', 'class' => 'bg-accent-soft text-accent '],
               'maintenance' => ['label' => 'En mantenimiento', 'class' => 'bg-warning-soft text-warning '],
               'out_of_service' => ['label' => 'Fuera de servicio', 'class' => 'bg-danger-soft text-danger-strong '],
+
             ];
             $statusConfig = $statusStyles[$truck->status] ?? $statusStyles['available'];
             $nextMaintenance = $truck->next_maintenance;
@@ -88,6 +89,7 @@
               ? 'text-danger font-semibold '
               : ($isDueSoon
                 ? 'text-warning font-semibold '
+
                 : 'text-slate-700 ');
             $alertLevel = $truck->maintenanceAlertLevel();
           @endphp
@@ -111,6 +113,7 @@
                 'bg-success-soft text-success-strong ' => $alertLevel === 'ok',
                 'bg-warning-soft text-warning ' => $alertLevel === 'warning',
                 'bg-danger-soft text-danger-strong ' => $alertLevel === 'danger',
+
               ])>
                 @switch($alertLevel)
                   @case('danger') Requiere mantenimiento @break
@@ -123,6 +126,7 @@
             <td class="table-cell text-right">
               <a href="{{ route('fleet.trucks.edit', $truck) }}" class="font-semibold text-accent transition hover:text-[color:var(--color-primary-emphasis)] ">Editar</a>
               <button wire:click="deleteTruck({{ $truck->id }})" wire:confirm="Esta seguro de eliminar este camion?" class="ml-3 font-semibold text-danger transition hover:text-danger-strong ">Eliminar</button>
+
             </td>
           </tr>
         @empty
