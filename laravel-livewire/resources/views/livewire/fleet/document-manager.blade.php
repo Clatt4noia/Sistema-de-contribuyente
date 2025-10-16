@@ -80,6 +80,7 @@
             'valid' => 'bg-success-soft text-success-strong ',
             'warning' => 'bg-warning-soft text-warning ',
             'expired' => 'bg-danger-soft text-danger-strong ',
+
           ];
         @endphp
         @forelse($documents as $document)

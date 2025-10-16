@@ -23,6 +23,7 @@
             </td>
             <td class="table-cell">
               <span class="rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success-strong ">
+
                 {{ $invoice->status ? __($invoice->status) : __('pendiente') }}
               </span>
             </td>

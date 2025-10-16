@@ -134,6 +134,7 @@
     </table>
   </div>
 
+
   <div class="table-footer">
       {{ $trucks->links() }}
     </div>

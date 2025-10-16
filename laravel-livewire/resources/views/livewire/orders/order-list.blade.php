@@ -133,6 +133,7 @@
       </table>
     </div>
 
+
     <div class="table-footer">
       {{ $orders->links() }}
     </div>

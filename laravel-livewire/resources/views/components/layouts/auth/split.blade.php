@@ -6,6 +6,7 @@
     <body class="min-h-screen bg-[color:var(--color-surface)] text-[color:var(--color-text)] antialiased">
         <div class="flex min-h-svh flex-col bg-[color:var(--color-elevated)] lg:grid lg:grid-cols-2">
             <div class="relative hidden h-dvh flex-col bg-[color:var(--color-primary)] p-10 text-[color:var(--color-primary-foreground)] lg:flex">
+
                 <div class="absolute inset-0 rounded-br-[3rem] bg-gradient-to-br from-[color:var(--color-primary-300)] via-[color:var(--color-primary)] to-[color:var(--color-primary-emphasis)] opacity-90"></div>
                 <div class="relative z-10 flex flex-1 flex-col">
                     <div class="flex items-center gap-3">

@@ -109,6 +109,7 @@
       </table>
     </div>
 
+
     <div class="table-footer">
       {{ $drivers->links() }}
     </div>

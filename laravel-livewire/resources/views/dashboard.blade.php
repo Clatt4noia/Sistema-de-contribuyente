@@ -190,6 +190,7 @@
  <p class="mt-1 text-sm text-slate-600 ">Últimas unidades listas para despacho.</p>
  </div>
  <span class="surface-pill border-success-soft bg-success-soft text-xs font-semibold text-success-strong ">Stock</span>
+
  </div>
         <div class="mt-4 overflow-x-auto">
           <table class="table table-md">
@@ -207,6 +208,7 @@
                   <td class="table-cell text-sm text-slate-600 ">{{ $truck->brand }} {{ $truck->model }}</td>
                   <td class="table-cell">
                     <span class="inline-flex items-center rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success-strong ">
+
                       Disponible
                     </span>
                   </td>
@@ -230,6 +232,7 @@
  <p class="mt-1 text-sm text-slate-600 ">Próximas intervenciones agendadas.</p>
  </div>
  <span class="surface-pill border-warning-soft bg-warning-soft text-xs font-semibold text-warning ">Agenda</span>
+
  </div>
         <div class="mt-4 overflow-x-auto">
           <table class="table table-md">

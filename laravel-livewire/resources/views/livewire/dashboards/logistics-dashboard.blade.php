@@ -108,6 +108,7 @@
                     @endphp
 
                     <span class="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent ">
+
                       {{ $statusMap[$order->status ?? 'pending'] ?? 'Desconocido' }}
                     </span>
                   </td>
@@ -145,6 +146,7 @@
                   <td class="table-cell text-sm font-medium text-slate-900 ">{{ __($incident->type) }}</td>
                   <td class="table-cell">
                     <span class="rounded-full bg-warning-soft px-3 py-1 text-xs font-semibold text-warning ">{{ __($incident->severity) }}</span>
+
                   </td>
                   <td class="table-cell text-sm text-slate-600 ">
                     {{ optional($incident->assignment?->order)->reference ?? '—' }} · {{ optional($incident->assignment?->truck)->plate_number ?? '—' }}
