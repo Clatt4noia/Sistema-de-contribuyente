@@ -74,42 +74,67 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form method="POST" wire:submit="resetPassword" class="flex flex-col gap-6">
+    <form method="POST" wire:submit="resetPassword" class="space-y-6">
         <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email')"
-            type="email"
-            required
-            autocomplete="email"
-        />
+        <div class="form-field">
+            <label for="email" class="text-sm font-medium text-[color:var(--color-text)]">
+                {{ __('Email') }}
+            </label>
+            <input
+                id="email"
+                type="email"
+                wire:model="email"
+                required
+                autocomplete="email"
+                class="form-control"
+            />
+            @error('email')
+                <p class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
 
         <!-- Password -->
-        <flux:input
-            wire:model="password"
-            :label="__('Password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Password')"
-            viewable
-        />
+        <div class="form-field">
+            <label for="password" class="text-sm font-medium text-[color:var(--color-text)]">
+                {{ __('Password') }}
+            </label>
+            <input
+                id="password"
+                type="password"
+                wire:model="password"
+                required
+                autocomplete="new-password"
+                placeholder="{{ __('Password') }}"
+                class="form-control"
+            />
+            @error('password')
+                <p class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
 
         <!-- Confirm Password -->
-        <flux:input
-            wire:model="password_confirmation"
-            :label="__('Confirm password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Confirm password')"
-            viewable
-        />
+        <div class="form-field">
+            <label for="password_confirmation" class="text-sm font-medium text-[color:var(--color-text)]">
+                {{ __('Confirm password') }}
+            </label>
+            <input
+                id="password_confirmation"
+                type="password"
+                wire:model="password_confirmation"
+                required
+                autocomplete="new-password"
+                placeholder="{{ __('Confirm password') }}"
+                class="form-control"
+            />
+            @error('password_confirmation')
+                <p class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
 
-        <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full" data-test="reset-password-button">
+        <div>
+            <button type="submit" class="btn btn-primary w-full" data-test="reset-password-button">
                 {{ __('Reset password') }}
-            </flux:button>
+            </button>
         </div>
     </form>
 </div>

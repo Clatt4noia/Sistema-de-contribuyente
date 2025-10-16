@@ -49,7 +49,7 @@
  </div>
  <div class="flex items-center justify-between text-lg">
  <dt>Total</dt>
- <dd class="font-bold text-emerald-600 ">S/ {{ number_format($totals['total'], 2) }}</dd>
+ <dd class="font-bold text-success ">S/ {{ number_format($totals['total'], 2) }}</dd>
  </div>
  </dl>
  </div>
@@ -64,43 +64,43 @@
  </div>
  @enderror
 
- <div class="overflow-hidden rounded-xl border border-slate-200 ">
- <table class="min-w-full divide-y divide-slate-200 ">
- <thead class="bg-slate-50 ">
- <tr class="text-left text-xs font-semibold uppercase tracking-wide text-slate-600 ">
- <th class="px-4 py-3">Descripción</th>
- <th class="px-4 py-3">Cantidad</th>
- <th class="px-4 py-3">Precio unitario</th>
- <th class="px-4 py-3">IGV</th>
- <th class="px-4 py-3">Total</th>
- <th class="px-4 py-3 text-right">Acciones</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-200 ">
- @forelse($items as $index => $item)
- <tr class="text-sm text-slate-700 ">
- <td class="px-4 py-3">
- <p class="font-semibold">{{ $item['description'] }}</p>
- <p class="text-xs text-slate-500">{{ $item['unit_code'] }} • Excepción {{ $item['tax_exemption_reason'] }}</p>
- </td>
- <td class="px-4 py-3">{{ number_format($item['quantity'], 2) }}</td>
- <td class="px-4 py-3">S/ {{ number_format($item['unit_price'], 2) }}</td>
- <td class="px-4 py-3">S/ {{ number_format($item['tax_amount'], 2) }}</td>
- <td class="px-4 py-3 font-semibold">S/ {{ number_format($item['taxable_amount'] + $item['tax_amount'], 2) }}</td>
- <td class="px-4 py-3 text-right">
-        <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger btn-sm">
-            Quitar
-        </button>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500 ">Sin ítems registrados.</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+        <div class="overflow-hidden rounded-xl border border-slate-200 ">
+          <table class="table table-md">
+            <thead>
+              <tr class="table-row">
+                <th class="table-header">Descripción</th>
+                <th class="table-header">Cantidad</th>
+                <th class="table-header">Precio unitario</th>
+                <th class="table-header">IGV</th>
+                <th class="table-header">Total</th>
+                <th class="table-header text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($items as $index => $item)
+                <tr class="table-row text-sm text-slate-700 ">
+                  <td class="table-cell">
+                    <p class="font-semibold">{{ $item['description'] }}</p>
+                    <p class="text-xs text-slate-500">{{ $item['unit_code'] }} • Excepción {{ $item['tax_exemption_reason'] }}</p>
+                  </td>
+                  <td class="table-cell">{{ number_format($item['quantity'], 2) }}</td>
+                  <td class="table-cell">S/ {{ number_format($item['unit_price'], 2) }}</td>
+                  <td class="table-cell">S/ {{ number_format($item['tax_amount'], 2) }}</td>
+                  <td class="table-cell font-semibold">S/ {{ number_format($item['taxable_amount'] + $item['tax_amount'], 2) }}</td>
+                  <td class="table-cell text-right">
+                    <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger btn-sm">
+                      Quitar
+                    </button>
+                  </td>
+                </tr>
+              @empty
+                <tr class="table-row">
+                  <td colspan="6" class="table-empty">Sin ítems registrados.</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
  </section>
 
  <section class="space-y-4">

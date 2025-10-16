@@ -42,43 +42,43 @@
  <div class="form-field">
  <label for="name" class="form-label">Nombre *</label>
  <input type="text" id="name" wire:model.defer="form.name" class="form-control">
- @error('form.name') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.name') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="last_name" class="form-label">Apellido *</label>
  <input type="text" id="last_name" wire:model.defer="form.last_name" class="form-control">
- @error('form.last_name') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.last_name') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="document_number" class="form-label">Número de documento *</label>
  <input type="text" id="document_number" wire:model.defer="form.document_number" class="form-control">
- @error('form.document_number') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.document_number') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="license_number" class="form-label">Número de licencia *</label>
  <input type="text" id="license_number" wire:model.defer="form.license_number" class="form-control">
- @error('form.license_number') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.license_number') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="license_expiration" class="form-label">Vencimiento de licencia *</label>
  <input type="date" id="license_expiration" wire:model.defer="form.license_expiration" class="form-control">
- @error('form.license_expiration') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.license_expiration') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="phone" class="form-label">Teléfono *</label>
  <input type="text" id="phone" wire:model.defer="form.phone" class="form-control">
- @error('form.phone') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.phone') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
  <label for="email" class="form-label">Email *</label>
  <input type="email" id="email" wire:model.defer="form.email" class="form-control">
- @error('form.email') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.email') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field">
@@ -89,20 +89,20 @@
  <option value="on_leave">De permiso</option>
  <option value="assigned">Asignado</option>
  </select>
- @error('form.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.status') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  </div>
 
  <div class="form-field md:col-span-2">
  <label for="address" class="form-label">Dirección *</label>
  <input type="text" id="address" wire:model.defer="form.address" class="form-control">
- @error('form.address') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.address') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="form-field md:col-span-2">
  <label for="notes" class="form-label">Notas</label>
  <textarea id="notes" wire:model.defer="form.notes" rows="4" class="form-control"></textarea>
- @error('form.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('form.notes') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
  <div class="space-y-6 border-t border-slate-200 pt-6 ">
@@ -118,7 +118,7 @@
  </div>
 
  @error('schedules')
- <div class="text-sm font-medium text-rose-500">{{ $message }}</div>
+ <div class="form-error">{{ $message }}</div>
  @enderror
 
  <div class="space-y-4">
@@ -138,17 +138,17 @@
  <option value="Sabado">Sábado</option>
  <option value="Domingo">Domingo</option>
  </select>
- @error('schedules.' . $index . '.day_of_week') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('schedules.' . $index . '.day_of_week') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Inicio</label>
  <input type="time" wire:model.defer="schedules.{{ $index }}.start_time" class="form-control text-sm">
- @error('schedules.' . $index . '.start_time') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('schedules.' . $index . '.start_time') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Fin</label>
  <input type="time" wire:model.defer="schedules.{{ $index }}.end_time" class="form-control text-sm">
- @error('schedules.' . $index . '.end_time') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('schedules.' . $index . '.end_time') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="flex justify-end">
         <button
@@ -183,32 +183,32 @@
  @forelse ($trainings as $index => $training)
  <div
  wire:key="training-{{ $index }}"
- class="grid grid-cols-1 gap-4 rounded-2xl border border-indigo-200 bg-indigo-50 p-4 transition md:grid-cols-6"
+ class="grid grid-cols-1 gap-4 rounded-2xl border border-accent-soft bg-accent-soft p-4 transition md:grid-cols-6"
  >
  <div class="md:col-span-2 space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Nombre *</label>
  <input type="text" wire:model.defer="trainings.{{ $index }}.name" class="form-control text-sm">
- @error('trainings.' . $index . '.name') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('trainings.' . $index . '.name') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Proveedor</label>
  <input type="text" wire:model.defer="trainings.{{ $index }}.provider" class="form-control text-sm">
- @error('trainings.' . $index . '.provider') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('trainings.' . $index . '.provider') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Emitida</label>
  <input type="date" wire:model.defer="trainings.{{ $index }}.issued_at" class="form-control text-sm">
- @error('trainings.' . $index . '.issued_at') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('trainings.' . $index . '.issued_at') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Vence</label>
  <input type="date" wire:model.defer="trainings.{{ $index }}.expires_at" class="form-control text-sm">
- @error('trainings.' . $index . '.expires_at') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('trainings.' . $index . '.expires_at') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Horas</label>
  <input type="number" min="0" wire:model.defer="trainings.{{ $index }}.hours" class="form-control text-sm">
- @error('trainings.' . $index . '.hours') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('trainings.' . $index . '.hours') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Estado</label>
@@ -217,12 +217,12 @@
  <option value="in_progress">En curso</option>
  <option value="expired">Vencida</option>
  </select>
- @error('trainings.' . $index . '.status') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('trainings.' . $index . '.status') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="md:col-span-2 space-y-2">
  <label class="text-xs font-medium text-slate-600 ">Certificado (URL)</label>
  <input type="url" wire:model.defer="trainings.{{ $index }}.certificate_url" class="form-control text-sm">
- @error('trainings.' . $index . '.certificate_url') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('trainings.' . $index . '.certificate_url') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="flex justify-end md:col-span-6">
         <button

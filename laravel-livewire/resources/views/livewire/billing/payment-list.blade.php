@@ -5,7 +5,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm " role="alert">
+ <div class="alert alert-success " role="alert">
  <p>{{ session('message') }}</p>
  </div>
  @endif
@@ -34,44 +34,44 @@
  </div>
 
  <div class="overflow-x-auto">
- <table class="surface-table">
- <thead>
- <tr>
- <th class="px-6 py-3">Factura</th>
- <th class="px-6 py-3">Cliente</th>
- <th class="px-6 py-3">Monto</th>
- <th class="px-6 py-3">Fecha</th>
- <th class="px-6 py-3">Metodo</th>
- <th class="px-6 py-3">Referencia</th>
- <th class="px-6 py-3">Acciones</th>
- </tr>
- </thead>
- <tbody>
- @forelse($payments as $payment)
- <tr class="transition hover:bg-slate-100 ">
- <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 ">{{ $payment->invoice->invoice_number }}</td>
- <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $payment->invoice->client->business_name }}</td>
- <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($payment->amount) }}</td>
- <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $payment->paid_at->format('d/m/Y') }}</td>
- <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $payment->method ?: '-' }}</td>
- <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 ">{{ $payment->reference ?: '-' }}</td>
- <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-        <a href="{{ route('billing.payments.edit', $payment->id) }}" class="btn btn-ghost btn-sm mr-2">Editar</a>
-        <button wire:click="deletePayment({{ $payment->id }})" wire:confirm="Eliminar este pago?" class="btn btn-danger btn-sm">Eliminar</button>
- </td>
- </tr>
- @empty
- <tr>
- <td colspan="7" class="px-6 py-4 text-center text-slate-500 ">No se encontraron pagos</td>
- </tr>
- @endforelse
- </tbody>
- </table>
- </div>
+        <table class="table table-md">
+          <thead>
+            <tr class="table-row">
+              <th class="table-header">Factura</th>
+              <th class="table-header">Cliente</th>
+              <th class="table-header">Monto</th>
+              <th class="table-header">Fecha</th>
+              <th class="table-header">Metodo</th>
+              <th class="table-header">Referencia</th>
+              <th class="table-header">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($payments as $payment)
+              <tr class="table-row table-row-hover">
+                <td class="table-cell whitespace-nowrap text-sm font-medium text-slate-900 ">{{ $payment->invoice->invoice_number }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $payment->invoice->client->business_name }}</td>
+                <td class="table-cell whitespace-nowrap text-sm font-semibold text-slate-900 ">{{ \App\Support\Formatters\MoneyFormatter::pen($payment->amount) }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $payment->paid_at->format('d/m/Y') }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $payment->method ?: '-' }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-slate-600 ">{{ $payment->reference ?: '-' }}</td>
+                <td class="table-cell whitespace-nowrap text-sm font-medium">
+                  <a href="{{ route('billing.payments.edit', $payment->id) }}" class="btn btn-ghost btn-sm mr-2">Editar</a>
+                  <button wire:click="deletePayment({{ $payment->id }})" wire:confirm="Eliminar este pago?" class="btn btn-danger btn-sm">Eliminar</button>
+                </td>
+              </tr>
+            @empty
+              <tr class="table-row">
+                <td colspan="7" class="table-empty">No se encontraron pagos</td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+    </div>
 
 
- <div class="border-t border-slate-200 px-4 py-3 ">
- {{ $payments->links() }}
- </div>
+    <div class="table-footer">
+      {{ $payments->links() }}
+    </div>
  </div>
 </div>

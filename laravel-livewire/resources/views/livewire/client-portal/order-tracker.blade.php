@@ -10,7 +10,7 @@
  </div>
 
  @if (session()->has('message'))
- <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-sm ">
+ <div class="alert alert-success">
  {{ session('message') }}
  </div>
  @endif
@@ -23,7 +23,7 @@
  <h2 class="text-lg font-semibold text-slate-900 ">{{ __('Pedido :reference', ['reference' => $order->reference]) }}</h2>
  <p class="text-sm text-slate-500 ">{{ optional($order->client)->business_name ?? optional($order->client)->contact_name }}</p>
  </div>
- <span class="inline-flex items-center gap-2 rounded-full bg-sky-100 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700 ">
+ <span class="badge badge-accent">
  {{ __($order->status) }}
  </span>
  </header>
@@ -83,28 +83,28 @@
  @endif
 
  @if ($order->assignments->isNotEmpty())
- <div class="overflow-x-auto">
- <table class="min-w-full divide-y divide-slate-200 text-sm ">
- <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 ">
- <tr>
- <th class="px-4 py-3">{{ __('Vehículo') }}</th>
- <th class="px-4 py-3">{{ __('Conductor') }}</th>
- <th class="px-4 py-3">{{ __('Estado') }}</th>
- <th class="px-4 py-3">{{ __('Inicio') }}</th>
- </tr>
- </thead>
- <tbody class="divide-y divide-slate-100 bg-white ">
- @foreach ($order->assignments as $assignment)
- <tr>
- <td class="px-4 py-3 font-medium text-slate-900 ">{{ optional($assignment->truck)->plate_number ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($assignment->driver)->full_name ?? optional($assignment->driver)->name ?? '—' }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ __($assignment->status) }}</td>
- <td class="px-4 py-3 text-slate-600 ">{{ optional($assignment->start_date)?->format('d/m/Y H:i') ?? '—' }}</td>
- </tr>
- @endforeach
- </tbody>
- </table>
- </div>
+    <div class="overflow-x-auto">
+      <table class="table table-sm text-sm">
+        <thead>
+          <tr class="table-row">
+            <th class="table-header">{{ __('Vehículo') }}</th>
+            <th class="table-header">{{ __('Conductor') }}</th>
+            <th class="table-header">{{ __('Estado') }}</th>
+            <th class="table-header">{{ __('Inicio') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($order->assignments as $assignment)
+            <tr class="table-row table-row-hover">
+              <td class="table-cell font-medium text-slate-900 ">{{ optional($assignment->truck)->plate_number ?? '—' }}</td>
+              <td class="table-cell text-slate-600 ">{{ optional($assignment->driver)->full_name ?? optional($assignment->driver)->name ?? '—' }}</td>
+              <td class="table-cell text-slate-600 ">{{ __($assignment->status) }}</td>
+              <td class="table-cell text-slate-600 ">{{ optional($assignment->start_date)?->format('d/m/Y H:i') ?? '—' }}</td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
  @endif
 
  <form wire:submit.prevent="updateWindow({{ $order->id }})" class="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 ">
@@ -113,18 +113,18 @@
  <div>
  <label class="form-label" for="window-start-{{ $order->id }}">{{ __('Inicio') }}</label>
  <input id="window-start-{{ $order->id }}" type="datetime-local" class="form-control" wire:model.defer="windowUpdates.{{ $order->id }}.delivery_window_start">
- @error('windowUpdates.' . $order->id . '.delivery_window_start') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('windowUpdates.' . $order->id . '.delivery_window_start') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div>
  <label class="form-label" for="window-end-{{ $order->id }}">{{ __('Fin') }}</label>
  <input id="window-end-{{ $order->id }}" type="datetime-local" class="form-control" wire:model.defer="windowUpdates.{{ $order->id }}.delivery_window_end">
- @error('windowUpdates.' . $order->id . '.delivery_window_end') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('windowUpdates.' . $order->id . '.delivery_window_end') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  </div>
  <div>
  <label class="form-label" for="window-notes-{{ $order->id }}">{{ __('Comentarios adicionales') }}</label>
  <textarea id="window-notes-{{ $order->id }}" rows="2" class="form-control" wire:model.defer="windowUpdates.{{ $order->id }}.notes"></textarea>
- @error('windowUpdates.' . $order->id . '.notes') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
+ @error('windowUpdates.' . $order->id . '.notes') <span class="form-error">{{ $message }}</span> @enderror
  </div>
  <div class="flex justify-end">
         <button type="submit" class="btn btn-primary">

@@ -33,19 +33,19 @@
             </p>
         </header>
         <nav class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3 text-sm font-semibold text-slate-600">
-            <a href="{{ route('dashboards.logistics') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-white">
+            <a href="{{ route('dashboards.logistics') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel logístico') }}</span>
-                <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-indigo-500 group-hover:translate-x-0.5" />
+                <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-accent-soft group-hover:translate-x-0.5" />
             </a>
 
-            <a href="{{ route('dashboards.fleet') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-white">
+            <a href="{{ route('dashboards.fleet') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel de flota') }}</span>
-                <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-indigo-500 group-hover:translate-x-0.5" />
+                <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-accent-soft group-hover:translate-x-0.5" />
             </a>
 
-            <a href="{{ route('dashboards.finance') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-white">
+            <a href="{{ route('dashboards.finance') }}" class="group flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel financiero') }}</span>
-                <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-indigo-500 group-hover:translate-x-0.5" />
+                <x-dynamic-component :component="'flux.icon.arrow-right'" class="size-4 text-accent-soft group-hover:translate-x-0.5" />
             </a>
         </nav>
     </section>
