@@ -1,138 +1,216 @@
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <h2 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Asignacion' : 'Nueva Asignacion' }}</h2>
- <a href="{{ route('fleet.assignments.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">
- <i class="fas fa-arrow-left"></i>
- Volver
- </a>
+    <a href="{{ route('fleet.assignments.index') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
  </div>
 
  <div class="surface-card p-6 shadow-lg">
  <form wire:submit.prevent="save" class="grid gap-6">
  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
- <div class="form-field">
- <label for="order_id" class="form-label">Pedido *</label>
- <select id="order_id" wire:model="form.order_id" class="form-control @error('form.order_id') border-rose-400 @enderror">
- <option value="">Seleccione un pedido</option>
- @foreach($orders as $order)
- <option value="{{ $order->id }}">{{ $order->reference }} - {{ $order->origin }} -> {{ $order->destination }}</option>
- @endforeach
- </select>
- @error('form.order_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- </div>
+            <div class="form-field">
+                <label for="order_id" class="form-label">
+                    <span class="required">Pedido</span>
+                </label>
+                <select
+                    id="order_id"
+                    wire:model="form.order_id"
+                    class="form-control form-md @error('form.order_id') is-invalid @enderror"
+                    @error('form.order_id') aria-invalid="true" aria-describedby="order_id-error" @enderror
+                >
+                    <option value="">Seleccione un pedido</option>
+                    @foreach($orders as $order)
+                        <option value="{{ $order->id }}">{{ $order->reference }} - {{ $order->origin }} -> {{ $order->destination }}</option>
+                    @endforeach
+                </select>
+                @error('form.order_id')
+                    <p id="order_id-error" class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
 
- <div class="form-field">
- <label class="form-label">Modo de asignación *</label>
- <div class="flex items-center gap-4">
- <label class="inline-flex items-center gap-2 text-sm">
- <input type="radio" wire:model="mode" value="manual" class="text-indigo-500 focus:ring-indigo-500">
- Manual
- </label>
- <label class="inline-flex items-center gap-2 text-sm">
- <input type="radio" wire:model="mode" value="automatic" class="text-indigo-500 focus:ring-indigo-500">
- Automática
- </label>
- </div>
- @error('mode') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- @if ($mode === 'automatic')
- <button type="button" wire:click="autoAssignResources" class="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-white shadow hover:bg-emerald-600">
- <i class="fas fa-bolt"></i>
- Buscar recursos disponibles
- </button>
- @if ($autoAssignAlert)
- <p class="mt-2 text-xs font-medium text-amber-600 ">{{ $autoAssignAlert }}</p>
- @endif
- @endif
- </div>
+            <div class="form-field">
+                <label class="form-label">
+                    <span class="required">Modo de asignación</span>
+                </label>
+                <div class="flex flex-wrap items-center gap-4">
+                    <label class="form-check">
+                        <input type="radio" wire:model="mode" value="manual" class="h-4 w-4">
+                        <span class="form-check-label">Manual</span>
+                    </label>
+                    <label class="form-check">
+                        <input type="radio" wire:model="mode" value="automatic" class="h-4 w-4">
+                        <span class="form-check-label">Automática</span>
+                    </label>
+                </div>
+                @error('mode')
+                    <p class="form-error">{{ $message }}</p>
+                @enderror
+                @if ($mode === 'automatic')
+                    <button type="button" wire:click="autoAssignResources" class="btn btn-primary btn-sm mt-3">
+                        <i class="fas fa-bolt"></i>
+            Buscar recursos disponibles
+        </button>
+                    @if ($autoAssignAlert)
+                        <p class="mt-2 form-help text-amber-600">{{ $autoAssignAlert }}</p>
+                    @endif
+                @endif
+            </div>
 
- <div class="form-field">
- <label for="truck_id" class="form-label">Vehiculo *</label>
- <select id="truck_id" wire:model="form.truck_id" class="form-control @error('form.truck_id') border-rose-400 @enderror">
- <option value="">Seleccione un vehiculo</option>
- @foreach($trucks as $truck)
- <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }} ({{ __($truck->status) }})</option>
- @endforeach
- </select>
- @error('form.truck_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- @if ($form['truck_id'])
- @php
- $selectedTruck = $trucks->firstWhere('id', (int) $form['truck_id']);
+            <div class="form-field">
+                <label for="truck_id" class="form-label">
+                    <span class="required">Vehículo</span>
+                </label>
+                <select
+                    id="truck_id"
+                    wire:model="form.truck_id"
+                    class="form-control form-md @error('form.truck_id') is-invalid @enderror"
+                    @error('form.truck_id') aria-invalid="true" aria-describedby="truck_id-error" @enderror
+                >
+                    <option value="">Seleccione un vehiculo</option>
+                    @foreach($trucks as $truck)
+                        <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }} ({{ __($truck->status) }})</option>
+                    @endforeach
+                </select>
+                @error('form.truck_id')
+                    <p id="truck_id-error" class="form-error">{{ $message }}</p>
+                @enderror
+                @if ($form['truck_id'])
+                    @php
+                        $selectedTruck = $trucks->firstWhere('id', (int) $form['truck_id']);
  @endphp
  @if ($selectedTruck)
- <div class="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 ">
- <p><span class="font-semibold">Mantenimiento prox.:</span> {{ optional($selectedTruck->next_maintenance)->format('d/m/Y') ?? 'No definido' }}</p>
- <p><span class="font-semibold">Km acumulado:</span> {{ number_format($selectedTruck->mileage) }} km</p>
- </div>
- @endif
- @endif
- </div>
+                        <div class="mt-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-xs text-neutral-600">
+                            <p><span class="font-semibold text-neutral-800">Mantenimiento prox.:</span> {{ optional($selectedTruck->next_maintenance)->format('d/m/Y') ?? 'No definido' }}</p>
+                            <p><span class="font-semibold text-neutral-800">Km acumulado:</span> {{ number_format($selectedTruck->mileage) }} km</p>
+                        </div>
+                    @endif
+                @endif
+            </div>
 
- <div class="form-field">
- <label for="driver_id" class="form-label">Conductor *</label>
- <select id="driver_id" wire:model="form.driver_id" class="form-control @error('form.driver_id') border-rose-400 @enderror">
- <option value="">Seleccione un conductor</option>
- @foreach($drivers as $driver)
- <option value="{{ $driver->id }}">{{ $driver->name }} {{ $driver->last_name }} ({{ __($driver->status) }})</option>
- @endforeach
- </select>
- @error('form.driver_id') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- @if ($form['driver_id'])
- @php
- $selectedDriver = $drivers->firstWhere('id', (int) $form['driver_id']);
+            <div class="form-field">
+                <label for="driver_id" class="form-label">
+                    <span class="required">Conductor</span>
+                </label>
+                <select
+                    id="driver_id"
+                    wire:model="form.driver_id"
+                    class="form-control form-md @error('form.driver_id') is-invalid @enderror"
+                    @error('form.driver_id') aria-invalid="true" aria-describedby="driver_id-error" @enderror
+                >
+                    <option value="">Seleccione un conductor</option>
+                    @foreach($drivers as $driver)
+                        <option value="{{ $driver->id }}">{{ $driver->name }} {{ $driver->last_name }} ({{ __($driver->status) }})</option>
+                    @endforeach
+                </select>
+                @error('form.driver_id')
+                    <p id="driver_id-error" class="form-error">{{ $message }}</p>
+                @enderror
+                @if ($form['driver_id'])
+                    @php
+                        $selectedDriver = $drivers->firstWhere('id', (int) $form['driver_id']);
  @endphp
  @if ($selectedDriver)
- <div class="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 ">
- <p><span class="font-semibold">Licencia:</span> {{ optional($selectedDriver->license_expiration)->format('d/m/Y') }}</p>
- <p><span class="font-semibold">Capacitaciones vigentes:</span> {{ $selectedDriver->trainings->filter(fn($training) => ! $training->expires_at || $training->expires_at->isFuture())->count() }}</p>
- </div>
- @endif
- @endif
- </div>
+                        <div class="mt-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-xs text-neutral-600">
+                            <p><span class="font-semibold text-neutral-800">Licencia:</span> {{ optional($selectedDriver->license_expiration)->format('d/m/Y') }}</p>
+                            <p><span class="font-semibold text-neutral-800">Capacitaciones vigentes:</span> {{ $selectedDriver->trainings->filter(fn($training) => ! $training->expires_at || $training->expires_at->isFuture())->count() }}</p>
+                        </div>
+                    @endif
+                @endif
+            </div>
 
- <div class="form-field">
- <label for="start_date" class="form-label">Fecha y hora de inicio *</label>
- <input type="datetime-local" id="start_date" wire:model="form.start_date" class="form-control @error('form.start_date') border-rose-400 @enderror">
- @error('form.start_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- </div>
+            <div class="form-field">
+                <label for="start_date" class="form-label">
+                    <span class="required">Fecha y hora de inicio</span>
+                </label>
+                <input
+                    type="datetime-local"
+                    id="start_date"
+                    wire:model="form.start_date"
+                    class="form-control form-md @error('form.start_date') is-invalid @enderror"
+                    @error('form.start_date') aria-invalid="true" aria-describedby="start_date-error" @enderror
+                >
+                @error('form.start_date')
+                    <p id="start_date-error" class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
 
- <div class="form-field">
- <label for="end_date" class="form-label">Fecha y hora de fin</label>
- <input type="datetime-local" id="end_date" wire:model="form.end_date" class="form-control @error('form.end_date') border-rose-400 @enderror">
- @error('form.end_date') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- </div>
+            <div class="form-field">
+                <label for="end_date" class="form-label">Fecha y hora de fin</label>
+                <input
+                    type="datetime-local"
+                    id="end_date"
+                    wire:model="form.end_date"
+                    class="form-control form-md @error('form.end_date') is-invalid @enderror"
+                    @error('form.end_date') aria-invalid="true" aria-describedby="end_date-error" @enderror
+                >
+                @error('form.end_date')
+                    <p id="end_date-error" class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
 
- <div class="form-field">
- <label for="status" class="form-label">Estado *</label>
- <select id="status" wire:model="form.status" class="form-control @error('form.status') border-rose-400 @enderror">
- <option value="scheduled">Programada</option>
- <option value="in_progress">En ruta</option>
- <option value="completed">Completada</option>
- <option value="cancelled">Cancelada</option>
- </select>
- @error('form.status') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- </div>
+            <div class="form-field">
+                <label for="status" class="form-label">
+                    <span class="required">Estado</span>
+                </label>
+                <select
+                    id="status"
+                    wire:model="form.status"
+                    class="form-control form-md @error('form.status') is-invalid @enderror"
+                    @error('form.status') aria-invalid="true" aria-describedby="status-error" @enderror
+                >
+                    <option value="scheduled">Programada</option>
+                    <option value="in_progress">En ruta</option>
+                    <option value="completed">Completada</option>
+                    <option value="cancelled">Cancelada</option>
+                </select>
+                @error('form.status')
+                    <p id="status-error" class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
 
- <div class="form-field md:col-span-2">
- <label for="description" class="form-label">Descripcion *</label>
- <input type="text" id="description" wire:model="form.description" class="form-control @error('form.description') border-rose-400 @enderror" placeholder="Ej: Transporte Lima - Arequipa">
- @error('form.description') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- </div>
- </div>
+            <div class="form-field md:col-span-2">
+                <label for="description" class="form-label">
+                    <span class="required">Descripción</span>
+                </label>
+                <input
+                    type="text"
+                    id="description"
+                    wire:model="form.description"
+                    class="form-control form-md @error('form.description') is-invalid @enderror"
+                    placeholder="Ej: Transporte Lima - Arequipa"
+                    @error('form.description') aria-invalid="true" aria-describedby="description-error" @enderror
+                >
+                @error('form.description')
+                    <p id="description-error" class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
 
- <div class="form-field">
- <label for="notes" class="form-label">Notas</label>
- <textarea id="notes" wire:model="form.notes" rows="4" class="form-control @error('form.notes') border-rose-400 @enderror" placeholder="Observaciones adicionales"></textarea>
- @error('form.notes') <span class="text-sm font-medium text-rose-500">{{ $message }}</span> @enderror
- </div>
+        <div class="form-field">
+            <label for="notes" class="form-label">Notas</label>
+            <textarea
+                id="notes"
+                wire:model="form.notes"
+                rows="4"
+                class="form-control form-md @error('form.notes') is-invalid @enderror"
+                placeholder="Observaciones adicionales"
+                @error('form.notes') aria-invalid="true" aria-describedby="notes-error" @enderror
+            ></textarea>
+            @error('form.notes')
+                <p id="notes-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
 
  <div class="flex flex-wrap items-center justify-end gap-3">
- <a href="{{ route('fleet.assignments.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">
- Cancelar
- </a>
- <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">
- <i class="fas fa-save"></i>
- {{ $isEdit ? 'Actualizar' : 'Guardar' }}
- </button>
+    <a href="{{ route('fleet.assignments.index') }}" class="btn btn-secondary">
+        Cancelar
+    </a>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i>
+        {{ $isEdit ? 'Actualizar' : 'Guardar' }}
+    </button>
  </div>
  </form>
  </div>

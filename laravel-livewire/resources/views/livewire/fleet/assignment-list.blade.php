@@ -1,10 +1,10 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <h2 class="text-2xl font-semibold text-slate-900 ">Asignaciones de Vehiculos</h2>
- <a href="{{ route('fleet.assignments.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">
- <i class="fas fa-plus"></i>
- Nueva Asignacion
- </a>
+    <a href="{{ route('fleet.assignments.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Nueva Asignacion
+    </a>
  </div>
 
  @if (session()->has('message'))
@@ -110,12 +110,12 @@
  </span>
  </td>
  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
- <a href="{{ route('fleet.assignments.edit', $assignment->id) }}" class="mr-3 font-semibold text-indigo-600 transition hover:text-indigo-700 ">
- <i class="fas fa-edit"></i> Editar
- </a>
- <button wire:click="deleteAssignment({{ $assignment->id }})" wire:confirm="Esta seguro de eliminar esta asignacion?" class="font-semibold text-rose-600 transition hover:text-rose-700 ">
- <i class="fas fa-trash"></i> Eliminar
- </button>
+        <a href="{{ route('fleet.assignments.edit', $assignment->id) }}" class="btn btn-ghost btn-sm mr-2">
+            <i class="fas fa-edit"></i> Editar
+        </a>
+        <button wire:click="deleteAssignment({{ $assignment->id }})" wire:confirm="Esta seguro de eliminar esta asignacion?" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i> Eliminar
+        </button>
  </td>
  </tr>
  @empty

@@ -4,10 +4,10 @@
  <h1 class="text-2xl font-semibold text-slate-900 ">Gestion de Camiones</h1>
  <p class="text-sm text-slate-500 ">Monitorea disponibilidad, mantenimientos y asignaciones de la flota.</p>
  </div>
- <a href="{{ route('fleet.trucks.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">
- <span class="text-lg leading-none">+</span>
- Agregar Camion
- </a>
+    <a href="{{ route('fleet.trucks.create') }}" class="btn btn-primary">
+        <span class="text-lg leading-none">+</span>
+        Agregar Camion
+    </a>
  </div>
 
  @if (session()->has('message'))

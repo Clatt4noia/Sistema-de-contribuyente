@@ -5,11 +5,11 @@
  <p class="text-sm text-slate-600 ">SUNAT - {{ strtoupper(config('billing.sunat.mode')) }}</p>
  </div>
  <div class="flex items-center gap-3">
- <a href="{{ route('billing.invoices.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">Volver</a>
- <button type="button" wire:click="confirmSend" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 ">
- <x-heroicon-o-paper-airplane class="h-4 w-4" />
- Enviar a SUNAT
- </button>
+    <a href="{{ route('billing.invoices.index') }}" class="btn btn-secondary">Volver</a>
+    <button type="button" wire:click="confirmSend" class="btn btn-primary">
+        <x-heroicon-o-paper-airplane class="h-4 w-4" />
+        Enviar a SUNAT
+    </button>
  </div>
  </div>
 
@@ -59,7 +59,7 @@
  <h2 class="text-lg font-semibold text-slate-900 ">Detalle de ítems</h2>
 
  @error('items')
- <div class="rounded-xl border border-rose-400 bg-rose-50 px-4 py-3 text-sm text-rose-600 ">
+    <div class="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700 ">
  {{ $message }}
  </div>
  @enderror
@@ -88,9 +88,9 @@
  <td class="px-4 py-3">S/ {{ number_format($item['tax_amount'], 2) }}</td>
  <td class="px-4 py-3 font-semibold">S/ {{ number_format($item['taxable_amount'] + $item['tax_amount'], 2) }}</td>
  <td class="px-4 py-3 text-right">
- <button type="button" wire:click="removeItem({{ $index }})" class="inline-flex items-center gap-2 rounded-lg border border-rose-300 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-50 ">
- Quitar
- </button>
+        <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger btn-sm">
+            Quitar
+        </button>
  </td>
  </tr>
  @empty
@@ -106,45 +106,113 @@
  <section class="space-y-4">
  <h2 class="text-lg font-semibold text-slate-900 ">Agregar ítem</h2>
  <div class="grid grid-cols-1 gap-4 md:grid-cols-6">
- <div class="md:col-span-2">
- <label class="form-label">Descripción *</label>
- <input type="text" wire:model.defer="newItem.description" class="form-control @error('newItem.description') border-rose-400 @enderror">
- @error('newItem.description') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
- </div>
- <div>
- <label class="form-label">Cantidad *</label>
- <input type="number" step="0.01" wire:model.defer="newItem.quantity" class="form-control @error('newItem.quantity') border-rose-400 @enderror">
- @error('newItem.quantity') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
- </div>
- <div>
- <label class="form-label">Precio unitario *</label>
- <input type="number" step="0.01" wire:model.defer="newItem.unit_price" class="form-control @error('newItem.unit_price') border-rose-400 @enderror">
- @error('newItem.unit_price') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
- </div>
- <div>
- <label class="form-label">IGV (%)</label>
- <input type="number" step="0.01" wire:model.defer="newItem.tax_percentage" class="form-control @error('newItem.tax_percentage') border-rose-400 @enderror">
- @error('newItem.tax_percentage') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
- </div>
- <div>
- <label class="form-label">Código unidad</label>
- <input type="text" wire:model.defer="newItem.unit_code" maxlength="3" class="form-control @error('newItem.unit_code') border-rose-400 @enderror">
- @error('newItem.unit_code') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
- </div>
- <div>
- <label class="form-label">Tipo de precio</label>
- <input type="text" wire:model.defer="newItem.price_type_code" maxlength="2" class="form-control @error('newItem.price_type_code') border-rose-400 @enderror">
- @error('newItem.price_type_code') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
- </div>
- <div>
- <label class="form-label">Motivo de exoneración</label>
- <input type="text" wire:model.defer="newItem.tax_exemption_reason" maxlength="2" class="form-control @error('newItem.tax_exemption_reason') border-rose-400 @enderror">
- @error('newItem.tax_exemption_reason') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
- </div>
+        <div class="md:col-span-2 form-field">
+            <label for="item_description" class="form-label">
+                <span class="required">Descripción</span>
+            </label>
+            <input
+                id="item_description"
+                type="text"
+                wire:model.defer="newItem.description"
+                class="form-control form-md @error('newItem.description') is-invalid @enderror"
+                @error('newItem.description') aria-invalid="true" aria-describedby="item_description-error" @enderror
+            >
+            @error('newItem.description')
+                <p id="item_description-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="form-field">
+            <label for="item_quantity" class="form-label">
+                <span class="required">Cantidad</span>
+            </label>
+            <input
+                id="item_quantity"
+                type="number"
+                step="0.01"
+                wire:model.defer="newItem.quantity"
+                class="form-control form-md @error('newItem.quantity') is-invalid @enderror"
+                @error('newItem.quantity') aria-invalid="true" aria-describedby="item_quantity-error" @enderror
+            >
+            @error('newItem.quantity')
+                <p id="item_quantity-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="form-field">
+            <label for="item_unit_price" class="form-label">
+                <span class="required">Precio unitario</span>
+            </label>
+            <input
+                id="item_unit_price"
+                type="number"
+                step="0.01"
+                wire:model.defer="newItem.unit_price"
+                class="form-control form-md @error('newItem.unit_price') is-invalid @enderror"
+                @error('newItem.unit_price') aria-invalid="true" aria-describedby="item_unit_price-error" @enderror
+            >
+            @error('newItem.unit_price')
+                <p id="item_unit_price-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="form-field">
+            <label for="item_tax_percentage" class="form-label">IGV (%)</label>
+            <input
+                id="item_tax_percentage"
+                type="number"
+                step="0.01"
+                wire:model.defer="newItem.tax_percentage"
+                class="form-control form-md @error('newItem.tax_percentage') is-invalid @enderror"
+                @error('newItem.tax_percentage') aria-invalid="true" aria-describedby="item_tax_percentage-error" @enderror
+            >
+            @error('newItem.tax_percentage')
+                <p id="item_tax_percentage-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="form-field">
+            <label for="item_unit_code" class="form-label">Código unidad</label>
+            <input
+                id="item_unit_code"
+                type="text"
+                wire:model.defer="newItem.unit_code"
+                maxlength="3"
+                class="form-control form-md @error('newItem.unit_code') is-invalid @enderror"
+                @error('newItem.unit_code') aria-invalid="true" aria-describedby="item_unit_code-error" @enderror
+            >
+            @error('newItem.unit_code')
+                <p id="item_unit_code-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="form-field">
+            <label for="item_price_type_code" class="form-label">Tipo de precio</label>
+            <input
+                id="item_price_type_code"
+                type="text"
+                wire:model.defer="newItem.price_type_code"
+                maxlength="2"
+                class="form-control form-md @error('newItem.price_type_code') is-invalid @enderror"
+                @error('newItem.price_type_code') aria-invalid="true" aria-describedby="item_price_type_code-error" @enderror
+            >
+            @error('newItem.price_type_code')
+                <p id="item_price_type_code-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="form-field">
+            <label for="item_tax_exemption_reason" class="form-label">Motivo de exoneración</label>
+            <input
+                id="item_tax_exemption_reason"
+                type="text"
+                wire:model.defer="newItem.tax_exemption_reason"
+                maxlength="2"
+                class="form-control form-md @error('newItem.tax_exemption_reason') is-invalid @enderror"
+                @error('newItem.tax_exemption_reason') aria-invalid="true" aria-describedby="item_tax_exemption_reason-error" @enderror
+            >
+            @error('newItem.tax_exemption_reason')
+                <p id="item_tax_exemption_reason-error" class="form-error">{{ $message }}</p>
+            @enderror
+        </div>
  <div class="md:col-span-2 flex items-end">
- <button type="button" wire:click="addItem" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ">
- <x-heroicon-o-plus-small class="h-4 w-4" /> Agregar
- </button>
+    <button type="button" wire:click="addItem" class="btn btn-primary w-full">
+        <x-heroicon-o-plus-small class="h-4 w-4" /> Agregar
+    </button>
  </div>
  </div>
  </section>
@@ -156,8 +224,8 @@
  <h2 class="text-lg font-semibold text-slate-900 ">Confirmar envío</h2>
  <p class="mt-3 text-sm text-slate-600 ">¿Confirmas que deseas enviar el comprobante {{ $invoice->numero_completo }} a SUNAT? Asegúrate de que la información sea correcta antes de proceder.</p>
  <div class="mt-6 flex justify-end gap-3">
- <button type="button" wire:click="$set('confirmationOpen', false)" class="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 ">Cancelar</button>
- <button type="button" wire:click="sendToSunat" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 ">Enviar ahora</button>
+    <button type="button" wire:click="$set('confirmationOpen', false)" class="btn btn-secondary">Cancelar</button>
+    <button type="button" wire:click="sendToSunat" class="btn btn-primary">Enviar ahora</button>
  </div>
  </div>
  </div>

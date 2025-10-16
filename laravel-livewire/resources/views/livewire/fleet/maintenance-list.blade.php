@@ -1,12 +1,12 @@
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <h1 class="text-2xl font-semibold text-slate-900 ">Mantenimientos de Vehículos</h1>
- <a
- href="{{ route('fleet.maintenance.create') }}"
- class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 "
- >
- Registrar Mantenimiento
- </a>
+    <a
+        href="{{ route('fleet.maintenance.create') }}"
+        class="btn btn-primary"
+    >
+        Registrar Mantenimiento
+    </a>
  </div>
 
  @if (session()->has('message'))
@@ -84,19 +84,19 @@
  </span>
  </td>
  <td class="px-6 py-4 text-sm font-semibold">
- <a
- href="{{ route('fleet.maintenance.edit', $maintenance) }}"
- class="text-indigo-600 transition hover:text-indigo-400 "
- >
- Editar
- </a>
- <button
- wire:click="deleteMaintenance({{ $maintenance->id }})"
- wire:confirm="¿Está seguro de eliminar este registro?"
- class="ml-3 text-rose-600 transition hover:text-rose-500 "
- >
- Eliminar
- </button>
+    <a
+        href="{{ route('fleet.maintenance.edit', $maintenance) }}"
+        class="btn btn-ghost btn-sm mr-2"
+    >
+        Editar
+    </a>
+    <button
+        wire:click="deleteMaintenance({{ $maintenance->id }})"
+        wire:confirm="¿Está seguro de eliminar este registro?"
+        class="btn btn-danger btn-sm"
+    >
+        Eliminar
+    </button>
  </td>
  </tr>
  @empty

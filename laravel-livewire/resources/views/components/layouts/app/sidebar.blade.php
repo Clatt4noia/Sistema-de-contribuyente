@@ -64,8 +64,7 @@
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-sky-200 hover:text-slate-700 lg:hidden"
-
+                            class="btn btn-secondary btn-icon rounded-xl lg:hidden"
                         >
                             <span class="sr-only">{{ __('Cerrar menú') }}</span>
                             <x-dynamic-component :component="$resolveIcon('heroicon-o-x-mark')" class="size-5" />
@@ -200,8 +199,7 @@
                             data-sidebar-toggle
                             aria-controls="app-sidebar"
                             aria-expanded="false"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-sky-200 hover:text-slate-700"
-
+                            class="btn btn-secondary btn-icon rounded-xl"
                         >
                             <span class="sr-only">{{ __('Abrir menú') }}</span>
                             <x-dynamic-component :component="$resolveIcon('heroicon-o-bars-2')" class="size-5" />

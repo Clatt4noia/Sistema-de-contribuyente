@@ -4,9 +4,9 @@
  <h1 class="text-2xl font-semibold text-slate-900 ">{{ $isEdit ? 'Editar Pedido' : 'Nuevo Pedido' }}</h1>
  <p class="text-sm text-slate-500 ">Gestiona la informacion clave del pedido y planifica su ruta principal.</p>
  </div>
- <a href="{{ route('orders.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">
- Volver
- </a>
+    <a href="{{ route('orders.index') }}" class="btn btn-secondary">
+        Volver
+    </a>
  </div>
 
  @if (session()->has('message'))
@@ -186,9 +186,9 @@
  <a href="{{ route('orders.index') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">
  Cancelar
  </a>
- <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ">
- {{ $isEdit ? 'Actualizar' : 'Guardar' }}
- </button>
+    <button type="submit" class="btn btn-primary">
+        {{ $isEdit ? 'Actualizar' : 'Guardar' }}
+    </button>
  </div>
  </form>
  </div>

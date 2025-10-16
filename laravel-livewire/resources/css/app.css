@@ -101,6 +101,10 @@
         --color-success: var(--color-success-600);
         --color-warning: var(--color-warning-500);
         --color-danger: var(--color-danger-600);
+        --color-danger-emphasis: var(--color-danger-700);
+        --color-danger-muted: var(--color-danger-100);
+        --color-danger-foreground: var(--color-primary-foreground);
+
 
         --color-accent: var(--color-primary);
         --color-accent-hover: var(--color-primary-emphasis);
@@ -137,8 +141,42 @@
     input:not([type='checkbox']):not([type='radio']):not([type='range']),
     textarea,
     select {
-        @apply rounded-lg border border-neutral-300 bg-white text-neutral-800 transition duration-200 focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200/70;
+        @apply rounded-lg border bg-white text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+        background-color: var(--color-surface);
+        border-color: var(--color-border);
+        color: var(--color-text);
     }
+
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):hover,
+    textarea:hover,
+    select:hover {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border-strong);
+    }
+
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):disabled,
+    textarea:disabled,
+    select:disabled {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border);
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+        opacity: 1;
+    }
+
+    input:not([type='checkbox']):not([type='radio']):not([type='range'])[readonly],
+    textarea[readonly],
+    select[readonly] {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border);
+        color: var(--color-text);
+    }
+
+    input[type='checkbox'],
+    input[type='radio'] {
+        accent-color: var(--color-primary);
+    }
+
 
     [data-flux-control] {
         @apply transition-colors duration-200;
@@ -166,17 +204,229 @@
         color: var(--color-text-muted);
     }
 
+    .form-group,
+    .form-field {
+        @apply space-y-2;
+    }
+
+    .form-label {
+        @apply text-sm font-medium;
+        color: var(--color-text);
+    }
+
+    .form-label .required {
+        @apply inline-flex items-center align-middle;
+        position: relative;
+        padding-left: 0.125rem;
+    }
+
+    .form-label .required::after {
+        content: '*';
+        color: var(--color-danger);
+        font-weight: 600;
+    }
+
+    .form-help {
+        @apply text-xs;
+        color: var(--color-text-muted);
+    }
+
+    .form-error {
+        @apply text-xs font-semibold;
+        color: var(--color-danger);
+    }
+
+    .form-control,
     [data-flux-control] {
-        @apply border-neutral-300 bg-white text-neutral-800 placeholder:text-neutral-500 shadow-none;
+        @apply w-full rounded-lg border bg-white text-sm transition-colors duration-200;
+        background-color: var(--color-surface);
+        border-color: var(--color-border);
+        color: var(--color-text);
+        box-shadow: none;
     }
 
+    .form-control:hover,
+    [data-flux-control]:hover {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border-strong);
+    }
+
+    .form-control:focus-visible,
     [data-flux-control]:focus-visible {
-        @apply border-primary-300 ring-2 ring-primary-200/70 outline-none;
+        @apply outline-none ring-2 ring-primary-200 ring-offset-2 ring-offset-white;
+        border-color: var(--color-primary);
     }
 
+    .form-control::placeholder,
     [data-flux-control]::placeholder {
         color: var(--color-text-muted);
         opacity: 1;
+    }
+
+    .form-control:is(.is-invalid, [aria-invalid='true']),
+    [data-flux-control]:is(.is-invalid, [aria-invalid='true']) {
+        background-color: var(--color-danger-muted);
+        border-color: var(--color-danger);
+        color: var(--color-text);
+    }
+
+    .form-control:is(.is-invalid, [aria-invalid='true'])::placeholder,
+    [data-flux-control]:is(.is-invalid, [aria-invalid='true'])::placeholder {
+        color: var(--color-danger);
+    }
+
+    .form-control:is(.is-invalid, [aria-invalid='true']):focus-visible,
+    [data-flux-control]:is(.is-invalid, [aria-invalid='true']):focus-visible {
+        @apply ring-danger-200 ring-offset-white;
+        border-color: var(--color-danger);
+    }
+
+    .form-control:disabled,
+    [data-flux-control]:disabled,
+    .form-control[disabled],
+    [data-flux-control][disabled] {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border);
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+        opacity: 1;
+    }
+
+    .form-control[readonly],
+    [data-flux-control][readonly] {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border);
+        color: var(--color-text);
+    }
+
+    .form-control.form-sm,
+    [data-flux-control].form-sm {
+        @apply rounded-md px-3 py-1.5 text-xs;
+    }
+
+    .form-control.form-md,
+    [data-flux-control].form-md {
+        @apply px-4 py-2.5 text-sm;
+    }
+
+    .form-control.form-lg,
+    [data-flux-control].form-lg {
+        @apply rounded-xl px-5 py-3 text-base;
+    }
+
+    textarea.form-control {
+        @apply min-h-[3.5rem];
+        resize: vertical;
+    }
+
+    textarea.form-control.form-lg {
+        @apply min-h-[5rem];
+    }
+
+    .form-check {
+        @apply flex items-start gap-2;
+    }
+
+    .form-check input[type='checkbox'],
+    .form-check input[type='radio'] {
+        margin-top: 0.125rem;
+    }
+
+    .form-check-label {
+        @apply text-sm;
+        color: var(--color-text);
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60;
+        background-color: var(--color-surface);
+        border-color: var(--color-border);
+        color: var(--color-text);
+        box-shadow: 0 4px 16px -10px rgba(15, 23, 42, 0.18);
+    }
+
+    .btn:hover {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border-strong);
+        color: var(--color-text);
+    }
+
+    .btn-primary {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+        color: var(--color-primary-foreground);
+        box-shadow: 0 10px 24px -14px rgba(30, 58, 138, 0.45);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--color-primary-emphasis);
+        border-color: var(--color-primary-emphasis);
+    }
+
+    .btn-primary:focus-visible {
+        @apply ring-primary-200;
+    }
+
+    .btn-secondary {
+        background-color: var(--color-surface);
+        border-color: var(--color-border);
+        color: var(--color-text);
+        box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--color-secondary-muted);
+        border-color: var(--color-border-strong);
+    }
+
+    .btn-secondary:focus-visible {
+        @apply ring-primary-200;
+    }
+
+    .btn-danger {
+        background-color: var(--color-danger);
+        border-color: var(--color-danger);
+        color: var(--color-danger-foreground);
+        box-shadow: 0 12px 24px -18px rgba(220, 38, 38, 0.45);
+    }
+
+    .btn-danger:hover {
+        background-color: var(--color-danger-emphasis);
+        border-color: var(--color-danger-emphasis);
+    }
+
+    .btn-danger:focus-visible {
+        @apply ring-danger-200;
+    }
+
+    .btn-ghost {
+        background-color: transparent;
+        border-color: transparent;
+        color: var(--color-text-muted);
+        box-shadow: none;
+    }
+
+    .btn-ghost:hover {
+        background-color: var(--color-primary-muted);
+        border-color: transparent;
+        color: var(--color-primary);
+    }
+
+    .btn-ghost:focus-visible {
+        @apply ring-primary-200;
+    }
+
+    .btn-sm {
+        @apply gap-1 rounded-md px-3 py-1.5 text-xs;
+    }
+
+    .btn-lg {
+        @apply px-6 py-3 text-base;
+    }
+
+    .btn-icon {
+        @apply h-10 w-10 px-0 py-0;
+        box-shadow: none;
     }
 
     .surface-card {
@@ -203,18 +453,6 @@
         @apply divide-y divide-neutral-100 bg-white;
     }
 
-    .form-field {
-        @apply space-y-2;
-    }
-
-    .form-label {
-        @apply block text-sm font-medium text-neutral-700;
-    }
-
-    .form-control {
-        @apply w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm text-neutral-700 placeholder:text-neutral-500 transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200/70;
-    }
-
     .stat-card {
         @apply rounded-2xl border border-neutral-200 bg-white/95 p-5 shadow-md shadow-neutral-200/70 backdrop-blur;
     }
@@ -228,15 +466,38 @@
         @apply text-neutral-900;
     }
 
+    [data-flux-component] [variant],
+    [variant],
+    [data-variant],
+    .ui-button[variant],
+    .ui-button[data-variant] {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60;
+        background-color: var(--color-surface);
+        border-color: var(--color-border);
+        color: var(--color-text);
+        box-shadow: 0 4px 16px -10px rgba(15, 23, 42, 0.18);
+    }
+
+    [data-flux-component] [variant]:hover,
+    [variant]:hover,
+    [data-variant]:hover,
+    .ui-button[variant]:hover,
+    .ui-button[data-variant]:hover {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border-strong);
+        color: var(--color-text);
+
+    }
+
     [data-flux-component] [variant='primary'],
     [variant='primary'],
     [data-variant='primary'],
     .ui-button[variant='primary'],
     .ui-button[data-variant='primary'] {
-        background-color: var(--color-accent);
-        border-color: var(--color-accent);
-        color: var(--color-accent-foreground);
-        transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+        color: var(--color-primary-foreground);
+        box-shadow: 0 10px 24px -14px rgba(30, 58, 138, 0.45);
     }
 
     [data-flux-component] [variant='primary']:hover,
@@ -244,8 +505,9 @@
     [data-variant='primary']:hover,
     .ui-button[variant='primary']:hover,
     .ui-button[data-variant='primary']:hover {
-        background-color: var(--color-accent-hover);
-        border-color: var(--color-accent-hover);
+        background-color: var(--color-primary-emphasis);
+        border-color: var(--color-primary-emphasis);
+        color: var(--color-primary-foreground);
     }
 
     [data-flux-component] [variant='primary']:focus-visible,
@@ -253,8 +515,8 @@
     [data-variant='primary']:focus-visible,
     .ui-button[variant='primary']:focus-visible,
     .ui-button[data-variant='primary']:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.25);
+        @apply ring-primary-200;
+
     }
 
     [data-flux-component] [variant='secondary'],
@@ -265,6 +527,7 @@
         background-color: var(--color-surface);
         border-color: var(--color-border);
         color: var(--color-text);
+        box-shadow: none;
     }
 
     [data-flux-component] [variant='secondary']:hover,
@@ -272,14 +535,87 @@
     [data-variant='secondary']:hover,
     .ui-button[variant='secondary']:hover,
     .ui-button[data-variant='secondary']:hover {
-        background-color: var(--color-surface-muted);
+        background-color: var(--color-secondary-muted);
         border-color: var(--color-border-strong);
+        color: var(--color-text);
+    }
+
+    [data-flux-component] [variant='secondary']:focus-visible,
+    [variant='secondary']:focus-visible,
+    [data-variant='secondary']:focus-visible,
+    .ui-button[variant='secondary']:focus-visible,
+    .ui-button[data-variant='secondary']:focus-visible {
+        @apply ring-primary-200;
+    }
+
+    [data-flux-component] [variant='danger'],
+    [variant='danger'],
+    [data-variant='danger'],
+    .ui-button[variant='danger'],
+    .ui-button[data-variant='danger'] {
+        background-color: var(--color-danger);
+        border-color: var(--color-danger);
+        color: var(--color-danger-foreground);
+        box-shadow: 0 12px 24px -18px rgba(220, 38, 38, 0.45);
+    }
+
+    [data-flux-component] [variant='danger']:hover,
+    [variant='danger']:hover,
+    [data-variant='danger']:hover,
+    .ui-button[variant='danger']:hover,
+    .ui-button[data-variant='danger']:hover {
+        background-color: var(--color-danger-emphasis);
+        border-color: var(--color-danger-emphasis);
+    }
+
+    [data-flux-component] [variant='danger']:focus-visible,
+    [variant='danger']:focus-visible,
+    [data-variant='danger']:focus-visible,
+    .ui-button[variant='danger']:focus-visible,
+    .ui-button[data-variant='danger']:focus-visible {
+        @apply ring-danger-200;
+    }
+
+    [data-flux-component] [variant='ghost'],
+    [variant='ghost'],
+    [data-variant='ghost'],
+    .ui-button[variant='ghost'],
+    .ui-button[data-variant='ghost'] {
+        background-color: transparent;
+        border-color: transparent;
+        color: var(--color-text-muted);
+        box-shadow: none;
+
     }
 }
 
 [data-flux-label] {
     @apply !mb-0 !leading-tight;
 }
+
+    [data-flux-component] [variant='ghost']:hover,
+    [variant='ghost']:hover,
+    [data-variant='ghost']:hover,
+    .ui-button[variant='ghost']:hover,
+    .ui-button[data-variant='ghost']:hover {
+        background-color: var(--color-primary-muted);
+        border-color: transparent;
+        color: var(--color-primary);
+    }
+
+    [data-flux-component] [variant='ghost']:focus-visible,
+    [variant='ghost']:focus-visible,
+    [data-variant='ghost']:focus-visible,
+    .ui-button[variant='ghost']:focus-visible,
+    .ui-button[data-variant='ghost']:focus-visible {
+        @apply ring-primary-200;
+    }
+}
+
+[data-flux-label] {
+    @apply !mb-0 !leading-tight;
+}
+
 
 input:focus[data-flux-control],
 textarea:focus[data-flux-control],

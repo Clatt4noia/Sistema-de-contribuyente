@@ -27,13 +27,13 @@
  @endif
  </div>
 
- <a
- href="{{ route('fleet.drivers.index') }}"
- class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 "
- >
+    <a
+        href="{{ route('fleet.drivers.index') }}"
+        class="btn btn-secondary"
+    >
 
- Volver
- </a>
+        Volver
+    </a>
  </div>
 
  <div class="surface-card space-y-8 p-6">
@@ -111,10 +111,10 @@
  <button
  type="button"
  wire:click="addSchedule"
- class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 "
- >
- Agregar horario
- </button>
+            class="btn btn-primary btn-sm"
+        >
+            Agregar horario
+        </button>
  </div>
 
  @error('schedules')
@@ -151,13 +151,13 @@
  @error('schedules.' . $index . '.end_time') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
  </div>
  <div class="flex justify-end">
- <button
- type="button"
- wire:click="removeSchedule({{ $index }})"
- class="inline-flex items-center gap-2 rounded-xl bg-rose-500 px-3 py-2 text-sm font-semibold text-white shadow transition hover:bg-rose-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500"
- >
- Eliminar
- </button>
+        <button
+            type="button"
+            wire:click="removeSchedule({{ $index }})"
+            class="btn btn-danger btn-sm"
+        >
+            Eliminar
+        </button>
  </div>
  </div>
  @empty
@@ -172,10 +172,10 @@
  <button
  type="button"
  wire:click="addTraining"
- class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 "
- >
- Agregar capacitación
- </button>
+            class="btn btn-primary btn-sm"
+        >
+            Agregar capacitación
+        </button>
 
  </div>
 
@@ -225,13 +225,13 @@
  @error('trainings.' . $index . '.certificate_url') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
  </div>
  <div class="flex justify-end md:col-span-6">
- <button
- type="button"
- wire:click="removeTraining({{ $index }})"
- class="inline-flex items-center gap-2 rounded-xl bg-rose-500 px-3 py-2 text-sm font-semibold text-white shadow transition hover:bg-rose-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500"
- >
- Eliminar
- </button>
+        <button
+            type="button"
+            wire:click="removeTraining({{ $index }})"
+            class="btn btn-danger btn-sm"
+        >
+            Eliminar
+        </button>
  </div>
  </div>
  @empty
@@ -241,18 +241,18 @@
  </div>
 
  <div class="flex flex-wrap items-center justify-end gap-3">
- <a
- href="{{ route('fleet.drivers.index') }}"
- class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 "
- >
- Cancelar
- </a>
- <button
- type="submit"
- class="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 "
- >
- {{ $isEdit ? 'Actualizar' : 'Guardar' }}
- </button>
+    <a
+        href="{{ route('fleet.drivers.index') }}"
+        class="btn btn-secondary"
+    >
+        Cancelar
+    </a>
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        {{ $isEdit ? 'Actualizar' : 'Guardar' }}
+    </button>
  </div>
  </form>
  </div>

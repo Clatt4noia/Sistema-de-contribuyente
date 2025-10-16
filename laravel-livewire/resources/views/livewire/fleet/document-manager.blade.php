@@ -55,10 +55,10 @@
  <div wire:loading wire:target="file" class="text-sm text-slate-500 ">
  {{ __('Subiendo archivo...') }}
  </div>
- <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 ">
- <i class="fas fa-cloud-upload-alt"></i>
- {{ __('Adjuntar') }}
- </button>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-cloud-upload-alt"></i>
+        {{ __('Adjuntar') }}
+    </button>
  </div>
  </form>
 
@@ -96,15 +96,15 @@
  <td class="px-4 py-2 text-right text-sm">
  <div class="flex items-center justify-end gap-2">
  @if($document['file_url'])
- <a href="{{ $document['file_url'] }}" target="_blank" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">
- <i class="fas fa-file-download"></i>
- {{ __('Descargar') }}
- </a>
- @endif
- <button type="button" wire:click="deleteDocument({{ $document['id'] }})" class="inline-flex items-center gap-2 rounded-lg border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-700 ">
- <i class="fas fa-trash"></i>
- {{ __('Eliminar') }}
- </button>
+        <a href="{{ $document['file_url'] }}" target="_blank" class="btn btn-secondary btn-sm">
+            <i class="fas fa-file-download"></i>
+            {{ __('Descargar') }}
+        </a>
+    @endif
+        <button type="button" wire:click="deleteDocument({{ $document['id'] }})" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i>
+            {{ __('Eliminar') }}
+        </button>
  </div>
  </td>
  </tr>

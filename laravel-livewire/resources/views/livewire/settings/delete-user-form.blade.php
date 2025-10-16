@@ -29,7 +29,7 @@ new class extends Component {
     </div>
 
     <flux:modal.trigger name="confirm-user-deletion">
-        <flux:button variant="danger" x-data="" x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')" data-test="delete-user-button">
+        <flux:button variant="danger" class="btn btn-danger" x-data="" x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')" data-test="delete-user-button">
             {{ __('Delete account') }}
         </flux:button>
     </flux:modal.trigger>
@@ -48,10 +48,10 @@ new class extends Component {
 
             <div class="flex justify-end space-x-2 rtl:space-x-reverse">
                 <flux:modal.close>
-                    <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
+                    <flux:button variant="secondary" class="btn btn-secondary">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
 
-                <flux:button variant="danger" type="submit" data-test="confirm-delete-user-button">
+                <flux:button variant="danger" class="btn btn-danger" type="submit" data-test="confirm-delete-user-button">
                     {{ __('Delete account') }}
                 </flux:button>
             </div>

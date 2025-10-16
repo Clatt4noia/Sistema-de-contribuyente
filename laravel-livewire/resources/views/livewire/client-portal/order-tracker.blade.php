@@ -4,9 +4,9 @@
  <h1 class="text-2xl font-semibold text-slate-900 ">{{ __('Mis envíos') }}</h1>
  <p class="text-sm text-slate-600 ">{{ __('Consulta el estado de tus pedidos y ajusta la ventana de entrega cuando sea necesario.') }}</p>
  </div>
- <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ">
- {{ __('Regresar al panel') }}
- </a>
+    <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+        {{ __('Regresar al panel') }}
+    </a>
  </div>
 
  @if (session()->has('message'))
@@ -127,9 +127,9 @@
  @error('windowUpdates.' . $order->id . '.notes') <span class="text-xs font-medium text-rose-500">{{ $message }}</span> @enderror
  </div>
  <div class="flex justify-end">
- <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
- {{ __('Guardar cambios') }}
- </button>
+        <button type="submit" class="btn btn-primary">
+        {{ __('Guardar cambios') }}
+        </button>
  </div>
  </form>
  </article>
