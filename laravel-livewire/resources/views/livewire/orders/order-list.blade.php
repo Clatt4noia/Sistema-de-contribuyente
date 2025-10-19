@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+<table class="table table-md min-w-[1200px]">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div class="space-y-1">
  <h1 class="text-2xl font-semibold text-token ">Gestion de Pedidos</h1>
