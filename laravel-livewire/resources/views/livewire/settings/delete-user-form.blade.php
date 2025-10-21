@@ -48,7 +48,7 @@ new class extends Component {
 
             <div class="flex justify-end space-x-2 rtl:space-x-reverse">
                 <flux:modal.close>
-                    <flux:button variant="secondary" class="btn btn-secondary">{{ __('Cancel') }}</flux:button>
+                    <flux:button variant="ghost" class="btn btn-ghost">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
 
                 <flux:button variant="danger" class="btn btn-danger" type="submit" data-test="confirm-delete-user-button">
