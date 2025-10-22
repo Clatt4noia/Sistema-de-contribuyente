@@ -13,9 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->encryptCookies(except: [
-            'app_theme',
-        ]);
+        $middleware->encryptCookies(except: []);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

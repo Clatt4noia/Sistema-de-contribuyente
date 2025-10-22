@@ -2,7 +2,6 @@
 
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ThemeController;
 
 require __DIR__.'/auth.php';
 

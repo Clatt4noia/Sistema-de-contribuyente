@@ -44,10 +44,7 @@
                 </flux:tooltip>
             </flux:navbar>
 
-            <div class="hidden lg:flex items-center ps-3">
-                @include('partials.theme-toggle')
-            </div>
-
+        
             <!-- Desktop User Menu -->
             <flux:dropdown position="top" align="end">
                 <flux:profile
