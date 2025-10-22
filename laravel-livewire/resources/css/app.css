@@ -74,66 +74,56 @@
 }
 
 @layer base {
-    :root {
-        color-scheme: light;
+  :root {
+    color-scheme: light;
 
-        --color-primary: var(--color-primary-800);
-        --color-primary-emphasis: var(--color-primary-900);
-        --color-primary-muted: var(--color-primary-100);
-        --color-primary-border: var(--color-primary-200);
-        --color-primary-foreground: #ffffff;
+    --color-primary: var(--color-primary-800);
+    --color-primary-emphasis: var(--color-primary-900);
+    --color-primary-muted: var(--color-primary-100);
+    --color-primary-border: var(--color-primary-200);
+    --color-primary-foreground: #ffffff;
 
-        --color-secondary: var(--color-neutral-700);
-        --color-secondary-muted: var(--color-neutral-200);
-        --color-secondary-foreground: #ffffff;
+    --color-secondary: var(--color-neutral-700);
+    --color-secondary-muted: var(--color-neutral-200);
+    --color-secondary-foreground: #ffffff;
 
-        --color-surface: var(--color-neutral-50);
-        --color-surface-muted: var(--color-neutral-100);
-        --color-surface-strong: var(--color-neutral-200);
-        --color-elevated: #ffffff;
-        --color-border: var(--color-neutral-200);
-        --color-border-strong: var(--color-neutral-300);
+    --color-surface: var(--color-neutral-50);
+    --color-surface-muted: var(--color-neutral-100);
+    --color-surface-strong: var(--color-neutral-200);
+    --color-elevated: #ffffff;
+    --color-border: var(--color-neutral-200);
+    --color-border-strong: var(--color-neutral-300);
 
-        --color-text: var(--color-neutral-900);
-        --color-text-subtle: var(--color-neutral-700);
-        --color-text-muted: var(--color-neutral-600);
+    --color-text: var(--color-neutral-900);
+    --color-text-subtle: var(--color-neutral-700);
+    --color-text-muted: var(--color-neutral-600);
 
-        --color-success: var(--color-success-600);
-        --color-warning: var(--color-warning-500);
-        --color-danger: var(--color-danger-600);
-        --color-danger-emphasis: var(--color-danger-700);
-        --color-danger-muted: var(--color-danger-100);
-        --color-danger-foreground: var(--color-primary-foreground);
+    --color-success: var(--color-success-600);
+    --color-warning: var(--color-warning-500);
+    --color-danger: var(--color-danger-600);
+    --color-danger-emphasis: var(--color-danger-700);
+    --color-danger-muted: var(--color-danger-100);
+    --color-danger-foreground: var(--color-primary-foreground);
 
+    --color-accent: var(--color-primary);
+    --color-accent-hover: var(--color-primary-emphasis);
+    --color-accent-muted: var(--color-primary-muted);
+    --color-accent-foreground: var(--color-primary-foreground);
 
-        --color-accent: var(--color-primary);
-        --color-accent-hover: var(--color-primary-emphasis);
-        --color-accent-muted: var(--color-primary-muted);
-        --color-accent-foreground: var(--color-primary-foreground);
+    --shadow-soft: 0 18px 32px -20px color-mix(in srgb, var(--color-text) 14%, transparent);
+    --shadow-elevated: 0 28px 48px -24px color-mix(in srgb, var(--color-text) 18%, transparent);
+  }
 
-        --shadow-soft: 0 18px 32px -20px color-mix(in srgb, var(--color-text) 14%, transparent);
-        --shadow-elevated: 0 28px 48px -24px color-mix(in srgb, var(--color-text) 18%, transparent);
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+  }
 
-        --flux-color-surface: var(--color-surface);
-        --flux-color-surface-muted: var(--color-surface-muted);
-        --flux-color-border: var(--color-border);
-        --flux-color-border-strong: var(--color-border-strong);
-        --flux-color-text: var(--color-text);
-        --flux-color-text-muted: var(--color-text-muted);
-        --flux-color-accent: var(--color-accent);
-        --flux-color-accent-hover: var(--color-accent-hover);
-        --flux-color-accent-foreground: var(--color-accent-foreground);
-    }
-
-    body {
-        @apply font-sans antialiased;
-        background-color: var(--color-surface);
-        color: var(--color-text);
-    }
-
-    ::selection {
-        @apply bg-primary-200 text-primary-950;
-    }
+  ::selection {
+    background-color: var(--color-primary-200);
+  }
+}
 
     *,
     ::after,
@@ -189,12 +179,96 @@
     }
 }
 
-[data-flux-field]:not(ui-radio, ui-checkbox) {
-    @apply grid gap-2;
+
+/* Asegura que el menú y sus ítems usen texto visible */
+flux\:menu,
+[flux\:menu],
+flux-menu,
+[data-flux-menu],
+[role="menu"] {
+    color: var(--color-text) !important;
+    background-color: var(--color-elevated) !important;
 }
 
-/* Components reference tokens declared in the @theme block above.
-   See resources/README-UI.md for usage patterns and commit conventions. */
+flux\:menu item,
+[flux\:menu-item],
+flux-menu-item,
+[data-flux-menu-item],
+[role="menuitem"] {
+    color: var(--color-text) !important;
+}
+
+/* Alinea el color de los íconos con el texto del menú */
+flux\:menu svg,
+[flux\:menu] svg,
+flux-menu svg,
+[data-flux-menu] svg,
+[role="menu"] svg {
+    color: var(--color-text) !important;
+    fill: var(--color-text) !important;
+    stroke: var(--color-text) !important;
+}
+
+
+/* Corrige visibilidad en la lista de navegación del panel Settings */
+flux\:navlist,
+[flux\:navlist],
+flux-navlist,
+[data-flux-navlist],
+[role="navigation"] {
+    color: var(--color-text) !important;
+}
+
+flux\:navlist.item,
+[flux\:navlist-item],
+flux-navlist-item,
+[data-flux-navlist-item],
+[role="link"],
+[role="menuitem"] {
+    color: var(--color-text) !important;
+    fill: var(--color-text) !important;
+    stroke: var(--color-text) !important;
+}
+
+
+@layer components {
+  /* === FIX VISIBILIDAD LABELS FLUX INPUT === */
+  flux\:input label,
+  [flux\:input] label,
+  [data-flux-input] label,
+  flux-input label {
+      color: var(--color-text) !important;
+      opacity: 1 !important;
+      font-weight: 500 !important;
+  }
+
+  flux\:input input,
+  [flux\:input] input,
+  [data-flux-input] input,
+  flux-input input {
+      color: var(--color-text) !important;
+      background-color: var(--color-surface, #fff) !important;
+      border-color: var(--color-border, #d1d5db) !important;
+      opacity: 1 !important;
+  }
+
+  flux\:input input::placeholder,
+  [flux\:input] input::placeholder,
+  [data-flux-input] input::placeholder,
+  flux-input input::placeholder {
+      color: var(--color-text-muted, #6b7280) !important;
+      opacity: 1 !important;
+  }
+
+  [data-flux-component] small,
+  [data-flux-component] p {
+      color: var(--color-text-muted, #6b7280) !important;
+  }
+}
+
+
+
+
 @layer components {
     [data-flux-component] {
         color: var(--color-text);
@@ -1096,3 +1170,73 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* 🔧 Fuerza los labels visibles de Flux incluso con herencias extrañas */
+[data-flux-input] label,
+flux\:input label,
+flux-input label {
+    color: var(--color-text) !important;
+    opacity: 1 !important;
+    font-weight: 500 !important;
+}
+
+/* === FIX VISIBILIDAD FLUX HEADINGS Y SUBHEADINGS === */
+flux\:heading,
+flux-heading,
+[data-flux-heading],
+[data-flux-component='heading'],
+[data-flux-component='subheading'],
+flux\:subheading,
+flux-subheading,
+[data-flux-subheading] {
+    color: var(--color-text) !important;
+    opacity: 1 !important;
+}
+
+/* Corrige el color dentro de modales o secciones oscuras */
+[data-flux-modal],
+[data-flux-modal] *,
+flux\:modal,
+flux-modal {
+    color: var(--color-text) !important;
+    fill: var(--color-text) !important;
+    stroke: var(--color-text) !important;
+}
+
+/* === FIX DEFINITIVO VISIBILIDAD LABELS DE FLUX INPUT === */
+flux\:input label,
+flux-input label,
+[data-flux-input] label,
+[data-flux-label],
+[data-flux-component='input'] label,
+[data-flux-component='input'] [data-flux-label],
+[data-flux-input] [data-flux-label],
+[data-flux-control-label],
+[data-flux-input] ::slotted(label),
+[data-flux-component='input'] ::slotted(label),
+[data-flux-field] label,
+[data-flux-field] ::slotted(label) {
+    color: var(--color-text) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-weight: 500 !important;
+}
+
+/* Reforzar contraste del texto dentro de inputs */
+flux\:input input,
+flux-input input,
+[data-flux-input] input,
+[data-flux-component='input'] input {
+    color: var(--color-text) !important;
+    background-color: var(--color-surface, #fff) !important;
+    border-color: var(--color-border, #d1d5db) !important;
+    opacity: 1 !important;
+}
+
+/* Ajustar placeholders y ayudas */
+flux\:input input::placeholder,
+flux-input input::placeholder,
+[data-flux-input] input::placeholder {
+    color: var(--color-text-muted, #6b7280) !important;
+    opacity: 1 !important;
+}

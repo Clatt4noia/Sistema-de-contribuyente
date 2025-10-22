@@ -69,7 +69,7 @@ new class extends Component {
  }
 }; ?>
 
-<section class="w-full text-token [&_*]:!text-token">
+<section class="w-full text-token">
     @include('partials.settings-heading')
 
     <x-settings.layout

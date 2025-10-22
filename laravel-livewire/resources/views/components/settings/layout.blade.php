@@ -3,7 +3,6 @@
         <flux:navlist>
             <flux:navlist.item :href="route('profile.edit')">{{ __('Profile') }}</flux:navlist.item>
             <flux:navlist.item :href="route('password.edit')">{{ __('Password') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('appearance.edit')">{{ __('Appearance') }}</flux:navlist.item>
         </flux:navlist>
     </div>
 
