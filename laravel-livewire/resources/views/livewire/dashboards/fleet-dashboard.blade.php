@@ -1,6 +1,8 @@
 <div class="space-y-6">
- <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
- <article class="surface-card">
+<section class="grid w-full gap-6 px-6 mb-6">
+  <article class="surface-card w-full">
+
+
  <header class="flex items-center justify-between border-b border-token px-6 py-5 ">
  <div>
  <h1 class="text-2xl font-semibold text-token ">{{ __('Salud de la flota') }}</h1>
@@ -39,16 +41,6 @@
  <p class="mt-3 text-xs text-token0 ">{{ __('Basado en los últimos 90 días de operaciones.') }}</p>
  </div>
  </div>
- </div>
- </article>
-
- <article class="surface-card">
- <header class="border-b border-token px-6 py-5 ">
- <h2 class="text-lg font-semibold text-token ">{{ __('Checklist rápido') }}</h2>
- </header>
- <div class="space-y-3 p-6 text-sm text-token ">
- <p>{{ __('Confirma SOAT y revisiones técnicas antes de liberar unidades.') }}</p>
- <p>{{ __('Coordina con logística asignaciones según capacidad disponible.') }}</p>
  </div>
  </article>
  </section>
@@ -128,15 +120,6 @@
  </article>
  </section>
 
- <section class="surface-card">
- <header class="border-b border-token px-6 py-5 ">
- <h2 class="text-lg font-semibold text-token ">{{ __('Por qué separar paneles') }}</h2>
- </header>
- <div class="space-y-3 p-6 text-sm text-token ">
- <p>{{ __('Operaciones de flota requieren foco en disponibilidad y cumplimiento legal.') }}</p>
- <p>{{ __('La segmentación evita que logística altere mantenimientos sin aprobación.') }}</p>
- </div>
- </section>
 </div>
 
 @php
