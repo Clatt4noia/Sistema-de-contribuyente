@@ -79,89 +79,94 @@
   </table>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <h2 class="text-lg font-semibold text-token ">Licencias por vencer (30 dias)</h2>
- <table class="table table-sm mt-3">
- <thead>
- <tr class="table-row">
- <th class="table-header">Conductor</th>
- <th class="table-header">Vence</th>
- </tr>
- </thead>
- <tbody>
- @forelse($licenseAlerts as $driver)
- <tr class="table-row table-row-hover">
- <td class="table-cell text-token ">{{ $driver->full_name }}</td>
- <td class="table-cell {{ $driver->license_expiration->isPast() ? 'text-danger-strong font-semibold ' : 'text-warning font-semibold' }}">
- {{ $driver->license_expiration->format('d/m/Y') }}
- </td>
- </tr>
- @empty
- <tr class="table-row">
- <td colspan="2" class="table-empty">Sin alertas.</td>
- </tr>
- @endforelse
- </tbody>
- </table>
+    <h2 class="text-lg font-semibold text-token ">Licencias por vencer (30 dias)</h2>
+    <table class="table table-sm mt-3">
+    <thead>
+    <tr class="table-row">
+    <th class="table-header">Conductor</th>
+    <th class="table-header">Vence</th>
+    </tr>
+    </thead>
+    <tbody>
+    @forelse($licenseAlerts as $driver)
+    <tr class="table-row table-row-hover">
+    <td class="table-cell text-token ">{{ $driver->full_name }}</td>
+    <td class="table-cell {{ $driver->license_expiration->isPast() ? 'text-danger-strong font-semibold ' : 'text-warning font-semibold' }}">
+    {{ $driver->license_expiration->format('d/m/Y') }}
+    </td>
+    </tr>
+    @empty
+    <tr class="table-row">
+    <td colspan="2" class="table-empty">Sin alertas.</td>
+    </tr>
+    @endforelse
+    </tbody>
+    </table>
  </div>
  <div class="surface-card p-4 shadow-sm">
- <h2 class="text-lg font-semibold text-token ">Mantenimientos proximos</h2>
- <table class="table table-sm mt-3">
- <thead>
- <tr class="table-row">
- <th class="table-header">Vehiculo</th>
- <th class="table-header">Fecha</th>
- <th class="table-header">Tipo</th>
- </tr>
- </thead>
- <tbody>
- @forelse($upcomingMaintenance as $item)
- <tr class="table-row table-row-hover">
- <td class="table-cell text-token ">{{ $item->truck->plate_number }}</td>
- <td class="table-cell text-token ">{{ $item->maintenance_date->format('d/m/Y') }}</td>
- <td class="table-cell text-token ">{{ $item->maintenance_type }}</td>
- </tr>
- @empty
- <tr class="table-row">
- <td colspan="3" class="table-empty">No hay mantenimientos programados.</td>
- </tr>
- @endforelse
- </tbody>
- </table>
+    <h2 class="text-lg font-semibold text-token ">Mantenimientos proximos</h2>
+    <table class="table table-sm mt-3">
+    <thead>
+    <tr class="table-row">
+    <th class="table-header">Vehiculo</th>
+    <th class="table-header">Fecha</th>
+    <th class="table-header">Tipo</th>
+    </tr>
+    </thead>
+    <tbody>
+    @forelse($upcomingMaintenance as $item)
+    <tr class="table-row table-row-hover">
+    <td class="table-cell text-token ">{{ $item->truck->plate_number }}</td>
+    <td class="table-cell text-token ">{{ $item->maintenance_date->format('d/m/Y') }}</td>
+    <td class="table-cell text-token ">{{ $item->maintenance_type }}</td>
+    </tr>
+    @empty
+    <tr class="table-row">
+    <td colspan="3" class="table-empty">No hay mantenimientos programados.</td>
+    </tr>
+    @endforelse
+    </tbody>
+    </table>
  </div>
 
- <div class="surface-card p-4 shadow-sm">
- <h2 class="text-lg font-semibold text-token ">Documentos críticos</h2>
- <table class="table table-sm mt-3">
- <thead>
- <tr class="table-row">
- <th class="table-header">Recurso</th>
- <th class="table-header">Documento</th>
- <th class="table-header">Vence</th>
- <th class="table-header">Estado</th>
- </tr>
- </thead>
- <tbody>
- @php
- $statusClasses = [
- \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning ',
- \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong ',
- \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong ',
- ];
- @endphp
- @forelse($documentAlerts as $document)
- <tr class="table-row table-row-hover">
- <td class="table-cell text-token ">{{ $document->owner_label }}</td>
- <td class="table-cell text-token ">{{ $document->title ?: $document->type_label }}</td>
- <td class="table-cell text-token ">{{ optional($document->expires_at)->format('d/m/Y') ?? '—' }}</td>
- <td class="table-cell">
- <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document->status] ?? $statusClasses[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label }}</span>
- </td>
- </tr>
- @empty
- <tr class="table-row">
- <td colspan="4" class="table-empty">Sin documentos con alertas de vigencia.</td>
- </tr>
- @endforelse
- </tbody>
- </table>
+<div class="surface-card p-4 shadow-sm md:col-span-3">
+  <h2 class="text-lg font-semibold text-token">Documentos críticos</h2>
+
+  <table class="table table-sm mt-3 w-full">
+    <thead>
+      <tr class="table-row">
+        <th class="table-header">Recurso</th>
+        <th class="table-header">Documento</th>
+        <th class="table-header">Vence</th>
+        <th class="table-header">Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      @php
+        $statusClasses = [
+          \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning',
+          \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong',
+          \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong',
+        ];
+      @endphp
+
+      @forelse($documentAlerts as $document)
+        <tr class="table-row table-row-hover">
+          <td class="table-cell text-token">{{ $document->owner_label }}</td>
+          <td class="table-cell text-token">{{ $document->title ?: $document->type_label }}</td>
+          <td class="table-cell text-token">{{ optional($document->expires_at)?->format('d/m/Y') ?? '—' }}</td>
+          <td class="table-cell">
+            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document->status] ?? $statusClasses[\App\Models\Document::STATUS_WARNING] }}">
+              {{ $document->status_label }}
+            </span>
+          </td>
+        </tr>
+      @empty
+        <tr class="table-row">
+          <td colspan="4" class="table-empty">Sin documentos con alertas de vigencia.</td>
+        </tr>
+      @endforelse
+    </tbody>
+  </table>
 </div>
+
