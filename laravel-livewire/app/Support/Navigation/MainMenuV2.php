@@ -199,6 +199,7 @@ class MainMenuV2
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::FINANCE_ANALYST, UserRole::ADMIN],
             ],
             [
+
                 'label' => __('Mi perfil'),
                 'icon' => 'heroicon-o-cog-6-tooth',
                 'route' => 'profile.edit',

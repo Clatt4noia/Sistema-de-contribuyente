@@ -15,6 +15,7 @@
                 {{ __('Nuevo movimiento') }}
             </button>
         </div>
+
     </div>
 
     @if (session()->has('message'))
