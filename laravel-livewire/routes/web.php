@@ -36,6 +36,8 @@ use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
 use App\Livewire\Billing\PaymentList;
+use App\Livewire\Finance\TransactionAnalytics;
+use App\Livewire\Finance\TransactionList;
 use App\Models\Driver;
 use App\Models\Truck;
 
@@ -144,6 +146,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments', PaymentList::class)->name('payments.index');
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
         Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
+    });
+
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::get('/transactions', TransactionList::class)
+            ->name('transactions.index');
+        Route::get('/transactions/analytics', TransactionAnalytics::class)
+            ->name('transactions.analytics');
     });
 
     Route::middleware('signed')->group(function () {
