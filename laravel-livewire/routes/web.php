@@ -36,6 +36,8 @@ use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
 use App\Livewire\Billing\PaymentList;
+use App\Livewire\Finance\TransactionAnalytics;
+
 use App\Livewire\Finance\TransactionList;
 use App\Models\Driver;
 use App\Models\Truck;
@@ -150,6 +152,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/transactions', TransactionList::class)
             ->name('transactions.index');
+        Route::get('/transactions/analytics', TransactionAnalytics::class)
+            ->name('transactions.analytics');
+
     });
 
     Route::middleware('signed')->group(function () {

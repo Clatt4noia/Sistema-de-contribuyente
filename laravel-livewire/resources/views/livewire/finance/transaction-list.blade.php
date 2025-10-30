@@ -7,9 +7,15 @@
             </p>
         </div>
 
-        <button type="button" wire:click="openCreateModal" class="btn btn-primary w-full sm:w-auto">
-            {{ __('Nuevo movimiento') }}
-        </button>
+        <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <a href="{{ route('finance.transactions.analytics') }}" class="btn btn-ghost w-full sm:w-auto">
+                {{ __('Ver analíticas') }}
+            </a>
+            <button type="button" wire:click="openCreateModal" class="btn btn-primary w-full sm:w-auto">
+                {{ __('Nuevo movimiento') }}
+            </button>
+        </div>
+
     </div>
 
     @if (session()->has('message'))
