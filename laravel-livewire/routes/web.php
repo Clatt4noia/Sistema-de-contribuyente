@@ -42,6 +42,7 @@ use App\Livewire\Billing\TransportGuides\TransportGuideShow;
 use App\Livewire\Finance\TransactionAnalytics;
 
 use App\Livewire\Finance\TransactionList;
+use App\Models\TransportGuide;
 use App\Models\Driver;
 use App\Models\Truck;
 use App\Http\Controllers\Billing\TransportGuideFileController;
@@ -152,10 +153,34 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
         Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
 
-        Route::get('/transport-guides', TransportGuideIndex::class)->name('transport-guides.index');
-        Route::get('/transport-guides/create', TransportGuideForm::class)->name('transport-guides.create');
-        Route::get('/transport-guides/{transportGuide}', TransportGuideShow::class)->whereNumber('transportGuide')->name('transport-guides.show');
-        Route::get('/transport-guides/{transportGuide}/edit', TransportGuideForm::class)->whereNumber('transportGuide')->name('transport-guides.edit');
+        Route::get('/transport-guides', TransportGuideIndex::class)
+            ->name('transport-guides.index')
+            ->can('viewAny', TransportGuide::class);
+
+        Route::get('/transport-guides/create', TransportGuideForm::class)
+            ->name('transport-guides.create')
+            ->can('create', TransportGuide::class);
+
+        Route::get('/transport-guides/{transportGuide}', TransportGuideShow::class)
+            ->name('transport-guides.show')
+            ->can('view', 'transportGuide');
+
+        Route::get('/transport-guides/{transportGuide}/edit', TransportGuideForm::class)
+            ->name('transport-guides.edit')
+            ->can('update', 'transportGuide');
+
+        Route::get('/transport-guides/{transportGuide}/xml', [TransportGuideFileController::class, 'xml'])
+            ->name('transport-guides.xml')
+            ->can('view', 'transportGuide');
+
+        Route::get('/transport-guides/{transportGuide}/cdr', [TransportGuideFileController::class, 'cdr'])
+            ->name('transport-guides.cdr')
+            ->can('view', 'transportGuide');
+
+        Route::get('/transport-guides/{transportGuide}/pdf', [TransportGuideFileController::class, 'pdf'])
+            ->name('transport-guides.pdf')
+            ->can('view', 'transportGuide');
+
     });
 
     Route::prefix('finance')->name('finance.')->group(function () {

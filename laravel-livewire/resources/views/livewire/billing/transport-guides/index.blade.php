@@ -91,9 +91,10 @@
                                     @endcan
                                 </div>
                                 @php
-                                    $signedPdf = $guide->pdf_path ? \Illuminate\Support\Facades\URL::temporarySignedRoute('billing.transport-guides.download.pdf', now()->addMinutes(10), $guide) : null;
-                                    $signedXml = $guide->xml_path ? \Illuminate\Support\Facades\URL::temporarySignedRoute('billing.transport-guides.download.xml', now()->addMinutes(10), $guide) : null;
-                                    $signedCdr = $guide->cdr_path ? \Illuminate\Support\Facades\URL::temporarySignedRoute('billing.transport-guides.download.cdr', now()->addMinutes(10), $guide) : null;
+                                    $signedPdf = $guide->pdf_path ? route('billing.transport-guides.pdf', $guide) : null;
+                                    $signedXml = $guide->xml_path ? route('billing.transport-guides.xml', $guide) : null;
+                                    $signedCdr = $guide->cdr_path ? route('billing.transport-guides.cdr', $guide) : null;
+
                                 @endphp
                                 <div class="flex flex-wrap items-center gap-2">
                                     @if($signedPdf)
