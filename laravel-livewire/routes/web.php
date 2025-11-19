@@ -180,6 +180,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/transport-guides/{transportGuide}/pdf', [TransportGuideFileController::class, 'pdf'])
             ->name('transport-guides.pdf')
             ->can('view', 'transportGuide');
+
     });
 
     Route::prefix('finance')->name('finance.')->group(function () {
