@@ -50,6 +50,7 @@ use App\Http\Controllers\Billing\TransportGuideFileController;
 // Aseguramos que los parámetros para guías de remisión sean numéricos y no capturen rutas estáticas como "create".
 Route::pattern('transportGuide', '[0-9]+');
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         $user = auth()->user();
@@ -165,27 +166,32 @@ Route::middleware('auth')->group(function () {
             return redirect()->route('billing.transport-guides.create');
         })->name('transport-guide.create-redirect');
 
+
         Route::get('/transport-guides/create', TransportGuideForm::class)
             ->name('transport-guides.create')
             ->can('create', TransportGuide::class);
 
         Route::get('/transport-guides/{transportGuide}', TransportGuideShow::class)
             ->whereNumber('transportGuide')
+
             ->name('transport-guides.show')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/edit', TransportGuideForm::class)
             ->whereNumber('transportGuide')
+
             ->name('transport-guides.edit')
             ->can('update', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/xml', [TransportGuideFileController::class, 'xml'])
             ->whereNumber('transportGuide')
+
             ->name('transport-guides.xml')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/cdr', [TransportGuideFileController::class, 'cdr'])
             ->whereNumber('transportGuide')
+
             ->name('transport-guides.cdr')
             ->can('view', 'transportGuide');
 
@@ -193,6 +199,7 @@ Route::middleware('auth')->group(function () {
             ->whereNumber('transportGuide')
             ->name('transport-guides.pdf')
             ->can('view', 'transportGuide');
+
     });
 
     Route::prefix('finance')->name('finance.')->group(function () {
@@ -220,6 +227,7 @@ Route::middleware('auth')->group(function () {
             ->whereNumber('transportGuide')
             ->can('view', 'transportGuide')
             ->name('billing.transport-guides.download.pdf');
+
     });
 
     Route::prefix('portal')->name('portal.')->middleware('can:view-dashboard.client')->group(function () {

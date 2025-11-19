@@ -76,4 +76,5 @@ class TransportGuidePolicy
     {
         return $this->sendToSunat($user, $transportGuide);
     }
+
 }
