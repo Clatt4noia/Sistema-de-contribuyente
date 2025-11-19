@@ -162,6 +162,7 @@ Route::middleware('auth')->group(function () {
             return redirect()->route('billing.transport-guides.create');
         })->name('transport-guide.create-redirect');
 
+
         Route::get('/transport-guides/create', TransportGuideForm::class)
             ->name('transport-guides.create')
             ->can('create', TransportGuide::class);
@@ -185,6 +186,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/transport-guides/{transportGuide}/pdf', [TransportGuideFileController::class, 'pdf'])
             ->name('transport-guides.pdf')
             ->can('view', 'transportGuide');
+
     });
 
     Route::prefix('finance')->name('finance.')->group(function () {
