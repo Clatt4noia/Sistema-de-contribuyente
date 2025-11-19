@@ -116,6 +116,7 @@
         $pdfUrl = $transportGuide->pdf_path ? route('billing.transport-guides.pdf', $transportGuide) : null;
         $xmlUrl = $transportGuide->xml_path ? route('billing.transport-guides.xml', $transportGuide) : null;
         $cdrUrl = $transportGuide->cdr_path ? route('billing.transport-guides.cdr', $transportGuide) : null;
+
     @endphp
     <div class="surface-card rounded-xl border border-token p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-token mb-3">Descargas</h2>
