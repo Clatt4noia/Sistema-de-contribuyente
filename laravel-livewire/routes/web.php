@@ -47,6 +47,10 @@ use App\Models\Driver;
 use App\Models\Truck;
 use App\Http\Controllers\Billing\TransportGuideFileController;
 
+// Aseguramos que los parámetros para guías de remisión sean numéricos y no capturen rutas estáticas como "create".
+Route::pattern('transportGuide', '[0-9]+');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         $user = auth()->user();
