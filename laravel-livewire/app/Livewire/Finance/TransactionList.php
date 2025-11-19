@@ -187,8 +187,7 @@ class TransactionList extends Component
     {
         $years = Transaction::query()
             ->where('user_id', auth()->id())
-            ->selectRaw('DISTINCT YEAR(occurred_on) as year')
-
+            ->selectRaw("DISTINCT EXTRACT(YEAR FROM occurred_on)::int AS year")
             ->orderByDesc('year')
             ->pluck('year')
             ->map(fn ($year) => (string) $year)
@@ -200,6 +199,7 @@ class TransactionList extends Component
 
         return $years;
     }
+
 
     protected function transactionsQuery(): Builder
     {
