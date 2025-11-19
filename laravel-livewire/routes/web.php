@@ -36,11 +36,15 @@ use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
 use App\Livewire\Billing\PaymentList;
+use App\Livewire\Billing\TransportGuides\TransportGuideForm;
+use App\Livewire\Billing\TransportGuides\TransportGuideIndex;
+use App\Livewire\Billing\TransportGuides\TransportGuideShow;
 use App\Livewire\Finance\TransactionAnalytics;
 
 use App\Livewire\Finance\TransactionList;
 use App\Models\Driver;
 use App\Models\Truck;
+use App\Http\Controllers\Billing\TransportGuideFileController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -147,6 +151,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments', PaymentList::class)->name('payments.index');
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
         Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
+
+        Route::get('/transport-guides', TransportGuideIndex::class)->name('transport-guides.index');
+        Route::get('/transport-guides/create', TransportGuideForm::class)->name('transport-guides.create');
+        Route::get('/transport-guides/{transportGuide}', TransportGuideShow::class)->whereNumber('transportGuide')->name('transport-guides.show');
+        Route::get('/transport-guides/{transportGuide}/edit', TransportGuideForm::class)->whereNumber('transportGuide')->name('transport-guides.edit');
     });
 
     Route::prefix('finance')->name('finance.')->group(function () {
@@ -161,6 +170,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/billing/invoices/{invoice}/download/xml', [InvoiceFileController::class, 'xml'])->name('billing.invoices.download.xml');
         Route::get('/billing/invoices/{invoice}/download/cdr', [InvoiceFileController::class, 'cdr'])->name('billing.invoices.download.cdr');
         Route::get('/billing/invoices/{invoice}/download/pdf', [InvoiceFileController::class, 'pdf'])->name('billing.invoices.download.pdf');
+
+        Route::get('/billing/transport-guides/{transportGuide}/download/xml', [TransportGuideFileController::class, 'xml'])->name('billing.transport-guides.download.xml');
+        Route::get('/billing/transport-guides/{transportGuide}/download/cdr', [TransportGuideFileController::class, 'cdr'])->name('billing.transport-guides.download.cdr');
+        Route::get('/billing/transport-guides/{transportGuide}/download/pdf', [TransportGuideFileController::class, 'pdf'])->name('billing.transport-guides.download.pdf');
     });
 
     Route::prefix('portal')->name('portal.')->middleware('can:view-dashboard.client')->group(function () {

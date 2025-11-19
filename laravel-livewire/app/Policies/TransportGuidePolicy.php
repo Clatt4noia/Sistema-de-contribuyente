@@ -71,4 +71,10 @@ class TransportGuidePolicy
     {
         return $this->create($user);
     }
+
+    public function issue(User $user, TransportGuide $transportGuide): bool
+    {
+        return $this->sendToSunat($user, $transportGuide);
+    }
+
 }
