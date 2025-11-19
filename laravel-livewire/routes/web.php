@@ -168,22 +168,31 @@ Route::middleware('auth')->group(function () {
             ->can('create', TransportGuide::class);
 
         Route::get('/transport-guides/{transportGuide}', TransportGuideShow::class)
+            ->whereNumber('transportGuide')
+
             ->name('transport-guides.show')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/edit', TransportGuideForm::class)
+            ->whereNumber('transportGuide')
+
             ->name('transport-guides.edit')
             ->can('update', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/xml', [TransportGuideFileController::class, 'xml'])
+            ->whereNumber('transportGuide')
+
             ->name('transport-guides.xml')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/cdr', [TransportGuideFileController::class, 'cdr'])
+            ->whereNumber('transportGuide')
+
             ->name('transport-guides.cdr')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/pdf', [TransportGuideFileController::class, 'pdf'])
+            ->whereNumber('transportGuide')
             ->name('transport-guides.pdf')
             ->can('view', 'transportGuide');
 
