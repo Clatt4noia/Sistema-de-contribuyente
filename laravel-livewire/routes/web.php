@@ -215,9 +215,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/billing/invoices/{invoice}/download/cdr', [InvoiceFileController::class, 'cdr'])->name('billing.invoices.download.cdr');
         Route::get('/billing/invoices/{invoice}/download/pdf', [InvoiceFileController::class, 'pdf'])->name('billing.invoices.download.pdf');
 
-        Route::get('/billing/transport-guides/{transportGuide}/download/xml', [TransportGuideFileController::class, 'xml'])->name('billing.transport-guides.download.xml');
-        Route::get('/billing/transport-guides/{transportGuide}/download/cdr', [TransportGuideFileController::class, 'cdr'])->name('billing.transport-guides.download.cdr');
-        Route::get('/billing/transport-guides/{transportGuide}/download/pdf', [TransportGuideFileController::class, 'pdf'])->name('billing.transport-guides.download.pdf');
+        Route::get('/billing/transport-guides/{transportGuide}/download/xml', [TransportGuideFileController::class, 'xml'])
+            ->whereNumber('transportGuide')
+            ->can('view', 'transportGuide')
+            ->name('billing.transport-guides.download.xml');
+        Route::get('/billing/transport-guides/{transportGuide}/download/cdr', [TransportGuideFileController::class, 'cdr'])
+            ->whereNumber('transportGuide')
+            ->can('view', 'transportGuide')
+            ->name('billing.transport-guides.download.cdr');
+        Route::get('/billing/transport-guides/{transportGuide}/download/pdf', [TransportGuideFileController::class, 'pdf'])
+            ->whereNumber('transportGuide')
+            ->can('view', 'transportGuide')
+            ->name('billing.transport-guides.download.pdf');
+
     });
 
     Route::prefix('portal')->name('portal.')->middleware('can:view-dashboard.client')->group(function () {
