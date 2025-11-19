@@ -94,6 +94,7 @@
                                     $signedPdf = $guide->pdf_path ? route('billing.transport-guides.pdf', $guide) : null;
                                     $signedXml = $guide->xml_path ? route('billing.transport-guides.xml', $guide) : null;
                                     $signedCdr = $guide->cdr_path ? route('billing.transport-guides.cdr', $guide) : null;
+
                                 @endphp
                                 <div class="flex flex-wrap items-center gap-2">
                                     @if($signedPdf)

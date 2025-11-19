@@ -253,14 +253,20 @@ class TransactionAnalytics extends Component
     }
 
     protected function rangeBounds(): array
-    {
-        $days = Arr::get($this->rangeOptions(), $this->range, 90);
+        {
+            // La clave (30, 90, 180, 365) ya representa los días
+            $days = (int) $this->range;
 
-        $end = Carbon::today()->endOfDay();
-        $start = $end->copy()->subDays($days - 1)->startOfDay();
+            // fallback por si algo raro llega
+            if ($days <= 0) {
+                $days = 90;
+            }
 
-        return [$start, $end];
-    }
+            $end = Carbon::today()->endOfDay();
+            $start = $end->copy()->subDays($days - 1)->startOfDay();
+
+            return [$start, $end];
+        }
 
     protected function rangeLabel(Carbon $start, Carbon $end): string
     {
