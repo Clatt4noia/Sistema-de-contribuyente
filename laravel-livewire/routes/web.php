@@ -157,6 +157,12 @@ Route::middleware('auth')->group(function () {
             ->name('transport-guides.index')
             ->can('viewAny', TransportGuide::class);
 
+        // Redirección de compatibilidad para quienes usen la ruta en singular
+        Route::get('/transport-guide/create', function () {
+            return redirect()->route('billing.transport-guides.create');
+        })->name('transport-guide.create-redirect');
+
+
         Route::get('/transport-guides/create', TransportGuideForm::class)
             ->name('transport-guides.create')
             ->can('create', TransportGuide::class);
