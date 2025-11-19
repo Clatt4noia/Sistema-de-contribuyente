@@ -200,7 +200,7 @@ class MainMenuV2
                 'label' => __('Control de caja'),
                 'icon' => 'heroicon-o-wallet',
                 'route' => 'finance.transactions.index',
-                'active' => ['finance.transactions.*'],
+                'active' => ['finance.transactions.index'],  // <- corregido
                 'group' => __('Finanzas'),
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::FINANCE_ANALYST, UserRole::ADMIN],
             ],
