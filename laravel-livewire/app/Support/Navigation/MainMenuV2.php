@@ -176,6 +176,7 @@ class MainMenuV2
             ],
             [
                 'label' => __('Guías de transportista (GRE-T)'),
+
                 'icon' => 'heroicon-o-receipt-refund',
                 'route' => 'billing.transport-guides.index',
                 'active' => ['billing.transport-guides.*'],

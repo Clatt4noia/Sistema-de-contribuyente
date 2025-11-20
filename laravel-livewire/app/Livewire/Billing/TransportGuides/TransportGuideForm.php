@@ -54,6 +54,7 @@ class TransportGuideForm extends Component
             if (!preg_match($this->seriesPattern(), (string) $this->transportGuide->series)) {
                 $this->transportGuide->series = $this->defaultSeriesForType();
                 $this->transportGuide->correlative = $this->nextCorrelative($this->transportGuide->series);
+
             }
         } else {
             $series = $this->defaultSeriesForType();
@@ -62,6 +63,7 @@ class TransportGuideForm extends Component
                 'sunat_status' => TransportGuide::STATUS_DRAFT,
                 'document_type_code' => $this->documentTypeForType(),
                 'series' => $series,
+
                 'issue_date' => now()->toDateString(),
                 'issue_time' => now()->format('H:i:s'),
                 'start_transport_date' => now()->toDateString(),
@@ -71,6 +73,7 @@ class TransportGuideForm extends Component
             ]);
             $this->authorize('create', TransportGuide::class);
             $this->transportGuide->correlative = $this->nextCorrelative($series);
+
         }
 
         $this->form = [
@@ -79,6 +82,7 @@ class TransportGuideForm extends Component
             'issue_date' => optional($this->transportGuide->issue_date)->format('Y-m-d') ?: now()->toDateString(),
             'issue_time' => $this->transportGuide->issue_time ?? now()->format('H:i:s'),
             'document_type_code' => $this->transportGuide->document_type_code ?? $this->documentTypeForType(),
+
             'observations' => $this->transportGuide->observations,
             'client_id' => $this->transportGuide->client_id,
             'remitente_document_type' => $this->transportGuide->remitente_document_type ?? '6',
@@ -142,7 +146,7 @@ class TransportGuideForm extends Component
         }
 
         $this->clients = Client::orderBy('business_name')->get();
-        $this->trucks = Truck::orderBy('plate')->get();
+        $this->trucks = Truck::orderBy('plate_number')->get();
         $this->drivers = Driver::orderBy('name')->get();
         $this->assignments = Assignment::orderByDesc('created_at')->limit(50)->get();
         $this->invoices = Invoice::orderByDesc('issue_date')->limit(50)->get();
@@ -156,6 +160,7 @@ class TransportGuideForm extends Component
             'form.issue_date' => 'required|date',
             'form.issue_time' => 'required',
             'form.document_type_code' => 'required|in:' . $this->documentTypeForType(),
+
             'form.observations' => 'nullable|string',
             'form.client_id' => 'required|exists:clients,id',
             'form.remitente_document_type' => 'required|string|max:2',

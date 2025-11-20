@@ -181,6 +181,7 @@ Route::middleware('auth')->group(function () {
         })
             ->name('remitter-guides.create')
             ->defaults('type', TransportGuide::TYPE_REMITENTE)
+
             ->can('create', TransportGuide::class);
 
         // Rutas de compatibilidad con enlaces existentes
