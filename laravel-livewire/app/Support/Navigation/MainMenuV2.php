@@ -175,7 +175,7 @@ class MainMenuV2
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::FINANCE_ANALYST, UserRole::ADMIN],
             ],
             [
-                'label' => __('Guías de Remitente (GRE-T)'),
+                'label' => __('Guía (GRE-T)'),
                 'icon' => 'heroicon-o-receipt-refund',
                 'route' => 'billing.transport-guides.index',
                 'active' => ['billing.transport-guides.*'],
