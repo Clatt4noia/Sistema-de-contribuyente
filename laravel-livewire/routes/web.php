@@ -25,6 +25,7 @@ use App\Livewire\Fleet\MaintenanceList;
 use App\Livewire\Fleet\TruckList;
 use App\Livewire\Fleet\Report as FleetReport;
 use App\Livewire\Logistics\LiveTrackingBoard;
+use App\Livewire\Logistics\OrderStatusNotifications;
 use App\Livewire\Orders\OrderForm;
 use App\Livewire\Orders\OrderList;
 use App\Livewire\Clients\ClientForm;
@@ -82,6 +83,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/logistics/tracking', LiveTrackingBoard::class)
             ->middleware('can:view-dashboard.logistics')
             ->name('logistics-tracking');
+
+        Route::get('/logistics/orders/notifications', OrderStatusNotifications::class)
+            ->middleware('can:view-dashboard.logistics')
+            ->name('logistics-notifications');
 
         Route::get('/fleet', FleetDashboard::class)
             ->middleware('can:view-dashboard.fleet')
