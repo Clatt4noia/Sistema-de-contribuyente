@@ -16,6 +16,7 @@ class Invoice extends Model
 
     protected $fillable = [
         'order_id',
+        'transport_guide_id',
         'client_id',
         'document_type',
         'series',
@@ -87,6 +88,11 @@ class Invoice extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function transportGuide(): BelongsTo
+    {
+        return $this->belongsTo(TransportGuide::class);
     }
 
     public function client(): BelongsTo

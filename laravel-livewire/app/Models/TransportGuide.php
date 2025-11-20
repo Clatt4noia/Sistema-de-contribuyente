@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TransportGuide extends Model
@@ -133,6 +134,11 @@ class TransportGuide extends Model
     public function relatedInvoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class, 'related_invoice_id');
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class, 'transport_guide_id');
     }
 
     public function items(): HasMany

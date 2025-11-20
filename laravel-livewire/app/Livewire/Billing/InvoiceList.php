@@ -67,7 +67,7 @@ class InvoiceList extends Component
         $this->authorize('viewAny', Invoice::class);
 
         $invoices = Invoice::query()
-            ->with(['client', 'order'])
+            ->with(['client', 'order', 'transportGuide'])
             ->when($this->search, function ($query) {
                 $query->where(function ($searchQuery) {
                     $searchQuery->where('invoice_number', 'like', '%' . $this->search . '%')

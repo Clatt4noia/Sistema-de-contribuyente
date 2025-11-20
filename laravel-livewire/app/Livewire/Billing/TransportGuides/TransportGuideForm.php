@@ -33,6 +33,7 @@ class TransportGuideForm extends Component
     public $drivers;
     public $assignments;
     public $invoices;
+    protected ?int $previousInvoiceId = null;
 
     public function mount(?TransportGuide $transportGuide = null, string $type = TransportGuide::TYPE_TRANSPORTISTA): void
     {
@@ -42,6 +43,7 @@ class TransportGuideForm extends Component
             $this->transportGuide = $transportGuide->load('items');
             $this->authorize('view', $this->transportGuide);
             $this->isEdit = true;
+            $this->previousInvoiceId = $this->transportGuide->related_invoice_id;
 
             if ($this->transportGuide->sunat_status !== TransportGuide::STATUS_DRAFT) {
                 abort(403, 'Solo se pueden editar guías en borrador.');
@@ -149,7 +151,7 @@ class TransportGuideForm extends Component
         $this->trucks = Truck::orderBy('plate_number')->get();
         $this->drivers = Driver::orderBy('name')->get();
         $this->assignments = Assignment::orderByDesc('created_at')->limit(50)->get();
-        $this->invoices = Invoice::orderByDesc('issue_date')->limit(50)->get();
+        $this->invoices = Invoice::with('client')->orderByDesc('issue_date')->limit(50)->get();
     }
 
     protected function rules(): array
@@ -256,6 +258,7 @@ class TransportGuideForm extends Component
         DB::transaction(function () use ($validated) {
             $this->persistGuide($validated['form']);
             $this->syncItems($validated['items']);
+            $this->syncInvoiceLink($validated['form']['related_invoice_id'] ?? null);
         });
 
         session()->flash('message', $this->isEdit ? 'Guía actualizada correctamente.' : 'Guía registrada correctamente.');
@@ -380,5 +383,46 @@ class TransportGuideForm extends Component
         $this->authorize($this->isEdit ? 'view' : 'create', $this->isEdit ? $this->transportGuide : TransportGuide::class);
 
         return view('livewire.billing.transport-guides.form');
+    }
+
+    public function updatedFormRelatedInvoiceId($invoiceId): void
+    {
+        if (! $invoiceId) {
+            return;
+        }
+
+        $invoice = Invoice::with('client', 'order')->find($invoiceId);
+
+        if (! $invoice) {
+            return;
+        }
+
+        $this->form['related_invoice_number'] = $invoice->numero_completo ?: $invoice->invoice_number;
+        $this->form['client_id'] = $invoice->client_id;
+        $this->form['order_id'] = $invoice->order_id;
+
+        $this->form['destinatario_document_number'] = $invoice->ruc_receptor;
+        $this->form['destinatario_name'] = $invoice->client?->business_name ?: $this->form['destinatario_name'];
+    }
+
+    protected function syncInvoiceLink(?int $invoiceId): void
+    {
+        if ($this->previousInvoiceId && $this->previousInvoiceId !== $invoiceId) {
+            $previousInvoice = Invoice::find($this->previousInvoiceId);
+
+            if ($previousInvoice && $previousInvoice->transport_guide_id === $this->transportGuide->getKey()) {
+                $previousInvoice->forceFill(['transport_guide_id' => null])->save();
+            }
+        }
+
+        if ($invoiceId) {
+            $invoice = Invoice::find($invoiceId);
+
+            if ($invoice) {
+                $invoice->forceFill(['transport_guide_id' => $this->transportGuide->getKey()])->save();
+            }
+        }
+
+        $this->previousInvoiceId = $invoiceId;
     }
 }

@@ -77,6 +77,26 @@
         @enderror
     </div>
     <div class="form-field">
+        <label for="invoice_transport_guide_id" class="form-label">Guía de remisión vinculada</label>
+        <select
+            id="invoice_transport_guide_id"
+            wire:model.defer="invoice.transport_guide_id"
+            class="form-control form-md @error('invoice.transport_guide_id') is-invalid @enderror"
+            @error('invoice.transport_guide_id') aria-invalid="true" aria-describedby="invoice_transport_guide_id-error" @enderror
+        >
+            <option value="">Sin GRE</option>
+            @foreach($transportGuides as $guide)
+                <option value="{{ $guide->id }}">
+                    {{ $guide->display_code }} — {{ $guide->client?->business_name }} (SUNAT: {{ strtoupper($guide->sunat_status ?? 'pendiente') }})
+                </option>
+            @endforeach
+        </select>
+        <p class="mt-2 text-xs text-token-muted">Muestra serie, correlativo y estado SUNAT de la GRE (GRE-T o GRE-R).</p>
+        @error('invoice.transport_guide_id')
+            <p id="invoice_transport_guide_id-error" class="form-error">{{ $message }}</p>
+        @enderror
+    </div>
+    <div class="form-field">
         <label for="invoice_document_type" class="form-label">
             <span class="required">Tipo de documento</span>
         </label>

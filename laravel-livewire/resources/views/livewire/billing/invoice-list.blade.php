@@ -66,6 +66,7 @@
               <th class="table-header">Factura</th>
               <th class="table-header">Cliente</th>
               <th class="table-header">Pedido</th>
+              <th class="table-header">GRE vinculada</th>
               <th class="table-header">Emision / Venc.</th>
               <th class="table-header">Total</th>
               <th class="table-header">Saldo</th>
@@ -95,6 +96,29 @@
                 <td class="table-cell whitespace-nowrap text-sm font-medium text-token ">{{ $invoice->numero_completo ?: $invoice->invoice_number }}</td>
                 <td class="table-cell whitespace-nowrap text-sm text-token ">{{ $invoice->client->business_name }}</td>
                 <td class="table-cell whitespace-nowrap text-sm text-token ">{{ optional($invoice->order)->reference ?: '-' }}</td>
+                <td class="table-cell whitespace-nowrap text-sm text-token ">
+                  @if($invoice->transportGuide)
+                    <div class="flex flex-col gap-1">
+                      <a
+                        href="{{ route('billing.transport-guides.show', $invoice->transportGuide) }}"
+                        class="link"
+                      >
+                        {{ $invoice->transportGuide->display_code }}
+                      </a>
+                      @php
+                        $greStatus = match ($invoice->transportGuide->sunat_status) {
+                          'accepted' => 'aceptado',
+                          'rejected', 'error', 'cancelled' => 'rechazado',
+                          'pending', 'sent' => 'pendiente',
+                          default => 'observado',
+                        };
+                      @endphp
+                      <livewire:billing.sunat-status-badge :status="$greStatus" :message="$invoice->transportGuide->sunat_notes" :key="'gre-status-'.$invoice->id" />
+                    </div>
+                  @else
+                    <span class="text-token-muted">Sin GRE</span>
+                  @endif
+                </td>
                 <td class="table-cell whitespace-nowrap text-sm text-token ">
                   {{ $invoice->issue_date->format('d/m/Y') }}<br>
                   {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : '-' }}
@@ -127,7 +151,7 @@
               </tr>
             @empty
               <tr class="table-row">
-                <td colspan="10" class="table-empty">No se encontraron facturas</td>
+                <td colspan="11" class="table-empty">No se encontraron facturas</td>
               </tr>
             @endforelse
           </tbody>
