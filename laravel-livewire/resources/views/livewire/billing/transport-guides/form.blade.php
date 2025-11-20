@@ -151,7 +151,7 @@
                     <select id="truck_id" wire:model.live="form.truck_id" class="form-control @error('form.truck_id') is-invalid @enderror">
                         <option value="">Seleccione</option>
                         @foreach($trucks as $truck)
-                            <option value="{{ $truck->id }}">{{ $truck->plate }} - {{ $truck->brand }}</option>
+                            <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }}</option>
                         @endforeach
                     </select>
                     @error('form.truck_id') <p class="form-error">{{ $message }}</p> @enderror
