@@ -135,7 +135,7 @@ class TransportGuideForm extends Component
         }
 
         $this->clients = Client::orderBy('business_name')->get();
-        $this->trucks = Truck::orderBy('plate')->get();
+        $this->trucks = Truck::orderBy('plate_number')->get();
         $this->drivers = Driver::orderBy('name')->get();
         $this->assignments = Assignment::orderByDesc('created_at')->limit(50)->get();
         $this->invoices = Invoice::orderByDesc('issue_date')->limit(50)->get();
