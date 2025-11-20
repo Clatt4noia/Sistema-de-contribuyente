@@ -41,11 +41,20 @@ class TransportGuideForm extends Component
             if ($this->transportGuide->sunat_status !== TransportGuide::STATUS_DRAFT) {
                 abort(403, 'Solo se pueden editar guías en borrador.');
             }
+
+            if ($this->transportGuide->document_type_code !== TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA) {
+                $this->transportGuide->document_type_code = TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA;
+            }
+
+            if (!preg_match('/^V\d{3}$/', (string) $this->transportGuide->series)) {
+                $this->transportGuide->series = TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA;
+                $this->transportGuide->correlative = $this->nextCorrelative(TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA);
+            }
         } else {
             $this->transportGuide = new TransportGuide([
                 'sunat_status' => TransportGuide::STATUS_DRAFT,
-                'document_type_code' => '09',
-                'series' => 'T001',
+                'document_type_code' => TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA,
+                'series' => TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA,
                 'issue_date' => now()->toDateString(),
                 'issue_time' => now()->format('H:i:s'),
                 'start_transport_date' => now()->toDateString(),
@@ -54,7 +63,7 @@ class TransportGuideForm extends Component
                 'scheduled_transshipment' => false,
             ]);
             $this->authorize('create', TransportGuide::class);
-            $this->transportGuide->correlative = $this->nextCorrelative('T001');
+            $this->transportGuide->correlative = $this->nextCorrelative(TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA);
         }
 
         $this->form = [
@@ -62,11 +71,16 @@ class TransportGuideForm extends Component
             'correlative' => $this->transportGuide->correlative,
             'issue_date' => optional($this->transportGuide->issue_date)->format('Y-m-d') ?: now()->toDateString(),
             'issue_time' => $this->transportGuide->issue_time ?? now()->format('H:i:s'),
-            'document_type_code' => $this->transportGuide->document_type_code ?? '09',
+            'document_type_code' => $this->transportGuide->document_type_code ?? TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA,
             'observations' => $this->transportGuide->observations,
             'client_id' => $this->transportGuide->client_id,
+            'remitente_document_type' => $this->transportGuide->remitente_document_type ?? '6',
+            'remitente_document_number' => $this->transportGuide->remitente_document_number ?? Config::get('billing.sunat.ruc'),
             'remitente_ruc' => $this->transportGuide->remitente_ruc ?? Config::get('billing.sunat.ruc'),
             'remitente_name' => $this->transportGuide->remitente_name ?? Config::get('app.name'),
+            'destinatario_document_type' => $this->transportGuide->destinatario_document_type ?? ($this->transportGuide->remitente_document_type ?? '6'),
+            'destinatario_document_number' => $this->transportGuide->destinatario_document_number ?? $this->transportGuide->remitente_document_number ?? $this->transportGuide->remitente_ruc ?? Config::get('billing.sunat.ruc'),
+            'destinatario_name' => $this->transportGuide->destinatario_name ?? $this->transportGuide->remitente_name ?? Config::get('app.name'),
             'transportista_ruc' => $this->transportGuide->transportista_ruc ?? Config::get('billing.sunat.ruc'),
             'transportista_name' => $this->transportGuide->transportista_name ?? Config::get('app.name'),
             'order_id' => $this->transportGuide->order_id,
@@ -130,15 +144,20 @@ class TransportGuideForm extends Component
     protected function rules(): array
     {
         return [
-            'form.series' => 'required|string|max:4',
+            'form.series' => ['required', 'string', 'max:4', 'regex:/^V\d{3}$/'],
             'form.correlative' => 'required|integer|min:1',
             'form.issue_date' => 'required|date',
             'form.issue_time' => 'required',
-            'form.document_type_code' => 'required|string|max:2',
+            'form.document_type_code' => 'required|in:' . TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA,
             'form.observations' => 'nullable|string',
             'form.client_id' => 'required|exists:clients,id',
-            'form.remitente_ruc' => 'required|digits:11',
+            'form.remitente_document_type' => 'required|string|max:2',
+            'form.remitente_document_number' => 'required|string|max:20',
+            'form.remitente_ruc' => 'required|regex:/^\d{8,11}$/',
             'form.remitente_name' => 'required|string|max:100',
+            'form.destinatario_document_type' => 'required|string|max:2',
+            'form.destinatario_document_number' => 'required|string|max:20',
+            'form.destinatario_name' => 'required|string|max:100',
             'form.transportista_ruc' => 'required|digits:11',
             'form.transportista_name' => 'required|string|max:100',
             'form.order_id' => 'nullable|exists:orders,id',
@@ -242,8 +261,13 @@ class TransportGuideForm extends Component
             'document_type_code' => $data['document_type_code'],
             'observations' => $data['observations'] ?: null,
             'client_id' => $data['client_id'],
+            'remitente_document_type' => $data['remitente_document_type'],
+            'remitente_document_number' => $data['remitente_document_number'],
             'remitente_ruc' => $data['remitente_ruc'],
             'remitente_name' => $data['remitente_name'],
+            'destinatario_document_type' => $data['destinatario_document_type'],
+            'destinatario_document_number' => $data['destinatario_document_number'],
+            'destinatario_name' => $data['destinatario_name'],
             'transportista_ruc' => $data['transportista_ruc'],
             'transportista_name' => $data['transportista_name'],
             'order_id' => $data['order_id'] ?: null,

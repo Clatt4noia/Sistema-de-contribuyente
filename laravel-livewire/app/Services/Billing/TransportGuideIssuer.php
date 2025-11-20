@@ -117,7 +117,7 @@ class TransportGuideIssuer
         $root->appendChild($document->createElement('cbc:IssueDate', optional($transportGuide->issue_date)->format('Y-m-d')));
         $root->appendChild($document->createElement('cbc:IssueTime', $transportGuide->issue_time));
 
-        $typeCode = $document->createElement('cbc:DespatchAdviceTypeCode', $transportGuide->document_type_code);
+        $typeCode = $document->createElement('cbc:DespatchAdviceTypeCode', $transportGuide->document_type_code ?: TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA);
         $typeCode->setAttribute('listAgencyName', 'PE:SUNAT');
         $typeCode->setAttribute('listName', 'Tipo de Documento');
         $root->appendChild($typeCode);
@@ -131,21 +131,21 @@ class TransportGuideIssuer
     {
         $supplierParty = $root->appendChild($document->createElement('cac:DespatchSupplierParty'));
         $supplierPartyIdentification = $supplierParty->appendChild($document->createElement('cac:PartyIdentification'));
-        $supplierId = $document->createElement('cbc:ID', $transportGuide->transportista_ruc ?: Config::get('billing.sunat.ruc'));
-        $supplierId->setAttribute('schemeID', '6');
+        $supplierId = $document->createElement('cbc:ID', $transportGuide->remitente_document_number ?: $transportGuide->remitente_ruc);
+        $supplierId->setAttribute('schemeID', $transportGuide->remitente_document_type ?: '6');
         $supplierPartyIdentification->appendChild($supplierId);
 
         $supplierPartyLegal = $supplierParty->appendChild($document->createElement('cac:PartyLegalEntity'));
-        $supplierPartyLegal->appendChild($document->createElement('cbc:RegistrationName', $this->sanitizeText($transportGuide->transportista_name)));
+        $supplierPartyLegal->appendChild($document->createElement('cbc:RegistrationName', $this->sanitizeText($transportGuide->remitente_name)));
 
         $customerParty = $root->appendChild($document->createElement('cac:DeliveryCustomerParty'));
         $customerPartyIdentification = $customerParty->appendChild($document->createElement('cac:PartyIdentification'));
-        $customerId = $document->createElement('cbc:ID', $transportGuide->remitente_ruc);
-        $customerId->setAttribute('schemeID', '6');
+        $customerId = $document->createElement('cbc:ID', $transportGuide->destinatario_document_number ?: $transportGuide->destinatario_name);
+        $customerId->setAttribute('schemeID', $transportGuide->destinatario_document_type ?: '6');
         $customerPartyIdentification->appendChild($customerId);
 
         $customerPartyLegal = $customerParty->appendChild($document->createElement('cac:PartyLegalEntity'));
-        $customerPartyLegal->appendChild($document->createElement('cbc:RegistrationName', $this->sanitizeText($transportGuide->remitente_name)));
+        $customerPartyLegal->appendChild($document->createElement('cbc:RegistrationName', $this->sanitizeText($transportGuide->destinatario_name ?: $transportGuide->remitente_name)));
     }
 
     protected function appendShipment(DOMDocument $document, DOMElement $root, TransportGuide $transportGuide): void
