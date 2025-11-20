@@ -21,6 +21,7 @@ class TransportGuide extends Model
     public const DOCUMENT_TYPE_GRE_TRANSPORTISTA = '31';
 
     public const DEFAULT_SERIES_GRE_REMITENTE = 'T001';
+
     public const DEFAULT_SERIES_GRE_TRANSPORTISTA = 'V001';
 
     public const STATUS_DRAFT = 'draft';
