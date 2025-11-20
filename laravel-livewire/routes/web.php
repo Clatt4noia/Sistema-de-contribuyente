@@ -167,6 +167,7 @@ Route::middleware('auth')->group(function () {
         })->name('transport-guide.create-redirect');
 
 
+
         Route::get('/transport-guides/create', function () {
             return view('pages.billing.transport-guides.create');
         })
