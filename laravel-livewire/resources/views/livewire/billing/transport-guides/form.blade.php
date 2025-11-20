@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between">
         <div class="space-y-1">
             <p class="text-sm font-semibold text-accent">GRE-T</p>
-            <h1 class="text-2xl font-bold text-token">{{ $isEdit ? 'Editar guía de remitente' : 'Nueva guía de remitente' }}</h1>
+            <h1 class="text-2xl font-bold text-token">{{ $isEdit ? 'Editar guía de transportista' : 'Nueva guía de transportista' }}</h1>
             <p class="text-sm text-token-muted">Completa los datos exigidos por SUNAT para emitir la GRE-T.</p>
         </div>
         <div class="flex gap-3">
@@ -26,8 +26,8 @@
             <h2 class="text-lg font-semibold text-token">Identificación y remitente</h2>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
-                    <label class="form-label" for="series">Serie</label>
-                    <input id="series" type="text" wire:model.defer="form.series" class="form-control @error('form.series') is-invalid @enderror">
+                    <label class="form-label" for="series">Serie (GRE-T)</label>
+                    <input id="series" type="text" wire:model.defer="form.series" class="form-control @error('form.series') is-invalid @enderror" placeholder="V001">
                     @error('form.series') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
@@ -36,8 +36,8 @@
                     @error('form.correlative') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="form-label" for="document_type_code">Tipo de documento</label>
-                    <input id="document_type_code" type="text" wire:model.defer="form.document_type_code" class="form-control @error('form.document_type_code') is-invalid @enderror">
+                    <label class="form-label" for="document_type_code">Tipo de documento (fijo)</label>
+                    <input id="document_type_code" type="text" wire:model.defer="form.document_type_code" class="form-control @error('form.document_type_code') is-invalid @enderror" readonly>
                     @error('form.document_type_code') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
@@ -69,6 +69,31 @@
                     <label class="form-label" for="remitente_name">Razón social remitente</label>
                     <input id="remitente_name" type="text" wire:model.defer="form.remitente_name" class="form-control @error('form.remitente_name') is-invalid @enderror">
                     @error('form.remitente_name') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="form-label" for="remitente_document_type">Tipo doc. remitente</label>
+                    <input id="remitente_document_type" type="text" wire:model.defer="form.remitente_document_type" class="form-control @error('form.remitente_document_type') is-invalid @enderror" placeholder="Cat. 6">
+                    @error('form.remitente_document_type') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="form-label" for="remitente_document_number">N° doc. remitente</label>
+                    <input id="remitente_document_number" type="text" wire:model.defer="form.remitente_document_number" class="form-control @error('form.remitente_document_number') is-invalid @enderror">
+                    @error('form.remitente_document_number') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="form-label" for="destinatario_document_type">Tipo doc. destinatario</label>
+                    <input id="destinatario_document_type" type="text" wire:model.defer="form.destinatario_document_type" class="form-control @error('form.destinatario_document_type') is-invalid @enderror" placeholder="Cat. 6">
+                    @error('form.destinatario_document_type') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="form-label" for="destinatario_document_number">N° doc. destinatario</label>
+                    <input id="destinatario_document_number" type="text" wire:model.defer="form.destinatario_document_number" class="form-control @error('form.destinatario_document_number') is-invalid @enderror">
+                    @error('form.destinatario_document_number') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="form-label" for="destinatario_name">Razón social destinatario</label>
+                    <input id="destinatario_name" type="text" wire:model.defer="form.destinatario_name" class="form-control @error('form.destinatario_name') is-invalid @enderror">
+                    @error('form.destinatario_name') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-3">
                     <label class="form-label" for="observations">Observaciones</label>

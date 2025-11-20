@@ -14,6 +14,9 @@ class TransportGuide extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public const DOCUMENT_TYPE_GRE_TRANSPORTISTA = '31';
+    public const DEFAULT_SERIES_GRE_TRANSPORTISTA = 'V001';
+
     public const STATUS_DRAFT = 'draft';
     public const STATUS_PENDING = 'pending';
     public const STATUS_SENT = 'sent';
@@ -31,8 +34,13 @@ class TransportGuide extends Model
         'document_type_code',
         'observations',
         'client_id',
+        'remitente_document_type',
+        'remitente_document_number',
         'remitente_ruc',
         'remitente_name',
+        'destinatario_document_type',
+        'destinatario_document_number',
+        'destinatario_name',
         'transportista_ruc',
         'transportista_name',
         'order_id',
