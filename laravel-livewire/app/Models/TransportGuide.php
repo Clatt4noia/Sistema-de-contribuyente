@@ -14,7 +14,14 @@ class TransportGuide extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public const TYPE_REMITENTE = 'remitente';
+    public const TYPE_TRANSPORTISTA = 'transportista';
+
+    public const DOCUMENT_TYPE_GRE_REMITENTE = '09';
     public const DOCUMENT_TYPE_GRE_TRANSPORTISTA = '31';
+
+    public const DEFAULT_SERIES_GRE_REMITENTE = 'T001';
+
     public const DEFAULT_SERIES_GRE_TRANSPORTISTA = 'V001';
 
     public const STATUS_DRAFT = 'draft';
@@ -26,6 +33,7 @@ class TransportGuide extends Model
     public const STATUS_ERROR = 'error';
 
     protected $fillable = [
+        'type',
         'series',
         'correlative',
         'full_code',

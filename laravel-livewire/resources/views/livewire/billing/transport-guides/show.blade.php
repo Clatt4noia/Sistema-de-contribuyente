@@ -1,12 +1,18 @@
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    @php
+        $isTransportista = $type === \App\Models\TransportGuide::TYPE_TRANSPORTISTA;
+        $greLabel = $isTransportista ? 'GRE-T' : 'GRE-R';
+        $backRoute = $isTransportista ? route('billing.transport-guides.index') : route('billing.remitter-guides.index');
+        $guideLabel = $isTransportista ? 'Transportista' : 'Remitente';
+    @endphp
     <div class="flex items-center justify-between">
         <div>
-            <p class="text-sm text-token-muted">Guía de Remitente</p>
+            <p class="text-sm text-token-muted">Guía de {{ $guideLabel }} ({{ $greLabel }})</p>
             <h1 class="text-2xl font-bold text-token">{{ $transportGuide->display_code }}</h1>
             <p class="text-sm text-token-muted">Emitida el {{ $transportGuide->issue_date?->format('d/m/Y') }} a las {{ $transportGuide->issue_time }}</p>
         </div>
         <div class="flex gap-3">
-            <a href="{{ route('billing.transport-guides.index') }}" class="btn btn-secondary">Volver</a>
+            <a href="{{ $backRoute }}" class="btn btn-secondary">Volver</a>
             @can('update', $transportGuide)
                 @if($transportGuide->sunat_status === \App\Models\TransportGuide::STATUS_DRAFT)
                     <a href="{{ route('billing.transport-guides.edit', $transportGuide) }}" class="btn btn-ghost">Editar</a>

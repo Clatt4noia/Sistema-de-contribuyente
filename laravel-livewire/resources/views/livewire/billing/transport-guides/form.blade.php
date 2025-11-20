@@ -1,12 +1,19 @@
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    @php
+        $isTransportista = $type === \App\Models\TransportGuide::TYPE_TRANSPORTISTA;
+        $greLabel = $isTransportista ? 'GRE-T' : 'GRE-R';
+        $guideLabel = $isTransportista ? 'transportista' : 'remitente';
+        $backRoute = $isTransportista ? route('billing.transport-guides.index') : route('billing.remitter-guides.index');
+    @endphp
     <div class="flex items-center justify-between">
         <div class="space-y-1">
-            <p class="text-sm font-semibold text-accent">GRE-T</p>
-            <h1 class="text-2xl font-bold text-token">{{ $isEdit ? 'Editar guía de transportista' : 'Nueva guía de transportista' }}</h1>
-            <p class="text-sm text-token-muted">Completa los datos exigidos por SUNAT para emitir la GRE-T.</p>
+            <p class="text-sm font-semibold text-accent">{{ $greLabel }}</p>
+            <h1 class="text-2xl font-bold text-token">{{ $isEdit ? "Editar guía de $guideLabel" : "Nueva guía de $guideLabel" }}</h1>
+            <p class="text-sm text-token-muted">Completa los datos exigidos por SUNAT para emitir la {{ $greLabel }}.</p>
+
         </div>
         <div class="flex gap-3">
-            <a href="{{ route('billing.transport-guides.index') }}" class="btn btn-secondary">Volver</a>
+            <a href="{{ $backRoute }}" class="btn btn-secondary">Volver</a>
             @if($isEdit && $transportGuide->sunat_status === \App\Models\TransportGuide::STATUS_DRAFT)
                 @can('issue', $transportGuide)
                     <a href="{{ route('billing.transport-guides.show', $transportGuide) }}" class="btn btn-primary">Emitir</a>
@@ -26,8 +33,9 @@
             <h2 class="text-lg font-semibold text-token">Identificación y remitente</h2>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
-                    <label class="form-label" for="series">Serie (GRE-T)</label>
-                    <input id="series" type="text" wire:model.defer="form.series" class="form-control @error('form.series') is-invalid @enderror" placeholder="V001">
+                    <label class="form-label" for="series">Serie ({{ $greLabel }})</label>
+                    <input id="series" type="text" wire:model.defer="form.series" class="form-control @error('form.series') is-invalid @enderror" placeholder="{{ $isTransportista ? 'V001' : 'T001' }}">
+
                     @error('form.series') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>

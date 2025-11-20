@@ -157,22 +157,42 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
         Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
 
-        Route::get('/transport-guides', TransportGuideIndex::class)
+        // GRE-T (transportista)
+        Route::get('/gre-t', TransportGuideIndex::class)
             ->name('transport-guides.index')
+            ->defaults('type', TransportGuide::TYPE_TRANSPORTISTA)
             ->can('viewAny', TransportGuide::class);
 
-        // Ruta en singular para compatibilidad con enlaces antiguos
+        Route::get('/gre-t/create', function (string $type = TransportGuide::TYPE_TRANSPORTISTA) {
+            return view('pages.billing.transport-guides.create', ['type' => $type]);
+        })
+            ->name('transport-guides.create')
+            ->defaults('type', TransportGuide::TYPE_TRANSPORTISTA)
+            ->can('create', TransportGuide::class);
+
+
+        // GRE-R (remitente)
+        Route::get('/gre-r', TransportGuideIndex::class)
+            ->name('remitter-guides.index')
+            ->defaults('type', TransportGuide::TYPE_REMITENTE)
+            ->can('viewAny', TransportGuide::class);
+
+        Route::get('/gre-r/create', function (string $type = TransportGuide::TYPE_REMITENTE) {
+            return view('pages.billing.transport-guides.create', ['type' => $type]);
+        })
+            ->name('remitter-guides.create')
+            ->defaults('type', TransportGuide::TYPE_REMITENTE)
+
+            ->can('create', TransportGuide::class);
+
+        // Rutas de compatibilidad con enlaces existentes
+        Route::redirect('/transport-guides', '/billing/gre-t');
+        Route::get('/transport-guides/create', function () {
+            return redirect()->route('billing.transport-guides.create');
+        });
         Route::get('/transport-guide/create', function () {
             return redirect()->route('billing.transport-guides.create');
         })->name('transport-guide.create-redirect');
-
-
-
-        Route::get('/transport-guides/create', function () {
-            return view('pages.billing.transport-guides.create');
-        })
-            ->name('transport-guides.create')
-            ->can('create', TransportGuide::class);
 
         Route::get('/transport-guides/{transportGuide}', TransportGuideShow::class)
             ->whereNumber('transportGuide')

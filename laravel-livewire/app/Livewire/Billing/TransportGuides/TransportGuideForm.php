@@ -20,6 +20,7 @@ class TransportGuideForm extends Component
     use AuthorizesRequests;
 
     public TransportGuide $transportGuide;
+    public string $type = TransportGuide::TYPE_TRANSPORTISTA;
     public bool $isEdit = false;
 
     public array $form = [];
@@ -31,8 +32,10 @@ class TransportGuideForm extends Component
     public $assignments;
     public $invoices;
 
-    public function mount(?TransportGuide $transportGuide = null): void
+    public function mount(?TransportGuide $transportGuide = null, string $type = TransportGuide::TYPE_TRANSPORTISTA): void
     {
+        $this->type = $this->normalizeType($transportGuide?->type ?: $type);
+
         if ($transportGuide && $transportGuide->exists) {
             $this->transportGuide = $transportGuide->load('items');
             $this->authorize('view', $this->transportGuide);
@@ -42,19 +45,23 @@ class TransportGuideForm extends Component
                 abort(403, 'Solo se pueden editar guías en borrador.');
             }
 
-            if ($this->transportGuide->document_type_code !== TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA) {
-                $this->transportGuide->document_type_code = TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA;
+            if ($this->transportGuide->document_type_code !== $this->documentTypeForType()) {
+                $this->transportGuide->document_type_code = $this->documentTypeForType();
             }
 
-            if (!preg_match('/^V\d{3}$/', (string) $this->transportGuide->series)) {
-                $this->transportGuide->series = TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA;
-                $this->transportGuide->correlative = $this->nextCorrelative(TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA);
+            if (!preg_match($this->seriesPattern(), (string) $this->transportGuide->series)) {
+                $this->transportGuide->series = $this->defaultSeriesForType();
+                $this->transportGuide->correlative = $this->nextCorrelative($this->transportGuide->series);
+
             }
         } else {
+            $series = $this->defaultSeriesForType();
             $this->transportGuide = new TransportGuide([
+                'type' => $this->type,
                 'sunat_status' => TransportGuide::STATUS_DRAFT,
-                'document_type_code' => TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA,
-                'series' => TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA,
+                'document_type_code' => $this->documentTypeForType(),
+                'series' => $series,
+
                 'issue_date' => now()->toDateString(),
                 'issue_time' => now()->format('H:i:s'),
                 'start_transport_date' => now()->toDateString(),
@@ -63,7 +70,8 @@ class TransportGuideForm extends Component
                 'scheduled_transshipment' => false,
             ]);
             $this->authorize('create', TransportGuide::class);
-            $this->transportGuide->correlative = $this->nextCorrelative(TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA);
+            $this->transportGuide->correlative = $this->nextCorrelative($series);
+
         }
 
         $this->form = [
@@ -71,7 +79,8 @@ class TransportGuideForm extends Component
             'correlative' => $this->transportGuide->correlative,
             'issue_date' => optional($this->transportGuide->issue_date)->format('Y-m-d') ?: now()->toDateString(),
             'issue_time' => $this->transportGuide->issue_time ?? now()->format('H:i:s'),
-            'document_type_code' => $this->transportGuide->document_type_code ?? TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA,
+            'document_type_code' => $this->transportGuide->document_type_code ?? $this->documentTypeForType(),
+
             'observations' => $this->transportGuide->observations,
             'client_id' => $this->transportGuide->client_id,
             'remitente_document_type' => $this->transportGuide->remitente_document_type ?? '6',
@@ -144,11 +153,12 @@ class TransportGuideForm extends Component
     protected function rules(): array
     {
         return [
-            'form.series' => ['required', 'string', 'max:4', 'regex:/^V\d{3}$/'],
+            'form.series' => ['required', 'string', 'max:4', 'regex:' . $this->seriesPattern()],
             'form.correlative' => 'required|integer|min:1',
             'form.issue_date' => 'required|date',
             'form.issue_time' => 'required',
-            'form.document_type_code' => 'required|in:' . TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA,
+            'form.document_type_code' => 'required|in:' . $this->documentTypeForType(),
+
             'form.observations' => 'nullable|string',
             'form.client_id' => 'required|exists:clients,id',
             'form.remitente_document_type' => 'required|string|max:2',
@@ -247,12 +257,13 @@ class TransportGuideForm extends Component
         });
 
         session()->flash('message', $this->isEdit ? 'Guía actualizada correctamente.' : 'Guía registrada correctamente.');
-        $this->redirectRoute('billing.transport-guides.index');
+        $this->redirectRoute($this->indexRouteName());
     }
 
     protected function persistGuide(array $data): void
     {
         $this->transportGuide->fill([
+            'type' => $this->type,
             'series' => $data['series'],
             'correlative' => $data['correlative'],
             'full_code' => sprintf('%s-%08d', $data['series'], $data['correlative']),
@@ -327,6 +338,39 @@ class TransportGuideForm extends Component
     protected function nextCorrelative(string $series): int
     {
         return (int) (TransportGuide::where('series', $series)->max('correlative') + 1);
+    }
+
+    protected function normalizeType(?string $type): string
+    {
+        return in_array($type, [TransportGuide::TYPE_TRANSPORTISTA, TransportGuide::TYPE_REMITENTE], true)
+            ? $type
+            : TransportGuide::TYPE_TRANSPORTISTA;
+    }
+
+    protected function seriesPattern(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE ? '/^T\d{3}$/' : '/^V\d{3}$/';
+    }
+
+    protected function defaultSeriesForType(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE
+            ? TransportGuide::DEFAULT_SERIES_GRE_REMITENTE
+            : TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA;
+    }
+
+    protected function documentTypeForType(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE
+            ? TransportGuide::DOCUMENT_TYPE_GRE_REMITENTE
+            : TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA;
+    }
+
+    protected function indexRouteName(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE
+            ? 'billing.remitter-guides.index'
+            : 'billing.transport-guides.index';
     }
 
     public function render()

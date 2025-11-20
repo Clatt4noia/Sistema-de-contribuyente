@@ -117,7 +117,12 @@ class TransportGuideIssuer
         $root->appendChild($document->createElement('cbc:IssueDate', optional($transportGuide->issue_date)->format('Y-m-d')));
         $root->appendChild($document->createElement('cbc:IssueTime', $transportGuide->issue_time));
 
-        $typeCode = $document->createElement('cbc:DespatchAdviceTypeCode', $transportGuide->document_type_code ?: TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA);
+        $fallbackType = $transportGuide->type === TransportGuide::TYPE_REMITENTE
+            ? TransportGuide::DOCUMENT_TYPE_GRE_REMITENTE
+            : TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA;
+
+        $typeCode = $document->createElement('cbc:DespatchAdviceTypeCode', $transportGuide->document_type_code ?: $fallbackType);
+
         $typeCode->setAttribute('listAgencyName', 'PE:SUNAT');
         $typeCode->setAttribute('listName', 'Tipo de Documento');
         $root->appendChild($typeCode);
