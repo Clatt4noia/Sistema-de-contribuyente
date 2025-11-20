@@ -122,6 +122,7 @@ class TransportGuideIssuer
             : TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA;
 
         $typeCode = $document->createElement('cbc:DespatchAdviceTypeCode', $transportGuide->document_type_code ?: $fallbackType);
+
         $typeCode->setAttribute('listAgencyName', 'PE:SUNAT');
         $typeCode->setAttribute('listName', 'Tipo de Documento');
         $root->appendChild($typeCode);

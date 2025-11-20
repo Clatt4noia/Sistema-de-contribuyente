@@ -10,6 +10,7 @@
             <p class="text-sm font-semibold text-accent">{{ $greLabel }}</p>
             <h1 class="text-2xl font-bold text-token">{{ $isEdit ? "Editar guía de $guideLabel" : "Nueva guía de $guideLabel" }}</h1>
             <p class="text-sm text-token-muted">Completa los datos exigidos por SUNAT para emitir la {{ $greLabel }}.</p>
+
         </div>
         <div class="flex gap-3">
             <a href="{{ $backRoute }}" class="btn btn-secondary">Volver</a>
@@ -34,6 +35,7 @@
                 <div>
                     <label class="form-label" for="series">Serie ({{ $greLabel }})</label>
                     <input id="series" type="text" wire:model.defer="form.series" class="form-control @error('form.series') is-invalid @enderror" placeholder="{{ $isTransportista ? 'V001' : 'T001' }}">
+
                     @error('form.series') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
@@ -182,7 +184,7 @@
                     <select id="truck_id" wire:model.live="form.truck_id" class="form-control @error('form.truck_id') is-invalid @enderror">
                         <option value="">Seleccione</option>
                         @foreach($trucks as $truck)
-                            <option value="{{ $truck->id }}">{{ $truck->plate }} - {{ $truck->brand }}</option>
+                            <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }}</option>
                         @endforeach
                     </select>
                     @error('form.truck_id') <p class="form-error">{{ $message }}</p> @enderror
