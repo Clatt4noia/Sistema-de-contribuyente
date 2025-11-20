@@ -1,5 +1,10 @@
 # Plan de Implementación SUNAT para Facturación Electrónica
 
+## Resumen de entregables recientes (HU-13, HU-14, HU-15)
+- **Vínculo factura ↔ GRE:** el formulario de facturas permite seleccionar una GRE existente (serie, correlativo y estado SUNAT) y el formulario de GRE precarga cliente/destino al elegir la factura, sincronizando ambas direcciones.
+- **Tablero unificado SUNAT:** nueva vista `/billing/sunat-dashboard` que combina facturas y GRE con filtros por fecha, serie y tipo, badges de estado, botón de reintento (REENVÍO job/GRE) y exportación a Excel/PDF.
+- **Reporte de cobranzas y gastos:** dashboard financiero con filtros por periodo, cliente, vehículo y ruta que resume facturado vs cobrado, pendientes y gastos operativos, con exportación a Excel/CSV.
+
 ## 1. Preparación de infraestructura tributaria
 1. **Credenciales y certificados**
    - Solicitar a "Carlos Gabriel Transporte S.A.C." las credenciales SOL (RUC, usuario secundario y contraseña) para ambiente de homologación y producción.

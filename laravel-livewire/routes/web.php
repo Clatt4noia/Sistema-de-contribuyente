@@ -25,6 +25,7 @@ use App\Livewire\Fleet\MaintenanceList;
 use App\Livewire\Fleet\TruckList;
 use App\Livewire\Fleet\Report as FleetReport;
 use App\Livewire\Logistics\LiveTrackingBoard;
+use App\Livewire\Logistics\OrderStatusNotifications;
 use App\Livewire\Orders\OrderForm;
 use App\Livewire\Orders\OrderList;
 use App\Livewire\Clients\ClientForm;
@@ -36,16 +37,19 @@ use App\Livewire\Billing\InvoiceForm;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\PaymentForm;
 use App\Livewire\Billing\PaymentList;
+use App\Livewire\Billing\SunatUnifiedDashboard;
 use App\Livewire\Billing\TransportGuides\TransportGuideForm;
 use App\Livewire\Billing\TransportGuides\TransportGuideIndex;
 use App\Livewire\Billing\TransportGuides\TransportGuideShow;
 use App\Livewire\Finance\TransactionAnalytics;
+use App\Livewire\Finance\CollectionsAndExpensesReport;
 
 use App\Livewire\Finance\TransactionList;
 use App\Models\TransportGuide;
 use App\Models\Driver;
 use App\Models\Truck;
 use App\Http\Controllers\Billing\TransportGuideFileController;
+use App\Http\Controllers\Billing\SunatDashboardExportController;
 
 // Aseguramos que los parámetros para guías de remisión sean numéricos y no capturen rutas estáticas como "create".
 Route::pattern('transportGuide', '[0-9]+');
@@ -82,6 +86,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/logistics/tracking', LiveTrackingBoard::class)
             ->middleware('can:view-dashboard.logistics')
             ->name('logistics-tracking');
+
+        Route::get('/logistics/orders/notifications', OrderStatusNotifications::class)
+            ->middleware('can:view-dashboard.logistics')
+            ->name('logistics-notifications');
 
         Route::get('/fleet', FleetDashboard::class)
             ->middleware('can:view-dashboard.fleet')
@@ -157,6 +165,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments/create', PaymentForm::class)->name('payments.create');
         Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
 
+        Route::get('/sunat-dashboard', SunatUnifiedDashboard::class)
+            ->name('sunat-dashboard')
+            ->middleware('can:viewAny,App\\Models\\Invoice');
+
+        Route::get('/sunat-dashboard/export/excel', [SunatDashboardExportController::class, 'excel'])
+            ->name('sunat-dashboard.export.excel')
+            ->middleware('can:viewAny,App\\Models\\Invoice');
+        Route::get('/sunat-dashboard/export/pdf', [SunatDashboardExportController::class, 'pdf'])
+            ->name('sunat-dashboard.export.pdf')
+            ->middleware('can:viewAny,App\\Models\\Invoice');
+
         // GRE-T (transportista)
         Route::get('/gre-t', TransportGuideIndex::class)
             ->name('transport-guides.index')
@@ -229,6 +248,8 @@ Route::middleware('auth')->group(function () {
             ->name('transactions.index');
         Route::get('/transactions/analytics', TransactionAnalytics::class)
             ->name('transactions.analytics');
+        Route::get('/collections-report', CollectionsAndExpensesReport::class)
+            ->name('collections.report');
 
     });
 

@@ -4,6 +4,7 @@ namespace App\Livewire\Billing;
 
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\TransportGuide;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,8 @@ class InvoiceForm extends Component
     public bool $isEdit = false;
     public $clients;
     public $orders;
+    public $transportGuides;
+    protected ?int $previousTransportGuideId = null;
 
     protected function rules(): array
     {
@@ -26,6 +29,7 @@ class InvoiceForm extends Component
             'invoice.invoice_number' => 'required|string|max:30|unique:invoices,invoice_number,' . $invoiceId,
             'invoice.client_id' => 'required|exists:clients,id',
             'invoice.order_id' => 'nullable|exists:orders,id',
+            'invoice.transport_guide_id' => 'nullable|exists:transport_guides,id',
             'invoice.document_type' => 'required|in:01,03,07,08',
             'invoice.series' => 'required|string|size:4',
             'invoice.correlative' => 'required|string|max:8',
@@ -51,6 +55,7 @@ class InvoiceForm extends Component
             $this->invoice = $invoice;
             $this->authorize('update', $this->invoice);
             $this->isEdit = true;
+            $this->previousTransportGuideId = $this->invoice->transport_guide_id;
         } else {
             $this->authorize('create', Invoice::class);
             $this->invoice = new Invoice([
@@ -82,6 +87,10 @@ class InvoiceForm extends Component
 
         $this->clients = \App\Models\Client::orderBy('business_name')->get();
         $this->orders = Order::orderBy('reference')->get();
+        $this->transportGuides = TransportGuide::with('client')
+            ->orderByDesc('issue_date')
+            ->limit(80)
+            ->get();
     }
 
     public function updatedInvoiceOrderId($orderId): void
@@ -90,6 +99,18 @@ class InvoiceForm extends Component
             $order = Order::find($orderId);
             if ($order) {
                 $this->invoice->client_id = $order->client_id;
+            }
+        }
+    }
+
+    public function updatedInvoiceTransportGuideId($guideId): void
+    {
+        if ($guideId) {
+            $guide = TransportGuide::with('client', 'order')->find($guideId);
+
+            if ($guide) {
+                $this->invoice->order_id = $guide->order_id;
+                $this->invoice->client_id = $guide->client_id;
             }
         }
     }
@@ -116,6 +137,8 @@ class InvoiceForm extends Component
             }
 
             $this->invoice->save();
+
+            $this->syncTransportGuideLink();
         });
 
         session()->flash('message', $this->isEdit ? 'Factura actualizada correctamente.' : 'Factura generada correctamente.');
@@ -127,5 +150,34 @@ class InvoiceForm extends Component
         $this->authorize('viewAny', Invoice::class);
 
         return view('livewire.billing.invoice-form');
+    }
+
+    protected function syncTransportGuideLink(): void
+    {
+        $currentGuideId = $this->invoice->transport_guide_id;
+
+        if ($this->previousTransportGuideId && $this->previousTransportGuideId !== $currentGuideId) {
+            $previous = TransportGuide::find($this->previousTransportGuideId);
+
+            if ($previous && $previous->related_invoice_id === $this->invoice->getKey()) {
+                $previous->forceFill([
+                    'related_invoice_id' => null,
+                    'related_invoice_number' => null,
+                ])->save();
+            }
+        }
+
+        if ($currentGuideId) {
+            $guide = TransportGuide::find($currentGuideId);
+
+            if ($guide) {
+                $guide->forceFill([
+                    'related_invoice_id' => $this->invoice->getKey(),
+                    'related_invoice_number' => $this->invoice->invoice_number,
+                ])->save();
+            }
+        }
+
+        $this->previousTransportGuideId = $currentGuideId;
     }
 }
