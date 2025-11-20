@@ -1,8 +1,14 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    @php
+        $isTransportista = $type === \App\Models\TransportGuide::TYPE_TRANSPORTISTA;
+        $createRoute = $isTransportista ? route('billing.transport-guides.create') : route('billing.remitter-guides.create');
+    @endphp
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <h1 class="text-2xl font-semibold text-token">Guías de Remitente (GRE-T)</h1>
+        <h1 class="text-2xl font-semibold text-token">
+            {{ $isTransportista ? 'Guías de transportista (GRE-T)' : 'Guías de remitente (GRE-R)' }}
+        </h1>
         @can('create', App\Models\TransportGuide::class)
-            <a href="{{ route('billing.transport-guides.create') }}" class="btn btn-primary">Nueva guía</a>
+            <a href="{{ $createRoute }}" class="btn btn-primary">Nueva guía</a>
         @endcan
     </div>
 

@@ -15,11 +15,14 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
+// Este formulario debe servir tanto para GRE-T como para GRE-R. Usar $type para decidir serie por defecto (V o T),
+// tipo de documento (31 o 09), textos del encabezado y ruta de retorno. Al guardar, siempre persistir el type correcto.
 class TransportGuideForm extends Component
 {
     use AuthorizesRequests;
 
     public TransportGuide $transportGuide;
+    public string $type = TransportGuide::TYPE_TRANSPORTISTA;
     public bool $isEdit = false;
 
     public array $form = [];
@@ -31,8 +34,10 @@ class TransportGuideForm extends Component
     public $assignments;
     public $invoices;
 
-    public function mount(?TransportGuide $transportGuide = null): void
+    public function mount(?TransportGuide $transportGuide = null, string $type = TransportGuide::TYPE_TRANSPORTISTA): void
     {
+        $this->type = $this->normalizeType($transportGuide?->type ?: $type);
+
         if ($transportGuide && $transportGuide->exists) {
             $this->transportGuide = $transportGuide->load('items');
             $this->authorize('view', $this->transportGuide);
@@ -41,11 +46,22 @@ class TransportGuideForm extends Component
             if ($this->transportGuide->sunat_status !== TransportGuide::STATUS_DRAFT) {
                 abort(403, 'Solo se pueden editar guías en borrador.');
             }
+
+            if ($this->transportGuide->document_type_code !== $this->documentTypeForType()) {
+                $this->transportGuide->document_type_code = $this->documentTypeForType();
+            }
+
+            if (!preg_match($this->seriesPattern(), (string) $this->transportGuide->series)) {
+                $this->transportGuide->series = $this->defaultSeriesForType();
+                $this->transportGuide->correlative = $this->nextCorrelative($this->transportGuide->series);
+            }
         } else {
+            $series = $this->defaultSeriesForType();
             $this->transportGuide = new TransportGuide([
+                'type' => $this->type,
                 'sunat_status' => TransportGuide::STATUS_DRAFT,
-                'document_type_code' => '09',
-                'series' => 'T001',
+                'document_type_code' => $this->documentTypeForType(),
+                'series' => $series,
                 'issue_date' => now()->toDateString(),
                 'issue_time' => now()->format('H:i:s'),
                 'start_transport_date' => now()->toDateString(),
@@ -54,7 +70,7 @@ class TransportGuideForm extends Component
                 'scheduled_transshipment' => false,
             ]);
             $this->authorize('create', TransportGuide::class);
-            $this->transportGuide->correlative = $this->nextCorrelative('T001');
+            $this->transportGuide->correlative = $this->nextCorrelative($series);
         }
 
         $this->form = [
@@ -62,11 +78,16 @@ class TransportGuideForm extends Component
             'correlative' => $this->transportGuide->correlative,
             'issue_date' => optional($this->transportGuide->issue_date)->format('Y-m-d') ?: now()->toDateString(),
             'issue_time' => $this->transportGuide->issue_time ?? now()->format('H:i:s'),
-            'document_type_code' => $this->transportGuide->document_type_code ?? '09',
+            'document_type_code' => $this->transportGuide->document_type_code ?? $this->documentTypeForType(),
             'observations' => $this->transportGuide->observations,
             'client_id' => $this->transportGuide->client_id,
+            'remitente_document_type' => $this->transportGuide->remitente_document_type ?? '6',
+            'remitente_document_number' => $this->transportGuide->remitente_document_number ?? Config::get('billing.sunat.ruc'),
             'remitente_ruc' => $this->transportGuide->remitente_ruc ?? Config::get('billing.sunat.ruc'),
             'remitente_name' => $this->transportGuide->remitente_name ?? Config::get('app.name'),
+            'destinatario_document_type' => $this->transportGuide->destinatario_document_type ?? ($this->transportGuide->remitente_document_type ?? '6'),
+            'destinatario_document_number' => $this->transportGuide->destinatario_document_number ?? $this->transportGuide->remitente_document_number ?? $this->transportGuide->remitente_ruc ?? Config::get('billing.sunat.ruc'),
+            'destinatario_name' => $this->transportGuide->destinatario_name ?? $this->transportGuide->remitente_name ?? Config::get('app.name'),
             'transportista_ruc' => $this->transportGuide->transportista_ruc ?? Config::get('billing.sunat.ruc'),
             'transportista_name' => $this->transportGuide->transportista_name ?? Config::get('app.name'),
             'order_id' => $this->transportGuide->order_id,
@@ -130,15 +151,20 @@ class TransportGuideForm extends Component
     protected function rules(): array
     {
         return [
-            'form.series' => 'required|string|max:4',
+            'form.series' => ['required', 'string', 'max:4', 'regex:' . $this->seriesPattern()],
             'form.correlative' => 'required|integer|min:1',
             'form.issue_date' => 'required|date',
             'form.issue_time' => 'required',
-            'form.document_type_code' => 'required|string|max:2',
+            'form.document_type_code' => 'required|in:' . $this->documentTypeForType(),
             'form.observations' => 'nullable|string',
             'form.client_id' => 'required|exists:clients,id',
-            'form.remitente_ruc' => 'required|digits:11',
+            'form.remitente_document_type' => 'required|string|max:2',
+            'form.remitente_document_number' => 'required|string|max:20',
+            'form.remitente_ruc' => 'required|regex:/^\d{8,11}$/',
             'form.remitente_name' => 'required|string|max:100',
+            'form.destinatario_document_type' => 'required|string|max:2',
+            'form.destinatario_document_number' => 'required|string|max:20',
+            'form.destinatario_name' => 'required|string|max:100',
             'form.transportista_ruc' => 'required|digits:11',
             'form.transportista_name' => 'required|string|max:100',
             'form.order_id' => 'nullable|exists:orders,id',
@@ -228,12 +254,13 @@ class TransportGuideForm extends Component
         });
 
         session()->flash('message', $this->isEdit ? 'Guía actualizada correctamente.' : 'Guía registrada correctamente.');
-        $this->redirectRoute('billing.transport-guides.index');
+        $this->redirectRoute($this->indexRouteName());
     }
 
     protected function persistGuide(array $data): void
     {
         $this->transportGuide->fill([
+            'type' => $this->type,
             'series' => $data['series'],
             'correlative' => $data['correlative'],
             'full_code' => sprintf('%s-%08d', $data['series'], $data['correlative']),
@@ -242,8 +269,13 @@ class TransportGuideForm extends Component
             'document_type_code' => $data['document_type_code'],
             'observations' => $data['observations'] ?: null,
             'client_id' => $data['client_id'],
+            'remitente_document_type' => $data['remitente_document_type'],
+            'remitente_document_number' => $data['remitente_document_number'],
             'remitente_ruc' => $data['remitente_ruc'],
             'remitente_name' => $data['remitente_name'],
+            'destinatario_document_type' => $data['destinatario_document_type'],
+            'destinatario_document_number' => $data['destinatario_document_number'],
+            'destinatario_name' => $data['destinatario_name'],
             'transportista_ruc' => $data['transportista_ruc'],
             'transportista_name' => $data['transportista_name'],
             'order_id' => $data['order_id'] ?: null,
@@ -303,6 +335,39 @@ class TransportGuideForm extends Component
     protected function nextCorrelative(string $series): int
     {
         return (int) (TransportGuide::where('series', $series)->max('correlative') + 1);
+    }
+
+    protected function normalizeType(?string $type): string
+    {
+        return in_array($type, [TransportGuide::TYPE_TRANSPORTISTA, TransportGuide::TYPE_REMITENTE], true)
+            ? $type
+            : TransportGuide::TYPE_TRANSPORTISTA;
+    }
+
+    protected function seriesPattern(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE ? '/^T\d{3}$/' : '/^V\d{3}$/';
+    }
+
+    protected function defaultSeriesForType(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE
+            ? TransportGuide::DEFAULT_SERIES_GRE_REMITENTE
+            : TransportGuide::DEFAULT_SERIES_GRE_TRANSPORTISTA;
+    }
+
+    protected function documentTypeForType(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE
+            ? TransportGuide::DOCUMENT_TYPE_GRE_REMITENTE
+            : TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA;
+    }
+
+    protected function indexRouteName(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE
+            ? 'billing.remitter-guides.index'
+            : 'billing.transport-guides.index';
     }
 
     public function render()

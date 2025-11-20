@@ -8,11 +8,13 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
+// Usar el type de la guía para mostrar encabezados GRE-T/GRE-R y regresar al índice adecuado.
 class TransportGuideShow extends Component
 {
     use AuthorizesRequests;
 
     public TransportGuide $transportGuide;
+    public string $type = TransportGuide::TYPE_TRANSPORTISTA;
     public bool $confirmingIssue = false;
     public bool $processingIssue = false;
 
@@ -20,6 +22,9 @@ class TransportGuideShow extends Component
     {
         $this->transportGuide = $transportGuide->load('items', 'client');
         $this->authorize('view', $this->transportGuide);
+        $this->type = in_array($transportGuide->type, [TransportGuide::TYPE_TRANSPORTISTA, TransportGuide::TYPE_REMITENTE], true)
+            ? $transportGuide->type
+            : TransportGuide::TYPE_TRANSPORTISTA;
     }
 
     public function confirmIssue(): void

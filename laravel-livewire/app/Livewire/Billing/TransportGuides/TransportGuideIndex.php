@@ -10,11 +10,14 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+// Ajustar este componente para soportar ambos tipos de guía (TYPE_TRANSPORTISTA y TYPE_REMITENTE),
+// recibiendo $type desde las rutas, filtrando la query por type y cambiando títulos según el tipo.
 class TransportGuideIndex extends Component
 {
     use WithPagination;
     use AuthorizesRequests;
 
+    public string $type = TransportGuide::TYPE_TRANSPORTISTA;
     public string $search = '';
     public string $status = '';
     public ?string $dateFrom = null;
@@ -30,6 +33,13 @@ class TransportGuideIndex extends Component
         'dateFrom' => ['except' => null],
         'dateTo' => ['except' => null],
     ];
+
+    public function mount(string $type = TransportGuide::TYPE_TRANSPORTISTA): void
+    {
+        $this->type = in_array($type, [TransportGuide::TYPE_TRANSPORTISTA, TransportGuide::TYPE_REMITENTE], true)
+            ? $type
+            : TransportGuide::TYPE_TRANSPORTISTA;
+    }
 
     public function updatingSearch(): void
     {
@@ -98,6 +108,7 @@ class TransportGuideIndex extends Component
 
         return view('livewire.billing.transport-guides.index', [
             'guides' => $guides,
+            'type' => $this->type,
             'statusLabels' => $this->statusLabels(),
         ]);
     }
@@ -105,6 +116,7 @@ class TransportGuideIndex extends Component
     protected function queryGuides(): LengthAwarePaginator
     {
         return TransportGuide::query()
+            ->where('type', $this->type)
             ->when($this->search, function ($query) {
                 $query->where(function ($searchQuery) {
                     $searchQuery->where('series', 'like', '%' . $this->search . '%')
