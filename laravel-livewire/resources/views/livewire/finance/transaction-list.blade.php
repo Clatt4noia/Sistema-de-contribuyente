@@ -1,9 +1,9 @@
 <div class="space-y-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold text-token">{{ __('Control de caja') }}</h1>
+            <h1 class="text-2xl font-semibold text-token">{{ __('Controla tus transacciones') }}</h1>
             <p class="mt-1 text-sm text-token-muted">
-                {{ __('Registra manualmente tus ingresos y egresos para llevar un seguimiento del flujo de caja.') }}
+                {{ __('Registra manualmente tus ingresos y egresos para llevar un seguimiento del flujo.') }}
             </p>
         </div>
 

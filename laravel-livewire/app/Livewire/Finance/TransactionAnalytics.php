@@ -42,7 +42,7 @@ class TransactionAnalytics extends Component
             'categorySplit' => $this->categorySplit,
             'rangeOptions' => $this->rangeOptions(),
         ])->layout('components.layouts.dashboard', [
-            'title' => __('Analíticas de caja'),
+            'title' => __('Analíticas de transacciones'),
         ]);
     }
 

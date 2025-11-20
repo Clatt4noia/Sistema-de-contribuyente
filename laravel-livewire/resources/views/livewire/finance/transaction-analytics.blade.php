@@ -1,7 +1,7 @@
 <div class="space-y-6">
     <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold text-token">{{ __('Analíticas de caja') }}</h1>
+            <h1 class="text-2xl font-semibold text-token">{{ __('Analíticas de transacciones') }}</h1>
             <p class="mt-1 text-sm text-token-muted">
                 {{ __('Explora el comportamiento de tus ingresos y egresos para identificar tendencias y oportunidades de ahorro.') }}
             </p>

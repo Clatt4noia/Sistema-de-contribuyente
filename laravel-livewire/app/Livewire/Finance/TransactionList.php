@@ -64,7 +64,7 @@ class TransactionList extends Component
             'summary' => $this->summary,
             'availableYears' => $this->availableYears,
         ])->layout('components.layouts.dashboard', [
-            'title' => __('Control de caja'),
+            'title' => __('Control de transacciones'),
         ]);
     }
 

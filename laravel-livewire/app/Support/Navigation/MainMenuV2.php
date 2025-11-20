@@ -197,7 +197,7 @@ class MainMenuV2
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::FINANCE_ANALYST, UserRole::ADMIN],
             ],
             [
-                'label' => __('Control de caja'),
+                'label' => __('Tansacciones'),
                 'icon' => 'heroicon-o-wallet',
                 'route' => 'finance.transactions.index',
                 'active' => ['finance.transactions.index'],  // <- corregido
@@ -205,7 +205,7 @@ class MainMenuV2
                 'roles' => [UserRole::FINANCE_MANAGER, UserRole::FINANCE_ANALYST, UserRole::ADMIN],
             ],
             [
-                'label' => __('Analíticas de caja'),
+                'label' => __('Analíticas'),
                 'icon' => 'heroicon-o-chart-bar',
                 'route' => 'finance.transactions.analytics',
                 'active' => ['finance.transactions.analytics'],
