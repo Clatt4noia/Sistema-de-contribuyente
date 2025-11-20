@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
+// Este formulario debe servir tanto para GRE-T como para GRE-R. Usar $type para decidir serie por defecto (V o T),
+// tipo de documento (31 o 09), textos del encabezado y ruta de retorno. Al guardar, siempre persistir el type correcto.
 class TransportGuideForm extends Component
 {
     use AuthorizesRequests;

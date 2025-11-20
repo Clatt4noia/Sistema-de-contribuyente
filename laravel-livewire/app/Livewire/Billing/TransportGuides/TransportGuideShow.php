@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
+// Usar el type de la guía para mostrar encabezados GRE-T/GRE-R y regresar al índice adecuado.
 class TransportGuideShow extends Component
 {
     use AuthorizesRequests;

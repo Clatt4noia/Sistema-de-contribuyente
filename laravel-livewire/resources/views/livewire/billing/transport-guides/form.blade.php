@@ -1,3 +1,4 @@
+{{-- Mostrar dinámicamente GRE-T o GRE-R en el título y en las etiquetas de serie/tipo de documento según $type. No duplicar la vista; usar condiciones simples. --}}
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
     @php
         $isTransportista = $type === \App\Models\TransportGuide::TYPE_TRANSPORTISTA;
@@ -8,7 +9,7 @@
     <div class="flex items-center justify-between">
         <div class="space-y-1">
             <p class="text-sm font-semibold text-accent">{{ $greLabel }}</p>
-            <h1 class="text-2xl font-bold text-token">{{ $isEdit ? "Editar guía de $guideLabel" : "Nueva guía de $guideLabel" }}</h1>
+            <h1 class="text-2xl font-bold text-token">{{ $isEdit ? "Editar guía de $guideLabel ($greLabel)" : "Nueva guía de $guideLabel ($greLabel)" }}</h1>
             <p class="text-sm text-token-muted">Completa los datos exigidos por SUNAT para emitir la {{ $greLabel }}.</p>
 
         </div>

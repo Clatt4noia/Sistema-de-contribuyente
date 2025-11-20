@@ -176,7 +176,6 @@ Route::middleware('auth')->group(function () {
             ->defaults('type', TransportGuide::TYPE_REMITENTE)
             ->can('viewAny', TransportGuide::class);
 
-
         Route::get('/gre-r/create', function (string $type = TransportGuide::TYPE_REMITENTE) {
             return view('pages.billing.transport-guides.create', ['type' => $type]);
         })

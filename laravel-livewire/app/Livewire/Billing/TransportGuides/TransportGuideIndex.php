@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+// Ajustar este componente para soportar ambos tipos de guía (TYPE_TRANSPORTISTA y TYPE_REMITENTE),
+// recibiendo $type desde las rutas, filtrando la query por type y cambiando títulos según el tipo.
 class TransportGuideIndex extends Component
 {
     use WithPagination;
