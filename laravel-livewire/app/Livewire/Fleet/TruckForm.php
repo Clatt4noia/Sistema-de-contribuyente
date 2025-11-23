@@ -26,6 +26,21 @@ class TruckForm extends Component
         'out_of_service' => 'Fuera de servicio',
     ];
 
+    /**
+     * Etiquetas descriptivas para renderizar el estado del mantenimiento en la vista.
+     *
+     * @return array<string, array{label: string, class: string}>
+     */
+    public function getMaintenanceStatusTagsProperty(): array
+    {
+        return [
+            'scheduled' => ['label' => 'Programado', 'class' => 'bg-warning-soft text-warning '],
+            'in_progress' => ['label' => 'En progreso', 'class' => 'bg-accent-soft text-accent '],
+            'completed' => ['label' => 'Completado', 'class' => 'bg-success-soft text-success-strong '],
+            'cancelled' => ['label' => 'Cancelado', 'class' => 'bg-danger-soft text-danger-strong '],
+        ];
+    }
+
     protected function rules(): array
     {
         return [

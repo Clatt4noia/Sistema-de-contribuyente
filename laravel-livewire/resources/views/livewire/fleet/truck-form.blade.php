@@ -98,24 +98,15 @@
  </form>
  </div>
 
- @if($isEdit)
- @if ($truck->exists)
- <livewire:fleet.document-manager
- :documentable-type="'truck'"
- :documentable-id="$truck->id"
- :key="'truck-documents-' . $truck->id"
+ <x-fleet.document-panel
+ :is-edit="$isEdit"
+ documentable-type="truck"
+ :documentable-id="$truck->id ?? null"
+ pending-message="{{ $isEdit
+ ? 'Guarda el camión para poder adjuntar pólizas, SOAT u otros documentos.'
+ : 'Guarda el camión para habilitar la carga de documentos (SOAT, pólizas, revisiones técnicas).'
+ }}"
  />
- @else
- <div class="surface-card border border-dashed border-token-strong p-6 text-sm text-token ">
- Guarda el camión para poder adjuntar pólizas, SOAT u otros documentos.
- </div>
- @endif
-
- @else
-    <div class="rounded-2xl border border-dashed border-token bg-surface p-6 text-sm text-token ">
- Guarda el camión para habilitar la carga de documentos (SOAT, pólizas, revisiones técnicas).
- </div>
- @endif
 
  @if($isEdit)
  <div class="surface-card p-6 shadow-lg">
@@ -127,14 +118,6 @@
  </div>
 
  @if(!empty($maintenanceHistory))
- @php
- $statusTags = [
- 'scheduled' => ['label' => 'Programado', 'class' => 'bg-warning-soft text-warning '],
- 'in_progress' => ['label' => 'En progreso', 'class' => 'bg-accent-soft text-accent '],
- 'completed' => ['label' => 'Completado', 'class' => 'bg-success-soft text-success-strong '],
- 'cancelled' => ['label' => 'Cancelado', 'class' => 'bg-danger-soft text-danger-strong '],
- ];
- @endphp
     <div class="mt-6 overflow-x-auto">
       <table class="table table-sm">
         <thead>
@@ -147,7 +130,7 @@
         </thead>
         <tbody>
           @foreach($maintenanceHistory as $history)
-            @php($status = $statusTags[$history['status']] ?? $statusTags['scheduled'])
+            @php($status = $maintenanceStatusTags[$history['status']] ?? $maintenanceStatusTags['scheduled'])
             <tr class="table-row table-row-hover">
               <td class="table-cell text-token ">{{ $history['date'] }}</td>
               <td class="table-cell text-token ">{{ $history['type'] }}</td>

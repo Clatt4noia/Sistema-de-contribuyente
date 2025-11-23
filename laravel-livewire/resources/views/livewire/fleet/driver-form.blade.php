@@ -1,27 +1,20 @@
-<div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+ <div class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div>
  <h1 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Chofer' : 'Registrar Chofer' }}</h1>
 
- @if ($form['license_expiration'])
- @php
- $expiresAt = \Illuminate\Support\Carbon::parse($form['license_expiration']);
- $daysLeft = now()->diffInDays($expiresAt, false);
- @endphp
-
+ @if ($licenseValidity)
  <p class="mt-2 text-sm text-token ">
  <span class="font-medium">Vigencia de licencia:</span>
  <span
             @class([
                 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm transition border',
-                'border-danger-soft bg-danger-soft text-danger-strong' => $daysLeft < 0,
-                'border-warning-soft bg-warning-soft text-warning-strong' => $daysLeft >= 0 && $daysLeft <= 30,
-                'border-success-soft bg-success-soft text-success-strong' => $daysLeft > 30,
+                $licenseValidity['status_class'],
             ])
  >
 
- {{ $expiresAt->format('d/m/Y') }}
- ({{ $daysLeft < 0 ? 'Vencida' : 'Quedan ' . $daysLeft . ' días' }})
+ {{ $licenseValidity['formatted_date'] }}
+ ({{ $licenseValidity['status_label'] }})
  </span>
  </p>
  @endif
@@ -257,22 +250,13 @@
  </form>
  </div>
 
- @if ($isEdit)
- @if ($isEdit && $driver->exists)
- <livewire:fleet.document-manager
- :documentable-type="'driver'"
- :documentable-id="$driver->id"
- :key="'driver-documents-' . $driver->id"
+ <x-fleet.document-panel
+ :is-edit="$isEdit"
+ documentable-type="driver"
+ :documentable-id="$driver->id ?? null"
+ pending-message="{{ $isEdit
+ ? 'Guarda el chofer para habilitar la carga de documentos (licencia, certificados, etc.).'
+ : 'Guarda el registro del chofer para adjuntar licencias escaneadas, certificados médicos o constancias de capacitación.'
+ }}"
  />
- @else
- <div class="surface-card border border-dashed border-token-strong p-6 text-sm text-token ">
- Guarda el chofer para habilitar la carga de documentos (licencia, certificados, etc.).
- </div>
- @endif
-
- @else
-    <div class="rounded-2xl border border-dashed border-token bg-surface p-6 text-sm text-token ">
- Guarda el registro del chofer para adjuntar licencias escaneadas, certificados médicos o constancias de capacitación.
- </div>
- @endif
 </div>
