@@ -2,6 +2,8 @@
 
 namespace App\Exports;
 
+use App\Exports\Contracts\ExcelExport;
+use App\Exports\Traits\HasFileName;
 use App\Models\Invoice;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Collection;
@@ -9,9 +11,14 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class InvoicesExport implements FromCollection, WithMapping, WithHeadings, Responsable
+class InvoicesExport implements ExcelExport, FromCollection, WithMapping, WithHeadings, Responsable
 {
-    public string $fileName = 'facturas.xlsx';
+    use HasFileName;
+
+    public function __construct()
+    {
+        $this->fileName = 'facturas.xlsx';
+    }
 
     public function collection(): Collection
     {
