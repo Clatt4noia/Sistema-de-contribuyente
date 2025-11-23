@@ -2,18 +2,16 @@
 
 namespace App\Livewire\Billing;
 
-use App\Jobs\SendElectronicInvoice;
-use App\Models\Client;
+use App\Actions\Billing\SendElectronicInvoiceAction;
 use App\Models\Invoice;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class ElectronicInvoiceForm extends Component
 {
     use AuthorizesRequests;
 
+    public SendElectronicInvoiceAction $sendElectronicInvoiceAction;
     public Invoice $invoice;
     public array $items = [];
     public array $newItem = [
@@ -41,6 +39,11 @@ class ElectronicInvoiceForm extends Component
             'newItem.price_type_code' => 'required|string|max:2',
             'newItem.tax_exemption_reason' => 'required|string|max:2',
         ];
+    }
+
+    public function boot(SendElectronicInvoiceAction $sendElectronicInvoiceAction): void
+    {
+        $this->sendElectronicInvoiceAction = $sendElectronicInvoiceAction;
     }
 
     public function mount(Invoice $invoice): void
@@ -100,38 +103,7 @@ class ElectronicInvoiceForm extends Component
     {
         $this->authorize('update', $this->invoice);
 
-        if (empty($this->items)) {
-            $this->addError('items', 'Debe registrar al menos un ítem para emitir el comprobante.');
-            return;
-        }
-
-        DB::transaction(function () {
-            $totals = $this->calculateTotals();
-
-            $this->invoice->forceFill([
-                'subtotal' => $totals['subtotal'],
-                'taxable_amount' => $totals['taxable'],
-                'tax' => $totals['tax'],
-                'total' => $totals['total'],
-                'metadata' => ['items' => $this->items],
-            ])->save();
-        });
-
-        $companyData = [
-            'ruc' => $this->invoice->ruc_emisor,
-            'legal_name' => Config::get('app.name', 'Carlos Gabriel Transporte S.A.C.'),
-            'commercial_name' => Config::get('app.name', 'Carlos Gabriel Transporte S.A.C.'),
-        ];
-
-        $client = Client::find($this->invoice->client_id);
-        $customerData = [
-            'ruc' => $this->invoice->ruc_receptor,
-            'scheme_id' => '6',
-            'name' => $client?->business_name ?? 'Cliente sin razón social',
-        ];
-
-        SendElectronicInvoice::dispatch($this->invoice, $this->items, $companyData, $customerData)
-            ->onQueue(config('billing.queues.sunat', 'sunat'));
+        $this->sendElectronicInvoiceAction->execute($this->invoice, $this->items);
 
         session()->flash('message', 'Se envió la factura electrónica a SUNAT. Revisa el estado en unos minutos.');
         $this->redirectRoute('billing.invoices.index');

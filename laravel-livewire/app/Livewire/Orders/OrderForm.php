@@ -4,10 +4,9 @@ namespace App\Livewire\Orders;
 
 use App\Models\CargoType;
 use App\Models\Order;
-use App\Models\RoutePlan;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Actions\Orders\SaveOrderAction;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class OrderForm extends Component
@@ -15,6 +14,7 @@ class OrderForm extends Component
     use AuthorizesRequests;
 
     public Order $order;
+    public SaveOrderAction $saveOrderAction;
     public bool $isEdit = false;
     public array $form = [];
     public array $routePlan = [
@@ -56,6 +56,11 @@ class OrderForm extends Component
             'routePlan.map_url' => 'nullable|url',
             'routePlan.route_data' => 'nullable|string',
         ];
+    }
+
+    public function boot(SaveOrderAction $saveOrderAction): void
+    {
+        $this->saveOrderAction = $saveOrderAction;
     }
 
     public function mount($order = null): void
@@ -114,90 +119,17 @@ class OrderForm extends Component
         $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->order : Order::class);
 
         $validated = $this->validate();
-        $data = $validated['form'];
-
-        // Normalizamos campos libres antes de persistirlos y reflejamos el resultado en el estado del formulario.
-        $data['cargo_details'] = trim((string) $data['cargo_details']) ?: null;
-        $data['notes'] = trim((string) $data['notes']) ?: null;
-        $data['estimated_distance_km'] = $data['estimated_distance_km'] !== null ? (float) $data['estimated_distance_km'] : null;
-        $data['estimated_duration_hours'] = $data['estimated_duration_hours'] !== null ? (float) $data['estimated_duration_hours'] : null;
+        $updatedForm = $this->saveOrderAction->execute($this->order, $validated['form'], $this->routePlan)->toArray();
 
         $this->form = array_merge($this->form, [
-            'cargo_details' => $data['cargo_details'],
-            'notes' => $data['notes'],
-            'estimated_distance_km' => $data['estimated_distance_km'],
-            'estimated_duration_hours' => $data['estimated_duration_hours'],
+            'cargo_details' => $updatedForm['cargo_details'],
+            'notes' => $updatedForm['notes'],
+            'estimated_distance_km' => $updatedForm['estimated_distance_km'],
+            'estimated_duration_hours' => $updatedForm['estimated_duration_hours'],
         ]);
-
-        DB::transaction(function () {
-            $this->order->fill([
-                'client_id' => $this->form['client_id'],
-                'reference' => $this->form['reference'],
-                'cargo_type_id' => $this->form['cargo_type_id'] ?: null,
-                'origin' => $this->form['origin'],
-                'origin_latitude' => $this->form['origin_latitude'] !== '' ? (float) $this->form['origin_latitude'] : null,
-                'origin_longitude' => $this->form['origin_longitude'] !== '' ? (float) $this->form['origin_longitude'] : null,
-                'destination' => $this->form['destination'],
-                'destination_latitude' => $this->form['destination_latitude'] !== '' ? (float) $this->form['destination_latitude'] : null,
-                'destination_longitude' => $this->form['destination_longitude'] !== '' ? (float) $this->form['destination_longitude'] : null,
-                'status' => $this->form['status'],
-                'cargo_details' => $this->form['cargo_details'] ?: null,
-                'cargo_weight_kg' => $this->form['cargo_weight_kg'] !== '' ? (float) $this->form['cargo_weight_kg'] : null,
-                'cargo_volume_m3' => $this->form['cargo_volume_m3'] !== '' ? (float) $this->form['cargo_volume_m3'] : null,
-                'estimated_distance_km' => $this->form['estimated_distance_km'] !== null ? (float) $this->form['estimated_distance_km'] : null,
-                'estimated_duration_hours' => $this->form['estimated_duration_hours'] !== null ? (float) $this->form['estimated_duration_hours'] : null,
-                'notes' => $this->form['notes'] ?: null,
-            ]);
-
-            $this->order->pickup_date = $this->form['pickup_date'] ? Carbon::parse($this->form['pickup_date']) : null;
-            $this->order->delivery_date = $this->form['delivery_date'] ? Carbon::parse($this->form['delivery_date']) : null;
-            $this->order->delivery_window_start = $this->form['delivery_window_start'] ? Carbon::parse($this->form['delivery_window_start']) : null;
-            $this->order->delivery_window_end = $this->form['delivery_window_end'] ? Carbon::parse($this->form['delivery_window_end']) : null;
-
-            $this->order->save();
-
-            $this->syncRoutePlan();
-        });
 
         session()->flash('message', $this->isEdit ? 'Pedido actualizado correctamente.' : 'Pedido registrado correctamente.');
         return redirect()->route('orders.index');
-    }
-
-    protected function syncRoutePlan(): void
-    {
-        $cleanData = [
-            'planner' => $this->routePlan['planner'] ?: null,
-            'route_summary' => $this->routePlan['route_summary'] ?: null,
-            'map_url' => $this->routePlan['map_url'] ?: null,
-            'route_data' => $this->decodeRouteData($this->routePlan['route_data'] ?? null),
-        ];
-
-        $hasData = collect($cleanData)
-            ->filter(fn ($value) => filled($value))
-            ->isNotEmpty();
-
-        $existingPlan = $this->order->routePlans()->first();
-
-        if ($hasData) {
-            if ($existingPlan) {
-                $existingPlan->update($cleanData);
-            } else {
-                $this->order->routePlans()->create($cleanData);
-            }
-        } elseif ($existingPlan) {
-            $existingPlan->delete();
-        }
-    }
-
-    protected function decodeRouteData(?string $payload): ?array
-    {
-        if (!$payload) {
-            return null;
-        }
-
-        $decoded = json_decode($payload, true);
-
-        return json_last_error() === JSON_ERROR_NONE ? $decoded : null;
     }
 
     public function render()
