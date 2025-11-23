@@ -5,32 +5,12 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
 
-
-
-use App\Enums\UserRole;
-use App\Livewire\Dashboards\AdminDashboard;
-use App\Livewire\Dashboards\ClientDashboard;
-use App\Livewire\Dashboards\FinanceAnalystDashboard;
-use App\Livewire\Dashboards\FinanceDashboard;
-use App\Livewire\ClientPortal\OrderTracker as ClientOrderTracker;
-use App\Livewire\Dashboards\FleetDashboard;
-use App\Livewire\Dashboards\LogisticsDashboard;
-use App\Livewire\Fleet\AvailabilityBoard;
-use App\Livewire\Fleet\AssignmentForm;
-use App\Livewire\Fleet\AssignmentList;
-use App\Livewire\Fleet\DriverForm;
-use App\Livewire\Fleet\DriverList;
-use App\Livewire\Fleet\MaintenanceForm;
-use App\Livewire\Fleet\MaintenanceList;
-use App\Livewire\Fleet\TruckList;
-use App\Livewire\Fleet\Report as FleetReport;
-use App\Livewire\Logistics\LiveTrackingBoard;
-use App\Livewire\Logistics\OrderStatusNotifications;
-use App\Livewire\Orders\OrderForm;
-use App\Livewire\Orders\OrderList;
-use App\Livewire\Clients\ClientForm;
-use App\Livewire\Clients\ClientList;
 use App\Http\Controllers\Billing\InvoiceFileController;
+use App\Http\Controllers\Billing\SunatDashboardExportController;
+use App\Http\Controllers\Billing\TransportGuideCreateController;
+use App\Http\Controllers\Billing\TransportGuideFileController;
+use App\Http\Controllers\DashboardRedirectController;
+use App\Http\Controllers\Fleet\LegacyDriverController;
 use App\Livewire\Billing\CreateInvoice;
 use App\Livewire\Billing\ElectronicInvoiceForm;
 use App\Livewire\Billing\InvoiceForm;
@@ -41,37 +21,41 @@ use App\Livewire\Billing\SunatUnifiedDashboard;
 use App\Livewire\Billing\TransportGuides\TransportGuideForm;
 use App\Livewire\Billing\TransportGuides\TransportGuideIndex;
 use App\Livewire\Billing\TransportGuides\TransportGuideShow;
-use App\Livewire\Finance\TransactionAnalytics;
+use App\Livewire\ClientPortal\OrderTracker as ClientOrderTracker;
+use App\Livewire\Clients\ClientForm;
+use App\Livewire\Clients\ClientList;
+use App\Livewire\Dashboards\AdminDashboard;
+use App\Livewire\Dashboards\ClientDashboard;
+use App\Livewire\Dashboards\FinanceAnalystDashboard;
+use App\Livewire\Dashboards\FinanceDashboard;
+use App\Livewire\Dashboards\FleetDashboard;
+use App\Livewire\Dashboards\LogisticsDashboard;
+use App\Livewire\Fleet\AvailabilityBoard;
+use App\Livewire\Fleet\AssignmentForm;
+use App\Livewire\Fleet\AssignmentList;
+use App\Livewire\Fleet\DriverList;
+use App\Livewire\Fleet\MaintenanceForm;
+use App\Livewire\Fleet\MaintenanceList;
+use App\Livewire\Fleet\Report as FleetReport;
+use App\Livewire\Fleet\TruckList;
 use App\Livewire\Finance\CollectionsAndExpensesReport;
-
+use App\Livewire\Finance\TransactionAnalytics;
 use App\Livewire\Finance\TransactionList;
-use App\Models\TransportGuide;
+use App\Livewire\Logistics\LiveTrackingBoard;
+use App\Livewire\Logistics\OrderStatusNotifications;
+use App\Livewire\Orders\OrderForm;
+use App\Livewire\Orders\OrderList;
 use App\Models\Driver;
+use App\Models\TransportGuide;
 use App\Models\Truck;
-use App\Http\Controllers\Billing\TransportGuideFileController;
-use App\Http\Controllers\Billing\SunatDashboardExportController;
 
-// Aseguramos que los parámetros para guías de remisión sean numéricos y no capturen rutas estáticas como "create".
+// Alias claros para parámetros numéricos y evitar conflictos con rutas estáticas.
 Route::pattern('transportGuide', '[0-9]+');
-
+Route::pattern('driver', '[0-9]+');
+Route::pattern('truck', '[0-9]+');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        $user = auth()->user();
-
-        $route = match ($user->role) {
-            UserRole::ADMIN => 'dashboards.admin',
-            UserRole::LOGISTICS_MANAGER => 'dashboards.logistics',
-            UserRole::FLEET_MANAGER => 'dashboards.fleet',
-            UserRole::FINANCE_MANAGER => 'dashboards.finance',
-            UserRole::FINANCE_ANALYST => 'dashboards.finance-analyst',
-            UserRole::CLIENT => 'dashboards.client',
-            default => 'dashboards.client',
-        };
-
-        return redirect()->route($route);
-    })->name('dashboard');
-
+    Route::get('/', DashboardRedirectController::class)->name('dashboard');
     Route::redirect('/home', '/')->name('home');
 
     Route::prefix('dashboards')->name('dashboards.')->group(function () {
@@ -79,17 +63,11 @@ Route::middleware('auth')->group(function () {
             ->middleware('can:view-dashboard.admin')
             ->name('admin');
 
-        Route::get('/logistics', LogisticsDashboard::class)
-            ->middleware('can:view-dashboard.logistics')
-            ->name('logistics');
-
-        Route::get('/logistics/tracking', LiveTrackingBoard::class)
-            ->middleware('can:view-dashboard.logistics')
-            ->name('logistics-tracking');
-
-        Route::get('/logistics/orders/notifications', OrderStatusNotifications::class)
-            ->middleware('can:view-dashboard.logistics')
-            ->name('logistics-notifications');
+        Route::middleware('can:view-dashboard.logistics')->group(function () {
+            Route::get('/logistics', LogisticsDashboard::class)->name('logistics');
+            Route::get('/logistics/tracking', LiveTrackingBoard::class)->name('logistics-tracking');
+            Route::get('/logistics/orders/notifications', OrderStatusNotifications::class)->name('logistics-notifications');
+        });
 
         Route::get('/fleet', FleetDashboard::class)
             ->middleware('can:view-dashboard.fleet')
@@ -108,21 +86,18 @@ Route::middleware('auth')->group(function () {
             ->name('client');
     });
 
-    Route::get('/drivers', fn () => redirect()->route('fleet.drivers.index'))
-        ->name('legacy.drivers.index');
-    Route::get('/drivers/create', function () {
-        return view('pages.fleet.drivers.create');
-    })->name('legacy.drivers.create');
-    Route::get('/drivers/{driver}/edit', function (Driver $driver) {
-        return view('pages.fleet.drivers.edit', ['driver' => $driver]);
-    })->whereNumber('driver')->name('legacy.drivers.edit');
+    Route::prefix('drivers')->name('legacy.drivers.')->controller(LegacyDriverController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::get('/{driver}/edit', 'edit')->name('edit');
+    });
 
     Route::prefix('fleet')->name('fleet.')->group(function () {
         Route::get('/trucks', TruckList::class)->name('trucks.index');
         Route::view('/trucks/create', 'pages.fleet.trucks.create')->name('trucks.create');
         Route::get('/trucks/{truck}/edit', function (Truck $truck) {
             return view('pages.fleet.trucks.edit', ['truck' => $truck]);
-        })->whereNumber('truck')->name('trucks.edit');
+        })->name('trucks.edit');
 
         Route::get('/drivers', DriverList::class)->name('drivers.index');
         Route::get('/drivers/create', function () {
@@ -130,7 +105,7 @@ Route::middleware('auth')->group(function () {
         })->name('drivers.create');
         Route::get('/drivers/{driver}/edit', function (Driver $driver) {
             return view('pages.fleet.drivers.edit', ['driver' => $driver]);
-        })->whereNumber('driver')->name('drivers.edit');
+        })->name('drivers.edit');
 
         Route::get('/maintenance', MaintenanceList::class)->name('maintenance.index');
         Route::get('/maintenance/create', MaintenanceForm::class)->name('maintenance.create');
@@ -156,25 +131,24 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('billing')->name('billing.')->group(function () {
-        Route::get('/invoices', InvoiceList::class)->name('invoices.index');
-        Route::get('/invoices/create', CreateInvoice::class)->name('invoices.create');
-        Route::get('/invoices/{invoice}/edit', InvoiceForm::class)->whereNumber('invoice')->name('invoices.edit');
-        Route::get('/invoices/{invoice}/electronic', ElectronicInvoiceForm::class)->whereNumber('invoice')->name('invoices.electronic');
+        Route::prefix('invoices')->name('invoices.')->group(function () {
+            Route::get('/', InvoiceList::class)->name('index');
+            Route::get('/create', CreateInvoice::class)->name('create');
+            Route::get('/{invoice}/edit', InvoiceForm::class)->whereNumber('invoice')->name('edit');
+            Route::get('/{invoice}/electronic', ElectronicInvoiceForm::class)->whereNumber('invoice')->name('electronic');
+        });
 
-        Route::get('/payments', PaymentList::class)->name('payments.index');
-        Route::get('/payments/create', PaymentForm::class)->name('payments.create');
-        Route::get('/payments/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('payments.edit');
+        Route::prefix('payments')->name('payments.')->group(function () {
+            Route::get('/', PaymentList::class)->name('index');
+            Route::get('/create', PaymentForm::class)->name('create');
+            Route::get('/{payment}/edit', PaymentForm::class)->whereNumber('payment')->name('edit');
+        });
 
-        Route::get('/sunat-dashboard', SunatUnifiedDashboard::class)
-            ->name('sunat-dashboard')
-            ->middleware('can:viewAny,App\\Models\\Invoice');
-
-        Route::get('/sunat-dashboard/export/excel', [SunatDashboardExportController::class, 'excel'])
-            ->name('sunat-dashboard.export.excel')
-            ->middleware('can:viewAny,App\\Models\\Invoice');
-        Route::get('/sunat-dashboard/export/pdf', [SunatDashboardExportController::class, 'pdf'])
-            ->name('sunat-dashboard.export.pdf')
-            ->middleware('can:viewAny,App\\Models\\Invoice');
+        Route::middleware('can:viewAny,App\\Models\\Invoice')->group(function () {
+            Route::get('/sunat-dashboard', SunatUnifiedDashboard::class)->name('sunat-dashboard');
+            Route::get('/sunat-dashboard/export/excel', [SunatDashboardExportController::class, 'excel'])->name('sunat-dashboard.export.excel');
+            Route::get('/sunat-dashboard/export/pdf', [SunatDashboardExportController::class, 'pdf'])->name('sunat-dashboard.export.pdf');
+        });
 
         // GRE-T (transportista)
         Route::get('/gre-t', TransportGuideIndex::class)
@@ -182,9 +156,7 @@ Route::middleware('auth')->group(function () {
             ->defaults('type', TransportGuide::TYPE_TRANSPORTISTA)
             ->can('viewAny', TransportGuide::class);
 
-        Route::get('/gre-t/create', function (string $type = TransportGuide::TYPE_TRANSPORTISTA) {
-            return view('pages.billing.transport-guides.create', ['type' => $type]);
-        })
+        Route::get('/gre-t/create', TransportGuideCreateController::class)
             ->name('transport-guides.create')
             ->defaults('type', TransportGuide::TYPE_TRANSPORTISTA)
             ->can('create', TransportGuide::class);
@@ -195,52 +167,35 @@ Route::middleware('auth')->group(function () {
             ->defaults('type', TransportGuide::TYPE_REMITENTE)
             ->can('viewAny', TransportGuide::class);
 
-        Route::get('/gre-r/create', function (string $type = TransportGuide::TYPE_REMITENTE) {
-            return view('pages.billing.transport-guides.create', ['type' => $type]);
-        })
+        Route::get('/gre-r/create', TransportGuideCreateController::class)
             ->name('remitter-guides.create')
             ->defaults('type', TransportGuide::TYPE_REMITENTE)
-
             ->can('create', TransportGuide::class);
 
         // Rutas de compatibilidad con enlaces existentes
         Route::redirect('/transport-guides', '/billing/gre-t');
-        Route::get('/transport-guides/create', function () {
-            return redirect()->route('billing.transport-guides.create');
-        });
-        Route::get('/transport-guide/create', function () {
-            return redirect()->route('billing.transport-guides.create');
-        })->name('transport-guide.create-redirect');
+        Route::redirect('/transport-guides/create', '/billing/gre-t/create');
+        Route::redirect('/transport-guide/create', '/billing/gre-t/create')->name('transport-guide.create-redirect');
 
         Route::get('/transport-guides/{transportGuide}', TransportGuideShow::class)
-            ->whereNumber('transportGuide')
-
             ->name('transport-guides.show')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/edit', TransportGuideForm::class)
-            ->whereNumber('transportGuide')
-
             ->name('transport-guides.edit')
             ->can('update', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/xml', [TransportGuideFileController::class, 'xml'])
-            ->whereNumber('transportGuide')
-
             ->name('transport-guides.xml')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/cdr', [TransportGuideFileController::class, 'cdr'])
-            ->whereNumber('transportGuide')
-
             ->name('transport-guides.cdr')
             ->can('view', 'transportGuide');
 
         Route::get('/transport-guides/{transportGuide}/pdf', [TransportGuideFileController::class, 'pdf'])
-            ->whereNumber('transportGuide')
             ->name('transport-guides.pdf')
             ->can('view', 'transportGuide');
-
     });
 
     Route::prefix('finance')->name('finance.')->group(function () {
@@ -250,7 +205,6 @@ Route::middleware('auth')->group(function () {
             ->name('transactions.analytics');
         Route::get('/collections-report', CollectionsAndExpensesReport::class)
             ->name('collections.report');
-
     });
 
     Route::middleware('signed')->group(function () {
@@ -259,18 +213,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/billing/invoices/{invoice}/download/pdf', [InvoiceFileController::class, 'pdf'])->name('billing.invoices.download.pdf');
 
         Route::get('/billing/transport-guides/{transportGuide}/download/xml', [TransportGuideFileController::class, 'xml'])
-            ->whereNumber('transportGuide')
             ->can('view', 'transportGuide')
             ->name('billing.transport-guides.download.xml');
         Route::get('/billing/transport-guides/{transportGuide}/download/cdr', [TransportGuideFileController::class, 'cdr'])
-            ->whereNumber('transportGuide')
             ->can('view', 'transportGuide')
             ->name('billing.transport-guides.download.cdr');
         Route::get('/billing/transport-guides/{transportGuide}/download/pdf', [TransportGuideFileController::class, 'pdf'])
-            ->whereNumber('transportGuide')
             ->can('view', 'transportGuide')
             ->name('billing.transport-guides.download.pdf');
-
     });
 
     Route::prefix('portal')->name('portal.')->middleware('can:view-dashboard.client')->group(function () {
