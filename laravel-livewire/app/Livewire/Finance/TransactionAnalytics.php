@@ -5,20 +5,20 @@ namespace App\Livewire\Finance;
 use App\Models\Transaction;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class TransactionAnalytics extends Component
 {
+    use AuthorizesRequests;
+
     public string $range = '90';
 
     public function mount(): void
     {
-        if (! Gate::any(['view-dashboard.finance', 'view-dashboard.finance-analyst'])) {
-            abort(403);
-        }
+        $this->authorize('viewAny', Transaction::class);
 
         if (! array_key_exists($this->range, $this->rangeOptions())) {
             $this->range = array_key_first($this->rangeOptions());
@@ -249,7 +249,7 @@ class TransactionAnalytics extends Component
 
     protected function baseQuery()
     {
-        return Transaction::query()->where('user_id', auth()->id());
+        return Transaction::query()->forUser(auth()->id());
     }
 
     protected function rangeBounds(): array

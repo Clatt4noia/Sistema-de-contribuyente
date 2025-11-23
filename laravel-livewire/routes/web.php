@@ -46,6 +46,7 @@ use App\Livewire\Logistics\OrderStatusNotifications;
 use App\Livewire\Orders\OrderForm;
 use App\Livewire\Orders\OrderList;
 use App\Models\Driver;
+use App\Models\Transaction;
 use App\Models\TransportGuide;
 use App\Models\Truck;
 
@@ -198,7 +199,7 @@ Route::middleware('auth')->group(function () {
             ->can('view', 'transportGuide');
     });
 
-    Route::prefix('finance')->name('finance.')->group(function () {
+    Route::prefix('finance')->name('finance.')->middleware('can:viewAny,' . Transaction::class)->group(function () {
         Route::get('/transactions', TransactionList::class)
             ->name('transactions.index');
         Route::get('/transactions/analytics', TransactionAnalytics::class)

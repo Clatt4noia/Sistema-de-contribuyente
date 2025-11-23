@@ -11,6 +11,7 @@ use App\Models\Invoice;
 use App\Models\Maintenance;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Transaction;
 use App\Models\Truck;
 use App\Models\TransportGuide;
 use App\Models\User;
@@ -28,6 +29,7 @@ use App\Policies\OrderPolicy;
 use App\Policies\OrderPolicyV2;
 use App\Policies\PaymentPolicy;
 use App\Policies\PaymentPolicyV2;
+use App\Policies\TransactionPolicy;
 use App\Policies\TruckPolicy;
 use App\Policies\TruckPolicyV2;
 use App\Policies\TransportGuidePolicy;
@@ -52,6 +54,7 @@ class AuthServiceProvider extends ServiceProvider
         Client::class => ClientPolicyV2::class,
         Invoice::class => InvoicePolicyV2::class,
         Payment::class => PaymentPolicyV2::class,
+        Transaction::class => TransactionPolicy::class,
         TransportGuide::class => TransportGuidePolicy::class,
 
     ];
