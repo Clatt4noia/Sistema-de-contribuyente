@@ -66,7 +66,7 @@ class CollectionsAndExpensesReport extends Component
     {
         $invoices = $this->invoiceQuery()->get();
         $invoiceIds = $invoices->pluck('id');
-        $payments = Payment::whereIn('invoice_id', $invoiceIds)->get();
+        $payments = Payment::forInvoices($invoiceIds)->get();
         $expenses = $this->expenseQuery()->get();
 
         $billed = $invoices->sum('total');
@@ -91,7 +91,7 @@ class CollectionsAndExpensesReport extends Component
 
         $range = $this->generatePeriods($start, $end, $period);
         $invoices = $this->invoiceQuery()->get();
-        $payments = Payment::whereIn('invoice_id', $invoices->pluck('id'))->get();
+        $payments = Payment::forInvoices($invoices->pluck('id'))->get();
         $expenses = $this->expenseQuery()->get();
 
         foreach ($range as &$row) {
@@ -139,17 +139,10 @@ class CollectionsAndExpensesReport extends Component
 
         return Invoice::query()
             ->with(['transportGuide', 'order'])
-            ->whereBetween('issue_date', [$start, $end])
-            ->when($this->clientId, fn ($query) => $query->where('client_id', $this->clientId))
-            ->when($this->vehicleId, function ($query) {
-                $query->whereHas('transportGuide', fn ($guideQuery) => $guideQuery->where('truck_id', $this->vehicleId));
-            })
-            ->when($this->routeFilter, function ($query) {
-                $query->whereHas('order', function ($orderQuery) {
-                    $orderQuery->where('origin', 'like', '%'.$this->routeFilter.'%')
-                        ->orWhere('destination', 'like', '%'.$this->routeFilter.'%');
-                });
-            });
+            ->withinIssueDate($start, $end)
+            ->forClient($this->clientId)
+            ->forTruck($this->vehicleId)
+            ->matchingRoute($this->routeFilter);
     }
 
     protected function expenseQuery()
