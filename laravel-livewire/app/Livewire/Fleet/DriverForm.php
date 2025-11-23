@@ -6,6 +6,7 @@ use App\Models\Driver;
 use App\Models\DriverEvaluation;
 use App\Models\DriverSchedule;
 use App\Models\DriverTraining;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -123,6 +124,29 @@ class DriverForm extends Component
         ])->values()->toArray();
     }
 
+    public function getLicenseValidityProperty(): ?array
+    {
+        if (empty($this->form['license_expiration'])) {
+            return null;
+        }
+
+        $expirationDate = Carbon::parse($this->form['license_expiration']);
+        $daysLeft = now()->diffInDays($expirationDate, false);
+
+        $statusClass = match (true) {
+            $daysLeft < 0 => 'border-danger-soft bg-danger-soft text-danger-strong',
+            $daysLeft <= 30 => 'border-warning-soft bg-warning-soft text-warning-strong',
+            default => 'border-success-soft bg-success-soft text-success-strong',
+        };
+
+        return [
+            'formatted_date' => $expirationDate->format('d/m/Y'),
+            'days_left' => $daysLeft,
+            'status_label' => $daysLeft < 0 ? 'Vencida' : 'Quedan ' . $daysLeft . ' días',
+            'status_class' => $statusClass,
+        ];
+    }
+
     public function addSchedule(): void
     {
         $this->schedules[] = [
@@ -178,18 +202,12 @@ class DriverForm extends Component
         $this->authorize($this->isEdit ? 'update' : 'create', $this->isEdit ? $this->driver : Driver::class);
 
         $validated = $this->validate();
-        $data = $validated['form'];
+        $data = $this->normalizeContactData($validated['form']);
 
-        $data['phone'] = trim((string) $data['phone']) ?: null;
-        $data['email'] = trim((string) $data['email']) ?: null;
-        $data['address'] = trim((string) $data['address']) ?: null;
-        $data['notes'] = trim((string) $data['notes']) ?: null;
+        if ($this->hasInvalidScheduleRange()) {
+            $this->addError('schedules', 'La hora de inicio debe ser menor a la hora de fin en cada horario.');
 
-        foreach ($this->schedules as $schedule) {
-            if (isset($schedule['start_time'], $schedule['end_time']) && $schedule['start_time'] >= $schedule['end_time']) {
-                $this->addError('schedules', 'La hora de inicio debe ser menor a la hora de fin en cada horario.');
-                return;
-            }
+            return;
         }
 
         DB::transaction(function () use ($data) {
@@ -235,6 +253,27 @@ class DriverForm extends Component
         session()->flash('message', $this->isEdit ? 'Chofer actualizado correctamente.' : 'Chofer registrado correctamente.');
 
         return redirect()->route('fleet.drivers.index');
+    }
+
+    private function normalizeContactData(array $data): array
+    {
+        $data['phone'] = trim((string) $data['phone']) ?: null;
+        $data['email'] = trim((string) $data['email']) ?: null;
+        $data['address'] = trim((string) $data['address']) ?: null;
+        $data['notes'] = trim((string) $data['notes']) ?: null;
+
+        return $data;
+    }
+
+    private function hasInvalidScheduleRange(): bool
+    {
+        foreach ($this->schedules as $schedule) {
+            if (isset($schedule['start_time'], $schedule['end_time']) && $schedule['start_time'] >= $schedule['end_time']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function render()
