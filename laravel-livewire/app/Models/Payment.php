@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +24,11 @@ class Payment extends Model
         'paid_at' => 'date',
         'amount' => 'decimal:2',
     ];
+
+    public function scopeForInvoices(Builder $query, $invoiceIds): Builder
+    {
+        return $query->when(! empty($invoiceIds), fn (Builder $builder) => $builder->whereIn('invoice_id', $invoiceIds));
+    }
 
     public function invoice(): BelongsTo
     {

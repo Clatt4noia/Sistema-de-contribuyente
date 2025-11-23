@@ -186,7 +186,7 @@ class TransactionList extends Component
     public function availableYears(): array
     {
         $years = Transaction::query()
-            ->where('user_id', auth()->id())
+            ->forUser(auth()->id())
             ->selectRaw("DISTINCT EXTRACT(YEAR FROM occurred_on)::int AS year")
             ->orderByDesc('year')
             ->pluck('year')
@@ -205,15 +205,10 @@ class TransactionList extends Component
     {
         return Transaction::query()
             ->with('user')
-            ->where('user_id', auth()->id())
-            ->when($this->search !== '', function (Builder $query) {
-                $query->where(function (Builder $subQuery) {
-                    $subQuery->where('category', 'like', '%' . $this->search . '%')
-                        ->orWhere('description', 'like', '%' . $this->search . '%');
-                });
-            })
-            ->when($this->typeFilter !== 'all', fn (Builder $query) => $query->where('type', $this->typeFilter))
-            ->when($this->year, fn (Builder $query) => $query->whereYear('occurred_on', $this->year))
-            ->when($this->month, fn (Builder $query) => $query->whereMonth('occurred_on', $this->month));
+            ->forUser(auth()->id())
+            ->searchTerm($this->search)
+            ->ofType($this->typeFilter)
+            ->forYear($this->year)
+            ->forMonth($this->month);
     }
 }

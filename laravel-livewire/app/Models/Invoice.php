@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -69,6 +70,33 @@ class Invoice extends Model
         'metadata' => '[]',
     ];
 
+
+    public function scopeWithinIssueDate(Builder $query, Carbon $start, Carbon $end): Builder
+    {
+        return $query->whereBetween('issue_date', [$start, $end]);
+    }
+
+    public function scopeForClient(Builder $query, ?string $clientId): Builder
+    {
+        return $query->when($clientId, fn (Builder $builder) => $builder->where('client_id', $clientId));
+    }
+
+    public function scopeForTruck(Builder $query, ?string $truckId): Builder
+    {
+        return $query->when($truckId, function (Builder $builder) use ($truckId) {
+            $builder->whereHas('transportGuide', fn (Builder $guideQuery) => $guideQuery->where('truck_id', $truckId));
+        });
+    }
+
+    public function scopeMatchingRoute(Builder $query, ?string $routeFilter): Builder
+    {
+        return $query->when($routeFilter, function (Builder $builder) use ($routeFilter) {
+            $builder->whereHas('order', function (Builder $orderQuery) use ($routeFilter) {
+                $orderQuery->where('origin', 'like', '%'.$routeFilter.'%')
+                    ->orWhere('destination', 'like', '%'.$routeFilter.'%');
+            });
+        });
+    }
 
     public function scopeAceptadas($query)
     {
