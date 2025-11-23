@@ -6,13 +6,14 @@ use App\Models\Transaction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class TransactionList extends Component
 {
+    use AuthorizesRequests;
     use WithPagination;
 
     public string $search = '';
@@ -40,9 +41,7 @@ class TransactionList extends Component
 
     public function mount(): void
     {
-        if (! Gate::any(['view-dashboard.finance', 'view-dashboard.finance-analyst'])) {
-            abort(403);
-        }
+        $this->authorize('viewAny', Transaction::class);
 
         $today = Carbon::now();
         $this->occurred_on = $today->format('Y-m-d');
@@ -81,6 +80,8 @@ class TransactionList extends Component
             ->where('transactions.id', $transactionId)
             ->firstOrFail();
 
+        $this->authorize('view', $transaction);
+
         $this->transactionId = $transaction->id;
         $this->formType = $transaction->type;
         $this->category = $transaction->category;
@@ -109,11 +110,15 @@ class TransactionList extends Component
                 ->where('transactions.id', $this->transactionId)
                 ->firstOrFail();
 
+            $this->authorize('update', $transaction);
+
             $transaction->fill($attributes);
             $transaction->save();
 
             $message = __('Movimiento actualizado correctamente.');
         } else {
+            $this->authorize('create', Transaction::class);
+
             $transaction = new Transaction($attributes);
             $transaction->user_id = auth()->id();
             $transaction->save();
@@ -133,6 +138,8 @@ class TransactionList extends Component
         $transaction = $this->transactionsQuery()
             ->where('transactions.id', $transactionId)
             ->firstOrFail();
+
+        $this->authorize('delete', $transaction);
 
         $transaction->delete();
 
