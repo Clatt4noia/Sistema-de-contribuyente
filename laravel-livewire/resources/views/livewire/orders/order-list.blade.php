@@ -1,7 +1,7 @@
 <table class="table table-md min-w-[1200px]">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div class="space-y-1">
- <h1 class="text-2xl font-semibold text-token ">Gestion de Pedidos</h1>
+ <h1 class="text-2xl font-semibold text-token ">Gestión de Ordenes</h1>
  <p class="text-sm text-token ">Controla solicitudes de transporte, monitorea estados y sincroniza asignaciones.</p>
  </div>
     <a href="{{ route('orders.create') }}" class="btn btn-primary">

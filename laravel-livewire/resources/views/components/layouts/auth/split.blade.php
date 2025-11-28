@@ -5,18 +5,9 @@
     </head>
     <body class="min-h-screen bg-[color:var(--color-surface)] text-[color:var(--color-text)] antialiased">
         <div class="flex min-h-svh flex-col bg-[color:var(--color-elevated)] lg:grid lg:grid-cols-2">
-            <div class="relative hidden h-dvh flex-col bg-[color:var(--color-primary)] p-10 text-[color:var(--color-primary-foreground)] lg:flex">
-                <div class="absolute inset-0 rounded-br-[3rem] bg-gradient-to-br from-[color:var(--color-primary-300)] via-[color:var(--color-primary)] to-[color:var(--color-primary-emphasis)] opacity-90"></div>
-                <div class="relative z-10 flex flex-1 flex-col">
-                    <div class="flex items-center gap-3">
-                        <span class="flex h-9 w-9 items-center justify-center rounded-md bg-[color:var(--color-primary-foreground)/0.16]">
-                            <x-app-logo-icon class="size-9 fill-current text-[color:var(--color-primary-foreground)]" />
-                        </span>
-                        <span class="text-lg font-semibold text-[color:var(--color-primary-foreground)]">{{ config('app.name', 'Laravel') }}</span>
-                    </div>
-                    <div class="mt-auto">
-                        {{ $aside ?? '' }}
-                    </div>
+            <div class="relative hidden h-dvh lg:flex rounded-br-[3rem] overflow-hidden">
+                <div class="flex h-full w-full items-center justify-center p-6">
+                    <img src="{{ asset('logoo1.png') }}" alt="Logo" class="max-h-[90%] max-w-[90%] object-contain" />
                 </div>
             </div>
 

@@ -74,7 +74,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Inicia sesión con tu cuenta')" :description="__('Ingresa tu correo y contraseña para ingresar')" />
+    <div class="flex justify-center">
+        <img src="{{ asset('logoo1.png') }}" alt="Logo" class="h-60 w-auto object-contain" />
+    </div>
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -133,7 +135,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 wire:model="remember"
                 class="size-4 rounded border-[color:var(--color-border)] text-[color:var(--color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-elevated)]"
             />
-            <span>{{ __('Recuardame') }}</span>
+            <span>{{ __('Recordarme') }}</span>
         </label>
 
         <div>
