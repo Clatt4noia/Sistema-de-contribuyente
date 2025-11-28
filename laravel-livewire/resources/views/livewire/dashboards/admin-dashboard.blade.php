@@ -35,26 +35,32 @@
         <nav class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3 text-sm font-semibold text-token">
             <a href="{{ route('dashboards.logistics') }}" class="group flex items-center justify-between rounded-xl border border-token px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel logístico') }}</span>
-                <x-dynamic-component
-                    :component="'flux.icon.arrow-right'"
-                    class="size-3 sm:size-4 text-accent-soft group-hover:translate-x-0.5"
-                />
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                    <x-dynamic-component
+                        :component="'flux.icon.navigation'"
+                        class="size-4 sm:size-5"
+                    />
+                </span>
             </a>
 
             <a href="{{ route('dashboards.fleet') }}" class="group flex items-center justify-between rounded-xl border border-token px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel de flota') }}</span>
-                <x-dynamic-component
-                    :component="'flux.icon.arrow-right'"
-                    class="size-3 sm:size-4 text-accent-soft group-hover:translate-x-0.5"
-                />
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                    <x-dynamic-component
+                        :component="'flux.icon.truck'"
+                        class="size-4 sm:size-5"
+                    />
+                </span>
             </a>
 
             <a href="{{ route('dashboards.finance') }}" class="group flex items-center justify-between rounded-xl border border-token px-5 py-4 transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)]">
                 <span>{{ __('Panel financiero') }}</span>
-            <x-dynamic-component
-                :component="'flux.icon.arrow-right'"
-                class="size-3 sm:size-4 text-accent-soft group-hover:translate-x-0.5"
-            />
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                    <x-dynamic-component
+                        :component="'flux.icon.credit-card'"
+                        class="size-4 sm:size-5"
+                    />
+                </span>
             </a>
         </nav>
     </section>
