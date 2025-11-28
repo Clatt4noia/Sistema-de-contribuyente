@@ -77,44 +77,51 @@
  <div class="space-y-3">
  @forelse ($trucks as $truck)
 <article class="rounded-2xl border border-token bg-elevated p-4 shadow-sm transition hover:border-[color:var(--color-primary-border)] hover:shadow-md ">
- <div class="flex items-center justify-between">
- <div>
+        <div class="flex items-start justify-between">
+            <div>
  <h3 class="text-base font-semibold text-token ">{{ $truck->plate_number }} · {{ $truck->brand }} {{ $truck->model }}</h3>
  <p class="text-sm text-token ">{{ __($truck->status) }} · {{ number_format($truck->mileage) }} km</p>
  </div>
- <span @class([
- 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
- 'bg-success-soft text-success-strong ' => $truck->alert_level === 'ok',
- 'bg-warning-soft text-warning ' => $truck->alert_level === 'warning',
- 'bg-danger-soft text-danger-strong ' => $truck->alert_level === 'danger',
- ])>
- @switch($truck->alert_level)
- @case('danger') Requiere mantenimiento inmediato @break
- @case('warning') Mantenimiento próximo @break
- @default Al día
- @endswitch
- </span>
- </div>
- <div class="mt-3 grid grid-cols-2 gap-4 text-xs text-token ">
- <div>
- <p class="font-semibold text-token ">Próximo mantenimiento</p>
- <p>{{ optional($truck->next_maintenance)->format('d/m/Y') ?? 'No programado' }}</p>
- </div>
- <div>
- <p class="font-semibold text-token ">Asignaciones activas</p>
- <p>{{ $truck->active_assignments_count }}</p>
- </div>
- </div>
- @if($truck->document_alerts->isNotEmpty())
- <div class="mt-3 alert alert-warning ">
- <p class="font-semibold">Documentos por atender:</p>
- <ul class="mt-1 list-disc space-y-1 pl-4">
- @foreach($truck->document_alerts as $document)
- <li>{{ $document->type_label }} · {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}</li>
- @endforeach
- </ul>
- </div>
- @endif
+        
+        </div>
+        <div class="mt-3 grid grid-cols-2 gap-4 text-xs text-token ">
+            <div>
+                <p class="font-semibold text-token ">Próximo mantenimiento</p>
+                <p>{{ optional($truck->next_maintenance)->format('d/m/Y') ?? 'No programado' }}</p>
+            </div>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-semibold text-token ">Asignaciones activas</p>
+                    <p>{{ $truck->active_assignments_count }}</p>
+                </div>
+                <span @class([
+                    'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
+                    'bg-success-soft text-success-strong ' => $truck->alert_level === 'ok',
+                    'bg-warning-soft text-warning ' => $truck->alert_level === 'warning',
+                    'bg-danger-soft text-danger-strong ' => $truck->alert_level === 'danger',
+                ]) class="shrink-0">
+                    @switch($truck->alert_level)
+                        @case('danger') Requiere mantenimiento inmediato @break
+                        @case('warning') Mantenimiento próximo @break
+                        @default Al día
+                    @endswitch
+                </span>
+            </div>
+        </div>
+        <div class="mt-3">
+            @if($truck->document_alerts->isNotEmpty())
+                <div class="alert alert-warning ">
+                    <p class="font-semibold">Documentos por atender:</p>
+                    <ul class="mt-1 list-disc space-y-1 pl-4">
+                        @foreach($truck->document_alerts as $document)
+                            <li>{{ $document->type_label }} · {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @else
+                <div class="min-h-[80px]"></div>
+            @endif
+        </div>
  </article>
  @empty
  <div class="rounded-2xl border border-dashed border-token bg-elevated p-6 text-center text-sm text-token ">
@@ -144,15 +151,28 @@
  <div class="space-y-3">
  @forelse ($drivers as $driver)
 <article class="rounded-2xl border border-token bg-elevated p-4 shadow-sm transition hover:border-[color:var(--color-primary-border)] hover:shadow-md ">
- <div class="flex items-center justify-between">
- <div>
- <h3 class="text-base font-semibold text-token ">{{ $driver->full_name }}</h3>
- <p class="text-sm text-token ">Licencia {{ $driver->license_number }} · {{ optional($driver->license_expiration)->format('d/m/Y') }}</p>
- </div>
- <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-surface-muted text-token ">
- {{ __($driver->status) }}
- </span>
- </div>
+        <div class="flex items-start justify-between">
+            <div>
+                <h3 class="text-base font-semibold text-token ">{{ $driver->full_name }}</h3>
+                <p class="text-sm text-token ">Licencia {{ $driver->license_number }} · {{ optional($driver->license_expiration)->format('d/m/Y') }}</p>
+            </div>
+            @php
+                $driverBadgeClass = match($driver->status) {
+                    'active' => 'bg-success-soft text-success-strong ',
+                    'assigned' => 'bg-accent-soft text-accent ',
+                    'on_leave' => 'bg-warning-soft text-warning ',
+                    'inactive' => 'bg-surface-strong text-token ',
+                    default => 'bg-surface-muted text-token ',
+                };
+                $driverBadgeLabel = match($driver->status) {
+                    'active' => 'Activo',
+                    default => __($driver->status),
+                };
+            @endphp
+            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shrink-0 {{ $driverBadgeClass }}">
+                {{ $driverBadgeLabel }}
+            </span>
+        </div>
  <div class="mt-3 grid grid-cols-2 gap-4 text-xs text-token ">
  <div>
  <p class="font-semibold text-token ">Capacitaciones vigentes</p>
@@ -169,16 +189,20 @@
  </p>
  </div>
  </div>
- @if($driver->document_alerts->isNotEmpty())
- <div class="mt-3 alert alert-warning ">
- <p class="font-semibold">Alertas de documentación:</p>
- <ul class="mt-1 list-disc space-y-1 pl-4">
- @foreach($driver->document_alerts as $document)
- <li>{{ $document->type_label }} · {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}</li>
- @endforeach
- </ul>
- </div>
- @endif
+        <div class="mt-3">
+            @if($driver->document_alerts->isNotEmpty())
+                <div class="alert alert-warning ">
+                    <p class="font-semibold">Alertas de documentación:</p>
+                    <ul class="mt-1 list-disc space-y-1 pl-4">
+                        @foreach($driver->document_alerts as $document)
+                            <li>{{ $document->type_label }} · {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @else
+                <div class="min-h-[80px]"></div>
+            @endif
+        </div>
  </article>
  @empty
  <div class="rounded-2xl border border-dashed border-token bg-elevated p-6 text-center text-sm text-token ">
