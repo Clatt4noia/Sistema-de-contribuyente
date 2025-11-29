@@ -94,7 +94,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 required
                 autofocus
                 autocomplete="email"
-                placeholder="correo@ejemplo.com"
+                placeholder="ingresa tu correo"
                 class="form-control"
             />
             @error('email')
