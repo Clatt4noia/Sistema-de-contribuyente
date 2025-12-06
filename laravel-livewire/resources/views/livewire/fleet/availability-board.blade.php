@@ -75,57 +75,80 @@
     </header>
 
     <div class="space-y-3">
-    @forelse ($trucks as $truck)
-        <article class="rounded-2xl border border-token bg-elevated p-4 shadow-sm transition hover:border-[color:var(--color-primary-border)] hover:shadow-md ">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h3 class="text-base font-semibold text-token ">{{ $truck->plate_number }} · {{ $truck->brand }} {{ $truck->model }}</h3>
-                        <p class="text-sm text-token ">{{ __($truck->status) }} · {{ number_format($truck->mileage) }} km</p>
-                    </div>
+            @forelse ($trucks as $truck)
+        <article
+            class="group flex flex-col justify-between gap-4 rounded-2xl border border-token/60 bg-elevated/80 p-4 shadow-sm backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:shadow-lg"
+        >
+
+            {{-- CABECERA --}}
+            <header class="flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                    <h3 class="text-base font-semibold text-token">
+                        {{ $truck->plate_number }}
+                        <span class="font-normal">· {{ $truck->brand }} {{ $truck->model }}</span>
+                    </h3>
+
+                    <p class="text-xs text-token">
+                        {{ __($truck->status) }} · {{ number_format($truck->mileage) }} km
+                    </p>
                 </div>
-                <div class="mt-3 grid grid-cols-2 gap-4 text-xs text-token ">
-                    <div>
-                        <p class="font-semibold text-token ">Próximo mantenimiento</p>
-                        <p>{{ optional($truck->next_maintenance)->format('d/m/Y') ?? 'No programado' }}</p>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-semibold text-token ">Asignaciones activas</p>
-                            <p>{{ $truck->active_assignments_count }}</p>
-                        </div>
-                        <span @class([
-                            'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
-                            'bg-success-soft text-success-strong ' => $truck->alert_level === 'ok',
-                            'bg-warning-soft text-warning ' => $truck->alert_level === 'warning',
-                            'bg-danger-soft text-danger-strong ' => $truck->alert_level === 'danger',
-                        ]) class="shrink-0">
-                            @switch($truck->alert_level)
-                                @case('danger') Requiere mantenimiento inmediato @break
-                                @case('warning') Mantenimiento próximo @break
-                                @default Al día
-                            @endswitch
-                        </span>
-                    </div>
+
+                {{-- Chip de estado / alerta principal --}}
+                <span
+                    @class([
+                        'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shrink-0',
+                        'bg-success-soft text-success-strong' => $truck->alert_level === 'ok',
+                        'bg-warning-soft text-warning'        => $truck->alert_level === 'warning',
+                        'bg-danger-soft text-danger-strong'   => $truck->alert_level === 'danger',
+                    ])
+                >
+                    @switch($truck->alert_level)
+                        @case('danger') Requiere mantenimiento inmediato @break
+                        @case('warning') Mantenimiento próximo @break
+                        @default Al día
+                    @endswitch
+                </span>
+            </header>
+
+            {{-- DATOS RÁPIDOS --}}
+            <div class="grid grid-cols-2 gap-4 text-xs text-token">
+                <div class="space-y-1">
+                    <p class="font-semibold text-token">Próximo mantenimiento</p>
+                    <p class="text-sm">
+                        {{ optional($truck->next_maintenance)->format('d/m/Y') ?? 'No programado' }}
+                    </p>
                 </div>
-                <div class="mt-3">
-                    @if($truck->document_alerts->isNotEmpty())
-                        <div class="alert alert-warning ">
-                            <p class="font-semibold">Documentos por atender:</p>
-                            <ul class="mt-1 list-disc space-y-1 pl-4">
-                                @foreach($truck->document_alerts as $document)
-                                    <li>{{ $document->type_label }} · {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @else
-                        <div class="min-h-[80px]"></div>
-                    @endif
+
+                <div class="space-y-1 text-right">
+                    <p class="font-semibold text-token">Asignaciones activas</p>
+                    <p class="text-sm">{{ $truck->active_assignments_count }}</p>
                 </div>
+            </div>
+
+            {{-- ALERTAS DOCUMENTARIAS / RELLENO PARA ALTURA --}}
+            <div class="mt-2">
+                @if($truck->document_alerts->isNotEmpty())
+                    <div class="rounded-xl border border-warning-soft bg-warning-soft/40 px-4 py-3 text-xs">
+                        <p class="font-semibold mb-1">Documentos por atender:</p>
+                        <ul class="list-disc space-y-1 pl-4">
+                            @foreach($truck->document_alerts as $document)
+                                <li>
+                                    {{ $document->type_label }} ·
+                                    {{ optional($document->expires_at)->format('d/m/Y') ?? 'Sin fecha' }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @else
+                    {{-- mantiene altura similar entre cards sin mostrar nada feo --}}
+                    <div class="min-h-[64px]"></div>
+                @endif
+            </div>
         </article>
         @empty
-        <div class="rounded-2xl border border-dashed border-token bg-elevated p-6 text-center text-sm text-token ">
-            No se encontraron camiones con los filtros actuales.
-        </div>
+            <div class="rounded-2xl border border-dashed border-token bg-elevated p-6 text-center text-sm text-token">
+                No se encontraron camiones con los filtros actuales.
+            </div>
         @endforelse
     </div>
     </section>
@@ -149,7 +172,9 @@
 
         <div class="space-y-3">
             @forelse ($drivers as $driver)
-            <article class="rounded-2xl border border-token bg-elevated p-4 shadow-sm transition hover:border-[color:var(--color-primary-border)] hover:shadow-md ">
+                <article
+                    class="group flex flex-col justify-between gap-4 rounded-2xl border border-token/60 bg-elevated/80 p-4 shadow-sm backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:shadow-lg"
+                >
                     <div class="flex items-start justify-between">
                         <div>
                             <h3 class="text-base font-semibold text-token ">{{ $driver->full_name }}</h3>
