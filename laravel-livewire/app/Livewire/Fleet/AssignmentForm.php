@@ -21,7 +21,7 @@ class AssignmentForm extends Component
     use AuthorizesRequests;
 
     public Assignment $assignment;
-    public AssignmentService $assignmentService;
+    protected AssignmentService $assignmentService;
     public bool $isEdit = false;
     public array $form = [];
     public $trucks = [];
