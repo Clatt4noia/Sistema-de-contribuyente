@@ -3,21 +3,21 @@
  <div>
  <h1 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Chofer' : 'Registrar Chofer' }}</h1>
 
- @if ($licenseValidity)
- <p class="mt-2 text-sm text-token ">
- <span class="font-medium">Vigencia de licencia:</span>
- <span
+        @if ($this->licenseValidity)
+            <p class="mt-2 text-sm text-token ">
+                <span class="font-medium">Vigencia de licencia:</span>
+                <span
             @class([
                 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm transition border',
-                $licenseValidity['status_class'],
+                    $this->licenseValidity['status_class'],
             ])
- >
+        >
 
- {{ $licenseValidity['formatted_date'] }}
- ({{ $licenseValidity['status_label'] }})
- </span>
- </p>
- @endif
+                    {{ $this->licenseValidity['formatted_date'] }}
+                    ({{ $this->licenseValidity['status_label'] }})
+                </span>
+            </p>
+        @endif
  </div>
 
     <a
