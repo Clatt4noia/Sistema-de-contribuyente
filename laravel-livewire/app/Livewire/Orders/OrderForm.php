@@ -14,7 +14,7 @@ class OrderForm extends Component
     use AuthorizesRequests;
 
     public Order $order;
-    public SaveOrderAction $saveOrderAction;
+    protected SaveOrderAction $saveOrderAction;
     public bool $isEdit = false;
     public array $form = [];
     public array $routePlan = [
