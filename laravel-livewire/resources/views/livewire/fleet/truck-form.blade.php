@@ -28,7 +28,7 @@
  </div>
 
  <div class="form-field">
- <label for="year" class="form-label">Ano</label>
+ <label for="year" class="form-label">Año</label>
  <input type="number" id="year" wire:model.defer="form.year" class="form-control">
  @error('form.year') <span class="form-error">{{ $message }}</span> @enderror
  </div>
