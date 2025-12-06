@@ -28,6 +28,15 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
+    @if (config('mail.default') === 'log')
+        <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            <p class="font-semibold">{{ __('Emails are not delivered in this environment.') }}</p>
+            <p class="mt-2 leading-relaxed">
+                {{ __('Password reset links are written to :path. Open the latest entry and look for "Reset Password Notification" to copy the URL.', ['path' => storage_path('logs/laravel.log')]) }}
+            </p>
+        </div>
+    @endif
+
     <form method="POST" wire:submit="sendPasswordResetLink" class="space-y-6">
         <!-- Email Address -->
         <div class="form-field">
