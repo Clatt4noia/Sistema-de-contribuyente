@@ -103,8 +103,20 @@ class Report extends Component
             ->take(5)
             ->get();
 
-        $topDrivers = Driver::withCount(['assignments' => function ($query) {
-                $query->whereBetween('start_date', [now()->startOfMonth(), now()->endOfMonth()]);
+        $monthStart = now()->startOfMonth();
+        $monthEnd = now()->endOfMonth();
+
+        $topDrivers = Driver::withCount(['assignments as assignments_count' => function ($query) use ($monthStart, $monthEnd) {
+                $query->where(function ($query) use ($monthStart, $monthEnd) {
+                    $query->whereBetween('start_date', [$monthStart, $monthEnd])
+                        ->orWhereBetween('end_date', [$monthStart, $monthEnd])
+                        ->orWhere(function ($query) use ($monthStart, $monthEnd) {
+                            $query->where('start_date', '<=', $monthStart)
+                                ->where(function ($query) use ($monthEnd) {
+                                    $query->whereNull('end_date')->orWhere('end_date', '>=', $monthEnd);
+                                });
+                        });
+                });
             }])
             ->orderByDesc('assignments_count')
             ->take(5)
