@@ -3,7 +3,7 @@
 namespace Tests\Feature\Authorization;
 
 use App\Enums\UserRole;
-use App\Livewire\Finance\TransactionList;
+use App\Domains\Finance\Livewire\TransactionList;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Billing\SunatWebhookController;
+use App\Domains\Billing\Http\Controllers\SunatWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
