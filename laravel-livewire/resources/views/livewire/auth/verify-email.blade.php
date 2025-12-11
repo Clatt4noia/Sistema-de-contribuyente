@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Auth\Actions\Logout;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;

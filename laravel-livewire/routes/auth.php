@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Auth\Actions\Logout;
+
 use App\Domains\Auth\Http\Controllers\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
