@@ -5,8 +5,9 @@ namespace App\Domains\Billing\Http\Controllers;
 use App\Exports\SunatStatusExport;
 use App\Exports\Pdf\SunatStatusPdfExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Billing\SunatDashboardFilterRequest;
-use App\Support\Billing\SunatStatusAggregator;
+use App\Domains\Billing\Http\Requests\SunatDashboardFilterRequest;
+use App\Domains\Billing\Support\SunatStatusAggregator;
+
 
 class SunatDashboardExportController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Billing;
+namespace App\Domains\Billing\Support;
 
 use App\Models\Invoice;
 use App\Models\TransportGuide;

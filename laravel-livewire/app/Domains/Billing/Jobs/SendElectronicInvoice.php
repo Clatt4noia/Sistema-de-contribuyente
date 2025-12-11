@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Domains\Billing\Jobs;
 
+use App\Domains\Billing\Services\DigitalSignatureService;
+use App\Domains\Billing\Services\SunatInvoiceBuilder;
+use App\Domains\Billing\Services\SunatSender;
 use App\Models\Invoice;
-use App\Services\Billing\DigitalSignatureService;
-use App\Services\Billing\SunatInvoiceBuilder;
-use App\Services\Billing\SunatSender;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

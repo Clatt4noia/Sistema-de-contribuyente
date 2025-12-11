@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Billing;
 
-use App\Services\Billing\SunatSender;
+use App\Domains\Billing\Services\SunatSender;
 use Tests\TestCase;
 use ZipArchive;
 

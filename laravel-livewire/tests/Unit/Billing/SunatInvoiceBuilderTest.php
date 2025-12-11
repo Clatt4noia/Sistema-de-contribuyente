@@ -3,7 +3,7 @@
 namespace Tests\Unit\Billing;
 
 use App\Models\Invoice;
-use App\Services\Billing\SunatInvoiceBuilder;
+use App\Domains\Billing\Services\SunatInvoiceBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

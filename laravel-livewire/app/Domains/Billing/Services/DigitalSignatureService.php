@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Billing;
+namespace App\Domains\Billing\Services;
 
 use DOMDocument;
 use DOMXPath;

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Billing;
 
-use App\Services\Billing\DigitalSignatureService;
+use App\Domains\Billing\Services\DigitalSignatureService;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 

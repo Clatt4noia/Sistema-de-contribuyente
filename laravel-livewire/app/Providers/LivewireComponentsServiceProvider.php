@@ -10,7 +10,8 @@ class LivewireComponentsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $components = [
-            'actions.logout' => \App\Domains\Actions\Logout::class,
+            'actions.logout' => \App\Domains\Auth\Actions\Logout::class,
+
             'billing.create-invoice' => \App\Domains\Billing\Livewire\CreateInvoice::class,
             'billing.electronic-invoice-form' => \App\Domains\Billing\Livewire\ElectronicInvoiceForm::class,
             'billing.invoice-file-downloader' => \App\Domains\Billing\Livewire\InvoiceFileDownloader::class,

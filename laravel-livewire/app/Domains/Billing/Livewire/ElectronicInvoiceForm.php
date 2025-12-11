@@ -2,7 +2,8 @@
 
 namespace App\Domains\Billing\Livewire;
 
-use App\Actions\Billing\SendElectronicInvoiceAction;
+use App\Domains\Billing\Actions\SendElectronicInvoiceAction;
+
 use App\Models\Invoice;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;

@@ -2,7 +2,8 @@
 
 namespace App\Domains\Billing\Livewire;
 
-use App\Jobs\SendElectronicInvoice;
+use App\Domains\Billing\Jobs\SendElectronicInvoice;
+
 use App\Models\CargoType;
 
 use App\Models\Client;

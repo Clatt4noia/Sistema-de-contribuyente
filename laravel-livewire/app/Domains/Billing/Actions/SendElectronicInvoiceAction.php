@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Actions\Billing;
+namespace App\Domains\Billing\Actions;
 
-use App\Jobs\SendElectronicInvoice;
+use App\Domains\Billing\Jobs\SendElectronicInvoice;
 use App\Models\Client;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Config;

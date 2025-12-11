@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Billing;
+namespace App\Domains\Billing\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

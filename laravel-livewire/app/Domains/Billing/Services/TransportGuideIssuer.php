@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Billing;
+namespace App\Domains\Billing\Services;
 
 use App\Models\TransportGuide;
 use DOMDocument;
