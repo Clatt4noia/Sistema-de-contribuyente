@@ -3,7 +3,7 @@
 namespace Tests\Feature\Billing;
 
 use App\Models\User;
-use App\Support\Billing\SunatStatusAggregator;
+use App\Domains\Billing\Support\SunatStatusAggregator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Mockery;

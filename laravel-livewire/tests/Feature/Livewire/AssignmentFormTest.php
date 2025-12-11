@@ -3,7 +3,7 @@
 namespace Tests\Feature\Livewire;
 
 use App\Enums\UserRole;
-use App\Livewire\Fleet\AssignmentForm;
+use App\Domains\Fleet\Livewire\AssignmentForm;
 use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\Order;

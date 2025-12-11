@@ -65,7 +65,7 @@
 
 ## 5. Arquitectura de aplicación
 - **Capa de presentación**: Livewire Volt para formularios y listados reactivos, componentes Blade compartidos (`components.layouts.dashboard`).
-- **Capa de dominio**: servicios (`App\Services\Fleet`, `App\Services\Logistics`, `App\Services\Billing`) orquestan reglas y transacciones.
+- **Capa de dominio**: servicios (`App\Services\Fleet`, `App\Services\Logistics`, `App\Domains\Billing\Services`) orquestan reglas y transacciones.
 - **Capa de infraestructura**: repositorios para integraciones externas (SUNAT, GPS, pasarelas), jobs en cola (`ProcessInvoice`, `SyncTelematicsEvent`).
 - **Eventos y listeners**: `OrderAssigned`, `InvoiceIssued`, `PaymentReceived` alimentan notificaciones, reportes y auditoría.
 - **Observabilidad**: logging estructurado (Monolog JSON), métricas (Prometheus via Horizon), tracing (OpenTelemetry exporter).

@@ -25,12 +25,12 @@
 
 ## 3. Servicios de facturación electrónica
 1. **Generación UBL 2.1**
-   - Crear servicio `App\Services\Billing\SunatInvoiceBuilder` que construya XML UBL 2.1 usando catálogos SUNAT y formateo PEN.
+   - Crear servicio `App\Domains\Billing\Services\SunatInvoiceBuilder` que construya XML UBL 2.1 usando catálogos SUNAT y formateo PEN.
    - Validar campos obligatorios antes de generar el XML mediante `FormRequest` dedicado (`StoreElectronicInvoiceRequest`).
 2. **Firma digital**
-   - Implementar `App\Services\Billing\DigitalSignatureService` que firme el XML con el certificado PFX usando `xmlseclibs`.
+   - Implementar `App\Domains\Billing\Services\DigitalSignatureService` que firme el XML con el certificado PFX usando `xmlseclibs`.
 3. **Envío y recepción**
-   - Desarrollar `App\Services\Billing\SunatSender` que encapsule SOAP/REST a SUNAT (`sendBill`, `sendSummary`, `getStatus`).
+   - Desarrollar `App\Domains\Billing\Services\SunatSender` que encapsule SOAP/REST a SUNAT (`sendBill`, `sendSummary`, `getStatus`).
    - Registrar cada interacción en `SunatLog` con request/response y códigos de error.
 4. **Procesamiento de respuesta**
    - Guardar el CDR (zip) retornado, parsear el status y actualizar `estado_sunat` (Aceptado, Rechazado, Pendiente) y `mensaje_sunat`.

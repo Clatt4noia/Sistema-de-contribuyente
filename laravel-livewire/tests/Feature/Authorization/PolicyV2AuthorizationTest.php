@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Authorization;
 
-use App\Livewire\Billing\InvoiceForm;
-use App\Livewire\Billing\PaymentList;
-use App\Livewire\Fleet\TruckList;
+use App\Domains\Billing\Livewire\InvoiceForm;
+use App\Domains\Billing\Livewire\PaymentList;
+use App\Domains\Fleet\Livewire\TruckList;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
