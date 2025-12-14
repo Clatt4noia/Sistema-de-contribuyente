@@ -152,12 +152,7 @@ class CreateInvoice extends Component
     {
         $this->operationType = $value;
 
-        $profile = $this->operationTaxProfile($this->operationType);
-
-        foreach ($this->invoiceItems as $index => $item) {
-            $this->invoiceItems[$index]['tax_percentage'] = $profile['percentage'];
-            $this->invoiceItems[$index]['tax_exemption_reason'] = $profile['exemption_reason'];
-            $this->invoiceItems[$index]['tax_code'] = $profile['tax_code'];
+        foreach (array_keys($this->invoiceItems) as $index) {
 
             $this->recalculateItem($index);
         }
@@ -358,9 +353,7 @@ class CreateInvoice extends Component
             'unit_price' => $unitPrice > 0 ? $unitPrice : 0,
             'unit_code' => 'ZZ',
             'price_type_code' => '01',
-            'tax_percentage' => $profile['percentage'],
-            'tax_exemption_reason' => $profile['exemption_reason'],
-            'tax_code' => $profile['tax_code'],
+
             'sku' => 'ORD-'.$order->getKey(),
             'cargo_type' => $cargoTypeName,
             'cargo_type_id' => $order->cargo_type_id,
@@ -603,9 +596,16 @@ class CreateInvoice extends Component
             return;
         }
 
+        $profile = $this->operationTaxProfile($this->operationType);
+
+        $this->invoiceItems[$index]['tax_percentage'] = $profile['percentage'];
+        $this->invoiceItems[$index]['tax_exemption_reason'] = $profile['exemption_reason'];
+        $this->invoiceItems[$index]['tax_code'] = $profile['tax_code'];
+        $this->invoiceItems[$index]['price_type_code'] = $profile['price_type_code'];
+
         $quantity = (float) ($this->invoiceItems[$index]['quantity'] ?? 1);
         $unitPrice = (float) ($this->invoiceItems[$index]['unit_price'] ?? 0);
-        $taxPercentage = (float) ($this->invoiceItems[$index]['tax_percentage'] ?? 18);
+        $taxPercentage = (float) $profile['percentage'];
 
         $taxable = round($quantity * $unitPrice, 2);
         $taxAmount = round($taxable * ($taxPercentage / 100), 2);
@@ -632,6 +632,8 @@ class CreateInvoice extends Component
                 'percentage' => 0.0,
                 'exemption_reason' => '40',
                 'tax_code' => 'O',
+                'price_type_code' => '01',
+
             ];
         }
 
@@ -640,6 +642,8 @@ class CreateInvoice extends Component
                 'percentage' => $this->taxRate,
                 'exemption_reason' => '10',
                 'tax_code' => 'S',
+                'price_type_code' => '01',
+
             ];
         }
 
@@ -647,6 +651,8 @@ class CreateInvoice extends Component
             'percentage' => $this->taxRate,
             'exemption_reason' => '10',
             'tax_code' => 'S',
+            'price_type_code' => '01',
+
         ];
     }
 
