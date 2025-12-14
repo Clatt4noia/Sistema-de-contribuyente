@@ -98,10 +98,11 @@ class CreateInvoice extends Component
 
     protected float $taxRate = 18.0;
 
-private function normalizeDocType(string|int|null $value): string
+    private function normalizeDocType(string|int|null $value): string
     {
         $v = (string) ($value ?? '');
         $v = preg_replace('/\D+/', '', $v) ?: $v; // por si viniera raro
+
         return str_pad($v, 2, '0', STR_PAD_LEFT); // 8 -> "08", 7 -> "07"
     }
 
@@ -768,16 +769,16 @@ private function normalizeDocType(string|int|null $value): string
         ];
     }
 
- protected function defaultSeriesForDocument(string $documentType): string
-{
-    return match ($documentType) {
-        '01' => 'F001', // Factura
-        '03' => 'B001', // Boleta
-        '07' => 'FC01', // Nota de crédito (ajusta a tu estándar)
-        '08' => 'FD01', // Nota de débito  (ajusta a tu estándar)
-        default => 'F001',
-    };
-}
+    protected function defaultSeriesForDocument(string $documentType): string
+    {
+        return match ($documentType) {
+            '01' => 'F001', // Factura
+            '03' => 'B001', // Boleta
+            '07' => 'FC01', // Nota de crédito (ajusta a tu estándar)
+            '08' => 'FD01', // Nota de débito  (ajusta a tu estándar)
+            default => 'F001',
+        };
+    }
 
 
     protected function suggestNextCorrelative(): string

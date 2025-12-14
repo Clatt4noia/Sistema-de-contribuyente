@@ -44,17 +44,16 @@
             @error('operationType') <span class="form-error">{{ $message }}</span> @enderror
           </div>
 
-         <div class="form-field">
+          <div class="form-field">
             <label class="form-label">Serie</label>
-           <input
-                type="text"
-                wire:model="series"
-                maxlength="4"
-                class="form-control uppercase cursor-not-allowed bg-surface-muted text-token-muted"
-                readonly
-                />
-
-            </div>
+            <input
+              type="text"
+              wire:model="series"
+              maxlength="4"
+              class="form-control uppercase cursor-not-allowed bg-surface-muted text-token-muted"
+              readonly
+            />
+          </div>
 
 
           <div class="form-field">
