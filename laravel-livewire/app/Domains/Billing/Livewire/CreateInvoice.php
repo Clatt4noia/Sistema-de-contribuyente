@@ -96,51 +96,33 @@ class CreateInvoice extends Component
 
     public float $total = 0.0;
 
-    protected float $taxRate = 0.0;
+    protected float $taxRate = 18.0;
+
+private function normalizeDocType(string|int|null $value): string
+    {
+        $v = (string) ($value ?? '');
+        $v = preg_replace('/\D+/', '', $v) ?: $v; // por si viniera raro
+        return str_pad($v, 2, '0', STR_PAD_LEFT); // 8 -> "08", 7 -> "07"
+    }
 
     public function mount(): void
     {
-        $this->taxRate = (float) Config::get('billing.tax_rate', 18);
-        $this->issueDate = now()->format('Y-m-d');
-        $this->dueDate = now()->format('Y-m-d');
-
-        $this->operationType = $this->operationTypes[0]['code'] ?? '0101';
-
-
-        $this->cargoTypes = CargoType::query()
-            ->orderBy('name')
-            ->get(['id', 'name', 'code', 'is_hazardous'])
-            ->map(fn (CargoType $type) => [
-                'id' => $type->getKey(),
-                'name' => $type->name,
-                'code' => $type->code,
-                'is_hazardous' => $type->is_hazardous,
-            ])
-            ->all();
-
-
-        $this->documentType = SunatDocumentType::query()
-            ->orderBy('code')
-            ->value('code') ?? '01';
+        // ...
+        $raw = SunatDocumentType::query()->orderBy('code')->value('code') ?? '01';
+        $this->documentType = $this->normalizeDocType($raw);
 
         $this->series = $this->defaultSeriesForDocument($this->documentType);
         $this->correlative = $this->suggestNextCorrelative();
     }
 
-    public function updatedDocumentType(string $value): void
+    public function updatedDocumentType($value): void
     {
-        $this->documentType = $value;
+        $this->documentType = $this->normalizeDocType($value);
 
-        if ($value === '03' && Str::startsWith($this->series, 'F')) {
-            $this->series = 'B001';
-        }
-
-        if ($value !== '03' && Str::startsWith($this->series, 'B')) {
-            $this->series = 'F001';
-        }
-
+        $this->series = $this->defaultSeriesForDocument($this->documentType);
         $this->correlative = $this->suggestNextCorrelative();
     }
+
 
     public function updatedSeries(string $value): void
     {
@@ -648,36 +630,49 @@ class CreateInvoice extends Component
 
     protected function operationTaxProfile(string $operationType): array
     {
+        // Operaciones GRAVADAS (18%)
         $taxableOperations = ['01', '04', '05', '06', '07', '08', '10', '11', '12'];
 
-        if (in_array($operationType, ['02', '03'], true)) {
+        // Exportación -> 0% con código 40
+        if ($operationType === '02') {
             return [
                 'percentage' => 0.0,
-                'exemption_reason' => '40',
-                'tax_code' => 'O',
+                'exemption_reason' => '40', // Exportación
+                'tax_code' => 'O',          // (según tu builder)
                 'price_type_code' => '01',
-
             ];
         }
 
+        // No domiciliados -> PARA TU CASO (servicio local) debe seguir GRAVADO 18%
+        // Si más adelante manejas servicios realmente exportados, eso debe venir por afectación IGV por ítem, no por operación.
+        if ($operationType === '03') {
+            return [
+                'percentage' => $this->taxRate, // 18
+                'exemption_reason' => '10',     // Gravado
+                'tax_code' => 'S',
+                'price_type_code' => '01',
+            ];
+        }
+
+        // Venta interna y similares -> gravado
         if (in_array($operationType, $taxableOperations, true)) {
             return [
-                'percentage' => $this->taxRate,
+                'percentage' => $this->taxRate, // 18
                 'exemption_reason' => '10',
                 'tax_code' => 'S',
                 'price_type_code' => '01',
-
             ];
         }
 
+        // Default seguro -> gravado
         return [
             'percentage' => $this->taxRate,
             'exemption_reason' => '10',
             'tax_code' => 'S',
             'price_type_code' => '01',
-
         ];
     }
+
 
     public function getCurrencySymbolProperty(): string
     {
@@ -773,10 +768,17 @@ class CreateInvoice extends Component
         ];
     }
 
-    protected function defaultSeriesForDocument(string $documentType): string
-    {
-        return $documentType === '03' ? 'B001' : 'F001';
-    }
+ protected function defaultSeriesForDocument(string $documentType): string
+{
+    return match ($documentType) {
+        '01' => 'F001', // Factura
+        '03' => 'B001', // Boleta
+        '07' => 'FC01', // Nota de crédito (ajusta a tu estándar)
+        '08' => 'FD01', // Nota de débito  (ajusta a tu estándar)
+        default => 'F001',
+    };
+}
+
 
     protected function suggestNextCorrelative(): string
     {

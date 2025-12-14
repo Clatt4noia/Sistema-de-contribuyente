@@ -1,216 +1,289 @@
 <div class="space-y-6">
- <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
- <div>
- <h1 class="text-2xl font-semibold text-token ">Emitir comprobante SUNAT</h1>
-    <p class="text-sm text-token-muted ">Complete los datos para generar la factura electrónica.</p>
- </div>
- <div class="flex flex-wrap items-center gap-3">
-    <button type="button" wire:click="$dispatch('open-client-modal')"
-        class="btn btn-primary">
+  <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-token">Emitir comprobante SUNAT</h1>
+      <p class="text-sm text-token-muted">Complete los datos para generar la factura electrónica.</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <button type="button" wire:click="$dispatch('open-client-modal')" class="btn btn-primary">
         <x-heroicon-o-user-plus class="h-4 w-4" />
         Nuevo cliente
-    </button>
-    <a href="{{ route('billing.invoices.index') }}"
-        class="btn btn-secondary">
+      </button>
+
+      <a href="{{ route('billing.invoices.index') }}" class="btn btn-secondary">
         Volver
-    </a>
- </div>
- </div>
+      </a>
+    </div>
+  </div>
 
- <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
- <div class="space-y-6">
- <div class="surface-card space-y-6 p-6 shadow-lg">
- <h2 class="text-lg font-semibold text-token ">Datos del comprobante</h2>
- <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
+    <div class="space-y-6">
+      {{-- DATOS DEL COMPROBANTE --}}
+      <div class="surface-card space-y-6 p-6 shadow-lg">
+        <h2 class="text-lg font-semibold text-token">Datos del comprobante</h2>
 
- <div class="form-field">
- <label class="form-label">Tipo de comprobante</label>
- <select wire:model="documentType" class="form-control">
- @foreach($documentTypes as $type)
- <option value="{{ $type->code }}">{{ $type->sunat_name ?? $type->description }}</option>
- @endforeach
- </select>
- @error('documentType') <span class="form-error">{{ $message }}</span> @enderror
- </div>
- <div class="form-field">
- <label class="form-label">Tipo de operación</label>
- <select wire:model="operationType" class="form-control">
- @foreach($operationTypes as $operation)
- <option value="{{ $operation['code'] }}">{{ $operation['code'] }} - {{ $operation['label'] }}</option>
- @endforeach
- </select>
- @error('operationType') <span class="form-error">{{ $message }}</span> @enderror
- </div>
- <div class="form-field">
-
- <label class="form-label">Serie</label>
- <input type="text" wire:model="series" maxlength="4" class="form-control uppercase" />
- @error('series') <span class="form-error">{{ $message }}</span> @enderror
- </div>
- <div class="form-field">
- <label class="form-label">Correlativo</label>
-    <input type="text" value="{{ $correlative }}" readonly class="form-control cursor-not-allowed bg-surface-muted text-token-muted" />
- </div>
- <div class="form-field">
- <label class="form-label">Moneda</label>
- <select wire:model="currency" class="form-control">
- <option value="PEN">Soles (PEN)</option>
- <option value="USD">Dólares (USD)</option>
- </select>
- @error('currency') <span class="form-error">{{ $message }}</span> @enderror
- </div>
- <div class="form-field">
- <label class="form-label">Fecha de emisión</label>
- <input type="date" wire:model="issueDate" class="form-control" />
- @error('issueDate') <span class="form-error">{{ $message }}</span> @enderror
- </div>
- <div class="form-field">
- <label class="form-label">Fecha de vencimiento</label>
- <input type="date" wire:model="dueDate" class="form-control" />
- @error('dueDate') <span class="form-error">{{ $message }}</span> @enderror
- </div>
- </div>
- </div>
-
- <div class="surface-card space-y-6 p-6 shadow-lg">
-      <h2 class="text-lg font-semibold text-token ">Cliente</h2>
-      <div class="space-y-3">
-        <div class="relative">
-          <input type="text" wire:model.live.debounce.300ms="clientSearch" placeholder="Buscar por RUC o razón social"
-            class="form-control" />
-        </div>
-        @error('clientSearch') <span class="form-error">{{ $message }}</span> @enderror
-        <p class="text-xs text-token-muted ">El cliente se carga automáticamente al ingresar un RUC válido y único. Si no existe o está duplicado, se mostrará un mensaje de error.</p>
-
-        @if($selectedClient)
-          <div class="rounded-xl border border-token bg-surface p-4 text-sm text-token ">
-            <div class="font-semibold text-token ">{{ $selectedClient['name'] }}</div>
-            <div class="text-xs uppercase tracking-wide text-token-muted ">{{ $selectedClient['document'] }}</div>
-            @if($selectedClient['billing_address'])
- <p class="mt-2 text-xs">{{ $selectedClient['billing_address'] }}</p>
- @endif
- <div class="mt-2 flex flex-wrap gap-4 text-xs">
- @if($selectedClient['email'])
- <span class="flex items-center gap-1"><x-heroicon-o-envelope class="h-4 w-4" /> {{ $selectedClient['email'] }}</span>
- @endif
- @if($selectedClient['phone'])
- <span class="flex items-center gap-1"><x-heroicon-o-phone class="h-4 w-4" /> {{ $selectedClient['phone'] }}</span>
- @endif
- </div>
- </div>
- @endif
- </div>
- </div>
-
- <div class="surface-card space-y-6 p-6 shadow-lg overflow-visible">
-  <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-    <h2 class="text-lg font-semibold text-token">Pedidos a facturar</h2>
-
-    <div class="grid w-full gap-4 md:w-auto md:grid-cols-[minmax(0,1fr)_220px] md:items-end">
-      {{-- BUSCAR PEDIDO --}}
-      <div class="form-field md:mb-0">
-        <label class="form-label">Buscar pedido</label>
-
-        <div class="relative overflow-visible">
-          <input
-            type="text"
-            wire:model.live.debounce.300ms="orderSearch"
-            placeholder="Buscar pedido por referencia, origen o destino"
-            class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
-            @disabled(!$selectedClient)
-          />
-
-          @if($selectedClient && !empty($orderResults))
-            <ul
-              class="absolute left-0 right-0 z-50 mt-1
-                     rounded-xl border border-token bg-elevated shadow-xl
-
-                     max-h-[min(70vh,32rem)]
-                     overflow-y-auto overscroll-contain"
-            >
-              @foreach($orderResults as $order)
-                <li>
-                  <button
-                    type="button"
-                    wire:click="addOrder({{ $order['id'] }})"
-                    class="btn btn-ghost btn-sm w-full flex-col items-start gap-1 text-left"
-                  >
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span class="font-medium text-token">
-                        Pedido {{ $order['reference'] }}
-                      </span>
-
-                      @if($order['cargo_type'])
-                        <span class="inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5
-                                     text-[11px] font-semibold uppercase tracking-wide text-token">
-                          {{ $order['cargo_type'] }}
-
-                          @if($order['is_hazardous'])
-                            <x-heroicon-o-exclamation-triangle class="h-3 w-3 text-warning" />
-                          @endif
-                        </span>
-                      @endif
-                    </div>
-
-                    @if($order['origin'] || $order['destination'])
-                      <span class="text-xs text-token">
-                        @if($order['origin']) Origen: {{ $order['origin'] }} @endif
-                        @if($order['destination'])
-                          <span class="ml-1">Destino: {{ $order['destination'] }}</span>
-                        @endif
-                      </span>
-                    @endif
-
-                    <span class="text-xs text-token">
-                      {{ $this->currencySymbol }} {{ number_format($order['estimated_cost'], 2) }}
-                    </span>
-
-                    @if($order['pickup_date'] || $order['status_label'])
-                      <span class="text-xs text-token-muted">
-                        @if($order['pickup_date']) Recojo: {{ $order['pickup_date'] }} @endif
-                        @if($order['status_label'])
-                          <span class="ml-1 inline-flex items-center rounded-full bg-surface-muted px-2 py-0.5
-                                       text-[10px] font-semibold uppercase tracking-wide text-token">
-                            {{ $order['status_label'] }}
-                          </span>
-                        @endif
-                      </span>
-                    @endif
-                  </button>
-                </li>
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div class="form-field">
+            <label class="form-label">Tipo de comprobante</label>
+            <select wire:model="documentType" class="form-control">
+              @foreach($documentTypes as $type)
+                <option value="{{ $type->code }}">{{ $type->sunat_name ?? $type->description }}</option>
               @endforeach
-            </ul>
+            </select>
+            @error('documentType') <span class="form-error">{{ $message }}</span> @enderror
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Tipo de operación</label>
+            <select wire:model="operationType" class="form-control">
+              @foreach($operationTypes as $operation)
+                <option value="{{ $operation['code'] }}">{{ $operation['code'] }} - {{ $operation['label'] }}</option>
+              @endforeach
+            </select>
+            @error('operationType') <span class="form-error">{{ $message }}</span> @enderror
+          </div>
+
+         <div class="form-field">
+            <label class="form-label">Serie</label>
+           <input
+                type="text"
+                wire:model="series"
+                maxlength="4"
+                class="form-control uppercase cursor-not-allowed bg-surface-muted text-token-muted"
+                readonly
+                />
+
+            </div>
+
+
+          <div class="form-field">
+            <label class="form-label">Correlativo</label>
+            <input type="text" value="{{ $correlative }}" readonly
+              class="form-control cursor-not-allowed bg-surface-muted text-token-muted" />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Moneda</label>
+            <select wire:model="currency" class="form-control">
+              <option value="PEN">Soles (PEN)</option>
+              <option value="USD">Dólares (USD)</option>
+            </select>
+            @error('currency') <span class="form-error">{{ $message }}</span> @enderror
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Fecha de emisión</label>
+            <input type="date" wire:model="issueDate" class="form-control" />
+            @error('issueDate') <span class="form-error">{{ $message }}</span> @enderror
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Fecha de vencimiento</label>
+            <input type="date" wire:model="dueDate" class="form-control" />
+            @error('dueDate') <span class="form-error">{{ $message }}</span> @enderror
+          </div>
+        </div>
+      </div>
+
+      {{-- CLIENTE --}}
+      <div class="surface-card space-y-6 p-6 shadow-lg">
+        <h2 class="text-lg font-semibold text-token">Cliente</h2>
+
+        <div class="space-y-3">
+          <div class="relative">
+            <input
+              type="text"
+              wire:model.live.debounce.300ms="clientSearch"
+              placeholder="Buscar por RUC o razón social"
+              class="form-control"
+            />
+          </div>
+
+          @error('clientSearch') <span class="form-error">{{ $message }}</span> @enderror
+
+          @if($selectedClient)
+            <div class="rounded-xl border border-token bg-surface p-4 text-sm text-token">
+              <div class="font-semibold text-token">{{ $selectedClient['name'] }}</div>
+              <div class="text-xs uppercase tracking-wide text-token-muted">{{ $selectedClient['document'] }}</div>
+
+              @if($selectedClient['billing_address'])
+                <p class="mt-2 text-xs">{{ $selectedClient['billing_address'] }}</p>
+              @endif
+
+              <div class="mt-2 flex flex-wrap gap-4 text-xs">
+                @if($selectedClient['email'])
+                  <span class="flex items-center gap-1">
+                    <x-heroicon-o-envelope class="h-4 w-4" /> {{ $selectedClient['email'] }}
+                  </span>
+                @endif
+
+                @if($selectedClient['phone'])
+                  <span class="flex items-center gap-1">
+                    <x-heroicon-o-phone class="h-4 w-4" /> {{ $selectedClient['phone'] }}
+                  </span>
+                @endif
+              </div>
+            </div>
           @endif
         </div>
       </div>
 
-      {{-- TIPO DE CARGA --}}
-      <div class="form-field md:mb-0">
-        <label class="form-label">Tipo de carga</label>
-        <select
-          wire:model="cargoTypeFilter"
-          class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
-          @disabled(!$selectedClient)
-        >
-          <option value="">Todos los tipos</option>
-          @foreach($cargoTypes as $type)
-            <option value="{{ $type['id'] }}">{{ $type['name'] }}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-  </div>
-</div>
+      {{-- PEDIDOS A FACTURAR (BUSCADOR + RESULTADOS DENTRO) --}}
+      <div class="surface-card space-y-6 p-6 shadow-lg">
+        <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-token">Pedidos a facturar</h2>
+            <p class="text-xs text-token-muted">Busca y agrega pedidos pendientes del cliente seleccionado.</p>
+          </div>
+
+          <div class="grid w-full gap-4 md:w-auto md:grid-cols-[minmax(0,380px)_220px]">
+            <div class="form-field">
+              <label class="form-label">Buscar pedido</label>
+              <input
+                type="text"
+                wire:model.live.debounce.300ms="orderSearch"
+                placeholder="Referencia, origen o destino"
+                class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
+                @disabled(!$selectedClient)
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Tipo de carga</label>
+              <select
+                wire:model="cargoTypeFilter"
+                class="form-control {{ $selectedClient ? '' : 'cursor-not-allowed opacity-60' }}"
+                @disabled(!$selectedClient)
+              >
+                <option value="">Todos los tipos</option>
+                @foreach($cargoTypes as $type)
+                  <option value="{{ $type['id'] }}">{{ $type['name'] }}</option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {{-- Mensajes --}}
+        @if(!$selectedClient)
+          <p class="text-xs text-token">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
+        @elseif(empty($orderResults) && ($orderSearch !== '' || $cargoTypeFilter))
+          <p class="text-xs text-token">No se encontraron pedidos pendientes que coincidan con los filtros aplicados.</p>
+        @endif
+
+       {{-- Resultados dentro de la tarjeta --}}
+        @if($selectedClient && !empty($orderResults))
+        <div class="rounded-xl border border-token bg-elevated">
+            <div class="flex items-center justify-between px-4 py-3">
+            <span class="text-sm font-semibold text-token">Resultados</span>
+
+            <button
+                type="button"
+                class="text-xs text-token-muted hover:text-token"
+                wire:click="$set('orderSearch','')"
+            >
+                Limpiar
+            </button>
+            </div>
+
+            <div class="max-h-72 overflow-y-auto">
+            <ul class="divide-y divide-token">
+                @foreach($orderResults as $order)
+                <li>
+                    <button
+                    type="button"
+                    wire:click="addOrder({{ $order['id'] }})"
+                    class="group w-full text-left px-4 py-4
+                            transition
+                            hover:bg-surface-muted/40
+                            focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40
+                            active:bg-surface-muted/60"
+                    >
+                    <div class="flex items-start justify-between gap-4">
+                        {{-- IZQUIERDA --}}
+                        <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-base font-semibold text-token">
+                            Pedido {{ $order['reference'] }}
+                            </span>
+
+                            @if($order['cargo_type'])
+                            <span class="inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5
+                                        text-[11px] font-semibold uppercase tracking-wide text-token">
+                                {{ $order['cargo_type'] }}
+                                @if($order['is_hazardous'])
+                                <x-heroicon-o-exclamation-triangle class="h-3 w-3 text-warning" />
+                                @endif
+                            </span>
+                            @endif
+
+                            @if($order['status_label'])
+                            <span class="inline-flex items-center rounded-full bg-surface-muted px-2 py-0.5
+                                        text-[10px] font-semibold uppercase tracking-wide text-token">
+                                {{ $order['status_label'] }}
+                            </span>
+                            @endif
+                        </div>
+
+                        <div class="mt-1 text-sm text-token">
+                            @if($order['origin']) <span>Origen: {{ $order['origin'] }}</span> @endif
+                            @if($order['destination'])
+                            <span class="ml-3">Destino: {{ $order['destination'] }}</span>
+                            @endif
+                        </div>
+
+                        @if($order['pickup_date'])
+                            <div class="mt-1 text-xs text-token-muted">
+                            Recojo: {{ $order['pickup_date'] }}
+                            </div>
+                        @endif
+
+                        {{-- Hint de acción (solo aparece al hover/focus) --}}
+                        <div class="mt-2 flex items-center gap-2 text-xs text-token-muted
+                                    opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
+                            <span class="inline-flex items-center rounded-full bg-surface-muted px-2 py-0.5">
+                            Click para seleccionar
+                            </span>
+                        </div>
+                        </div>
+
+                        {{-- DERECHA --}}
+                        <div class="shrink-0 text-right">
+                        <div class="text-base font-bold text-token">
+                            {{ $this->currencySymbol }} {{ number_format($order['estimated_cost'], 2) }}
+                        </div>
+
+                        {{-- Indicador visual de selección (chevron) --}}
+                        <div class="mt-2 inline-flex items-center gap-2 text-xs text-token-muted">
+                            <span class="hidden sm:inline opacity-70 group-hover:opacity-100 transition">
+                            Seleccionar
+                            </span>
+                            <span
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-full
+                                    bg-surface-muted text-token
+                                    transition
+                                    group-hover:translate-x-0.5 group-hover:bg-surface
+                                    group-active:scale-95"
+                            aria-hidden="true"
+                            >
+                            ›
+                            </span>
+                        </div>
+                        </div>
+                    </div>
+                    </button>
+                </li>
+                @endforeach
+            </ul>
+            </div>
+        </div>
+        @endif
+        </div>
 
 
- @if(!$selectedClient)
- <p class="text-xs text-token ">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
- @elseif(empty($orderResults) && ($orderSearch !== '' || $cargoTypeFilter))
- <p class="text-xs text-token ">No se encontraron pedidos pendientes que coincidan con los filtros aplicados.</p>
- @endif
-
-
-      <div class="overflow-hidden rounded-xl border border-token shadow-sm ">
+      {{-- TABLA DE ÍTEMS (PEDIDOS AGREGADOS) --}}
+      <div class="overflow-hidden rounded-xl border border-token shadow-sm">
         <table class="table table-md">
           <thead>
             <tr class="table-row">
@@ -218,34 +291,45 @@
               <th class="table-header text-left">Descripción</th>
               <th class="table-header text-right">Precio unit.</th>
               <th class="table-header text-right">Base imponible</th>
-
               <th class="table-header text-right">Acciones</th>
             </tr>
           </thead>
+
           <tbody class="bg-elevated text-sm">
             @forelse($invoiceItems as $index => $item)
               <tr class="table-row" wire:key="item-{{ $item['order_id'] ?? $index }}">
+                <td class="table-cell">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    wire:model.lazy="invoiceItems.{{ $index }}.quantity"
+                    wire:change="updateQuantity({{ $index }}, $event.target.value)"
+                    class="form-control text-right"
+                  />
+                </td>
 
                 <td class="table-cell">
-                  <input type="number" min="0" step="0.01" wire:model.lazy="invoiceItems.{{ $index }}.quantity"
-                    wire:change="updateQuantity({{ $index }}, $event.target.value)"
-                    class="form-control text-right" />
-                </td>
-                <td class="table-cell">
-                  <div class="font-medium text-token ">{{ $item['description'] }}</div>
-                  <div class="text-xs text-token ">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
+                  <div class="font-medium text-token">{{ $item['description'] }}</div>
+                  <div class="text-xs text-token">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
+
                   @if(!empty($item['cargo_type']))
-                    <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-token ">
+                    <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-token">
                       {{ $item['cargo_type'] }}
                     </div>
                   @endif
                 </td>
-                <td class="table-cell text-right">{{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}</td>
-                <td class="table-cell text-right">{{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}</td>
 
                 <td class="table-cell text-right">
-                  <button type="button" wire:click="removeItem({{ $index }})"
-                    class="btn btn-danger btn-sm">
+                  {{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}
+                </td>
+
+                <td class="table-cell text-right">
+                  {{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}
+                </td>
+
+                <td class="table-cell text-right">
+                  <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger btn-sm">
                     <x-heroicon-o-trash class="h-4 w-4" />
                     Eliminar
                   </button>
@@ -261,44 +345,48 @@
           </tbody>
         </table>
       </div>
- @error('invoiceItems') <span class="form-error">{{ $message }}</span> @enderror
- </div>
- </div>
 
- <div class="space-y-6">
- <div class="surface-card space-y-4 p-6 shadow-lg">
- <h2 class="text-lg font-semibold text-token ">Totales</h2>
- <dl class="space-y-3 text-sm">
- <div class="flex items-center justify-between">
- <dt class="text-token ">Sub total</dt>
- <dd class="font-semibold text-token ">{{ $this->currencySymbol }} {{ number_format($subtotal, 2) }}</dd>
- </div>
- <div class="flex items-center justify-between">
- <dt class="text-token ">IGV ({{ rtrim(rtrim(number_format($this->taxRate, 2), '0'), '.') }}%)</dt>
- <dd class="font-semibold text-token ">{{ $this->currencySymbol }} {{ number_format($igv, 2) }}</dd>
- </div>
- <div class="flex items-center justify-between text-base">
- <dt class="font-semibold text-token ">Importe total</dt>
- <dd class="font-bold text-accent ">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
+      @error('invoiceItems') <span class="form-error">{{ $message }}</span> @enderror
+    </div>
 
- </div>
- </dl>
- </div>
+    {{-- COLUMNA DERECHA --}}
+    <div class="space-y-6">
+      <div class="surface-card space-y-4 p-6 shadow-lg">
+        <h2 class="text-lg font-semibold text-token">Totales</h2>
 
- <div class="surface-card p-6 shadow-lg">
-    <button type="button" wire:click="saveInvoice" wire:loading.attr="disabled"
-        class="btn btn-primary btn-lg w-full">
-        <span wire:loading.remove>Guardar y enviar</span>
-        <span wire:loading class="flex items-center gap-2">
- <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
- <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
- <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"></path>
- </svg>
- Procesando...
- </span>
- </button>
- @error('save') <span class="form-error mt-2 block">{{ $message }}</span> @enderror
- </div>
- </div>
- </div>
+        <dl class="space-y-3 text-sm">
+          <div class="flex items-center justify-between">
+            <dt class="text-token">Sub total</dt>
+            <dd class="font-semibold text-token">{{ $this->currencySymbol }} {{ number_format($subtotal, 2) }}</dd>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <dt class="text-token">IGV ({{ rtrim(rtrim(number_format($this->taxRate, 2), '0'), '.') }}%)</dt>
+            <dd class="font-semibold text-token">{{ $this->currencySymbol }} {{ number_format($igv, 2) }}</dd>
+          </div>
+
+          <div class="flex items-center justify-between text-base">
+            <dt class="font-semibold text-token">Importe total</dt>
+            <dd class="font-bold text-accent">{{ $this->currencySymbol }} {{ number_format($total, 2) }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="surface-card p-6 shadow-lg">
+        <button type="button" wire:click="saveInvoice" wire:loading.attr="disabled" class="btn btn-primary btn-lg w-full">
+          <span wire:loading.remove>Guardar y enviar</span>
+
+          <span wire:loading class="flex items-center gap-2">
+            <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"></path>
+            </svg>
+            Procesando...
+          </span>
+        </button>
+
+        @error('save') <span class="form-error mt-2 block">{{ $message }}</span> @enderror
+      </div>
+    </div>
+  </div>
 </div>
