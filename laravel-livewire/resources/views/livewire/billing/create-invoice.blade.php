@@ -73,32 +73,20 @@
  </div>
 
  <div class="surface-card space-y-6 p-6 shadow-lg">
- <h2 class="text-lg font-semibold text-token ">Cliente</h2>
- <div class="space-y-3">
- <div class="relative">
- <input type="text" wire:model.live.debounce.300ms="clientSearch" placeholder="Buscar por RUC o razón social"
- class="form-control" />
- @if(!empty($clientResults))
-        <ul class="absolute z-20 mt-1 w-full rounded-xl border border-token bg-elevated shadow-lg ">
- @foreach($clientResults as $client)
- <li>
-                    <button type="button" wire:click="selectClient({{ $client['id'] }})"
-                        class="btn btn-ghost btn-sm w-full justify-start text-left">
-                        <div class="font-medium text-token ">{{ $client['name'] }}</div>
-                        <div class="text-xs text-token-muted ">{{ $client['document'] }}</div>
-                    </button>
- </li>
- @endforeach
- </ul>
- @endif
- </div>
- @error('clientSearch') <span class="form-error">{{ $message }}</span> @enderror
+      <h2 class="text-lg font-semibold text-token ">Cliente</h2>
+      <div class="space-y-3">
+        <div class="relative">
+          <input type="text" wire:model.live.debounce.300ms="clientSearch" placeholder="Buscar por RUC o razón social"
+            class="form-control" />
+        </div>
+        @error('clientSearch') <span class="form-error">{{ $message }}</span> @enderror
+        <p class="text-xs text-token-muted ">El cliente se carga automáticamente al ingresar un RUC válido y único. Si no existe o está duplicado, se mostrará un mensaje de error.</p>
 
- @if($selectedClient)
-        <div class="rounded-xl border border-token bg-surface p-4 text-sm text-token ">
-          <div class="font-semibold text-token ">{{ $selectedClient['name'] }}</div>
-          <div class="text-xs uppercase tracking-wide text-token-muted ">{{ $selectedClient['document'] }}</div>
- @if($selectedClient['billing_address'])
+        @if($selectedClient)
+          <div class="rounded-xl border border-token bg-surface p-4 text-sm text-token ">
+            <div class="font-semibold text-token ">{{ $selectedClient['name'] }}</div>
+            <div class="text-xs uppercase tracking-wide text-token-muted ">{{ $selectedClient['document'] }}</div>
+            @if($selectedClient['billing_address'])
  <p class="mt-2 text-xs">{{ $selectedClient['billing_address'] }}</p>
  @endif
  <div class="mt-2 flex flex-wrap gap-4 text-xs">
