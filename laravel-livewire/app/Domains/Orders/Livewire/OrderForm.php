@@ -133,6 +133,9 @@ class OrderForm extends Component
             'cargo_details' => $this->order->cargo_details ?? '',
             'cargo_weight_kg' => $this->order->cargo_weight_kg,
             'cargo_volume_m3' => $this->order->cargo_volume_m3,
+            'estimated_distance_km' => $this->order->estimated_distance_km ?? null,
+            'estimated_duration_hours' => $this->order->estimated_duration_hours ?? null,
+
 
             // costo
             'estimated_cost' => $this->order->estimated_cost,

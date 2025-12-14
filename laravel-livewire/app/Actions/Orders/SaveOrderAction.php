@@ -55,13 +55,32 @@ class SaveOrderAction
 
     protected function normalizeForm(array $form): array
     {
-        $form['cargo_details'] = trim((string) $form['cargo_details']) ?: null;
-        $form['notes'] = trim((string) $form['notes']) ?: null;
-        $form['estimated_distance_km'] = $form['estimated_distance_km'] !== null ? (float) $form['estimated_distance_km'] : null;
-        $form['estimated_duration_hours'] = $form['estimated_duration_hours'] !== null ? (float) $form['estimated_duration_hours'] : null;
+        $form['cargo_details'] = trim((string)($form['cargo_details'] ?? '')) ?: null;
+        $form['notes']         = trim((string)($form['notes'] ?? '')) ?: null;
+
+        $form['estimated_distance_km'] = ($form['estimated_distance_km'] ?? null) !== null
+            ? (float) $form['estimated_distance_km']
+            : null;
+
+        $form['estimated_duration_hours'] = ($form['estimated_duration_hours'] ?? null) !== null
+            ? (float) $form['estimated_duration_hours']
+            : null;
+
+        $form['cargo_weight_kg'] = ($form['cargo_weight_kg'] ?? null) !== null
+            ? (float) $form['cargo_weight_kg']
+            : null;
+
+        $form['cargo_volume_m3'] = ($form['cargo_volume_m3'] ?? null) !== null
+            ? (float) $form['cargo_volume_m3']
+            : null;
+
+        $form['estimated_cost'] = ($form['estimated_cost'] ?? null) !== null
+            ? (float) $form['estimated_cost']
+            : null;
 
         return $form;
     }
+
 
     protected function syncRoutePlan(Order $order, array $routePlan): void
     {
