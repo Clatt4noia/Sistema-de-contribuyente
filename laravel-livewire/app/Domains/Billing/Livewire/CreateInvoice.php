@@ -88,7 +88,7 @@ class CreateInvoice extends Component
 
     public float $total = 0.0;
 
-    protected float $taxRate;
+    protected float $taxRate = 0.0;
 
     public function mount(): void
     {
