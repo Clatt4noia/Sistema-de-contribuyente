@@ -32,7 +32,7 @@ class CreateInvoice extends Component
 
     public string $currency = 'PEN';
 
-    public string $operationType = '0101';
+    public string $operationType = '01';
 
 
     public string $issueDate;
@@ -59,10 +59,17 @@ class CreateInvoice extends Component
      * @var array<int, array{code: string, label: string}>
      */
     public array $operationTypes = [
-        ['code' => '0101', 'label' => 'Venta interna'],
-        ['code' => '0112', 'label' => 'Servicios prestados en el país'],
-        ['code' => '0126', 'label' => 'Operaciones con zona primaria'],
-        ['code' => '0131', 'label' => 'Otros ingresos'],
+        ['code' => '01', 'label' => 'Venta interna'],
+        ['code' => '02', 'label' => 'Exportación'],
+        ['code' => '03', 'label' => 'No domiciliados'],
+        ['code' => '04', 'label' => 'Venta interna – Anticipos'],
+        ['code' => '05', 'label' => 'Venta itinerante'],
+        ['code' => '06', 'label' => 'Factura guía'],
+        ['code' => '07', 'label' => 'Venta arroz pilado'],
+        ['code' => '08', 'label' => 'Factura - Comprobante de percepción'],
+        ['code' => '10', 'label' => 'Factura - Guía remitente'],
+        ['code' => '11', 'label' => 'Factura - Guía transportista'],
+        ['code' => '12', 'label' => 'Boleta de venta – Comprobante de percepción'],
     ];
 
     /**
@@ -139,6 +146,23 @@ class CreateInvoice extends Component
     {
         $this->series = Str::upper(Str::substr($value, 0, 4));
         $this->correlative = $this->suggestNextCorrelative();
+    }
+
+    public function updatedOperationType(string $value): void
+    {
+        $this->operationType = $value;
+
+        $profile = $this->operationTaxProfile($this->operationType);
+
+        foreach ($this->invoiceItems as $index => $item) {
+            $this->invoiceItems[$index]['tax_percentage'] = $profile['percentage'];
+            $this->invoiceItems[$index]['tax_exemption_reason'] = $profile['exemption_reason'];
+            $this->invoiceItems[$index]['tax_code'] = $profile['tax_code'];
+
+            $this->recalculateItem($index);
+        }
+
+        $this->calculateTotals();
     }
 
     public function updatedClientSearch(): void
@@ -314,6 +338,8 @@ class CreateInvoice extends Component
 
         $cargoTypeName = optional($order->cargoType)->name;
 
+        $profile = $this->operationTaxProfile($this->operationType);
+
         $descriptionParts = array_filter([
             $order->reference ? 'Pedido '.$order->reference : null,
             $order->destination ? 'Destino: '.$order->destination : null,
@@ -332,9 +358,9 @@ class CreateInvoice extends Component
             'unit_price' => $unitPrice > 0 ? $unitPrice : 0,
             'unit_code' => 'ZZ',
             'price_type_code' => '01',
-            'tax_percentage' => $this->taxRate,
-            'tax_exemption_reason' => '10',
-            'tax_code' => 'S',
+            'tax_percentage' => $profile['percentage'],
+            'tax_exemption_reason' => $profile['exemption_reason'],
+            'tax_code' => $profile['tax_code'],
             'sku' => 'ORD-'.$order->getKey(),
             'cargo_type' => $cargoTypeName,
             'cargo_type_id' => $order->cargo_type_id,
@@ -595,6 +621,33 @@ class CreateInvoice extends Component
         $this->subtotal = round($collection->sum('taxable_amount'), 2);
         $this->igv = round($collection->sum('tax_amount'), 2);
         $this->total = round($collection->sum('total'), 2);
+    }
+
+    protected function operationTaxProfile(string $operationType): array
+    {
+        $taxableOperations = ['01', '04', '05', '06', '07', '08', '10', '11', '12'];
+
+        if (in_array($operationType, ['02', '03'], true)) {
+            return [
+                'percentage' => 0.0,
+                'exemption_reason' => '40',
+                'tax_code' => 'O',
+            ];
+        }
+
+        if (in_array($operationType, $taxableOperations, true)) {
+            return [
+                'percentage' => $this->taxRate,
+                'exemption_reason' => '10',
+                'tax_code' => 'S',
+            ];
+        }
+
+        return [
+            'percentage' => $this->taxRate,
+            'exemption_reason' => '10',
+            'tax_code' => 'S',
+        ];
     }
 
     public function getCurrencySymbolProperty(): string
