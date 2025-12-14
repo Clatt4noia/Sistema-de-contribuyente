@@ -607,12 +607,25 @@ class CreateInvoice extends Component
         $unitPrice = (float) ($this->invoiceItems[$index]['unit_price'] ?? 0);
         $taxPercentage = (float) $profile['percentage'];
 
-        $taxable = round($quantity * $unitPrice, 2);
-        $taxAmount = round($taxable * ($taxPercentage / 100), 2);
+        $priceIncludesTax = $profile['price_type_code'] === '01' && $taxPercentage > 0;
+
+        if ($priceIncludesTax) {
+            $unitBase = $unitPrice / (1 + ($taxPercentage / 100));
+            $taxable = round($quantity * $unitBase, 2);
+            $taxAmount = round(($quantity * $unitPrice) - $taxable, 2);
+            $total = round($quantity * $unitPrice, 2);
+        } else {
+            $taxable = round($quantity * $unitPrice, 2);
+            $taxAmount = $taxPercentage > 0
+                ? round($taxable * ($taxPercentage / 100), 2)
+                : 0.0;
+            $total = round($taxable + $taxAmount, 2);
+        }
+
 
         $this->invoiceItems[$index]['taxable_amount'] = $taxable;
         $this->invoiceItems[$index]['tax_amount'] = $taxAmount;
-        $this->invoiceItems[$index]['total'] = round($taxable + $taxAmount, 2);
+        $this->invoiceItems[$index]['total'] = $total;
     }
 
     protected function calculateTotals(): void
