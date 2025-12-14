@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\SunatDocumentType;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -142,6 +143,8 @@ class CreateInvoice extends Component
 
     public function updatedClientSearch(): void
     {
+        $this->resetErrorBag('clientSearch');
+
         $term = trim($this->clientSearch);
 
         if (strlen($term) < 2) {
@@ -150,7 +153,7 @@ class CreateInvoice extends Component
             return;
         }
 
-        $this->clientResults = Client::query()
+        $clients = Client::query()
             ->when(Schema::hasColumn('clients', 'business_name'), fn ($query) => $query->orderBy('business_name'))
             ->where(function ($query) use ($term) {
                 $likeTerm = '%'.$term.'%';
@@ -170,6 +173,20 @@ class CreateInvoice extends Component
                 'phone' => $client->phone,
                 'billing_address' => $client->billing_address ?? null,
             ])
+            ->values();
+
+        $duplicateDocuments = $this->findDuplicateDocuments($clients);
+
+        if ($duplicateDocuments->isNotEmpty()) {
+            $this->clientResults = [];
+            $this->addError('clientSearch', 'Existen clientes duplicados con el mismo RUC: '.$duplicateDocuments->implode(', ').'. Unifique los registros antes de seleccionar.');
+
+            return;
+        }
+
+        $this->clientResults = $clients
+            ->unique(fn (array $client) => $client['document'] !== '' ? $client['document'] : $client['id'])
+            ->values()
             ->all();
     }
 
@@ -179,6 +196,37 @@ class CreateInvoice extends Component
 
         if (! $client) {
             return;
+        }
+
+        $documentValue = $client->tax_id ?? $client->document_number ?? null;
+
+        if ($documentValue) {
+            $hasDuplicates = Client::query()
+                ->whereKeyNot($clientId)
+                ->where(function ($query) use ($client, $documentValue) {
+                    $hasCondition = false;
+
+                    if (Schema::hasColumn('clients', 'tax_id') && $client->tax_id) {
+                        $query->where('tax_id', $documentValue);
+                        $hasCondition = true;
+                    }
+
+                    if (Schema::hasColumn('clients', 'document_number') && $client->document_number) {
+                        if ($hasCondition) {
+                            $query->orWhere('document_number', $documentValue);
+                        } else {
+                            $query->where('document_number', $documentValue);
+                        }
+                    }
+                })
+                ->exists();
+
+            if ($hasDuplicates) {
+                $this->addError('clientSearch', 'Existen clientes duplicados con el mismo RUC. Unifique los registros antes de seleccionar.');
+                $this->clientResults = [];
+
+                return;
+            }
         }
 
         $this->selectedClient = [
@@ -558,6 +606,15 @@ class CreateInvoice extends Component
 
             ])
             ->all();
+    }
+
+    protected function findDuplicateDocuments(Collection $clients): Collection
+    {
+        return $clients
+            ->filter(fn (array $client) => $client['document'] !== '')
+            ->groupBy('document')
+            ->filter(fn (Collection $group) => $group->count() > 1)
+            ->keys();
     }
 
     protected function rules(): array
