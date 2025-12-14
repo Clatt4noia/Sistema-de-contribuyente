@@ -37,18 +37,29 @@ class SaveOrderAction
                 'referential_route_dest' => $data['referential_route_dest'] ?? null,
                 'referential_source' => $data['referential_source'] ?? null,
                 'referential_year' => $data['referential_year'] ?? null,
+                
 
             ]);
 
-            $order->pickup_date = $form['pickup_date'] ? Carbon::parse($form['pickup_date']) : null;
-            $order->delivery_date = $form['delivery_date'] ? Carbon::parse($form['delivery_date']) : null;
-            $order->delivery_window_start = $form['delivery_window_start'] ? Carbon::parse($form['delivery_window_start']) : null;
-            $order->delivery_window_end = $form['delivery_window_end'] ? Carbon::parse($form['delivery_window_end']) : null;
+            $order->pickup_date = !empty($form['pickup_date'] ?? null)
+            ? Carbon::parse($form['pickup_date'])
+            : null;
 
-            $order->save();
+            $order->delivery_date = !empty($form['delivery_date'] ?? null)
+                ? Carbon::parse($form['delivery_date'])
+                : null;
 
-            $this->syncRoutePlan($order, $routePlan);
-        });
+            $order->delivery_window_start = !empty($form['delivery_window_start'] ?? null)
+                ? Carbon::parse($form['delivery_window_start'])
+                : null;
+
+            $order->delivery_window_end = !empty($form['delivery_window_end'] ?? null)
+                ? Carbon::parse($form['delivery_window_end'])
+                : null;
+                $order->save();
+
+                $this->syncRoutePlan($order, $routePlan);
+            });
 
         return $order;
     }
