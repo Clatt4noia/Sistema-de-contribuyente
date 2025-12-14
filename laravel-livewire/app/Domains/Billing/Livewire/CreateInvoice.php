@@ -147,23 +147,47 @@ class CreateInvoice extends Component
 
         $term = trim($this->clientSearch);
 
-        if (strlen($term) < 2) {
-            $this->clientResults = [];
+        if ($term === '') {
+            $this->selectedClient = null;
+            $this->orderResults = [];
+            $this->invoiceItems = [];
+            $this->calculateTotals();
 
             return;
         }
 
-        $clients = Client::query()
-            ->when(Schema::hasColumn('clients', 'business_name'), fn ($query) => $query->orderBy('business_name'))
-            ->where(function ($query) use ($term) {
-                $likeTerm = '%'.$term.'%';
+        $documentTerm = preg_replace('/\D+/', '', $term);
 
-                $query->when(Schema::hasColumn('clients', 'business_name'), fn ($q) => $q->orWhere('business_name', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('clients', 'social_reason'), fn ($q) => $q->orWhere('social_reason', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('clients', 'tax_id'), fn ($q) => $q->orWhere('tax_id', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('clients', 'document_number'), fn ($q) => $q->orWhere('document_number', 'like', $likeTerm));
+        $clients = Client::query()
+            ->when($documentTerm !== '', function ($query) use ($documentTerm) {
+                $query->where(function ($q) use ($documentTerm) {
+                    $hasCondition = false;
+
+                    if (Schema::hasColumn('clients', 'tax_id')) {
+                        $q->where('tax_id', $documentTerm);
+                        $hasCondition = true;
+                    }
+
+                    if (Schema::hasColumn('clients', 'document_number')) {
+                        if ($hasCondition) {
+                            $q->orWhere('document_number', $documentTerm);
+                        } else {
+                            $q->where('document_number', $documentTerm);
+                        }
+                    }
+                });
+            }, function ($query) use ($term) {
+                $query->when(Schema::hasColumn('clients', 'business_name'), fn ($q) => $q->orderBy('business_name'))
+                    ->where(function ($q) use ($term) {
+                        $likeTerm = '%'.$term.'%';
+
+                        $q->when(Schema::hasColumn('clients', 'business_name'), fn ($inner) => $inner->orWhere('business_name', 'like', $likeTerm))
+                            ->when(Schema::hasColumn('clients', 'social_reason'), fn ($inner) => $inner->orWhere('social_reason', 'like', $likeTerm))
+                            ->when(Schema::hasColumn('clients', 'tax_id'), fn ($inner) => $inner->orWhere('tax_id', 'like', $likeTerm))
+                            ->when(Schema::hasColumn('clients', 'document_number'), fn ($inner) => $inner->orWhere('document_number', 'like', $likeTerm));
+                    });
+
             })
-            ->limit(5)
             ->get()
             ->map(fn (Client $client) => [
                 'id' => $client->getKey(),
@@ -178,16 +202,34 @@ class CreateInvoice extends Component
         $duplicateDocuments = $this->findDuplicateDocuments($clients);
 
         if ($duplicateDocuments->isNotEmpty()) {
-            $this->clientResults = [];
             $this->addError('clientSearch', 'Existen clientes duplicados con el mismo RUC: '.$duplicateDocuments->implode(', ').'. Unifique los registros antes de seleccionar.');
+            $this->resetClientSelection();
+
 
             return;
         }
 
-        $this->clientResults = $clients
-            ->unique(fn (array $client) => $client['document'] !== '' ? $client['document'] : $client['id'])
-            ->values()
-            ->all();
+        if ($documentTerm !== '') {
+            if ($clients->count() === 1) {
+                $client = Client::find($clients->first()['id']);
+
+                if ($client) {
+                    $this->setSelectedClientFromModel($client);
+                }
+
+                return;
+            }
+
+            if ($clients->isEmpty() && strlen($documentTerm) >= 8) {
+                $this->addError('clientSearch', 'No se encontró un cliente con el RUC ingresado.');
+                $this->resetClientSelection();
+            }
+
+            return;
+        }
+
+        $this->clientResults = [];
+
     }
 
     public function selectClient(int $clientId): void
@@ -229,23 +271,8 @@ class CreateInvoice extends Component
             }
         }
 
-        $this->selectedClient = [
-            'id' => $client->getKey(),
-            'name' => $client->business_name ?? $client->social_reason ?? $client->contact_name ?? 'Cliente',
-            'document' => $client->tax_id ?? $client->document_number ?? '',
-            'email' => $client->email,
-            'phone' => $client->phone,
-            'billing_address' => $client->billing_address ?? null,
-        ];
 
-        $this->clientSearch = $this->selectedClient['name'];
-        $this->clientResults = [];
-        $this->orderSearch = '';
-        $this->orderResults = [];
-        $this->cargoTypeFilter = null;
-        $this->invoiceItems = [];
-        $this->calculateTotals();
-        $this->refreshOrderResults();
+        $this->setSelectedClientFromModel($client);
 
     }
 
@@ -616,6 +643,36 @@ class CreateInvoice extends Component
             ->filter(fn (Collection $group) => $group->count() > 1)
             ->keys();
     }
+
+    protected function setSelectedClientFromModel(Client $client): void
+    {
+        $this->selectedClient = [
+            'id' => $client->getKey(),
+            'name' => $client->business_name ?? $client->social_reason ?? $client->contact_name ?? 'Cliente',
+            'document' => $client->tax_id ?? $client->document_number ?? '',
+            'email' => $client->email,
+            'phone' => $client->phone,
+            'billing_address' => $client->billing_address ?? null,
+        ];
+
+        $this->clientSearch = $this->selectedClient['document'] ?: $this->selectedClient['name'];
+        $this->clientResults = [];
+        $this->orderSearch = '';
+        $this->orderResults = [];
+        $this->cargoTypeFilter = null;
+        $this->invoiceItems = [];
+        $this->calculateTotals();
+        $this->refreshOrderResults();
+    }
+
+    protected function resetClientSelection(): void
+    {
+        $this->selectedClient = null;
+        $this->orderResults = [];
+        $this->invoiceItems = [];
+        $this->calculateTotals();
+    }
+
 
     protected function rules(): array
     {
