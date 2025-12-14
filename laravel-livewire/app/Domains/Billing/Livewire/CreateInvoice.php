@@ -186,6 +186,7 @@ class CreateInvoice extends Component
                             ->when(Schema::hasColumn('clients', 'tax_id'), fn ($inner) => $inner->orWhere('tax_id', 'like', $likeTerm))
                             ->when(Schema::hasColumn('clients', 'document_number'), fn ($inner) => $inner->orWhere('document_number', 'like', $likeTerm));
                     });
+
             })
             ->get()
             ->map(fn (Client $client) => [
@@ -203,6 +204,7 @@ class CreateInvoice extends Component
         if ($duplicateDocuments->isNotEmpty()) {
             $this->addError('clientSearch', 'Existen clientes duplicados con el mismo RUC: '.$duplicateDocuments->implode(', ').'. Unifique los registros antes de seleccionar.');
             $this->resetClientSelection();
+
 
             return;
         }
@@ -227,6 +229,7 @@ class CreateInvoice extends Component
         }
 
         $this->clientResults = [];
+
     }
 
     public function selectClient(int $clientId): void
@@ -267,6 +270,7 @@ class CreateInvoice extends Component
                 return;
             }
         }
+
 
         $this->setSelectedClientFromModel($client);
 
@@ -668,6 +672,7 @@ class CreateInvoice extends Component
         $this->invoiceItems = [];
         $this->calculateTotals();
     }
+
 
     protected function rules(): array
     {
