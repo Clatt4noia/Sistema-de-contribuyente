@@ -153,6 +153,7 @@ class CreateInvoice extends Component
         $this->operationType = $value;
 
         foreach (array_keys($this->invoiceItems) as $index) {
+
             $this->recalculateItem($index);
         }
 
@@ -204,6 +205,7 @@ class CreateInvoice extends Component
                             ->when(Schema::hasColumn('clients', 'tax_id'), fn ($inner) => $inner->orWhere('tax_id', 'like', $likeTerm))
                             ->when(Schema::hasColumn('clients', 'document_number'), fn ($inner) => $inner->orWhere('document_number', 'like', $likeTerm));
                     });
+
             })
             ->get()
             ->map(fn (Client $client) => [
@@ -221,6 +223,7 @@ class CreateInvoice extends Component
         if ($duplicateDocuments->isNotEmpty()) {
             $this->addError('clientSearch', 'Existen clientes duplicados con el mismo RUC: '.$duplicateDocuments->implode(', ').'. Unifique los registros antes de seleccionar.');
             $this->resetClientSelection();
+
 
             return;
         }
@@ -245,6 +248,7 @@ class CreateInvoice extends Component
         }
 
         $this->clientResults = [];
+
     }
 
     public function selectClient(int $clientId): void
@@ -285,6 +289,7 @@ class CreateInvoice extends Component
                 return;
             }
         }
+
 
         $this->setSelectedClientFromModel($client);
 
@@ -328,6 +333,8 @@ class CreateInvoice extends Component
 
         $cargoTypeName = optional($order->cargoType)->name;
 
+        $profile = $this->operationTaxProfile($this->operationType);
+
         $descriptionParts = array_filter([
             $order->reference ? 'Pedido '.$order->reference : null,
             $order->destination ? 'Destino: '.$order->destination : null,
@@ -346,6 +353,7 @@ class CreateInvoice extends Component
             'unit_price' => $unitPrice > 0 ? $unitPrice : 0,
             'unit_code' => 'ZZ',
             'price_type_code' => '01',
+
             'sku' => 'ORD-'.$order->getKey(),
             'cargo_type' => $cargoTypeName,
             'cargo_type_id' => $order->cargo_type_id,
@@ -595,6 +603,7 @@ class CreateInvoice extends Component
         $this->invoiceItems[$index]['tax_exemption_reason'] = $profile['exemption_reason'];
         $this->invoiceItems[$index]['tax_code'] = $profile['tax_code'];
 
+
         $quantity = (float) ($this->invoiceItems[$index]['quantity'] ?? 1);
         $unitPrice = (float) ($this->invoiceItems[$index]['unit_price'] ?? 0);
         $taxPercentage = (float) $profile['percentage'];
@@ -607,6 +616,7 @@ class CreateInvoice extends Component
             $taxable = round($quantity * $unitBase, 2);
             $taxAmount = max(round($gross - $taxable, 2), 0.0);
             $total = $gross;
+
         } else {
             $taxable = round($quantity * $unitPrice, 2);
             $taxAmount = $taxPercentage > 0
@@ -621,6 +631,7 @@ class CreateInvoice extends Component
                 ? round($taxable + $taxAmount, 2)
                 : $total;
         }
+
 
         $this->invoiceItems[$index]['taxable_amount'] = $taxable;
         $this->invoiceItems[$index]['tax_amount'] = $taxAmount;
@@ -645,6 +656,7 @@ class CreateInvoice extends Component
                 'exemption_reason' => '40',
                 'tax_code' => 'O',
                 'price_type_code' => '01',
+
             ];
         }
 
@@ -654,6 +666,7 @@ class CreateInvoice extends Component
                 'exemption_reason' => '10',
                 'tax_code' => 'S',
                 'price_type_code' => '01',
+
             ];
         }
 
@@ -662,6 +675,7 @@ class CreateInvoice extends Component
             'exemption_reason' => '10',
             'tax_code' => 'S',
             'price_type_code' => '01',
+
         ];
     }
 
@@ -740,6 +754,7 @@ class CreateInvoice extends Component
         $this->invoiceItems = [];
         $this->calculateTotals();
     }
+
 
     protected function rules(): array
     {
