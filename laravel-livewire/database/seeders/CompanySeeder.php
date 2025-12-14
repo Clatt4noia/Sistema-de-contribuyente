@@ -26,7 +26,7 @@ class CompanySeeder extends Seeder
             'ubigeo' => '150101',
             'sol_user' => 'MODDATOS',
             'sol_pass' => 'MODDATOS',
-            'cert_path' => 'certificates/certificate.pem', // Se debe colocar un certificado dummy aquí o Greenter usará uno por defecto si se configura
+            'cert_path' => 'app/billing/combinado.pem', // Ruta relativa al root del proyecto
             'production' => false,
             'client_id' => 'test-client-id',
             'client_secret' => 'test-client-secret',
