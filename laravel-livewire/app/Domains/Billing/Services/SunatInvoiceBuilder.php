@@ -61,7 +61,7 @@ class SunatInvoiceBuilder
         if ($invoice->due_date) {
             $root->appendChild($document->createElement('cbc:DueDate', optional($invoice->due_date)->format('Y-m-d')));
         }
-        $operationType = data_get($invoice->metadata, 'operation_type', '0101');
+        $operationType = data_get($invoice->metadata, 'operation_type', '01');
 
         $typeCode = $document->createElement('cbc:InvoiceTypeCode', $invoice->document_type ?: '01');
         $typeCode->setAttribute('listID', $operationType);
@@ -69,6 +69,22 @@ class SunatInvoiceBuilder
         $typeCode->setAttribute('listName', 'Tipo de Operación');
         $root->appendChild($typeCode);
         $root->appendChild($document->createElement('cbc:DocumentCurrencyCode', $invoice->currency ?? 'PEN'));
+
+        $this->appendOperationType($document, $operationType);
+    }
+
+    protected function appendOperationType(DOMDocument $document, string $operationType): void
+    {
+        $additionalInformation = $document->getElementsByTagName('sac:AdditionalInformation')->item(0)
+            ?? $document->getElementsByTagName('AdditionalInformation')->item(0);
+
+        if (! $additionalInformation instanceof DOMElement) {
+            return;
+        }
+
+        $transaction = $document->createElement('sac:SUNATTransaction');
+        $transaction->appendChild($document->createElement('cbc:ID', $operationType));
+        $additionalInformation->appendChild($transaction);
     }
 
     protected function appendSignature(DOMDocument $document, DOMElement $root, array $companyData): void
