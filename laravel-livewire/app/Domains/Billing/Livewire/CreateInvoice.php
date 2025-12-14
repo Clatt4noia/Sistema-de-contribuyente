@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\SunatDocumentType;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,7 @@ class CreateInvoice extends Component
 
     public string $currency = 'PEN';
 
-    public string $operationType = '0101';
+    public string $operationType = '01';
 
 
     public string $issueDate;
@@ -58,10 +59,17 @@ class CreateInvoice extends Component
      * @var array<int, array{code: string, label: string}>
      */
     public array $operationTypes = [
-        ['code' => '0101', 'label' => 'Venta interna'],
-        ['code' => '0112', 'label' => 'Servicios prestados en el país'],
-        ['code' => '0126', 'label' => 'Operaciones con zona primaria'],
-        ['code' => '0131', 'label' => 'Otros ingresos'],
+        ['code' => '01', 'label' => 'Venta interna'],
+        ['code' => '02', 'label' => 'Exportación'],
+        ['code' => '03', 'label' => 'No domiciliados'],
+        ['code' => '04', 'label' => 'Venta interna – Anticipos'],
+        ['code' => '05', 'label' => 'Venta itinerante'],
+        ['code' => '06', 'label' => 'Factura guía'],
+        ['code' => '07', 'label' => 'Venta arroz pilado'],
+        ['code' => '08', 'label' => 'Factura - Comprobante de percepción'],
+        ['code' => '10', 'label' => 'Factura - Guía remitente'],
+        ['code' => '11', 'label' => 'Factura - Guía transportista'],
+        ['code' => '12', 'label' => 'Boleta de venta – Comprobante de percepción'],
     ];
 
     /**
@@ -88,7 +96,7 @@ class CreateInvoice extends Component
 
     public float $total = 0.0;
 
-    protected float $taxRate;
+    protected float $taxRate = 0.0;
 
     public function mount(): void
     {
@@ -140,27 +148,63 @@ class CreateInvoice extends Component
         $this->correlative = $this->suggestNextCorrelative();
     }
 
+    public function updatedOperationType(string $value): void
+    {
+        $this->operationType = $value;
+
+        foreach (array_keys($this->invoiceItems) as $index) {
+            $this->recalculateItem($index);
+        }
+
+        $this->calculateTotals();
+    }
+
     public function updatedClientSearch(): void
     {
+        $this->resetErrorBag('clientSearch');
+
         $term = trim($this->clientSearch);
 
-        if (strlen($term) < 2) {
-            $this->clientResults = [];
+        if ($term === '') {
+            $this->selectedClient = null;
+            $this->orderResults = [];
+            $this->invoiceItems = [];
+            $this->calculateTotals();
 
             return;
         }
 
-        $this->clientResults = Client::query()
-            ->when(Schema::hasColumn('clients', 'business_name'), fn ($query) => $query->orderBy('business_name'))
-            ->where(function ($query) use ($term) {
-                $likeTerm = '%'.$term.'%';
+        $documentTerm = preg_replace('/\D+/', '', $term);
 
-                $query->when(Schema::hasColumn('clients', 'business_name'), fn ($q) => $q->orWhere('business_name', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('clients', 'social_reason'), fn ($q) => $q->orWhere('social_reason', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('clients', 'tax_id'), fn ($q) => $q->orWhere('tax_id', 'like', $likeTerm))
-                    ->when(Schema::hasColumn('clients', 'document_number'), fn ($q) => $q->orWhere('document_number', 'like', $likeTerm));
+        $clients = Client::query()
+            ->when($documentTerm !== '', function ($query) use ($documentTerm) {
+                $query->where(function ($q) use ($documentTerm) {
+                    $hasCondition = false;
+
+                    if (Schema::hasColumn('clients', 'tax_id')) {
+                        $q->where('tax_id', $documentTerm);
+                        $hasCondition = true;
+                    }
+
+                    if (Schema::hasColumn('clients', 'document_number')) {
+                        if ($hasCondition) {
+                            $q->orWhere('document_number', $documentTerm);
+                        } else {
+                            $q->where('document_number', $documentTerm);
+                        }
+                    }
+                });
+            }, function ($query) use ($term) {
+                $query->when(Schema::hasColumn('clients', 'business_name'), fn ($q) => $q->orderBy('business_name'))
+                    ->where(function ($q) use ($term) {
+                        $likeTerm = '%'.$term.'%';
+
+                        $q->when(Schema::hasColumn('clients', 'business_name'), fn ($inner) => $inner->orWhere('business_name', 'like', $likeTerm))
+                            ->when(Schema::hasColumn('clients', 'social_reason'), fn ($inner) => $inner->orWhere('social_reason', 'like', $likeTerm))
+                            ->when(Schema::hasColumn('clients', 'tax_id'), fn ($inner) => $inner->orWhere('tax_id', 'like', $likeTerm))
+                            ->when(Schema::hasColumn('clients', 'document_number'), fn ($inner) => $inner->orWhere('document_number', 'like', $likeTerm));
+                    });
             })
-            ->limit(5)
             ->get()
             ->map(fn (Client $client) => [
                 'id' => $client->getKey(),
@@ -170,7 +214,37 @@ class CreateInvoice extends Component
                 'phone' => $client->phone,
                 'billing_address' => $client->billing_address ?? null,
             ])
-            ->all();
+            ->values();
+
+        $duplicateDocuments = $this->findDuplicateDocuments($clients);
+
+        if ($duplicateDocuments->isNotEmpty()) {
+            $this->addError('clientSearch', 'Existen clientes duplicados con el mismo RUC: '.$duplicateDocuments->implode(', ').'. Unifique los registros antes de seleccionar.');
+            $this->resetClientSelection();
+
+            return;
+        }
+
+        if ($documentTerm !== '') {
+            if ($clients->count() === 1) {
+                $client = Client::find($clients->first()['id']);
+
+                if ($client) {
+                    $this->setSelectedClientFromModel($client);
+                }
+
+                return;
+            }
+
+            if ($clients->isEmpty() && strlen($documentTerm) >= 8) {
+                $this->addError('clientSearch', 'No se encontró un cliente con el RUC ingresado.');
+                $this->resetClientSelection();
+            }
+
+            return;
+        }
+
+        $this->clientResults = [];
     }
 
     public function selectClient(int $clientId): void
@@ -181,23 +255,38 @@ class CreateInvoice extends Component
             return;
         }
 
-        $this->selectedClient = [
-            'id' => $client->getKey(),
-            'name' => $client->business_name ?? $client->social_reason ?? $client->contact_name ?? 'Cliente',
-            'document' => $client->tax_id ?? $client->document_number ?? '',
-            'email' => $client->email,
-            'phone' => $client->phone,
-            'billing_address' => $client->billing_address ?? null,
-        ];
+        $documentValue = $client->tax_id ?? $client->document_number ?? null;
 
-        $this->clientSearch = $this->selectedClient['name'];
-        $this->clientResults = [];
-        $this->orderSearch = '';
-        $this->orderResults = [];
-        $this->cargoTypeFilter = null;
-        $this->invoiceItems = [];
-        $this->calculateTotals();
-        $this->refreshOrderResults();
+        if ($documentValue) {
+            $hasDuplicates = Client::query()
+                ->whereKeyNot($clientId)
+                ->where(function ($query) use ($client, $documentValue) {
+                    $hasCondition = false;
+
+                    if (Schema::hasColumn('clients', 'tax_id') && $client->tax_id) {
+                        $query->where('tax_id', $documentValue);
+                        $hasCondition = true;
+                    }
+
+                    if (Schema::hasColumn('clients', 'document_number') && $client->document_number) {
+                        if ($hasCondition) {
+                            $query->orWhere('document_number', $documentValue);
+                        } else {
+                            $query->where('document_number', $documentValue);
+                        }
+                    }
+                })
+                ->exists();
+
+            if ($hasDuplicates) {
+                $this->addError('clientSearch', 'Existen clientes duplicados con el mismo RUC. Unifique los registros antes de seleccionar.');
+                $this->clientResults = [];
+
+                return;
+            }
+        }
+
+        $this->setSelectedClientFromModel($client);
 
     }
 
@@ -257,9 +346,6 @@ class CreateInvoice extends Component
             'unit_price' => $unitPrice > 0 ? $unitPrice : 0,
             'unit_code' => 'ZZ',
             'price_type_code' => '01',
-            'tax_percentage' => $this->taxRate,
-            'tax_exemption_reason' => '10',
-            'tax_code' => 'S',
             'sku' => 'ORD-'.$order->getKey(),
             'cargo_type' => $cargoTypeName,
             'cargo_type_id' => $order->cargo_type_id,
@@ -502,9 +588,16 @@ class CreateInvoice extends Component
             return;
         }
 
+        $profile = $this->operationTaxProfile($this->operationType);
+
+        $this->invoiceItems[$index]['tax_percentage'] = $profile['percentage'];
+        $this->invoiceItems[$index]['tax_exemption_reason'] = $profile['exemption_reason'];
+        $this->invoiceItems[$index]['tax_code'] = $profile['tax_code'];
+        $this->invoiceItems[$index]['price_type_code'] = $profile['price_type_code'];
+
         $quantity = (float) ($this->invoiceItems[$index]['quantity'] ?? 1);
         $unitPrice = (float) ($this->invoiceItems[$index]['unit_price'] ?? 0);
-        $taxPercentage = (float) ($this->invoiceItems[$index]['tax_percentage'] ?? 18);
+        $taxPercentage = (float) $profile['percentage'];
 
         $taxable = round($quantity * $unitPrice, 2);
         $taxAmount = round($taxable * ($taxPercentage / 100), 2);
@@ -520,6 +613,36 @@ class CreateInvoice extends Component
         $this->subtotal = round($collection->sum('taxable_amount'), 2);
         $this->igv = round($collection->sum('tax_amount'), 2);
         $this->total = round($collection->sum('total'), 2);
+    }
+
+    protected function operationTaxProfile(string $operationType): array
+    {
+        $taxableOperations = ['01', '04', '05', '06', '07', '08', '10', '11', '12'];
+
+        if (in_array($operationType, ['02', '03'], true)) {
+            return [
+                'percentage' => 0.0,
+                'exemption_reason' => '40',
+                'tax_code' => 'O',
+                'price_type_code' => '01',
+            ];
+        }
+
+        if (in_array($operationType, $taxableOperations, true)) {
+            return [
+                'percentage' => $this->taxRate,
+                'exemption_reason' => '10',
+                'tax_code' => 'S',
+                'price_type_code' => '01',
+            ];
+        }
+
+        return [
+            'percentage' => $this->taxRate,
+            'exemption_reason' => '10',
+            'tax_code' => 'S',
+            'price_type_code' => '01',
+        ];
     }
 
     public function getCurrencySymbolProperty(): string
@@ -558,6 +681,44 @@ class CreateInvoice extends Component
 
             ])
             ->all();
+    }
+
+    protected function findDuplicateDocuments(Collection $clients): Collection
+    {
+        return $clients
+            ->filter(fn (array $client) => $client['document'] !== '')
+            ->groupBy('document')
+            ->filter(fn (Collection $group) => $group->count() > 1)
+            ->keys();
+    }
+
+    protected function setSelectedClientFromModel(Client $client): void
+    {
+        $this->selectedClient = [
+            'id' => $client->getKey(),
+            'name' => $client->business_name ?? $client->social_reason ?? $client->contact_name ?? 'Cliente',
+            'document' => $client->tax_id ?? $client->document_number ?? '',
+            'email' => $client->email,
+            'phone' => $client->phone,
+            'billing_address' => $client->billing_address ?? null,
+        ];
+
+        $this->clientSearch = $this->selectedClient['document'] ?: $this->selectedClient['name'];
+        $this->clientResults = [];
+        $this->orderSearch = '';
+        $this->orderResults = [];
+        $this->cargoTypeFilter = null;
+        $this->invoiceItems = [];
+        $this->calculateTotals();
+        $this->refreshOrderResults();
+    }
+
+    protected function resetClientSelection(): void
+    {
+        $this->selectedClient = null;
+        $this->orderResults = [];
+        $this->invoiceItems = [];
+        $this->calculateTotals();
     }
 
     protected function rules(): array
