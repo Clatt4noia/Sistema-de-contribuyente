@@ -26,11 +26,12 @@
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <div class="form-field">
             <label class="form-label">Tipo de comprobante</label>
-            <select wire:model="documentType" class="form-control">
-              @foreach($documentTypes as $type)
+            <select wire:model.live="documentType" class="form-control">
+            @foreach($documentTypes as $type)
                 <option value="{{ $type->code }}">{{ $type->sunat_name ?? $type->description }}</option>
-              @endforeach
+            @endforeach
             </select>
+
             @error('documentType') <span class="form-error">{{ $message }}</span> @enderror
           </div>
 
@@ -44,16 +45,19 @@
             @error('operationType') <span class="form-error">{{ $message }}</span> @enderror
           </div>
 
-          <div class="form-field">
-            <label class="form-label">Serie</label>
-            <input
-              type="text"
-              wire:model="series"
-              maxlength="4"
-              class="form-control uppercase cursor-not-allowed bg-surface-muted text-token-muted"
-              readonly
-            />
-          </div>
+    <div class="form-field">
+  <label class="form-label">Serie</label>
+
+  <input
+    type="text"
+    wire:model.live="series"
+    readonly
+    class="form-control bg-surface-muted text-token-muted cursor-not-allowed"
+  />
+
+  @error('series') <span class="form-error">{{ $message }}</span> @enderror
+</div>
+
 
 
           <div class="form-field">
@@ -281,69 +285,90 @@
         </div>
 
 
-      {{-- TABLA DE ÍTEMS (PEDIDOS AGREGADOS) --}}
-      <div class="overflow-hidden rounded-xl border border-token shadow-sm">
-        <table class="table table-md">
-          <thead>
-            <tr class="table-row">
-              <th class="table-header text-left">Cantidad</th>
-              <th class="table-header text-left">Descripción</th>
-              <th class="table-header text-right">Precio unit.</th>
-              <th class="table-header text-right">Base imponible</th>
-              <th class="table-header text-right">Acciones</th>
-            </tr>
-          </thead>
+{{-- TABLA DE ÍTEMS (PEDIDOS AGREGADOS) --}}
+<div class="overflow-hidden rounded-xl border border-token shadow-sm bg-white">
+  <table class="w-full table-fixed border-separate border-spacing-0 !table">
+    <thead class="bg-surface-muted !table-header-group">
+      <tr class="!table-row">
+        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-token-muted w-32 !table-cell">
+          Cantidad
+        </th>
+        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-token-muted !table-cell">
+          Descripción
+        </th>
+        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-token-muted w-32 !table-cell">
+          Precio unit.
+        </th>
+        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-token-muted w-40 !table-cell">
+          Base imponible
+        </th>
+        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-token-muted w-36 !table-cell">
+          Acciones
+        </th>
+      </tr>
+    </thead>
 
-          <tbody class="bg-elevated text-sm">
-            @forelse($invoiceItems as $index => $item)
-              <tr class="table-row" wire:key="item-{{ $item['order_id'] ?? $index }}">
-                <td class="table-cell">
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    wire:model.lazy="invoiceItems.{{ $index }}.quantity"
-                    wire:change="updateQuantity({{ $index }}, $event.target.value)"
-                    class="form-control text-right"
-                  />
-                </td>
+    <tbody class="divide-y divide-token/20 text-sm !table-row-group">
+      @forelse($invoiceItems as $index => $item)
+        <tr
+          wire:key="item-{{ $item['order_id'] ?? $index }}"
+          class="align-top hover:bg-surface-muted/40 transition !table-row"
+        >
+          <td class="px-4 py-3 align-top !table-cell">
+            <div class="text-sm font-semibold text-token leading-tight">1 servicio</div>
+            <div class="text-xs text-token-muted leading-tight">Servicio de transporte</div>
+          </td>
 
-                <td class="table-cell">
-                  <div class="font-medium text-token">{{ $item['description'] }}</div>
-                  <div class="text-xs text-token">{{ $item['reference'] ?? $item['sku'] ?? '' }}</div>
+          <td class="px-4 py-3 align-top !table-cell">
+            <div class="font-medium text-token leading-snug">
+              {{ $item['description'] }}
+            </div>
 
-                  @if(!empty($item['cargo_type']))
-                    <div class="mt-1 inline-flex items-center gap-1 rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-token">
-                      {{ $item['cargo_type'] }}
-                    </div>
-                  @endif
-                </td>
+            @if(!empty($item['reference'] ?? $item['sku'] ?? ''))
+              <div class="mt-1 text-xs text-token-muted">
+                {{ $item['reference'] ?? $item['sku'] ?? '' }}
+              </div>
+            @endif
 
-                <td class="table-cell text-right">
-                  {{ $this->currencySymbol }} {{ number_format($item['unit_price'], 2) }}
-                </td>
+            @if(!empty($item['cargo_type']))
+              <div class="mt-2">
+                <span class="inline-flex items-center rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-token">
+                  {{ $item['cargo_type'] }}
+                </span>
+              </div>
+            @endif
+          </td>
 
-                <td class="table-cell text-right">
-                  {{ $this->currencySymbol }} {{ number_format($item['taxable_amount'] ?? 0, 2) }}
-                </td>
+          <td class="px-4 py-3 align-top text-right whitespace-nowrap !table-cell">
+            {{ $this->currencySymbol }} {{ number_format((float)($item['unit_price'] ?? 0), 2) }}
+          </td>
 
-                <td class="table-cell text-right">
-                  <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger btn-sm">
-                    <x-heroicon-o-trash class="h-4 w-4" />
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            @empty
-              <tr class="table-row">
-                <td colspan="5" class="table-empty">
-                  No se han agregado pedidos. Utilice el buscador para añadir ítems.
-                </td>
-              </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
+          <td class="px-4 py-3 align-top text-right whitespace-nowrap !table-cell">
+            {{ $this->currencySymbol }} {{ number_format((float)($item['taxable_amount'] ?? 0), 2) }}
+          </td>
+
+          <td class="px-4 py-3 align-top text-right !table-cell">
+            <button
+              type="button"
+              wire:click="removeItem({{ $index }})"
+              class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700 transition"
+            >
+              <x-heroicon-o-trash class="h-4 w-4" />
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      @empty
+        <tr class="!table-row">
+          <td colspan="5" class="px-4 py-10 text-center text-sm text-token-muted !table-cell">
+            No se han agregado pedidos. Utilice el buscador para añadir ítems.
+          </td>
+        </tr>
+      @endforelse
+    </tbody>
+  </table>
+</div>
+
 
       @error('invoiceItems') <span class="form-error">{{ $message }}</span> @enderror
     </div>

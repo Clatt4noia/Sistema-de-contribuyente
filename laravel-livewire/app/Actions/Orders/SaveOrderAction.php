@@ -30,6 +30,14 @@ class SaveOrderAction
                 'estimated_distance_km' => $form['estimated_distance_km'],
                 'estimated_duration_hours' => $form['estimated_duration_hours'],
                 'notes' => $form['notes'],
+                // dentro del data que guardas:
+                'estimated_cost' => $data['estimated_cost'] ?? null,
+                'referential_rate_sxtm' => $data['referential_rate_sxtm'] ?? null,
+                'referential_route_key' => $data['referential_route_key'] ?? null,
+                'referential_route_dest' => $data['referential_route_dest'] ?? null,
+                'referential_source' => $data['referential_source'] ?? null,
+                'referential_year' => $data['referential_year'] ?? null,
+
             ]);
 
             $order->pickup_date = $form['pickup_date'] ? Carbon::parse($form['pickup_date']) : null;

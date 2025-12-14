@@ -93,5 +93,8 @@ class DatabaseSeeder extends Seeder
             CargoTypeSeeder::class,
             SunatBillingCatalogSeeder::class,
         ]);
+        $this->call([
+                MtcReferentialRatesSeeder::class,
+            ]);
     }
 }

@@ -36,6 +36,12 @@ class Order extends Model
         'estimated_cost',
         'cost_breakdown',
         'notes',
+        'estimated_cost',
+        'referential_rate_sxtm',
+        'referential_route_key',
+        'referential_route_dest',
+        'referential_source',
+        'referential_year',
     ];
 
     protected $casts = [
@@ -53,6 +59,9 @@ class Order extends Model
         'destination_latitude' => 'float',
         'destination_longitude' => 'float',
         'cost_breakdown' => 'array',
+        'estimated_cost' => 'decimal:2',
+        'referential_rate_sxtm' => 'decimal:2',
+        'referential_year' => 'integer',
     ];
 
     public function client(): BelongsTo
@@ -85,12 +94,14 @@ class Order extends Model
         return $this->hasMany(Invoice::class);
     }
 
-    public function incidents(): HasMany
+    // Aquí está la corrección: cambio de `HasMany` a `HasManyThrough`
+    public function incidents(): HasManyThrough
     {
         return $this->hasManyThrough(RouteIncident::class, Assignment::class);
     }
 
-    public function locationUpdates(): HasMany
+    // Aquí también: `HasManyThrough` en lugar de `HasMany`
+    public function locationUpdates(): HasManyThrough
     {
         return $this->hasManyThrough(VehicleLocationUpdate::class, Assignment::class);
     }
