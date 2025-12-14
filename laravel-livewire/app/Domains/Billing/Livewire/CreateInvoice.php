@@ -598,10 +598,11 @@ class CreateInvoice extends Component
 
         $profile = $this->operationTaxProfile($this->operationType);
 
+        $this->invoiceItems[$index]['price_type_code'] = $profile['price_type_code'];
         $this->invoiceItems[$index]['tax_percentage'] = $profile['percentage'];
         $this->invoiceItems[$index]['tax_exemption_reason'] = $profile['exemption_reason'];
         $this->invoiceItems[$index]['tax_code'] = $profile['tax_code'];
-        $this->invoiceItems[$index]['price_type_code'] = $profile['price_type_code'];
+
 
         $quantity = (float) ($this->invoiceItems[$index]['quantity'] ?? 1);
         $unitPrice = (float) ($this->invoiceItems[$index]['unit_price'] ?? 0);
@@ -610,16 +611,25 @@ class CreateInvoice extends Component
         $priceIncludesTax = $profile['price_type_code'] === '01' && $taxPercentage > 0;
 
         if ($priceIncludesTax) {
-            $unitBase = $unitPrice / (1 + ($taxPercentage / 100));
+            $unitBase = round($unitPrice / (1 + ($taxPercentage / 100)), 4);
+            $gross = round($quantity * $unitPrice, 2);
             $taxable = round($quantity * $unitBase, 2);
-            $taxAmount = round(($quantity * $unitPrice) - $taxable, 2);
-            $total = round($quantity * $unitPrice, 2);
+            $taxAmount = max(round($gross - $taxable, 2), 0.0);
+            $total = $gross;
+
         } else {
             $taxable = round($quantity * $unitPrice, 2);
             $taxAmount = $taxPercentage > 0
                 ? round($taxable * ($taxPercentage / 100), 2)
                 : 0.0;
             $total = round($taxable + $taxAmount, 2);
+        }
+
+        if ($taxPercentage > 0 && $taxAmount === 0.0 && $taxable > 0) {
+            $taxAmount = round($taxable * ($taxPercentage / 100), 2);
+            $total = $priceIncludesTax
+                ? round($taxable + $taxAmount, 2)
+                : $total;
         }
 
 
