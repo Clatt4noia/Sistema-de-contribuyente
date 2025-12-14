@@ -351,7 +351,7 @@ class CreateInvoice extends Component
                 'invoice_number' => $this->series.'-'.$this->correlative,
                 'issue_date' => $issueDate,
                 'due_date' => $dueDate,
-                'ruc_emisor' => Config::get('billing.sunat.ruc'),
+                'ruc_emisor' => \App\Models\Company::first()->ruc ?? Config::get('billing.sunat.ruc'),
                 'ruc_receptor' => $client->tax_id ?? $client->document_number ?? null,
                 'currency' => $this->currency,
                 'subtotal' => $this->subtotal,

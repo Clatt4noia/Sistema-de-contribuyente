@@ -12,7 +12,16 @@ class GreenterService
     public function getSee(Company $company): See
     {
         $see = new See();
-        $see->setCertificate(Storage::get($company->cert_path)); // Leer certificado del storage
+        $certificate = null;
+        if (Storage::exists($company->cert_path)) {
+            $certificate = Storage::get($company->cert_path);
+        } elseif (file_exists(base_path($company->cert_path))) {
+            $certificate = file_get_contents(base_path($company->cert_path));
+        } else {
+            throw new \Exception("Certificado no encontrado: " . $company->cert_path);
+        }
+
+        $see->setCertificate($certificate);
         $see->setService($company->production ? SunatEndpoints::FE_PRODUCCION : SunatEndpoints::FE_BETA);
         
         // Clave SOL
