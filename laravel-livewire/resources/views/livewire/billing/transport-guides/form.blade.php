@@ -50,19 +50,9 @@
                     @error('form.document_type_code') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="form-label" for="issue_date">Fecha de emisión</label>
-                    <input id="issue_date" type="date" wire:model.defer="form.issue_date" class="form-control @error('form.issue_date') is-invalid @enderror">
-                    @error('form.issue_date') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label" for="issue_time">Hora de emisión</label>
-                    <input id="issue_time" type="time" wire:model.defer="form.issue_time" class="form-control @error('form.issue_time') is-invalid @enderror">
-                    @error('form.issue_time') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label" for="client_id">Remitente / Cliente</label>
+                    <label class="form-label" for="client_id">Destinatario</label>
                     <select id="client_id" wire:model.live="form.client_id" class="form-control @error('form.client_id') is-invalid @enderror">
-                        <option value="">Seleccione</option>
+                        <option value="">Seleccione cliente destinatario</option>
                         @foreach($clients as $client)
                             <option value="{{ $client->id }}">{{ $client->business_name }}</option>
                         @endforeach
@@ -70,38 +60,13 @@
                     @error('form.client_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="form-label" for="remitente_ruc">RUC remitente</label>
-                    <input id="remitente_ruc" type="text" wire:model.defer="form.remitente_ruc" class="form-control @error('form.remitente_ruc') is-invalid @enderror">
-                    @error('form.remitente_ruc') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label" for="remitente_name">Razón social remitente</label>
-                    <input id="remitente_name" type="text" wire:model.defer="form.remitente_name" class="form-control @error('form.remitente_name') is-invalid @enderror">
-                    @error('form.remitente_name') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label" for="remitente_document_type">Tipo doc. remitente</label>
-                    <input id="remitente_document_type" type="text" wire:model.defer="form.remitente_document_type" class="form-control @error('form.remitente_document_type') is-invalid @enderror" placeholder="Cat. 6">
-                    @error('form.remitente_document_type') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label" for="remitente_document_number">N° doc. remitente</label>
-                    <input id="remitente_document_number" type="text" wire:model.defer="form.remitente_document_number" class="form-control @error('form.remitente_document_number') is-invalid @enderror">
-                    @error('form.remitente_document_number') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label" for="destinatario_document_type">Tipo doc. destinatario</label>
-                    <input id="destinatario_document_type" type="text" wire:model.defer="form.destinatario_document_type" class="form-control @error('form.destinatario_document_type') is-invalid @enderror" placeholder="Cat. 6">
-                    @error('form.destinatario_document_type') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="form-label" for="destinatario_document_number">N° doc. destinatario</label>
-                    <input id="destinatario_document_number" type="text" wire:model.defer="form.destinatario_document_number" class="form-control @error('form.destinatario_document_number') is-invalid @enderror">
+                    <label class="form-label" for="destinatario_document_number">RUC destinatario</label>
+                    <input id="destinatario_document_number" type="text" wire:model="form.destinatario_document_number" class="form-control bg-surface-muted" readonly>
                     @error('form.destinatario_document_number') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="form-label" for="destinatario_name">Razón social destinatario</label>
-                    <input id="destinatario_name" type="text" wire:model.defer="form.destinatario_name" class="form-control @error('form.destinatario_name') is-invalid @enderror">
+                    <input id="destinatario_name" type="text" wire:model="form.destinatario_name" class="form-control bg-surface-muted" readonly>
                     @error('form.destinatario_name') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-3">

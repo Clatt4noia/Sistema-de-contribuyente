@@ -1,0 +1,21 @@
+{
+    "invoice": {
+        "id": 5,
+        "number": "F001-00000001",
+        "subtotal": 33.61,
+        "tax": 5.13,
+        "total": 38.74,
+        "taxable_amount": 33.61
+    },
+    "details": [
+        {
+            "description": "Pedido ORD-2025-981 • Destino: LIMA • Tipo de carga: Carga general",
+            "quantity": 1,
+            "unit_price": 33.61,
+            "taxable_amount": 28.48,
+            "tax_amount": 5.13,
+            "tax_percentage": 18,
+            "total": 33.61
+        }
+    ]
+}

@@ -60,6 +60,29 @@ class TransportGuideShow extends Component
         }
     }
 
+    public function sendToSunat(): void
+    {
+        $this->authorize('update', $this->transportGuide);
+
+        if (!$this->transportGuide->xml_path) {
+            session()->flash('error', 'Primero debe generar el XML de la guía.');
+            return;
+        }
+
+        app(\App\Domains\Billing\Actions\SendTransportGuideToSunatAction::class)
+            ->execute($this->transportGuide);
+
+        session()->flash('message', 'Guía enviada a SUNAT. Revisa el estado en unos minutos.');
+        $this->redirectRoute($this->indexRouteName());
+    }
+
+    protected function indexRouteName(): string
+    {
+        return $this->type === TransportGuide::TYPE_REMITENTE
+            ? 'billing.transport-guides.remitente.index'
+            : 'billing.transport-guides.transportista.index';
+    }
+
     public function render()
     {
         $this->authorize('view', $this->transportGuide);

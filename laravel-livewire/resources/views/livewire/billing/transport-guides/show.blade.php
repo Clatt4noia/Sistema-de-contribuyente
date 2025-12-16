@@ -20,10 +20,17 @@
             @endcan
             @can('issue', $transportGuide)
                 @if(in_array($transportGuide->sunat_status, [\App\Models\TransportGuide::STATUS_DRAFT, \App\Models\TransportGuide::STATUS_PENDING]))
-                    <button class="btn btn-primary" wire:click="confirmIssue" wire:loading.attr="disabled">
-                        <span wire:loading wire:target="confirmIssue,issueGuide" class="animate-spin">⏳</span>
-                        Emitir SUNAT
-                    </button>
+                    @if(!$transportGuide->xml_path)
+                        <button class="btn btn-primary" wire:click="confirmIssue" wire:loading.attr="disabled">
+                            <span wire:loading wire:target="confirmIssue,issueGuide" class="animate-spin">⏳</span>
+                            Generar XML
+                        </button>
+                    @else
+                        <button class="btn btn-primary" wire:click="sendToSunat" wire:loading.attr="disabled">
+                            <span wire:loading wire:target="sendToSunat" class="animate-spin">⏳</span>
+                            Emitir a SUNAT
+                        </button>
+                    @endif
                 @endif
             @endcan
         </div>

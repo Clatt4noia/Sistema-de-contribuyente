@@ -6,5 +6,5 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 interface PdfExport extends Exportable
 {
-    public function download(): BinaryFileResponse;
+    public function download(): \Illuminate\Http\Response;
 }

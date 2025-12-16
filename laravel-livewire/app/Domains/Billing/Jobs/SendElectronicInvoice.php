@@ -18,14 +18,12 @@ class SendElectronicInvoice implements ShouldQueue
 
     public int $tries = 3;
 
-    public string $queue;
-
     /**
      * @param  array<int, array<string, mixed>>  $items
      */
     public function __construct(public Invoice $invoice, public array $items, public array $companyData, public array $customerData)
     {
-        $this->queue = config('billing.queues.sunat', 'sunat');
+        $this->onQueue(config('billing.queues.sunat', 'sunat'));
     }
 
     public function handle(InvoiceService $invoiceService): void

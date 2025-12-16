@@ -383,6 +383,9 @@ class CreateInvoice extends Component
     public function saveInvoice(): void
     {
         $this->resetValidation();
+        
+        // Recalcular totales antes de guardar para asegurar consistencia
+        $this->calculateTotals();
 
         $this->validate($this->rules());
 
@@ -594,11 +597,14 @@ class CreateInvoice extends Component
         $priceIncludesTax = $profile['price_type_code'] === '01' && $taxPercentage > 0;
 
         if ($priceIncludesTax) {
-            $unitBase = round($unitPrice / (1 + ($taxPercentage / 100)), 4);
-            $gross = round($quantity * $unitPrice, 2);
-            $taxable = round($quantity * $unitBase, 2);
-            $taxAmount = max(round($gross - $taxable, 2), 0.0);
-            $total = $gross;
+            // El precio unitario YA incluye IGV
+            $total = round($quantity * $unitPrice, 2);
+            
+            // Calcular IGV desde el total: IGV = Total × (18/118)
+            $taxAmount = round($total * ($taxPercentage / (100 + $taxPercentage)), 2);
+            
+            // Base imponible = Total - IGV
+            $taxable = round($total - $taxAmount, 2);
 
         } else {
             $taxable = round($quantity * $unitPrice, 2);
