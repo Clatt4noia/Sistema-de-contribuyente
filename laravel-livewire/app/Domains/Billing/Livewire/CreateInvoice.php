@@ -483,8 +483,13 @@ class CreateInvoice extends Component
             'name' => $this->selectedClient['name'],
         ];
 
-        SendElectronicInvoice::dispatch($invoice->fresh(), $this->formattedItemsForDispatch(), $companyData, $customerData)
-            ->onQueue(Config::get('billing.queues.sunat', 'sunat'));
+        SendElectronicInvoice::dispatch(
+            $invoice->fresh(),
+            $this->formattedItemsForDispatch(),
+            $companyData,
+            $customerData
+        )->onQueue(config('billing.queues.sunat', 'sunat'));
+
 
         session()->flash('message', 'Factura registrada y enviada para procesamiento en SUNAT.');
         $this->redirectRoute('billing.invoices.index');
