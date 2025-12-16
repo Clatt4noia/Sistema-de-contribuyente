@@ -139,6 +139,8 @@ class TruckForm extends Component
     {
         $this->authorize('viewAny', Truck::class);
 
-        return view('livewire.fleet.truck-form');
+        return view('livewire.fleet.truck-form', [
+            'maintenanceStatusTags' => $this->maintenanceStatusTags,
+        ]);
     }
 }
