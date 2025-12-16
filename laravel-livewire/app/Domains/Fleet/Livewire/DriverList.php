@@ -19,6 +19,27 @@ class DriverList extends Component
     public $search = '';
     public $status = '';
 
+    // ✅ Modal state
+    public bool $driverModalOpen = false;
+    public ?Driver $selectedDriver = null;
+
+    public function openDriverModal(int $id): void
+    {
+        $driver = Driver::with(['schedules', 'evaluations', 'trainings'])->findOrFail($id);
+
+        // (opcional, recomendado) misma política de acceso
+        $this->authorize('view', $driver);
+
+        $this->selectedDriver = $driver;
+        $this->driverModalOpen = true;
+    }
+
+    public function closeDriverModal(): void
+    {
+        $this->driverModalOpen = false;
+        $this->selectedDriver = null;
+    }
+
     public function deleteDriver($id): void
     {
         $driver = Driver::findOrFail($id);
@@ -38,9 +59,9 @@ class DriverList extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                      ->orWhere('document_number', 'like', '%' . $this->search . '%')
-                      ->orWhere('license_number', 'like', '%' . $this->search . '%');
+                        ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                        ->orWhere('document_number', 'like', '%' . $this->search . '%')
+                        ->orWhere('license_number', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->status, function ($query) {
