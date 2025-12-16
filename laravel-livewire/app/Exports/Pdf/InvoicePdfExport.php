@@ -18,7 +18,7 @@ class InvoicePdfExport implements PdfExport
         $this->fileName = $invoice->numero_completo.'.pdf';
     }
 
-    public function download(): BinaryFileResponse
+    public function download(): \Illuminate\Http\Response
     {
         $pdf = Pdf::loadView('invoices.pdf', [
             'invoice' => $this->invoice->load('client', 'order'),

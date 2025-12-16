@@ -105,10 +105,14 @@ class InvoiceService
                 ->setDistrito('LIMA')
                 ->setDireccion($companyData->address));
 
+        // Tipo de operación desde metadata (ej: '01' -> '0101')
+        $operationType = $invoice->metadata['operation_type'] ?? '01';
+        $tipoOperacion = str_pad($operationType, 2, '0', STR_PAD_LEFT) . '01'; // Formato: XXYY donde XX=tipo, YY=01
+        
         $inv = new GreenterInvoice();
         $inv->setUblVersion('2.1')
-            ->setTipoOperacion('0101') // Venta Interna
-            ->setTipoDoc('01') // Factura
+            ->setTipoOperacion($tipoOperacion)
+            ->setTipoDoc($invoice->document_type ?? '01')
             ->setSerie($invoice->series)
             ->setCorrelativo($invoice->correlative)
             ->setFechaEmision(new DateTime($invoice->issue_date->format('Y-m-d')))
@@ -122,22 +126,45 @@ class InvoiceService
             ->setSubTotal($invoice->total)
             ->setMtoImpVenta($invoice->total);
 
+        // Forma de pago (requerido por SUNAT desde 2024)
+        // Si tiene fecha de vencimiento = Crédito, si no = Contado
+        if ($invoice->due_date && $invoice->due_date->gt($invoice->issue_date)) {
+            $paymentTerm = (new \Greenter\Model\Sale\PaymentTerms())
+                ->setTipo('Credito')
+                ->setMonto($invoice->total);
+            $inv->setFormaPago($paymentTerm);
+        } else {
+            $paymentTerm = (new \Greenter\Model\Sale\PaymentTerms())
+                ->setTipo('Contado');
+            $inv->setFormaPago($paymentTerm);
+        }
+
         // Detalles
         $items = [];
         foreach ($invoice->details as $detail) {
+            $quantity = (float) $detail->quantity;
+            $taxableAmount = (float) $detail->taxable_amount;
+            $taxPercentage = (float) $detail->tax_percentage;
+            
+            // Precio unitario SIN IGV (valor unitario = base imponible / cantidad)
+            $valorUnitario = $quantity > 0 ? round($taxableAmount / $quantity, 4) : 0;
+            
+            // Precio unitario CON IGV
+            $precioUnitario = round($valorUnitario * (1 + ($taxPercentage / 100)), 4);
+            
             $item = new SaleDetail();
             $item->setCodProducto($detail->metadata['sku'] ?? 'P001')
-                ->setUnidad('NIU')
-                ->setCantidad($detail->quantity)
+                ->setUnidad($detail->metadata['unit_code'] ?? 'ZZ')
+                ->setCantidad($quantity)
                 ->setDescripcion($detail->description)
-                ->setMtoBaseIgv($detail->taxable_amount)
-                ->setPorcentajeIgv($detail->tax_percentage)
-                ->setIgv($detail->tax_amount)
-                ->setTipAfeIgv('10') // Gravado - Operación Onerosa
-                ->setTotalImpuestos($detail->tax_amount)
-                ->setMtoValorVenta($detail->taxable_amount)
-                ->setMtoValorUnitario($detail->unit_price)
-                ->setMtoPrecioUnitario($detail->unit_price * (1 + ($detail->tax_percentage/100))); // Precio con IGV
+                ->setMtoBaseIgv($taxableAmount)
+                ->setPorcentajeIgv($taxPercentage)
+                ->setIgv((float) $detail->tax_amount)
+                ->setTipAfeIgv($detail->metadata['tax_exemption_reason'] ?? '10') // Gravado - Operación Onerosa
+                ->setTotalImpuestos((float) $detail->tax_amount)
+                ->setMtoValorVenta($taxableAmount)
+                ->setMtoValorUnitario($valorUnitario)
+                ->setMtoPrecioUnitario($precioUnitario);
             
             $items[] = $item;
         }
@@ -147,7 +174,7 @@ class InvoiceService
         // Leyendas
         $legend = new Legend();
         $legend->setCode('1000')
-            ->setValue((new \NumerosEnLetras\NumerosEnLetras())->toInvoice($invoice->total, 2, $invoice->currency == 'USD' ? 'DOLARES AMERICANOS' : 'SOLES'));
+            ->setValue((new \Luecano\NumeroALetras\NumeroALetras())->toMoney($invoice->total, 2, $invoice->currency == 'USD' ? 'DOLARES AMERICANOS' : 'SOLES', 'CENTIMOS'));
         $inv->setLegends([$legend]);
 
         return $inv;

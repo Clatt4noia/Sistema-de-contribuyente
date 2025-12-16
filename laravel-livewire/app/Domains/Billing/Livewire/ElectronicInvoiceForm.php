@@ -12,7 +12,6 @@ class ElectronicInvoiceForm extends Component
 {
     use AuthorizesRequests;
 
-    public SendElectronicInvoiceAction $sendElectronicInvoiceAction;
     public Invoice $invoice;
     public array $items = [];
     public array $newItem = [
@@ -40,11 +39,6 @@ class ElectronicInvoiceForm extends Component
             'newItem.price_type_code' => 'required|string|max:2',
             'newItem.tax_exemption_reason' => 'required|string|max:2',
         ];
-    }
-
-    public function boot(SendElectronicInvoiceAction $sendElectronicInvoiceAction): void
-    {
-        $this->sendElectronicInvoiceAction = $sendElectronicInvoiceAction;
     }
 
     public function mount(Invoice $invoice): void
@@ -104,7 +98,7 @@ class ElectronicInvoiceForm extends Component
     {
         $this->authorize('update', $this->invoice);
 
-        $this->sendElectronicInvoiceAction->execute($this->invoice, $this->items);
+        app(SendElectronicInvoiceAction::class)->execute($this->invoice, $this->items);
 
         session()->flash('message', 'Se envió la factura electrónica a SUNAT. Revisa el estado en unos minutos.');
         $this->redirectRoute('billing.invoices.index');

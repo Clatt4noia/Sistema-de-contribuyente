@@ -1,0 +1,17 @@
+{
+    "company": {
+        "ruc": "20604342351",
+        "razon_social": "EMPRESA DE PRUEBA S.A.C.",
+        "sol_user": "MODDATOS",
+        "sol_pass_len": 8,
+        "cert_path": "app\/billing\/combinado.pem",
+        "production": true,
+        "cert_exists": true
+    },
+    "invoice": {
+        "id": 5,
+        "number": "F001-00000001",
+        "sunat_status": "rechazado",
+        "sunat_message": "Error al procesar factura: Bad Request"
+    }
+}

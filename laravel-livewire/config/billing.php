@@ -26,7 +26,7 @@ return [
         'passphrase' => env('BILLING_CERTIFICATE_PASSPHRASE'),
     ],
     'storage' => [
-        'disk_xml_cdr' => env('BILLING_STORAGE_DISK', 'secure-billing'),
+        'disk_xml_cdr' => env('BILLING_STORAGE_DISK', 'public'),
         'xml_directory' => env('BILLING_STORAGE_XML_DIRECTORY', 'xml'),
         'cdr_directory' => env('BILLING_STORAGE_CDR_DIRECTORY', 'cdr'),
         'pdf_directory' => env('BILLING_STORAGE_PDF_DIRECTORY', 'pdf'),

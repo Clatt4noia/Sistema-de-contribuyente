@@ -21,14 +21,10 @@ class SendElectronicInvoice implements ShouldQueue
     /**
      * @param  array<int, array<string, mixed>>  $items
      */
-    public function __construct(
-        public Invoice $invoice,
-        public array $items,
-        public array $companyData,
-        public array $customerData
-    ) {
-        // ❌ NO definas $this->queue aquí (ni declares public string $queue)
-        // La cola se define al dispatch: ->onQueue(...)
+    public function __construct(public Invoice $invoice, public array $items, public array $companyData, public array $customerData)
+    {
+        $this->onQueue(config('billing.queues.sunat', 'sunat'));
+
     }
 
     public function handle(InvoiceService $invoiceService): void

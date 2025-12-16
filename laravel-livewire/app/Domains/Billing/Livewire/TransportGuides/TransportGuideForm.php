@@ -78,24 +78,35 @@ class TransportGuideForm extends Component
 
         }
 
+
+        // Obtener datos de la empresa para remitente y transportista
+        $company = \App\Models\Company::first();
+        $companyRuc = $company ? $company->ruc : Config::get('billing.sunat.ruc');
+        $companyName = $company ? $company->razon_social : Config::get('app.name');
+
         $this->form = [
             'series' => $this->transportGuide->series,
             'correlative' => $this->transportGuide->correlative,
-            'issue_date' => optional($this->transportGuide->issue_date)->format('Y-m-d') ?: now()->toDateString(),
-            'issue_time' => $this->transportGuide->issue_time ?? now()->format('H:i:s'),
             'document_type_code' => $this->transportGuide->document_type_code ?? $this->documentTypeForType(),
 
             'observations' => $this->transportGuide->observations,
             'client_id' => $this->transportGuide->client_id,
-            'remitente_document_type' => $this->transportGuide->remitente_document_type ?? '6',
-            'remitente_document_number' => $this->transportGuide->remitente_document_number ?? Config::get('billing.sunat.ruc'),
-            'remitente_ruc' => $this->transportGuide->remitente_ruc ?? Config::get('billing.sunat.ruc'),
-            'remitente_name' => $this->transportGuide->remitente_name ?? Config::get('app.name'),
-            'destinatario_document_type' => $this->transportGuide->destinatario_document_type ?? ($this->transportGuide->remitente_document_type ?? '6'),
-            'destinatario_document_number' => $this->transportGuide->destinatario_document_number ?? $this->transportGuide->remitente_document_number ?? $this->transportGuide->remitente_ruc ?? Config::get('billing.sunat.ruc'),
-            'destinatario_name' => $this->transportGuide->destinatario_name ?? $this->transportGuide->remitente_name ?? Config::get('app.name'),
-            'transportista_ruc' => $this->transportGuide->transportista_ruc ?? Config::get('billing.sunat.ruc'),
-            'transportista_name' => $this->transportGuide->transportista_name ?? Config::get('app.name'),
+            
+            // REMITENTE (FIJO - siempre es la empresa)
+            'remitente_document_type' => '6', // RUC
+            'remitente_document_number' => $companyRuc,
+            'remitente_ruc' => $companyRuc,
+            'remitente_name' => $companyName,
+            
+            // DESTINATARIO (se llena al seleccionar cliente)
+            'destinatario_document_type' => $this->transportGuide->destinatario_document_type ?? '6',
+            'destinatario_document_number' => $this->transportGuide->destinatario_document_number ?? '',
+            'destinatario_name' => $this->transportGuide->destinatario_name ?? '',
+            
+            // TRANSPORTISTA (FIJO - siempre es la empresa)
+            'transportista_ruc' => $companyRuc,
+            'transportista_name' => $companyName,
+            
             'order_id' => $this->transportGuide->order_id,
             'assignment_id' => $this->transportGuide->assignment_id,
             'truck_id' => $this->transportGuide->truck_id,
@@ -159,21 +170,24 @@ class TransportGuideForm extends Component
         return [
             'form.series' => ['required', 'string', 'max:4', 'regex:' . $this->seriesPattern()],
             'form.correlative' => 'required|integer|min:1',
-            'form.issue_date' => 'required|date',
-            'form.issue_time' => 'required',
             'form.document_type_code' => 'required|in:' . $this->documentTypeForType(),
 
             'form.observations' => 'nullable|string',
             'form.client_id' => 'required|exists:clients,id',
+            
+            // Remitente (siempre es la empresa para GRE-R)
             'form.remitente_document_type' => 'required|string|max:2',
             'form.remitente_document_number' => 'required|string|max:20',
-            'form.remitente_ruc' => 'required|regex:/^\d{8,11}$/',
+            'form.remitente_ruc' => 'required|string|max:11',
             'form.remitente_name' => 'required|string|max:100',
+            
+            // Transportista (siempre es la empresa para GRE-R)
+            'form.transportista_ruc' => 'required|string|max:11',
+            'form.transportista_name' => 'required|string|max:100',
+            
             'form.destinatario_document_type' => 'required|string|max:2',
             'form.destinatario_document_number' => 'required|string|max:20',
             'form.destinatario_name' => 'required|string|max:100',
-            'form.transportista_ruc' => 'required|digits:11',
-            'form.transportista_name' => 'required|string|max:100',
             'form.order_id' => 'nullable|exists:orders,id',
             'form.assignment_id' => 'nullable|exists:assignments,id',
             'form.truck_id' => 'required|exists:trucks,id',
@@ -215,7 +229,7 @@ class TransportGuideForm extends Component
     {
         $truck = Truck::find($value);
         if ($truck) {
-            $this->form['vehicle_plate'] = $truck->plate;
+            $this->form['vehicle_plate'] = $truck->plate_number;
             $this->form['vehicle_brand'] = $truck->brand;
             $this->form['mtc_registration_number'] = $truck->mtc_registration_number;
         }
@@ -229,6 +243,23 @@ class TransportGuideForm extends Component
             $this->form['driver_document_type'] = $driver->document_type;
             $this->form['driver_name'] = $driver->name;
             $this->form['driver_license_number'] = $driver->license_number;
+        }
+    }
+
+    public function updatedFormClientId($value): void
+    {
+        $client = Client::find($value);
+        if ($client) {
+            // Llenar datos del remitente con los datos del cliente
+            $this->form['remitente_ruc'] = $client->tax_id;
+            $this->form['remitente_name'] = $client->business_name;
+            $this->form['remitente_document_type'] = '6'; // RUC
+            $this->form['remitente_document_number'] = $client->tax_id;
+            
+            // También llenar datos del destinatario (por defecto son los mismos)
+            $this->form['destinatario_document_type'] = '6'; // RUC
+            $this->form['destinatario_document_number'] = $client->tax_id;
+            $this->form['destinatario_name'] = $client->business_name;
         }
     }
 
@@ -272,8 +303,8 @@ class TransportGuideForm extends Component
             'series' => $data['series'],
             'correlative' => $data['correlative'],
             'full_code' => sprintf('%s-%08d', $data['series'], $data['correlative']),
-            'issue_date' => $data['issue_date'],
-            'issue_time' => $data['issue_time'],
+            'issue_date' => now()->toDateString(),
+            'issue_time' => now()->format('H:i:s'),
             'document_type_code' => $data['document_type_code'],
             'observations' => $data['observations'] ?: null,
             'client_id' => $data['client_id'],
@@ -317,7 +348,7 @@ class TransportGuideForm extends Component
             'sunat_status' => $this->transportGuide->sunat_status ?: TransportGuide::STATUS_DRAFT,
         ]);
 
-        $this->transportGuide->issue_date = Carbon::parse($data['issue_date']);
+        $this->transportGuide->issue_date = now();
         $this->transportGuide->start_transport_date = Carbon::parse($data['start_transport_date']);
         $this->transportGuide->delivery_date = $data['delivery_date'] ? Carbon::parse($data['delivery_date']) : null;
 
