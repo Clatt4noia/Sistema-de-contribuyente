@@ -5,7 +5,7 @@
  <p class="text-sm text-token ">Controla solicitudes de transporte, monitorea estados y sincroniza asignaciones.</p>
  </div>
     <a href="{{ route('orders.create') }}" class="btn btn-primary">
-        Nuevo Pedido
+        Nueva Orden
     </a>
  </div>
 
@@ -120,13 +120,13 @@
                   <a href="{{ route('fleet.assignments.index', ['order' => $order->id]) }}" class="btn btn-secondary btn-sm">Asignaciones</a>
                   <button wire:click="updateOrderStatus({{ $order->id }}, 'en_route')" class="btn btn-secondary btn-sm">Marcar en ruta</button>
                   <button wire:click="updateOrderStatus({{ $order->id }}, 'delivered')" class="btn btn-primary btn-sm">Marcar entregado</button>
-                  <button wire:click="deleteOrder({{ $order->id }})" wire:confirm="Esta seguro de eliminar el pedido?" class="btn btn-danger btn-sm">Eliminar</button>
+                  <button wire:click="deleteOrder({{ $order->id }})" wire:confirm="Esta seguro de eliminar el Orden?" class="btn btn-danger btn-sm">Eliminar</button>
                 </div>
               </td>
             </tr>
           @empty
             <tr class="table-row">
-              <td colspan="7" class="table-empty">No se encontraron pedidos</td>
+              <td colspan="7" class="table-empty">No se encontraron Ordenes</td>
             </tr>
           @endforelse
         </tbody>

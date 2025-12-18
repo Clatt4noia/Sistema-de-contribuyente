@@ -2,7 +2,7 @@
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div>
  <h1 class="text-2xl font-semibold text-token ">{{ __('Mis envíos') }}</h1>
- <p class="text-sm text-token ">{{ __('Consulta el estado de tus pedidos y ajusta la ventana de entrega cuando sea necesario.') }}</p>
+ <p class="text-sm text-token ">{{ __('Consulta el estado de tus Ordenes y ajusta la ventana de entrega cuando sea necesario.') }}</p>
  </div>
     <a href="{{ route('dashboard') }}" class="btn btn-secondary">
         {{ __('Regresar al panel') }}
@@ -20,7 +20,7 @@
  <article class="surface-card space-y-4 p-6 shadow-lg">
  <header class="flex flex-wrap items-center justify-between gap-3">
  <div>
- <h2 class="text-lg font-semibold text-token ">{{ __('Pedido :reference', ['reference' => $order->reference]) }}</h2>
+ <h2 class="text-lg font-semibold text-token ">{{ __('Orden :reference', ['reference' => $order->reference]) }}</h2>
  <p class="text-sm text-token ">{{ optional($order->client)->business_name ?? optional($order->client)->contact_name }}</p>
  </div>
  <span class="badge badge-accent">
@@ -135,7 +135,7 @@
  </article>
  @empty
     <div class="rounded-2xl border border-token bg-surface p-6 text-center text-sm text-token shadow-sm ">
- {{ __('No se encontraron pedidos asociados a tu cuenta.') }}
+ {{ __('No se encontraron Ordenes asociados a tu cuenta.') }}
  </div>
  @endforelse
  </div>

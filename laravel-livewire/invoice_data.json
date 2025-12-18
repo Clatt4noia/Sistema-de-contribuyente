@@ -9,7 +9,7 @@
     },
     "details": [
         {
-            "description": "Pedido ORD-2025-981 • Destino: LIMA • Tipo de carga: Carga general",
+            "description": "Orden: ORD-2025-981 • Destino: LIMA • Tipo de carga: Carga general",
             "quantity": 1,
             "unit_price": 33.61,
             "taxable_amount": 28.48,

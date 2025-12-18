@@ -52,7 +52,7 @@
  @endforeach
  </select>
  <select wire:model.live="order_id" class="form-control">
- <option value="">Todos los pedidos</option>
+ <option value="">Todos los Ordenes</option>
  @foreach($orders as $order)
  <option value="{{ $order->id }}">{{ $order->reference }}</option>
  @endforeach
@@ -65,7 +65,7 @@
             <tr class="table-row">
               <th class="table-header">Factura</th>
               <th class="table-header">Cliente</th>
-              <th class="table-header">Pedido</th>
+              <th class="table-header">Orden</th>
               <th class="table-header">GRE vinculada</th>
               <th class="table-header">Emision / Venc.</th>
               <th class="table-header">Total</th>

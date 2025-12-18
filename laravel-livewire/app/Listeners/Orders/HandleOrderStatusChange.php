@@ -70,7 +70,7 @@ class HandleOrderStatusChange
             'tax' => $tax,
             'total' => $total,
             'status' => 'issued',
-            'notes' => __('Factura generada automáticamente al entregar el pedido.'),
+            'notes' => __('Factura generada automáticamente al entregar la Orden.'),
         ]);
     }
 

@@ -48,7 +48,7 @@
             <div class="form-field">
                 <label class="form-label" for="routeFilter">Ruta / Destino</label>
                 <input id="routeFilter" type="text" wire:model.live="routeFilter" class="form-control" placeholder="Ciudad, tramo o destino">
-                <p class="mt-1 text-xs text-token-muted">Filtra por origen o destino del pedido ligado a la factura.</p>
+                <p class="mt-1 text-xs text-token-muted">Filtra por origen o destino del Orden ligado a la factura.</p>
             </div>
         </div>
     </div>

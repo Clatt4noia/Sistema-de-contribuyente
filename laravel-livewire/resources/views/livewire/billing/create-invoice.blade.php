@@ -132,17 +132,17 @@
         </div>
       </div>
 
-      {{-- PEDIDOS A FACTURAR (BUSCADOR + RESULTADOS DENTRO) --}}
+      {{-- OrdenES A FACTURAR (BUSCADOR + RESULTADOS DENTRO) --}}
       <div class="surface-card space-y-6 p-6 shadow-lg">
         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 class="text-lg font-semibold text-token">Pedidos a facturar</h2>
-            <p class="text-xs text-token-muted">Busca y agrega pedidos pendientes del cliente seleccionado.</p>
+            <h2 class="text-lg font-semibold text-token">Ordenes a facturar</h2>
+            <p class="text-xs text-token-muted">Busca y agrega Ordenes pendientes del cliente seleccionado.</p>
           </div>
 
           <div class="grid w-full gap-4 md:w-auto md:grid-cols-[minmax(0,380px)_220px]">
             <div class="form-field">
-              <label class="form-label">Buscar pedido</label>
+              <label class="form-label">Buscar Orden</label>
               <input
                 type="text"
                 wire:model.live.debounce.300ms="orderSearch"
@@ -170,9 +170,9 @@
 
         {{-- Mensajes --}}
         @if(!$selectedClient)
-          <p class="text-xs text-token">Seleccione un cliente para listar sus pedidos pendientes de facturar.</p>
+          <p class="text-xs text-token">Seleccione un cliente para listar sus Ordenes pendientes de facturar.</p>
         @elseif(empty($orderResults) && ($orderSearch !== '' || $cargoTypeFilter))
-          <p class="text-xs text-token">No se encontraron pedidos pendientes que coincidan con los filtros aplicados.</p>
+          <p class="text-xs text-token">No se encontraron Ordenes pendientes que coincidan con los filtros aplicados.</p>
         @endif
 
        {{-- Resultados dentro de la tarjeta --}}
@@ -208,7 +208,7 @@
                         <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-base font-semibold text-token">
-                            Pedido {{ $order['reference'] }}
+                            Orden {{ $order['reference'] }}
                             </span>
 
                             @if($order['cargo_type'])
@@ -285,7 +285,7 @@
         </div>
 
 
-{{-- TABLA DE ÍTEMS (PEDIDOS AGREGADOS) --}}
+{{-- TABLA DE ÍTEMS (Ordenes AGREGADOS) --}}
 <div class="overflow-hidden rounded-xl border border-token shadow-sm bg-white">
   <table class="w-full table-fixed border-separate border-spacing-0 !table">
     <thead class="bg-surface-muted !table-header-group">
@@ -361,7 +361,7 @@
       @empty
         <tr class="!table-row">
           <td colspan="5" class="px-4 py-10 text-center text-sm text-token-muted !table-cell">
-            No se han agregado pedidos. Utilice el buscador para añadir ítems.
+            No se han agregado Ordenes. Utilice el buscador para añadir ítems.
           </td>
         </tr>
       @endforelse

@@ -12,7 +12,7 @@
  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div class="form-field">
                 <label for="order_id" class="form-label">
-                    <span class="required">Pedido</span>
+                    <span class="required">Orden</span>
                 </label>
                 <select
                     id="order_id"
@@ -20,7 +20,7 @@
                     class="form-control form-md @error('form.order_id') is-invalid @enderror"
                     @error('form.order_id') aria-invalid="true" aria-describedby="order_id-error" @enderror
                 >
-                    <option value="">Seleccione un pedido</option>
+                    <option value="">Seleccione un Orden</option>
                     @foreach($orders as $order)
                         <option value="{{ $order->id }}">{{ $order->reference }} - {{ $order->origin }} -> {{ $order->destination }}</option>
                     @endforeach
@@ -217,7 +217,7 @@
 
  @if($orderPreview)
  <div class="surface-card p-6 shadow-lg">
- <h3 class="text-lg font-semibold text-token ">Resumen del pedido</h3>
+ <h3 class="text-lg font-semibold text-token ">Resumen del Orden</h3>
  <dl class="mt-4 space-y-2 text-sm text-token ">
  <div class="flex items-center gap-2">
  <dt class="font-semibold text-token ">Ruta:</dt>

@@ -2,8 +2,8 @@
     <article class="surface-card">
         <header class="flex items-center justify-between border-b border-token px-6 py-5">
             <div>
-                <h1 class="text-2xl font-semibold text-token">{{ __('Notificaciones de estado del pedido') }}</h1>
-                <p class="mt-1 text-sm text-token">{{ __('Seguimiento cronológico de cambios en pedidos y asignaciones logísticas.') }}</p>
+                <h1 class="text-2xl font-semibold text-token">{{ __('Notificaciones de estado del Orden') }}</h1>
+                <p class="mt-1 text-sm text-token">{{ __('Seguimiento cronológico de cambios en Ordenes y asignaciones logísticas.') }}</p>
             </div>
             <div class="rounded-full bg-accent-soft px-4 py-2 text-xs font-semibold uppercase tracking-wide text-accent">
                 {{ trans_choice(':count evento|:count eventos', count($notifications), ['count' => count($notifications)]) }}
@@ -29,7 +29,7 @@
                         <li class="relative rounded-xl border border-token bg-elevated p-4 shadow-sm">
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-xs uppercase tracking-wide text-token">{{ __('Pedido') }}</p>
+                                    <p class="text-xs uppercase tracking-wide text-token">{{ __('Orden') }}</p>
                                     <div class="flex items-center gap-2 text-sm font-semibold text-token">
                                         <span>{{ $update['order_reference'] ?? '—' }}</span>
                                         @if($update['order_id'])

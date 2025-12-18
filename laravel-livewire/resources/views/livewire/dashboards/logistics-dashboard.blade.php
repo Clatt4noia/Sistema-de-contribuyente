@@ -4,7 +4,7 @@
  <header class="flex items-center justify-between border-b border-token px-6 py-5 ">
  <div>
  <h1 class="text-2xl font-semibold text-token ">{{ __('Seguimiento logístico') }}</h1>
- <p class="mt-1 text-sm text-token ">{{ __('Estado consolidado de pedidos, ventanas de entrega y desempeño operativo.') }}</p>
+ <p class="mt-1 text-sm text-token ">{{ __('Estado consolidado de Ordenes, ventanas de entrega y desempeño operativo.') }}</p>
  </div>
  </header>
  <div class="grid gap-4 p-6 sm:grid-cols-4">
@@ -169,7 +169,7 @@
           <table class="table table-md">
             <thead>
               <tr class="table-row">
-                <th class="table-header">{{ __('Pedido') }}</th>
+                <th class="table-header">{{ __('Orden') }}</th>
                 <th class="table-header">{{ __('Planificador') }}</th>
                 <th class="table-header">{{ __('Distancia (km)') }}</th>
                 <th class="table-header">{{ __('Actualizado') }}</th>
@@ -213,7 +213,7 @@
             <thead>
               <tr class="table-row">
                 <th class="table-header">{{ __('Vehículo') }}</th>
-                <th class="table-header">{{ __('Pedido') }}</th>
+                <th class="table-header">{{ __('Orden') }}</th>
                 <th class="table-header">{{ __('Estado') }}</th>
                 <th class="table-header">{{ __('Reportado') }}</th>
               </tr>

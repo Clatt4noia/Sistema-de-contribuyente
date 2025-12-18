@@ -67,7 +67,7 @@ class OrderList extends Component
             $order->delete();
         });
 
-        session()->flash('message', 'Pedido eliminado correctamente.');
+        session()->flash('message', 'Orden eliminado correctamente.');
         $this->resetPage();
     }
 
@@ -87,7 +87,7 @@ class OrderList extends Component
         }
 
         $order->save();
-        session()->flash('message', 'Estado del pedido actualizado.');
+        session()->flash('message', 'Estado del Orden actualizado.');
     }
 
     public function render()

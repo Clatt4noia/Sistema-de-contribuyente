@@ -8,7 +8,7 @@
  @foreach ($markers as $marker)
  <li class="rounded-xl border border-token bg-elevated p-3 shadow-sm ">
  <p class="font-semibold text-token ">{{ $marker['truck'] ?? __('Vehículo sin placa') }}</p>
- <p>{{ __('Pedido') }}: <span class="font-medium">{{ $marker['order'] ?? '—' }}</span></p>
+ <p>{{ __('Orden') }}: <span class="font-medium">{{ $marker['order'] ?? '—' }}</span></p>
  <p>{{ __('Estado') }}: <span class="capitalize">{{ __($marker['status'] ?? 'on_route') }}</span></p>
  <p>{{ __('Reportado') }}: {{ $marker['reported_at'] }}</p>
  </li>
@@ -81,7 +81,7 @@
  markers.forEach((marker) => {
  window.L.marker([marker.latitude, marker.longitude])
  .addTo(map)
- .bindPopup(`<strong>${marker.truck ?? 'Vehículo'}</strong><br/>Pedido: ${marker.order ?? '—'}<br/>${marker.reported_at}`);
+ .bindPopup(`<strong>${marker.truck ?? 'Vehículo'}</strong><br/>Orden: ${marker.order ?? '—'}<br/>${marker.reported_at}`);
  });
 
  if (markers.length > 1) {

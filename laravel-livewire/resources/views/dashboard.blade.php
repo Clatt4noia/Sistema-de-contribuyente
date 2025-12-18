@@ -14,7 +14,7 @@
  </span>
  <h2 class="text-3xl font-semibold tracking-tight text-token ">Gestión integral en un solo lugar</h2>
  <p class="text-sm leading-relaxed text-token ">
- Supervisa camiones, conductores, pedidos y finanzas con información en vivo. Ajusta tus operaciones y mantén a todo el equipo alineado en segundos.
+ Supervisa camiones, conductores, Ordenes y finanzas con información en vivo. Ajusta tus operaciones y mantén a todo el equipo alineado en segundos.
  </p>
  </div>
 
@@ -57,11 +57,11 @@
  <article class="surface-card p-6">
  <h3 class="text-xl font-semibold text-token ">Operaciones y Finanzas</h3>
  <p class="mt-2 text-sm leading-relaxed text-token ">
- Accesos directos a los registros clave del día a día. Revisa pedidos, clientes y facturación sin perderte entre pantallas.
+ Accesos directos a los registros clave del día a día. Revisa Ordenes, clientes y facturación sin perderte entre pantallas.
  </p>
  <div class="mt-6 grid gap-3">
  <a href="{{ route('orders.index') }}" class="group surface-muted flex transform items-center justify-between px-4 py-3 text-sm font-semibold text-token transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)] ">
- <span>Pedidos</span>
+ <span>Ordenes</span>
  <span class="text-accent-soft transition group-hover:translate-x-0.5 ">&rarr;</span>
  </a>
  <a href="{{ route('clients.index') }}" class="group surface-muted flex transform items-center justify-between px-4 py-3 text-sm font-semibold text-token transition hover:-translate-y-0.5 hover:border-[color:var(--color-primary-border)] hover:[background-color:var(--color-elevated)] ">
@@ -87,18 +87,18 @@
  <section class="grid gap-6 lg:grid-cols-3">
  <article class="surface-card p-6">
  <header class="space-y-2">
- <span class="surface-pill text-xs font-semibold uppercase tracking-wide text-accent ">1. Gestión de Pedidos y Rutas</span>
+ <span class="surface-pill text-xs font-semibold uppercase tracking-wide text-accent ">1. Gestión de Ordenes y Rutas</span>
  <h3 class="text-xl font-semibold text-token ">Control logístico en tiempo real</h3>
- <p class="text-sm text-token ">Organiza cada pedido, asigna recursos y visualiza rutas optimizadas con estados claros.</p>
+ <p class="text-sm text-token ">Organiza cada Orden, asigna recursos y visualiza rutas optimizadas con estados claros.</p>
  </header>
  <ul class="mt-4 space-y-3 text-sm text-token ">
  <li class="flex items-start gap-2">
                 <span class="mt-1 h-1.5 w-1.5 rounded-full [background-color:var(--color-primary-muted)]"></span>
- Registro y seguimiento completo de pedidos de transporte.
+ Registro y seguimiento completo de Ordenes de transporte.
  </li>
  <li class="flex items-start gap-2">
                 <span class="mt-1 h-1.5 w-1.5 rounded-full [background-color:var(--color-primary-muted)]"></span>
- Asignación inmediata de camiones y choferes a cada pedido.
+ Asignación inmediata de camiones y choferes a cada Orden.
  </li>
  <li class="flex items-start gap-2">
                 <span class="mt-1 h-1.5 w-1.5 rounded-full [background-color:var(--color-primary-muted)]"></span>
@@ -106,7 +106,7 @@
  </li>
  <li class="flex items-start gap-2">
                 <span class="mt-1 h-1.5 w-1.5 rounded-full [background-color:var(--color-primary-muted)]"></span>
- Estados del pedido: pendiente, en ruta, entregado o cancelado.
+ Estados de la Orden: pendiente, en ruta, entregado o cancelado.
  </li>
  </ul>
  <div class="mt-6">

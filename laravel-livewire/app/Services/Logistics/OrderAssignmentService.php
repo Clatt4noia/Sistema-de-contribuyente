@@ -19,7 +19,7 @@ class OrderAssignmentService
             $driver = $this->selectDriver($order, $truck);
 
             if (!$truck || !$driver) {
-                Log::warning('No se encontraron recursos disponibles para el pedido', [
+                Log::warning('No se encontraron recursos disponibles para la Orden', [
                     'order_id' => $order->id,
                 ]);
 
@@ -34,7 +34,7 @@ class OrderAssignmentService
                     'start_date' => $order->pickup_date ?? now(),
                     'end_date' => $order->delivery_date,
                     'status' => 'scheduled',
-                    'description' => __('Asignación automática generada para el pedido :reference', [
+                    'description' => __('Asignación automática generada para el Orden :reference', [
                         'reference' => $order->reference,
                     ]),
                 ]

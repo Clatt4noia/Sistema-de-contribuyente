@@ -32,9 +32,9 @@ class OrderAssignedNotification extends Notification
             ?? __('Cliente');
 
         return (new MailMessage())
-            ->subject(__('Nuevo pedido asignado: :reference', ['reference' => $order->reference]))
+            ->subject(__('Nueva orden asignada: :reference', ['reference' => $order->reference]))
             ->greeting(__('Hola :name', ['name' => $recipientName]))
-            ->line(__('Se te ha asignado el pedido :reference.', ['reference' => $order->reference]))
+            ->line(__('Se te ha asignado la Orden :reference.', ['reference' => $order->reference]))
             ->line(__('Vehículo: :truck', ['truck' => $truck?->plate_number ?? __('No disponible')]))
             ->line(__('Conductor: :driver', ['driver' => $driver?->full_name ?? __('No disponible')]))
             ->line(__('Fecha de recogida: :date', ['date' => optional($order->pickup_date)->format('d/m/Y H:i')]))
@@ -42,7 +42,7 @@ class OrderAssignedNotification extends Notification
                 'start' => optional($order->delivery_window_start)->format('d/m/Y H:i') ?? __('No definida'),
                 'end' => optional($order->delivery_window_end)->format('d/m/Y H:i') ?? __('No definida'),
             ]))
-            ->action(__('Ver pedido'), route('orders.edit', $order))
+            ->action(__('Ver Orden'), route('orders.edit', $order))
             ->line(__('Gracias por usar nuestro sistema logístico.'));
     }
 }

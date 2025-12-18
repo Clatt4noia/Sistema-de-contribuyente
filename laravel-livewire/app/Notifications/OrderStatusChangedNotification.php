@@ -28,9 +28,9 @@ class OrderStatusChangedNotification extends Notification
             ?? __('Cliente');
 
         return (new MailMessage())
-            ->subject(__('Actualización de estado para el pedido :reference', ['reference' => $this->order->reference]))
+            ->subject(__('Actualización de estado para el Orden :reference', ['reference' => $this->order->reference]))
             ->greeting(__('Hola :name', ['name' => $recipientName]))
-            ->line(__('El pedido :reference cambió de :from a :to.', [
+            ->line(__('El Orden :reference cambió de :from a :to.', [
                 'reference' => $this->order->reference,
                 'from' => __($this->previousStatus),
                 'to' => __($this->order->status),
@@ -38,7 +38,7 @@ class OrderStatusChangedNotification extends Notification
             ->line(__('Fecha estimada de entrega: :date', [
                 'date' => optional($this->order->delivery_date)->format('d/m/Y H:i') ?? __('No definida'),
             ]))
-            ->action(__('Ver pedido'), route('orders.edit', $this->order))
+            ->action(__('Ver Orden'), route('orders.edit', $this->order))
             ->line(__('Gracias por confiar en nosotros.'));
     }
 }

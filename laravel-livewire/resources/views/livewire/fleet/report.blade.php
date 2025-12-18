@@ -65,7 +65,7 @@
 
         <div class="surface-card flex items-center justify-between gap-3 rounded-2xl p-4 shadow-sm">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wide text-token">Pedidos activos</p>
+                <p class="text-xs font-semibold uppercase tracking-wide text-token">Orden activos</p>
                 <p class="mt-2 text-2xl font-semibold text-token">
                     {{ ($orderTotals['pending'] ?? 0) + ($orderTotals['en_route'] ?? 0) }}
                 </p>

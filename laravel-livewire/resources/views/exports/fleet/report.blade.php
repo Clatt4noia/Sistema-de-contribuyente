@@ -34,7 +34,7 @@
             <p class="value">{{ $truckTotals['maintenance'] ?? 0 }}</p>
         </div>
         <div class="card">
-            <p class="muted">Pedidos activos</p>
+            <p class="muted">Ordenes activas</p>
             <p class="value">{{ ($orderTotals['pending'] ?? 0) + ($orderTotals['en_route'] ?? 0) }}</p>
         </div>
     </div>

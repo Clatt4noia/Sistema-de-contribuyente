@@ -319,7 +319,7 @@ class CreateInvoice extends Component
         $profile = $this->operationTaxProfile($this->operationType);
 
         $descriptionParts = array_filter([
-            $order->reference ? 'Pedido '.$order->reference : null,
+            $order->reference ? 'Orden: '.$order->reference : null,
             $order->destination ? 'Destino: '.$order->destination : null,
             $cargoTypeName ? 'Tipo de carga: '.$cargoTypeName : null,
 
@@ -383,7 +383,7 @@ class CreateInvoice extends Component
     public function saveInvoice(): void
     {
         $this->resetValidation();
-        
+
         // Recalcular totales antes de guardar para asegurar consistencia
         $this->calculateTotals();
 
@@ -396,7 +396,7 @@ class CreateInvoice extends Component
         }
 
         if (empty($this->invoiceItems)) {
-            $this->addError('invoiceItems', 'Debe agregar al menos un pedido.');
+            $this->addError('invoiceItems', 'Debe agregar al menos un Orden.');
 
 
             return;
@@ -604,10 +604,10 @@ class CreateInvoice extends Component
         if ($priceIncludesTax) {
             // El precio unitario YA incluye IGV
             $total = round($quantity * $unitPrice, 2);
-            
+
             // Calcular IGV desde el total: IGV = Total × (18/118)
             $taxAmount = round($total * ($taxPercentage / (100 + $taxPercentage)), 2);
-            
+
             // Base imponible = Total - IGV
             $taxable = round($total - $taxAmount, 2);
 

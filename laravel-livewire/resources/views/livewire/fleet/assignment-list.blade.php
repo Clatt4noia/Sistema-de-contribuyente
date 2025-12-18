@@ -16,7 +16,7 @@
  <div class="surface-card overflow-hidden shadow-lg">
  <div class="grid grid-cols-1 gap-4 border-b border-token px-4 py-4 md:grid-cols-4">
  <div class="md:col-span-2">
- <input wire:model.live.debounce.300ms="search" type="text" placeholder="Buscar por descripcion, pedido, vehiculo o chofer..." class="form-control">
+ <input wire:model.live.debounce.300ms="search" type="text" placeholder="Buscar por descripcion, Orden, vehiculo o chofer..." class="form-control">
  </div>
  <div>
  <select wire:model.live="status" class="form-control">
@@ -29,7 +29,7 @@
  </div>
  <div>
  <select wire:model.live="order_id" class="form-control">
- <option value="">Todos los pedidos</option>
+ <option value="">Todos los Ordenes</option>
  @foreach($orders as $order)
  <option value="{{ $order->id }}">{{ $order->reference }} - {{ $order->origin }} -> {{ $order->destination }}</option>
  @endforeach
@@ -59,7 +59,7 @@
       <table class="table table-md">
         <thead>
           <tr class="table-row">
-            <th class="table-header">Pedido</th>
+            <th class="table-header">Orden</th>
             <th class="table-header">Vehiculo</th>
             <th class="table-header">Conductor</th>
             <th class="table-header">Inicio</th>
@@ -81,7 +81,7 @@
             @endphp
             <tr class="table-row table-row-hover">
               <td class="table-cell whitespace-nowrap">
-                <div class="text-sm font-medium text-token ">{{ optional($assignment->order)->reference ?? 'Sin pedido' }}</div>
+                <div class="text-sm font-medium text-token ">{{ optional($assignment->order)->reference ?? 'Sin Orden' }}</div>
                 <div class="text-sm text-token ">
                   @if($assignment->order)
                     {{ $assignment->order->origin }} -> {{ $assignment->order->destination }}

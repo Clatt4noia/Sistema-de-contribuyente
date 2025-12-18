@@ -52,7 +52,7 @@
             <main class="mx-auto max-w-5xl px-6 pb-24">
                 <section class="surface-card rounded-3xl p-12 text-center">
                     <h1 class="text-4xl font-semibold tracking-tight text-token">{{ __('Gestiona tu logística con claridad absoluta') }}</h1>
-                    <p class="mt-4 text-lg text-token">{{ __('Monitorea pedidos, flota y finanzas desde un panel moderno y coherente diseñado para equipos de transporte.') }}</p>
+                    <p class="mt-4 text-lg text-token">{{ __('Monitorea Ordenes, flota y finanzas desde un panel moderno y coherente diseñado para equipos de transporte.') }}</p>
                     <div class="mt-8 flex flex-wrap justify-center gap-3">
                         <a href="{{ route('register') }}" class="btn btn-primary btn-lg">
                             {{ __('Comenzar ahora') }}
@@ -66,7 +66,7 @@
                 <section class="mt-16 grid gap-6 md:grid-cols-3">
                     <article class="surface-card p-6 text-left">
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">📦</span>
-                        <h2 class="mt-4 text-lg font-semibold text-token">{{ __('Pedidos y rutas') }}</h2>
+                        <h2 class="mt-4 text-lg font-semibold text-token">{{ __('Ordenes y rutas') }}</h2>
                         <p class="mt-2 text-sm text-token">{{ __('Organiza entregas, visualiza avances y mantén informado a tu equipo en tiempo real.') }}</p>
                     </article>
                     <article class="surface-card p-6 text-left">

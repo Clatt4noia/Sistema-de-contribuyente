@@ -60,14 +60,14 @@
         @enderror
     </div>
     <div class="form-field">
-        <label for="invoice_order_id" class="form-label">Pedido asociado</label>
+        <label for="invoice_order_id" class="form-label">Orden asociado</label>
         <select
             id="invoice_order_id"
             wire:model.defer="invoice.order_id"
             class="form-control form-md @error('invoice.order_id') is-invalid @enderror"
             @error('invoice.order_id') aria-invalid="true" aria-describedby="invoice_order_id-error" @enderror
         >
-            <option value="">Sin pedido</option>
+            <option value="">Sin Orden</option>
             @foreach($orders as $order)
                 <option value="{{ $order->id }}">{{ $order->reference }}</option>
             @endforeach

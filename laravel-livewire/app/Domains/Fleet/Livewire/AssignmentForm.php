@@ -214,7 +214,7 @@ class AssignmentForm extends Component
             })
             ->values();
 
-        // Guardamos una vista previa del pedido seleccionado para alimentar el resumen lateral.
+        // Guardamos una vista previa del Orden seleccionado para alimentar el resumen lateral.
         $this->orderPreview = $this->orders->firstWhere('id', (int) ($this->form['order_id'] ?? 0));
     }
 

@@ -30,7 +30,7 @@ class ClientList extends Component
         $this->authorize('delete', $client);
 
         if ($client->orders_count > 0 || $client->invoices_count > 0) {
-            session()->flash('error', 'No se puede eliminar el cliente porque tiene pedidos o facturas asociadas.');
+            session()->flash('error', 'No se puede eliminar el cliente porque tiene Ordenes o facturas asociadas.');
             return;
         }
 
