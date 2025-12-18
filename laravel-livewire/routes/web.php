@@ -131,13 +131,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/{client}/edit', ClientForm::class)->name('edit');
     });
 
-    Route::prefix('billing')->name('billing.')->group(function () {
-        Route::prefix('invoices')->name('invoices.')->group(function () {
-            Route::get('/', InvoiceList::class)->name('index');
-            Route::get('/create', CreateInvoice::class)->name('create');
-            Route::get('/{invoice}/edit', InvoiceForm::class)->whereNumber('invoice')->name('edit');
-            Route::get('/{invoice}/electronic', ElectronicInvoiceForm::class)->whereNumber('invoice')->name('electronic');
-        });
+        Route::prefix('billing')->name('billing.')->group(function () {
+            Route::prefix('invoices')->name('invoices.')->group(function () {
+                Route::get('/', InvoiceList::class)->name('index');
+                Route::get('/create', CreateInvoice::class)->name('create');
+                Route::get('/{invoice}/electronic', ElectronicInvoiceForm::class)->whereNumber('invoice')->name('electronic');
+            });
 
         Route::prefix('payments')->name('payments.')->group(function () {
             Route::get('/', PaymentList::class)->name('index');

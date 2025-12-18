@@ -28,6 +28,11 @@
             <p>{{ session('message') }}</p>
         </div>
     @endif
+    @error('save')
+        <div class="alert alert-danger" role="alert">
+            <p>{{ $message }}</p>
+        </div>
+    @enderror
 
     <form wire:submit.prevent="save" class="space-y-6">
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
@@ -71,7 +76,7 @@
                     </select>
                     @error('form.client_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-                
+
                 @if($isTransportista)
                     {{-- GRE-T: Mostrar remitente (cliente) --}}
                     <div>
@@ -85,7 +90,7 @@
                         @error('form.remitente_name') <p class="form-error">{{ $message }}</p> @enderror
                     </div>
                 @endif
-                
+
                 {{-- Destinatario (always shown) --}}
                 <div>
                     <label class="form-label" for="destinatario_document_number">RUC destinatario</label>
@@ -152,7 +157,7 @@
                 <div class="space-y-2">
                     <h3 class="text-sm font-semibold text-token">Punto de partida</h3>
                     <label class="form-label" for="origin_ubigeo">Ubigeo</label>
-                    <input id="origin_ubigeo" type="text" wire:model.defer="form.origin_ubigeo" class="form-control @error('form.origin_ubigeo') is-invalid @enderror">
+                    <input id="origin_ubigeo" type="text" wire:model.defer="form.origin_ubigeo" class="form-control @error('form.origin_ubigeo') is-invalid @enderror" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="Ej: 150101">
                     @error('form.origin_ubigeo') <p class="form-error">{{ $message }}</p> @enderror
                     <label class="form-label" for="origin_address">Dirección</label>
                     <input id="origin_address" type="text" wire:model.defer="form.origin_address" class="form-control @error('form.origin_address') is-invalid @enderror">
@@ -161,7 +166,7 @@
                 <div class="space-y-2">
                     <h3 class="text-sm font-semibold text-token">Punto de llegada</h3>
                     <label class="form-label" for="destination_ubigeo">Ubigeo</label>
-                    <input id="destination_ubigeo" type="text" wire:model.defer="form.destination_ubigeo" class="form-control @error('form.destination_ubigeo') is-invalid @enderror">
+                    <input id="destination_ubigeo" type="text" wire:model.defer="form.destination_ubigeo" class="form-control @error('form.destination_ubigeo') is-invalid @enderror" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="Ej: 150102">
                     @error('form.destination_ubigeo') <p class="form-error">{{ $message }}</p> @enderror
                     <label class="form-label" for="destination_address">Dirección</label>
                     <input id="destination_address" type="text" wire:model.defer="form.destination_address" class="form-control @error('form.destination_address') is-invalid @enderror">
@@ -172,10 +177,14 @@
 
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
             <h2 class="text-lg font-semibold text-token">Vehículo y conductor</h2>
+
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
                     <label class="form-label" for="truck_id">Vehículo</label>
-                    <select id="truck_id" wire:model.live="form.truck_id" class="form-control @error('form.truck_id') is-invalid @enderror">
+                    <select id="truck_id"
+                            wire:model.live="form.truck_id"
+                            class="form-control @error('form.truck_id') is-invalid @enderror"
+                            @disabled(!empty($form['assignment_id']))>
                         <option value="">Seleccione</option>
                         @foreach($trucks as $truck)
                             @if($truck->status === 'available')
@@ -185,9 +194,13 @@
                     </select>
                     @error('form.truck_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="driver_id">Conductor</label>
-                    <select id="driver_id" wire:model.live="form.driver_id" class="form-control @error('form.driver_id') is-invalid @enderror">
+                    <select id="driver_id"
+                            wire:model.live="form.driver_id"
+                            class="form-control @error('form.driver_id') is-invalid @enderror"
+                            @disabled(!empty($form['assignment_id']))>
                         <option value="">Seleccione</option>
                         @foreach($drivers as $driver)
                             @if($driver->status === 'active')
@@ -197,53 +210,97 @@
                     </select>
                     @error('form.driver_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="assignment_id">Asignación / Servicio</label>
-                    <select id="assignment_id" wire:model.defer="form.assignment_id" class="form-control @error('form.assignment_id') is-invalid @enderror">
+                    <select id="assignment_id"
+                            wire:model.live="form.assignment_id"
+                            class="form-control @error('form.assignment_id') is-invalid @enderror">
                         <option value="">Opcional</option>
                         @foreach($assignments as $assignment)
-                            <option value="{{ $assignment->id }}">#{{ $assignment->id }} - {{ $assignment->status }}</option>
+                            @php
+                                $assignmentOrderLabel = $assignment->order
+                                    ? trim($assignment->order->reference.' - '.$assignment->order->origin.' -> '.$assignment->order->destination)
+                                    : null;
+
+                                $assignmentLabel = $assignmentOrderLabel ?: ($assignment->description
+                                    ?: trim(implode(' / ', array_filter([
+                                        optional($assignment->truck)->plate_number,
+                                        optional($assignment->driver)->name,
+                                    ]))));
+                            @endphp
+                            <option value="{{ $assignment->id }}">#{{ $assignment->id }} - {{ $assignmentLabel ?: 'Servicio' }} ({{ $assignment->status }})</option>
                         @endforeach
                     </select>
                     @error('form.assignment_id') <p class="form-error">{{ $message }}</p> @enderror
+
+                    @if(!empty($form['assignment_id']))
+                        <p class="form-help">
+                            Vehículo y conductor se llenan automáticamente según la asignación, pero puedes corregir los campos si falta información.
+                        </p>
+                    @endif
                 </div>
+
+                {{-- OJO: desde aquí TODO editable, sin @readonly --}}
                 <div>
                     <label class="form-label" for="vehicle_plate">Placa</label>
-                    <input id="vehicle_plate" type="text" wire:model.defer="form.vehicle_plate" class="form-control @error('form.vehicle_plate') is-invalid @enderror">
+                    <input id="vehicle_plate" type="text"
+                        wire:model.defer="form.vehicle_plate"
+                        class="form-control @error('form.vehicle_plate') is-invalid @enderror">
                     @error('form.vehicle_plate') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="vehicle_brand">Marca</label>
-                    <input id="vehicle_brand" type="text" wire:model.defer="form.vehicle_brand" class="form-control @error('form.vehicle_brand') is-invalid @enderror">
+                    <input id="vehicle_brand" type="text"
+                        wire:model.defer="form.vehicle_brand"
+                        class="form-control @error('form.vehicle_brand') is-invalid @enderror">
                     @error('form.vehicle_brand') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="mtc_registration_number">Certificado MTC</label>
-                    <input id="mtc_registration_number" type="text" wire:model.defer="form.mtc_registration_number" class="form-control @error('form.mtc_registration_number') is-invalid @enderror">
+                    <input id="mtc_registration_number" type="text"
+                        wire:model.defer="form.mtc_registration_number"
+                        class="form-control @error('form.mtc_registration_number') is-invalid @enderror">
                     @error('form.mtc_registration_number') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="driver_document_type">Tipo doc. conductor</label>
-                    <input id="driver_document_type" type="text" wire:model.defer="form.driver_document_type" class="form-control @error('form.driver_document_type') is-invalid @enderror">
+                    <input id="driver_document_type" type="text"
+                        wire:model.defer="form.driver_document_type"
+                        class="form-control @error('form.driver_document_type') is-invalid @enderror"
+                        placeholder="Ej: DNI / CE / PAS">
                     @error('form.driver_document_type') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="driver_document_number">Número doc. conductor</label>
-                    <input id="driver_document_number" type="text" wire:model.defer="form.driver_document_number" class="form-control @error('form.driver_document_number') is-invalid @enderror">
+                    <input id="driver_document_number" type="text"
+                        wire:model.defer="form.driver_document_number"
+                        class="form-control @error('form.driver_document_number') is-invalid @enderror">
                     @error('form.driver_document_number') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="driver_name">Nombre del conductor</label>
-                    <input id="driver_name" type="text" wire:model.defer="form.driver_name" class="form-control @error('form.driver_name') is-invalid @enderror">
+                    <input id="driver_name" type="text"
+                        wire:model.defer="form.driver_name"
+                        class="form-control @error('form.driver_name') is-invalid @enderror">
                     @error('form.driver_name') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
                 <div>
                     <label class="form-label" for="driver_license_number">Licencia de conducir</label>
-                    <input id="driver_license_number" type="text" wire:model.defer="form.driver_license_number" class="form-control @error('form.driver_license_number') is-invalid @enderror">
+                    <input id="driver_license_number" type="text"
+                        wire:model.defer="form.driver_license_number"
+                        class="form-control @error('form.driver_license_number') is-invalid @enderror">
                     @error('form.driver_license_number') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
+
 
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
             <h2 class="text-lg font-semibold text-token">Documentos relacionados</h2>

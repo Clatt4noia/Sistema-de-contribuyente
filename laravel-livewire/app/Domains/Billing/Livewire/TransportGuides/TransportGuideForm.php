@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 // Este formulario debe servir tanto para GRE-T como para GRE-R. Usar $type para decidir serie por defecto (V o T),
@@ -21,12 +22,28 @@ class TransportGuideForm extends Component
 {
     use AuthorizesRequests;
 
+    protected const TRANSFER_REASONS = [
+        '01' => 'Venta',
+        '02' => 'Compra',
+        '04' => 'Traslado entre establecimientos de la misma empresa',
+        '08' => 'Importacion',
+        '09' => 'Exportacion',
+        '13' => 'Otros',
+    ];
+
+    protected const TRANSPORT_MODES = [
+        '01' => 'Publico',
+        '02' => 'Privado',
+    ];
+
     public TransportGuide $transportGuide;
     public string $type = TransportGuide::TYPE_TRANSPORTISTA;
     public bool $isEdit = false;
 
     public array $form = [];
     public array $items = [];
+    public array $transferReasonOptions = [];
+    public array $transportModeOptions = [];
 
     public $clients;
     public $trucks;
@@ -34,10 +51,28 @@ class TransportGuideForm extends Component
     public $assignments;
     public $invoices;
     protected ?int $previousInvoiceId = null;
+    protected bool $syncingAssignment = false;
+    protected bool $syncingInvoice = false;
+
+    protected function messages(): array
+    {
+        return [
+            'form.origin_ubigeo.required' => 'El ubigeo de partida es obligatorio.',
+            'form.origin_ubigeo.size' => 'El ubigeo de partida debe tener 6 digitos.',
+            'form.origin_ubigeo.regex' => 'El ubigeo de partida debe tener 6 digitos.',
+            'form.destination_ubigeo.required' => 'El ubigeo de llegada es obligatorio.',
+            'form.destination_ubigeo.size' => 'El ubigeo de llegada debe tener 6 digitos.',
+            'form.destination_ubigeo.regex' => 'El ubigeo de llegada debe tener 6 digitos.',
+            'form.transfer_reason_code.regex' => 'El motivo de traslado debe ser un codigo de 2 digitos (catalogo 20).',
+            'form.transport_mode_code.in' => 'La modalidad de transporte debe ser 01 (publico) o 02 (privado).',
+        ];
+    }
 
     public function mount(?TransportGuide $transportGuide = null, string $type = TransportGuide::TYPE_TRANSPORTISTA): void
     {
         $this->type = $this->normalizeType($transportGuide?->type ?: $type);
+        $this->transferReasonOptions = self::TRANSFER_REASONS;
+        $this->transportModeOptions = self::TRANSPORT_MODES;
 
         if ($transportGuide && $transportGuide->exists) {
             $this->transportGuide = $transportGuide->load('items');
@@ -56,7 +91,6 @@ class TransportGuideForm extends Component
             if (!preg_match($this->seriesPattern(), (string) $this->transportGuide->series)) {
                 $this->transportGuide->series = $this->defaultSeriesForType();
                 $this->transportGuide->correlative = $this->nextCorrelative($this->transportGuide->series);
-
             }
         } else {
             $series = $this->defaultSeriesForType();
@@ -70,14 +104,14 @@ class TransportGuideForm extends Component
                 'issue_time' => now()->format('H:i:s'),
                 'start_transport_date' => now()->toDateString(),
                 'gross_weight_unit' => 'KGM',
+                'transfer_reason_code' => '01',
+                'transfer_reason_description' => self::TRANSFER_REASONS['01'],
                 'transport_mode_code' => '01',
                 'scheduled_transshipment' => false,
             ]);
             $this->authorize('create', TransportGuide::class);
             $this->transportGuide->correlative = $this->nextCorrelative($series);
-
         }
-
 
         // Obtener datos de la empresa para remitente y transportista
         $company = \App\Models\Company::first();
@@ -91,7 +125,7 @@ class TransportGuideForm extends Component
             $remitenteName = $companyName;
             $remitenteDocType = '6';
             $remitenteDocNumber = $companyRuc;
-            
+
             // Destinatario se llenará al seleccionar cliente
             $destinatarioDocType = $this->transportGuide->destinatario_document_type ?? '6';
             $destinatarioDocNumber = $this->transportGuide->destinatario_document_number ?? '';
@@ -103,7 +137,7 @@ class TransportGuideForm extends Component
             $remitenteName = $this->transportGuide->remitente_name ?? '';
             $remitenteDocType = $this->transportGuide->remitente_document_type ?? '6';
             $remitenteDocNumber = $this->transportGuide->remitente_document_number ?? '';
-            
+
             // Destinatario también se llenará (puede ser el mismo que remitente)
             $destinatarioDocType = $this->transportGuide->destinatario_document_type ?? '6';
             $destinatarioDocNumber = $this->transportGuide->destinatario_document_number ?? '';
@@ -117,26 +151,31 @@ class TransportGuideForm extends Component
 
             'observations' => $this->transportGuide->observations,
             'client_id' => $this->transportGuide->client_id,
-            
+
             // REMITENTE (varía según tipo)
             'remitente_document_type' => $remitenteDocType,
             'remitente_document_number' => $remitenteDocNumber,
             'remitente_ruc' => $remitenteRuc,
             'remitente_name' => $remitenteName,
-            
+
             // DESTINATARIO (se llena al seleccionar cliente)
             'destinatario_document_type' => $destinatarioDocType,
             'destinatario_document_number' => $destinatarioDocNumber,
             'destinatario_name' => $destinatarioName,
-            
+
             // TRANSPORTISTA (siempre es la empresa)
             'transportista_ruc' => $companyRuc,
             'transportista_name' => $companyName,
-            
+
             'order_id' => $this->transportGuide->order_id,
+
+            // >>> CAMBIO: assignment_id ES LA FUENTE DE VERDAD <<<
             'assignment_id' => $this->transportGuide->assignment_id,
+
+            // Estos se seguirán guardando como snapshot, pero NO se deben elegir manualmente
             'truck_id' => $this->transportGuide->truck_id,
             'driver_id' => $this->transportGuide->driver_id,
+
             'vehicle_plate' => $this->transportGuide->vehicle_plate,
             'vehicle_brand' => $this->transportGuide->vehicle_brand,
             'mtc_registration_number' => $this->transportGuide->mtc_registration_number,
@@ -144,8 +183,10 @@ class TransportGuideForm extends Component
             'driver_document_type' => $this->transportGuide->driver_document_type,
             'driver_name' => $this->transportGuide->driver_name,
             'driver_license_number' => $this->transportGuide->driver_license_number,
+
             'transfer_reason_code' => $this->transportGuide->transfer_reason_code,
-            'transfer_reason_description' => $this->transportGuide->transfer_reason_description,
+            'transfer_reason_description' => $this->transportGuide->transfer_reason_description
+                ?: ($this->transferReasonOptions[$this->transportGuide->transfer_reason_code ?? ''] ?? null),
             'transport_mode_code' => $this->transportGuide->transport_mode_code,
             'scheduled_transshipment' => (bool) $this->transportGuide->scheduled_transshipment,
             'start_transport_date' => optional($this->transportGuide->start_transport_date)->format('Y-m-d') ?: now()->toDateString(),
@@ -187,8 +228,23 @@ class TransportGuideForm extends Component
         $this->clients = Client::orderBy('business_name')->get();
         $this->trucks = Truck::orderBy('plate_number')->get();
         $this->drivers = Driver::orderBy('name')->get();
-        $this->assignments = Assignment::orderByDesc('created_at')->limit(50)->get();
+
+        // Carga asignaciones sin filtrar por truck/driver (porque ya no se seleccionan)
+        $this->loadAssignments();
+
+        // Si hay asignación (edit o draft), aplicar SIEMPRE la asignación como fuente de verdad
+        if (!empty($this->form['assignment_id'])) {
+            $assignment = Assignment::with(['truck', 'driver', 'order'])->find((int) $this->form['assignment_id']);
+            if ($assignment) {
+                $this->applyAssignment($assignment);
+            }
+        }
+
         $this->invoices = Invoice::with('client')->orderByDesc('issue_date')->limit(50)->get();
+
+        if (!empty($this->form['assignment_id'])) {
+            $this->applyInvoiceFromOrder(isset($this->form['order_id']) ? (int) $this->form['order_id'] : null);
+        }
     }
 
     protected function rules(): array
@@ -200,24 +256,29 @@ class TransportGuideForm extends Component
 
             'form.observations' => 'nullable|string',
             'form.client_id' => 'required|exists:clients,id',
-            
+
             // Remitente (siempre es la empresa para GRE-R)
             'form.remitente_document_type' => 'required|string|max:2',
             'form.remitente_document_number' => 'required|string|max:20',
             'form.remitente_ruc' => 'required|string|max:11',
             'form.remitente_name' => 'required|string|max:100',
-            
+
             // Transportista (siempre es la empresa para GRE-R)
             'form.transportista_ruc' => 'required|string|max:11',
             'form.transportista_name' => 'required|string|max:100',
-            
+
             'form.destinatario_document_type' => 'required|string|max:2',
             'form.destinatario_document_number' => 'required|string|max:20',
             'form.destinatario_name' => 'required|string|max:100',
             'form.order_id' => 'nullable|exists:orders,id',
-            'form.assignment_id' => 'nullable|exists:assignments,id',
-            'form.truck_id' => 'required|exists:trucks,id',
-            'form.driver_id' => 'required|exists:drivers,id',
+
+            // >>> CAMBIO: asignación requerida (única selección) <<<
+'form.assignment_id' => 'nullable|exists:assignments,id',
+
+            // Ya no se eligen manualmente; igual validamos si están presentes
+            'form.truck_id' => 'nullable|exists:trucks,id',
+            'form.driver_id' => 'nullable|exists:drivers,id',
+
             'form.vehicle_plate' => 'required|string|max:20',
             'form.vehicle_brand' => 'nullable|string|max:50',
             'form.mtc_registration_number' => 'nullable|string|max:50',
@@ -225,18 +286,18 @@ class TransportGuideForm extends Component
             'form.driver_document_type' => 'required|string|max:4',
             'form.driver_name' => 'required|string|max:100',
             'form.driver_license_number' => 'required|string|max:20',
-            'form.transfer_reason_code' => 'required|string|max:2',
+            'form.transfer_reason_code' => ['required', 'string', 'size:2', 'regex:/^\\d{2}$/'],
             'form.transfer_reason_description' => 'nullable|string|max:100',
-            'form.transport_mode_code' => 'required|string|max:2',
+            'form.transport_mode_code' => ['required', 'string', 'size:2', Rule::in(array_keys($this->transportModeOptions))],
             'form.scheduled_transshipment' => 'boolean',
             'form.start_transport_date' => 'required|date',
             'form.delivery_date' => 'nullable|date|after_or_equal:form.start_transport_date',
             'form.gross_weight' => 'required|numeric|min:0.001',
             'form.gross_weight_unit' => 'required|string|max:4',
             'form.total_packages' => 'nullable|integer|min:1',
-            'form.origin_ubigeo' => 'required|digits:8',
+            'form.origin_ubigeo' => ['required', 'string', 'size:6', 'regex:/^\\d{6}$/'],
             'form.origin_address' => 'required|string|max:100',
-            'form.destination_ubigeo' => 'required|digits:8',
+            'form.destination_ubigeo' => ['required', 'string', 'size:6', 'regex:/^\\d{6}$/'],
             'form.destination_address' => 'required|string|max:100',
             'form.related_invoice_id' => 'nullable|exists:invoices,id',
             'form.related_invoice_number' => 'nullable|string|max:20',
@@ -251,34 +312,306 @@ class TransportGuideForm extends Component
         ];
     }
 
+    /**
+     * Fuente de verdad: Assignment
+     * Aplica truck/driver y snapshots de vehículo/conductor.
+     */
+protected function applyAssignment(Assignment $assignment): void
+{
+    $this->syncingAssignment = true;
+
+    if ($assignment->order_id) {
+        $this->form['order_id'] = $assignment->order_id;
+    }
+
+    // Fuente de verdad (IDs)
+    $this->form['assignment_id'] = $assignment->id;
+    $this->form['truck_id'] = $assignment->truck_id;
+    $this->form['driver_id'] = $assignment->driver_id;
+
+    // Snapshots: solo setear si vienen con valor (no null/empty)
+    if ($assignment->truck) {
+        if (!empty($assignment->truck->plate_number)) {
+            $this->form['vehicle_plate'] = $assignment->truck->plate_number;
+        }
+        if (!empty($assignment->truck->brand)) {
+            $this->form['vehicle_brand'] = $assignment->truck->brand;
+        }
+        if (!empty($assignment->truck->mtc_registration_number)) {
+            $this->form['mtc_registration_number'] = $assignment->truck->mtc_registration_number;
+        }
+    }
+
+    if ($assignment->driver) {
+        if (!empty($assignment->driver->document_number)) {
+            $this->form['driver_document_number'] = $assignment->driver->document_number;
+        }
+        // CLAVE: si el driver no tiene document_type, NO lo pises (para que el usuario lo complete)
+        if (!empty($assignment->driver->document_type)) {
+            $this->form['driver_document_type'] = $assignment->driver->document_type;
+        }
+        if (!empty($assignment->driver->name)) {
+            $this->form['driver_name'] = $assignment->driver->name;
+        }
+        if (!empty($assignment->driver->license_number)) {
+            $this->form['driver_license_number'] = $assignment->driver->license_number;
+        }
+    }
+
+    $this->syncingAssignment = false;
+}
+
+    protected function applyInvoiceFromOrder(?int $orderId): void
+    {
+        if (! $orderId) {
+            return;
+        }
+
+        $currentRelatedInvoiceId = $this->form['related_invoice_id'] ?? null;
+        $currentRelatedInvoiceNumber = trim((string) ($this->form['related_invoice_number'] ?? ''));
+
+        $invoice = null;
+
+        if ($currentRelatedInvoiceId) {
+            $invoice = Invoice::with('client')->find((int) $currentRelatedInvoiceId);
+            if (! $invoice) {
+                return;
+            }
+
+            if ($invoice->order_id && (int) $invoice->order_id !== $orderId) {
+                $this->form['related_invoice_id'] = null;
+                $this->form['related_invoice_number'] = null;
+                $invoice = null;
+            }
+        } elseif ($currentRelatedInvoiceNumber !== '') {
+            return;
+        }
+
+        if (! $invoice) {
+            $candidates = Invoice::with('client')
+                ->where('order_id', $orderId)
+                ->orderByDesc('issue_date')
+                ->orderByDesc('created_at')
+                ->limit(20)
+                ->get();
+
+            if ($candidates->isEmpty()) {
+                return;
+            }
+
+            $isPaid = static function (Invoice $candidate): bool {
+                $values = [
+                    $candidate->status ?? null,
+                    $candidate->estado ?? null,
+                    $candidate->state ?? null,
+                    $candidate->payment_status ?? null,
+                    $candidate->sunat_status ?? null,
+                ];
+
+                $values = array_values(array_filter($values, static fn ($value) => $value !== null && $value !== ''));
+                $normalized = array_map(static fn ($value) => strtolower(trim((string) $value)), $values);
+
+                return in_array('paid', $normalized, true)
+                    || in_array('pagado', $normalized, true)
+                    || in_array('pagada', $normalized, true)
+                    || in_array('aceptado', $normalized, true);
+            };
+
+            $invoice = $candidates->first(fn (Invoice $candidate) => $isPaid($candidate)) ?: $candidates->first();
+        }
+
+        if (! $invoice) {
+            return;
+        }
+
+        $this->ensureInvoiceInList($invoice);
+
+        $this->syncingInvoice = true;
+        try {
+            if (empty($this->form['related_invoice_id'])) {
+                $this->form['related_invoice_id'] = $invoice->getKey();
+            }
+
+            if (trim((string) ($this->form['related_invoice_number'] ?? '')) === '') {
+                $number = $invoice->numero_completo
+                    ?: $invoice->invoice_number
+                    ?: (($invoice->series && $invoice->correlative) ? ($invoice->series.'-'.$invoice->correlative) : null);
+
+                if ($number) {
+                    $this->form['related_invoice_number'] = $number;
+                }
+            }
+
+            if (empty($this->form['order_id']) || (int) $this->form['order_id'] === $orderId) {
+                $this->form['order_id'] = $invoice->order_id ?: $orderId;
+            }
+
+            if (empty($this->form['client_id']) && $invoice->client_id) {
+                $this->form['client_id'] = $invoice->client_id;
+            }
+
+            if (empty($this->form['destinatario_document_number']) && ! empty($invoice->ruc_receptor)) {
+                $this->form['destinatario_document_number'] = $invoice->ruc_receptor;
+            }
+
+            if (empty($this->form['destinatario_name'])) {
+                $name = $invoice->client?->business_name ?: $invoice->client?->name;
+                if ($name) {
+                    $this->form['destinatario_name'] = $name;
+                }
+            }
+        } finally {
+            $this->syncingInvoice = false;
+        }
+    }
+
+    protected function ensureInvoiceInList(Invoice $invoice): void
+    {
+        if (! $this->invoices) {
+            return;
+        }
+
+        if (! $this->invoices instanceof \Illuminate\Support\Collection) {
+            return;
+        }
+
+        if ($this->invoices->contains('id', $invoice->getKey())) {
+            return;
+        }
+
+        $this->invoices = $this->invoices->prepend($invoice);
+    }
+
+
     public function updatedFormTruckId($value): void
     {
-        $truck = Truck::find($value);
+        // >>> CAMBIO: ya NO se debe seleccionar manualmente si hay asignación <<<
+        if (!empty($this->form['assignment_id'])) {
+            return;
+        }
+
+        $truckId = is_numeric($value) ? (int) $value : null;
+        if (! $truckId) {
+            $this->form['truck_id'] = null;
+            $this->form['vehicle_plate'] = null;
+            $this->form['vehicle_brand'] = null;
+            $this->form['mtc_registration_number'] = null;
+            $this->loadAssignments();
+
+            return;
+        }
+
+        $truck = Truck::find($truckId);
         if ($truck) {
             $this->form['vehicle_plate'] = $truck->plate_number;
             $this->form['vehicle_brand'] = $truck->brand;
             $this->form['mtc_registration_number'] = $truck->mtc_registration_number;
         }
+
+        $this->loadAssignments();
     }
 
     public function updatedFormDriverId($value): void
     {
-        $driver = Driver::find($value);
+        // >>> CAMBIO: ya NO se debe seleccionar manualmente si hay asignación <<<
+        if (!empty($this->form['assignment_id'])) {
+            return;
+        }
+
+        $driverId = is_numeric($value) ? (int) $value : null;
+        if (! $driverId) {
+            $this->form['driver_id'] = null;
+            $this->form['driver_document_number'] = null;
+            $this->form['driver_document_type'] = null;
+            $this->form['driver_name'] = null;
+            $this->form['driver_license_number'] = null;
+            $this->loadAssignments();
+
+            return;
+        }
+
+        $driver = Driver::find($driverId);
         if ($driver) {
             $this->form['driver_document_number'] = $driver->document_number;
             $this->form['driver_document_type'] = $driver->document_type;
             $this->form['driver_name'] = $driver->name;
             $this->form['driver_license_number'] = $driver->license_number;
         }
+
+        $this->loadAssignments();
+    }
+
+    public function updatedFormAssignmentId($value): void
+    {
+        // >>> CAMBIO: assignment_id es la única selección; limpiar si se quita <<<
+        if (! $value) {
+            $this->form['order_id'] = null;
+            $this->form['truck_id'] = null;
+            $this->form['driver_id'] = null;
+
+            $this->form['vehicle_plate'] = null;
+            $this->form['vehicle_brand'] = null;
+            $this->form['mtc_registration_number'] = null;
+
+            $this->form['driver_document_number'] = null;
+            $this->form['driver_document_type'] = null;
+            $this->form['driver_name'] = null;
+            $this->form['driver_license_number'] = null;
+            return;
+        }
+
+        $assignmentId = is_numeric($value) ? (int) $value : null;
+        if (! $assignmentId) {
+            return;
+        }
+
+        $assignment = Assignment::with(['truck', 'driver', 'order'])->find($assignmentId);
+        if (! $assignment) {
+            return;
+        }
+
+        $this->applyAssignment($assignment);
+        $this->applyInvoiceFromOrder(isset($this->form['order_id']) ? (int) $this->form['order_id'] : ($assignment->order_id ? (int) $assignment->order_id : null));
+        $this->loadAssignments();
+    }
+
+    public function updatedFormTransferReasonCode($value): void
+    {
+        $code = (string) $value;
+        if (isset($this->transferReasonOptions[$code])) {
+            $this->form['transfer_reason_description'] = $this->transferReasonOptions[$code];
+        }
     }
 
     public function updatedFormClientId($value): void
     {
-        $client = Client::find($value);
-        if (!$client) {
+        $clientId = is_numeric($value) ? (int) $value : null;
+        if (! $clientId) {
+            $this->form['client_id'] = null;
+
+            if ($this->type === TransportGuide::TYPE_REMITENTE) {
+                $this->form['destinatario_document_type'] = null;
+                $this->form['destinatario_document_number'] = null;
+                $this->form['destinatario_name'] = null;
+            } else {
+                $this->form['remitente_document_type'] = null;
+                $this->form['remitente_document_number'] = null;
+                $this->form['remitente_ruc'] = null;
+                $this->form['remitente_name'] = null;
+
+                $this->form['destinatario_document_type'] = null;
+                $this->form['destinatario_document_number'] = null;
+                $this->form['destinatario_name'] = null;
+            }
+
             return;
         }
-        
+
+        $client = Client::find($clientId);
+        if (! $client) {
+            return;
+        }
+
         if ($this->type === TransportGuide::TYPE_REMITENTE) {
             // GRE-R: El cliente es el DESTINATARIO
             // El remitente ya está configurado como la empresa
@@ -291,11 +624,39 @@ class TransportGuideForm extends Component
             $this->form['remitente_document_number'] = $client->tax_id;
             $this->form['remitente_ruc'] = $client->tax_id;
             $this->form['remitente_name'] = $client->business_name;
-            
+
             // Por defecto, el destinatario es el mismo (puede editarse después)
             $this->form['destinatario_document_type'] = '6';
             $this->form['destinatario_document_number'] = $client->tax_id;
             $this->form['destinatario_name'] = $client->business_name;
+        }
+    }
+
+    protected function loadAssignments(): void
+    {
+        // >>> CAMBIO: ya no filtramos por truck/driver, porque no se eligen manualmente <<<
+        $currentAssignmentId = $this->form['assignment_id'] ?? null;
+
+        $this->assignments = Assignment::query()
+            ->with(['truck', 'driver', 'order'])
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->orderByDesc('start_date')
+            ->limit(50)
+            ->get();
+
+        if (! $currentAssignmentId) {
+            return;
+        }
+
+        $selectedAssignment = Assignment::with(['truck', 'driver', 'order'])->find((int) $currentAssignmentId);
+        if ($selectedAssignment && ! $this->assignments->contains('id', (int) $currentAssignmentId)) {
+            $this->assignments = $this->assignments->prepend($selectedAssignment);
+        }
+
+        // No auto-null aquí: si eligieron una asignación, se respeta
+        // (antes se anulaba por mismatch de truck/driver)
+        if (! $selectedAssignment && ! $this->syncingAssignment) {
+            $this->form['assignment_id'] = null;
         }
     }
 
@@ -322,14 +683,20 @@ class TransportGuideForm extends Component
 
         $validated = $this->validate();
 
-        DB::transaction(function () use ($validated) {
-            $this->persistGuide($validated['form']);
-            $this->syncItems($validated['items']);
-            
-            // Convert to int or null to match syncInvoiceLink signature
-            $invoiceId = $validated['form']['related_invoice_id'] ?? null;
-            $this->syncInvoiceLink($invoiceId ? (int) $invoiceId : null);
-        });
+        try {
+            DB::transaction(function () use ($validated) {
+                $this->persistGuide($validated['form']);
+                $this->syncItems($validated['items']);
+
+                $invoiceId = $validated['form']['related_invoice_id'] ?? null;
+                $this->syncInvoiceLink($invoiceId ? (int) $invoiceId : null);
+            });
+        } catch (\Throwable $exception) {
+            report($exception);
+            $this->addError('save', 'No se pudo guardar la guía. Revise los datos e intente nuevamente.');
+
+            return;
+        }
 
         session()->flash('message', $this->isEdit ? 'Guía actualizada correctamente.' : 'Guía registrada correctamente.');
         $this->redirectRoute($this->indexRouteName());
@@ -337,6 +704,52 @@ class TransportGuideForm extends Component
 
     protected function persistGuide(array $data): void
     {
+        // >>> BLINDAJE: SIEMPRE derivar vehículo/conductor desde asignación <<<
+       if (!empty($data['assignment_id'])) {
+        $assignment = Assignment::with(['truck', 'driver', 'order'])->find((int) $data['assignment_id']);
+        if ($assignment) {
+            $data['order_id'] = $assignment->order_id ?: ($data['order_id'] ?? null);
+
+            // IDs siempre desde asignación
+            $data['truck_id'] = $assignment->truck_id;
+            $data['driver_id'] = $assignment->driver_id;
+
+            // Snapshots: solo completar desde asignación si asignación trae dato
+            if ($assignment->truck) {
+                if (!empty($assignment->truck->plate_number)) {
+                    $data['vehicle_plate'] = $assignment->truck->plate_number;
+                }
+                if (!empty($assignment->truck->brand)) {
+                    $data['vehicle_brand'] = $assignment->truck->brand;
+                }
+                if (!empty($assignment->truck->mtc_registration_number)) {
+                    $data['mtc_registration_number'] = $assignment->truck->mtc_registration_number;
+                }
+            }
+
+            if ($assignment->driver) {
+                if (!empty($assignment->driver->document_number)) {
+                    $data['driver_document_number'] = $assignment->driver->document_number;
+                }
+                if (!empty($assignment->driver->document_type)) {
+                    $data['driver_document_type'] = $assignment->driver->document_type;
+                }
+                if (!empty($assignment->driver->name)) {
+                    $data['driver_name'] = $assignment->driver->name;
+                }
+                if (!empty($assignment->driver->license_number)) {
+                    $data['driver_license_number'] = $assignment->driver->license_number;
+                }
+            }
+        }
+    }
+
+
+        $transferReasonDescription = trim((string) ($data['transfer_reason_description'] ?? ''));
+        if ($transferReasonDescription === '' && isset($this->transferReasonOptions[$data['transfer_reason_code']])) {
+            $transferReasonDescription = $this->transferReasonOptions[$data['transfer_reason_code']];
+        }
+
         $this->transportGuide->fill([
             'type' => $this->type,
             'series' => $data['series'],
@@ -358,8 +771,8 @@ class TransportGuideForm extends Component
             'transportista_name' => $data['transportista_name'],
             'order_id' => $data['order_id'] ?: null,
             'assignment_id' => $data['assignment_id'] ?: null,
-            'truck_id' => $data['truck_id'],
-            'driver_id' => $data['driver_id'],
+            'truck_id' => $data['truck_id'] ?: null,
+            'driver_id' => $data['driver_id'] ?: null,
             'vehicle_plate' => $data['vehicle_plate'],
             'vehicle_brand' => $data['vehicle_brand'] ?: null,
             'mtc_registration_number' => $data['mtc_registration_number'] ?: null,
@@ -368,7 +781,7 @@ class TransportGuideForm extends Component
             'driver_name' => $data['driver_name'],
             'driver_license_number' => $data['driver_license_number'],
             'transfer_reason_code' => $data['transfer_reason_code'],
-            'transfer_reason_description' => $data['transfer_reason_description'] ?: null,
+            'transfer_reason_description' => $transferReasonDescription !== '' ? $transferReasonDescription : null,
             'transport_mode_code' => $data['transport_mode_code'],
             'scheduled_transshipment' => (bool) $data['scheduled_transshipment'],
             'start_transport_date' => $data['start_transport_date'],
@@ -457,22 +870,34 @@ class TransportGuideForm extends Component
 
     public function updatedFormRelatedInvoiceId($invoiceId): void
     {
+        if ($this->syncingInvoice) {
+            return;
+        }
+
         if (! $invoiceId) {
             return;
         }
 
-        $invoice = Invoice::with('client', 'order')->find($invoiceId);
+        $this->syncingInvoice = true;
 
-        if (! $invoice) {
-            return;
+        try {
+            $invoice = Invoice::with('client', 'order')->find($invoiceId);
+
+            if (! $invoice) {
+                return;
+            }
+
+            $this->form['related_invoice_id'] = $invoiceId;
+            $this->ensureInvoiceInList($invoice);
+            $this->form['related_invoice_number'] = $invoice->numero_completo ?: $invoice->invoice_number;
+            $this->form['client_id'] = $invoice->client_id;
+            $this->form['order_id'] = $invoice->order_id;
+
+            $this->form['destinatario_document_number'] = $invoice->ruc_receptor;
+            $this->form['destinatario_name'] = $invoice->client?->business_name ?: $this->form['destinatario_name'];
+        } finally {
+            $this->syncingInvoice = false;
         }
-
-        $this->form['related_invoice_number'] = $invoice->numero_completo ?: $invoice->invoice_number;
-        $this->form['client_id'] = $invoice->client_id;
-        $this->form['order_id'] = $invoice->order_id;
-
-        $this->form['destinatario_document_number'] = $invoice->ruc_receptor;
-        $this->form['destinatario_name'] = $invoice->client?->business_name ?: $this->form['destinatario_name'];
     }
 
     protected function syncInvoiceLink(?int $invoiceId): void

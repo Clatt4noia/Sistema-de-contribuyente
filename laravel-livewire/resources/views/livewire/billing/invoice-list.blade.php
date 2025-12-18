@@ -138,7 +138,6 @@
                 </td>
                 <td class="table-cell whitespace-nowrap text-sm font-medium space-y-2">
                   <div class="flex flex-wrap items-center gap-3">
-                    <a href="{{ route('billing.invoices.edit', $invoice->id) }}" class="btn btn-ghost btn-sm">Editar</a>
                     <a href="{{ route('billing.payments.create', ['invoice' => $invoice->id]) }}" class="btn btn-primary btn-sm">Registrar pago</a>
                   </div>
                   <div class="flex flex-wrap items-center gap-3">
