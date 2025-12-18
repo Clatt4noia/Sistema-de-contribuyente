@@ -21,10 +21,25 @@ composer update guzzlehttp/guzzle robrichards/xmlseclibs
 
 Actualice el archivo `.env` con las claves agregadas en `.env.example` (prefijo `BILLING_`).
 
-- `BILLING_CERTIFICATE_PATH`: ruta absoluta al certificado digital `.pfx` o `.pem`.
+### Configuración del Certificado Digital
+
+El certificado digital es **obligatorio** para firmar los documentos electrónicos antes de enviarlos a SUNAT.
+
+- `BILLING_CERTIFICATE_PATH`: ruta **absoluta** al certificado digital `.pfx` o `.pem`.
+  - Ejemplo Windows: `C:/certificados/certificado.pfx`
+  - Ejemplo Linux: `/var/www/certificados/certificado.pfx`
+  - **Importante:** Usa barras diagonales `/` en lugar de barras invertidas `\`
+  
 - `BILLING_CERTIFICATE_PASSPHRASE`: contraseña del certificado.
+  - Si el certificado no tiene contraseña, deja el valor vacío: `BILLING_CERTIFICATE_PASSPHRASE=""`
+  - Si la contraseña contiene espacios o caracteres especiales, enciérrala entre comillas dobles
+
+### Otras Variables
+
 - `BILLING_SUNAT_USER` y `BILLING_SUNAT_PASSWORD`: credenciales SOL.
 - `BILLING_STORAGE_DRIVER`: `local` o `s3` según el repositorio de XML/CDR.
+
+**📖 Para una guía completa sobre cómo obtener y configurar el certificado digital, consulta [docs/guia-certificado-digital.md](docs/guia-certificado-digital.md)**
 
 ## Migraciones y seeders
 
@@ -86,6 +101,37 @@ Los tests cubren:
 - Los certificados no se almacenan en el repositorio.
 - Los logs enmascaran contraseñas y se almacenan en `sunat_logs`.
 - Las descargas de XML/CDR/PDF requieren URLs firmadas y autenticación.
+
+## Solución de Problemas (Troubleshooting)
+
+### Error: "No se encontró el certificado digital configurado"
+
+Este error aparece cuando el sistema no puede localizar el archivo del certificado digital.
+
+**Soluciones:**
+1. Verifica que `BILLING_CERTIFICATE_PATH` esté configurado en `.env`
+2. Verifica que la ruta sea absoluta y use barras diagonales `/`
+3. Confirma que el archivo existe: `Test-Path "C:/ruta/al/certificado.pfx"` (PowerShell)
+4. Verifica los permisos de lectura del archivo
+5. Limpia la caché de configuración: `php artisan config:clear`
+
+### Error: "No fue posible interpretar el certificado PFX"
+
+**Soluciones:**
+1. Verifica que la contraseña en `BILLING_CERTIFICATE_PASSPHRASE` sea correcta
+2. Asegúrate de que el certificado no esté corrupto
+3. Confirma que el formato sea `.pfx` (PKCS#12) compatible
+
+### Verificar la Configuración del Certificado
+
+```powershell
+# Usando Laravel Tinker
+php artisan tinker
+
+# Ejecutar en Tinker:
+config('billing.certificate.path')
+file_exists(config('billing.certificate.path'))
+```
 
 Para más detalle consulte `docs/facturacion-sunat-plan.md`.
 

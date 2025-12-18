@@ -84,6 +84,32 @@ class TransportGuideForm extends Component
         $companyRuc = $company ? $company->ruc : Config::get('billing.sunat.ruc');
         $companyName = $company ? $company->razon_social : Config::get('app.name');
 
+        // Inicializar campos según el tipo de guía
+        if ($this->type === TransportGuide::TYPE_REMITENTE) {
+            // GRE-R: La empresa es el REMITENTE (dueño de la mercancía)
+            $remitenteRuc = $companyRuc;
+            $remitenteName = $companyName;
+            $remitenteDocType = '6';
+            $remitenteDocNumber = $companyRuc;
+            
+            // Destinatario se llenará al seleccionar cliente
+            $destinatarioDocType = $this->transportGuide->destinatario_document_type ?? '6';
+            $destinatarioDocNumber = $this->transportGuide->destinatario_document_number ?? '';
+            $destinatarioName = $this->transportGuide->destinatario_name ?? '';
+        } else {
+            // GRE-T: La empresa es el TRANSPORTISTA, el cliente es el REMITENTE
+            // Remitente se llenará al seleccionar cliente
+            $remitenteRuc = $this->transportGuide->remitente_ruc ?? '';
+            $remitenteName = $this->transportGuide->remitente_name ?? '';
+            $remitenteDocType = $this->transportGuide->remitente_document_type ?? '6';
+            $remitenteDocNumber = $this->transportGuide->remitente_document_number ?? '';
+            
+            // Destinatario también se llenará (puede ser el mismo que remitente)
+            $destinatarioDocType = $this->transportGuide->destinatario_document_type ?? '6';
+            $destinatarioDocNumber = $this->transportGuide->destinatario_document_number ?? '';
+            $destinatarioName = $this->transportGuide->destinatario_name ?? '';
+        }
+
         $this->form = [
             'series' => $this->transportGuide->series,
             'correlative' => $this->transportGuide->correlative,
@@ -92,18 +118,18 @@ class TransportGuideForm extends Component
             'observations' => $this->transportGuide->observations,
             'client_id' => $this->transportGuide->client_id,
             
-            // REMITENTE (FIJO - siempre es la empresa)
-            'remitente_document_type' => '6', // RUC
-            'remitente_document_number' => $companyRuc,
-            'remitente_ruc' => $companyRuc,
-            'remitente_name' => $companyName,
+            // REMITENTE (varía según tipo)
+            'remitente_document_type' => $remitenteDocType,
+            'remitente_document_number' => $remitenteDocNumber,
+            'remitente_ruc' => $remitenteRuc,
+            'remitente_name' => $remitenteName,
             
             // DESTINATARIO (se llena al seleccionar cliente)
-            'destinatario_document_type' => $this->transportGuide->destinatario_document_type ?? '6',
-            'destinatario_document_number' => $this->transportGuide->destinatario_document_number ?? '',
-            'destinatario_name' => $this->transportGuide->destinatario_name ?? '',
+            'destinatario_document_type' => $destinatarioDocType,
+            'destinatario_document_number' => $destinatarioDocNumber,
+            'destinatario_name' => $destinatarioName,
             
-            // TRANSPORTISTA (FIJO - siempre es la empresa)
+            // TRANSPORTISTA (siempre es la empresa)
             'transportista_ruc' => $companyRuc,
             'transportista_name' => $companyName,
             
@@ -249,15 +275,25 @@ class TransportGuideForm extends Component
     public function updatedFormClientId($value): void
     {
         $client = Client::find($value);
-        if ($client) {
-            // Llenar datos del remitente con los datos del cliente
-            $this->form['remitente_ruc'] = $client->tax_id;
-            $this->form['remitente_name'] = $client->business_name;
+        if (!$client) {
+            return;
+        }
+        
+        if ($this->type === TransportGuide::TYPE_REMITENTE) {
+            // GRE-R: El cliente es el DESTINATARIO
+            // El remitente ya está configurado como la empresa
+            $this->form['destinatario_document_type'] = '6'; // RUC
+            $this->form['destinatario_document_number'] = $client->tax_id;
+            $this->form['destinatario_name'] = $client->business_name;
+        } else {
+            // GRE-T: El cliente es el REMITENTE (dueño de la mercancía)
             $this->form['remitente_document_type'] = '6'; // RUC
             $this->form['remitente_document_number'] = $client->tax_id;
+            $this->form['remitente_ruc'] = $client->tax_id;
+            $this->form['remitente_name'] = $client->business_name;
             
-            // También llenar datos del destinatario (por defecto son los mismos)
-            $this->form['destinatario_document_type'] = '6'; // RUC
+            // Por defecto, el destinatario es el mismo (puede editarse después)
+            $this->form['destinatario_document_type'] = '6';
             $this->form['destinatario_document_number'] = $client->tax_id;
             $this->form['destinatario_name'] = $client->business_name;
         }
@@ -289,7 +325,10 @@ class TransportGuideForm extends Component
         DB::transaction(function () use ($validated) {
             $this->persistGuide($validated['form']);
             $this->syncItems($validated['items']);
-            $this->syncInvoiceLink($validated['form']['related_invoice_id'] ?? null);
+            
+            // Convert to int or null to match syncInvoiceLink signature
+            $invoiceId = $validated['form']['related_invoice_id'] ?? null;
+            $this->syncInvoiceLink($invoiceId ? (int) $invoiceId : null);
         });
 
         session()->flash('message', $this->isEdit ? 'Guía actualizada correctamente.' : 'Guía registrada correctamente.');
