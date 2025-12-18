@@ -437,7 +437,8 @@ protected function applyAssignment(Assignment $assignment): void
             $setIfEmpty('destinatario_name', $destName);
         }
 
-        if ($client) {
+        if ($client && $this->type === TransportGuide::TYPE_REMITENTE) {
+            // Para GRE-R tiene sentido que el client_id sea el destinatario.
             $fallbackDoc = $normalizeDocumentNumber($client->tax_id ?? null);
             if ($fallbackDoc !== '' && strlen($fallbackDoc) <= 11) {
                 $setIfEmpty('destinatario_document_type', $guessDocumentType($fallbackDoc) ?? '6');
@@ -778,11 +779,8 @@ protected function applyAssignment(Assignment $assignment): void
             $this->form['remitente_document_number'] = $client->tax_id;
             $this->form['remitente_ruc'] = $client->tax_id;
             $this->form['remitente_name'] = $client->business_name;
-
-            // Por defecto, el destinatario es el mismo (puede editarse después)
-            $this->form['destinatario_document_type'] = '6';
-            $this->form['destinatario_document_number'] = $client->tax_id;
-            $this->form['destinatario_name'] = $client->business_name;
+            // NO setear destinatario por defecto en GRE-T.
+            // El destinatario debe venir de factura/orden (si existe) o lo ingresa el usuario.
         }
     }
 
