@@ -13,12 +13,49 @@ class GreenterService
     {
         $see = new See();
         $certificate = null;
-        if (Storage::exists($company->cert_path)) {
-            $certificate = Storage::get($company->cert_path);
-        } elseif (file_exists(base_path($company->cert_path))) {
-            $certificate = file_get_contents(base_path($company->cert_path));
-        } else {
-            throw new \Exception("Certificado no encontrado: " . $company->cert_path);
+        
+        // Log para debugging
+        \Log::info('GreenterService: Intentando cargar certificado', [
+            'cert_path_configured' => $company->cert_path,
+            'company_ruc' => $company->ruc,
+        ]);
+        
+        // Try multiple paths for certificate
+        $paths = [
+            Storage::path($company->cert_path), // storage/app/...
+            base_path($company->cert_path),     // project root
+            storage_path($company->cert_path),  // storage/...
+        ];
+        
+        \Log::info('GreenterService: Rutas a verificar', ['paths' => $paths]);
+        
+        foreach ($paths as $index => $path) {
+            $exists = file_exists($path);
+            \Log::info("GreenterService: Verificando ruta #{$index}", [
+                'path' => $path,
+                'exists' => $exists,
+            ]);
+            
+            if ($exists) {
+                $certificate = file_get_contents($path);
+                \Log::info('GreenterService: Certificado cargado exitosamente', ['path' => $path]);
+                break;
+            }
+        }
+        
+        if (!$certificate) {
+            $errorMsg = "No se encontró el certificado digital configurado.\n" .
+                "Ruta configurada: {$company->cert_path}\n" .
+                "Rutas verificadas:\n" .
+                "- " . implode("\n- ", $paths) . "\n\n" .
+                "Por favor, asegúrate de que el archivo existe en alguna de estas ubicaciones.";
+            
+            \Log::error('GreenterService: Certificado NO encontrado', [
+                'cert_path' => $company->cert_path,
+                'paths_checked' => $paths,
+            ]);
+            
+            throw new \Exception($errorMsg);
         }
 
         $see->setCertificate($certificate);

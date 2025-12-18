@@ -27,10 +27,10 @@ class DispatchService
 
     public function createAndSign(TransportGuide $guide)
     {
-        // Obtener configuración de empresa (Emisor)
-        $company = Company::where('ruc', $guide->remitente_ruc)->first();
+        // Obtener configuración de empresa (Emisor - siempre es la empresa)
+        $company = Company::first();
         if (!$company) {
-            throw new Exception("No se encontró configuración para el RUC remitente: {$guide->remitente_ruc}");
+            throw new Exception("No se encontró configuración de empresa");
         }
 
         $see = $this->greenterService->getSee($company);
@@ -59,7 +59,8 @@ class DispatchService
 
     public function send(TransportGuide $guide)
     {
-        $company = Company::where('ruc', $guide->remitente_ruc)->first();
+        // Obtener configuración de empresa (Emisor - siempre es la empresa)
+        $company = Company::first();
         if (!$company) throw new Exception("Configuración de empresa no encontrada");
 
         $see = $this->greenterService->getSee($company);
@@ -130,11 +131,29 @@ class DispatchService
         }
         
         // Vehículo / Conductor (Si es Privado - 02)
-        // Implementar lógica según campos disponibles en TransportGuide (truck_id, driver_id details)
+        if ($guide->transport_mode_code === '02') {
+            // Driver
+            $driver = new \Greenter\Model\Despatch\Driver();
+            $driver->setTipo($guide->driver_document_type ?? '1'); // 1=DNI
+            $driver->setNroDoc($guide->driver_document_number);
+            $driver->setNombres($guide->driver_name);
+            $driver->setLicencia($guide->driver_license_number);
+            $shipment->setConductor($driver);
+            
+            // Vehicle
+            $vehicle = new \Greenter\Model\Despatch\Vehicle();
+            $vehicle->setPlaca($guide->vehicle_plate);
+            
+            if ($guide->mtc_registration_number) {
+                $vehicle->setNumero($guide->mtc_registration_number);
+            }
+            
+            $shipment->setVehiculo($vehicle);
+        }
         
         // Despatch
         $despatch = new Despatch();
-        $despatch->setTipoDoc('09') // Guia Remitente
+        $despatch->setTipoDoc($guide->document_type_code) // '09' para GRE-R, '31' para GRE-T
             ->setSerie($guide->series)
             ->setCorrelativo($guide->correlative)
             ->setFechaEmision(new DateTime($guide->issue_date->format('Y-m-d')))

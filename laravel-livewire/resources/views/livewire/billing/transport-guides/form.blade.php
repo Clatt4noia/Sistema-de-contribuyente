@@ -31,7 +31,13 @@
 
     <form wire:submit.prevent="save" class="space-y-6">
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
-            <h2 class="text-lg font-semibold text-token">Identificación y remitente</h2>
+            <h2 class="text-lg font-semibold text-token">
+                @if($isTransportista)
+                    Identificación y datos del servicio
+                @else
+                    Identificación y remitente
+                @endif
+            </h2>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
                     <label class="form-label" for="series">Serie ({{ $greLabel }})</label>
@@ -50,15 +56,37 @@
                     @error('form.document_type_code') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="form-label" for="client_id">Destinatario</label>
+                    <label class="form-label" for="client_id">
+                        @if($isTransportista)
+                            Cliente (Remitente - Dueño de la mercancía)
+                        @else
+                            Cliente (Destinatario)
+                        @endif
+                    </label>
                     <select id="client_id" wire:model.live="form.client_id" class="form-control @error('form.client_id') is-invalid @enderror">
-                        <option value="">Seleccione cliente destinatario</option>
+                        <option value="">Seleccione cliente</option>
                         @foreach($clients as $client)
                             <option value="{{ $client->id }}">{{ $client->business_name }}</option>
                         @endforeach
                     </select>
                     @error('form.client_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+                
+                @if($isTransportista)
+                    {{-- GRE-T: Mostrar remitente (cliente) --}}
+                    <div>
+                        <label class="form-label" for="remitente_document_number">RUC Remitente</label>
+                        <input id="remitente_document_number" type="text" wire:model="form.remitente_document_number" class="form-control bg-surface-muted" readonly>
+                        @error('form.remitente_document_number') <p class="form-error">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="form-label" for="remitente_name">Razón social Remitente</label>
+                        <input id="remitente_name" type="text" wire:model="form.remitente_name" class="form-control bg-surface-muted" readonly>
+                        @error('form.remitente_name') <p class="form-error">{{ $message }}</p> @enderror
+                    </div>
+                @endif
+                
+                {{-- Destinatario (always shown) --}}
                 <div>
                     <label class="form-label" for="destinatario_document_number">RUC destinatario</label>
                     <input id="destinatario_document_number" type="text" wire:model="form.destinatario_document_number" class="form-control bg-surface-muted" readonly>
@@ -150,7 +178,9 @@
                     <select id="truck_id" wire:model.live="form.truck_id" class="form-control @error('form.truck_id') is-invalid @enderror">
                         <option value="">Seleccione</option>
                         @foreach($trucks as $truck)
-                            <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }}</option>
+                            @if($truck->status === 'available')
+                                <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }}</option>
+                            @endif
                         @endforeach
                     </select>
                     @error('form.truck_id') <p class="form-error">{{ $message }}</p> @enderror
@@ -160,7 +190,9 @@
                     <select id="driver_id" wire:model.live="form.driver_id" class="form-control @error('form.driver_id') is-invalid @enderror">
                         <option value="">Seleccione</option>
                         @foreach($drivers as $driver)
-                            <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->license_number }})</option>
+                            @if($driver->status === 'active')
+                                <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->license_number }})</option>
+                            @endif
                         @endforeach
                     </select>
                     @error('form.driver_id') <p class="form-error">{{ $message }}</p> @enderror
