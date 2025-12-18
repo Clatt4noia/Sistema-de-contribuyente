@@ -233,17 +233,26 @@ class TransportGuideForm extends Component
         $this->loadAssignments();
 
         // Si hay asignación (edit o draft), aplicar SIEMPRE la asignación como fuente de verdad
+        $selectedAssignment = null;
         if (!empty($this->form['assignment_id'])) {
-            $assignment = Assignment::with(['truck', 'driver', 'order'])->find((int) $this->form['assignment_id']);
-            if ($assignment) {
-                $this->applyAssignment($assignment);
+            $selectedAssignment = Assignment::with(['truck', 'driver', 'order'])->find((int) $this->form['assignment_id']);
+            if ($selectedAssignment) {
+                $this->applyAssignment($selectedAssignment);
             }
         }
 
         $this->invoices = Invoice::with('client')->orderByDesc('issue_date')->limit(50)->get();
 
-        if (!empty($this->form['assignment_id'])) {
-            $this->applyInvoiceFromOrder(isset($this->form['order_id']) ? (int) $this->form['order_id'] : null);
+        if ($selectedAssignment) {
+            $orderId = isset($this->form['order_id']) ? (int) $this->form['order_id'] : null;
+
+            if (empty($this->form['client_id']) && $selectedAssignment->order?->client_id) {
+                $this->form['client_id'] = (int) $selectedAssignment->order->client_id;
+            }
+
+            $invoice = $this->applyInvoiceFromOrder($orderId, false);
+            $this->applyClientFromAssignment($selectedAssignment, $invoice);
+            $this->applySenderGuideReferenceFromOrder($orderId);
         }
     }
 
@@ -361,10 +370,115 @@ protected function applyAssignment(Assignment $assignment): void
     $this->syncingAssignment = false;
 }
 
-    protected function applyInvoiceFromOrder(?int $orderId): void
+    protected function applyClientFromAssignment(Assignment $assignment, ?Invoice $invoice = null, bool $forceClientFromOrder = false): void
+    {
+        $setIfEmpty = function (string $key, mixed $value): void {
+            if ($value === null) {
+                return;
+            }
+
+            $current = $this->form[$key] ?? null;
+            if (trim((string) $current) !== '') {
+                return;
+            }
+
+            $value = is_string($value) ? trim($value) : $value;
+            if ($value === '' || $value === []) {
+                return;
+            }
+
+            $this->form[$key] = $value;
+        };
+
+        $normalizeDocumentNumber = static function (?string $value): string {
+            $digits = preg_replace('/\\D+/', '', (string) $value) ?: '';
+
+            return $digits;
+        };
+
+        $guessDocumentType = static function (string $documentNumber): ?string {
+            return match (strlen($documentNumber)) {
+                11 => '6', // RUC
+                8 => '1',  // DNI
+                default => null,
+            };
+        };
+
+        $orderClientId = $assignment->order?->client_id;
+
+        if ($orderClientId && ($forceClientFromOrder || empty($this->form['client_id']))) {
+            $this->form['client_id'] = (int) $orderClientId;
+        } elseif (empty($this->form['client_id']) && $invoice?->client_id) {
+            $this->form['client_id'] = (int) $invoice->client_id;
+        }
+
+        $clientId = is_numeric($this->form['client_id'] ?? null) ? (int) $this->form['client_id'] : null;
+        $client = $clientId ? Client::find($clientId) : null;
+
+        // GRE-T: el client_id representa al remitente (dueño de la mercancía).
+        if ($this->type === TransportGuide::TYPE_TRANSPORTISTA && $client) {
+            $clientDoc = $normalizeDocumentNumber($client->tax_id ?? null);
+            if ($clientDoc !== '' && strlen($clientDoc) <= 11) {
+                $setIfEmpty('remitente_document_type', $guessDocumentType($clientDoc) ?? '6');
+                $setIfEmpty('remitente_document_number', $clientDoc);
+                $setIfEmpty('remitente_ruc', $clientDoc);
+            }
+            $setIfEmpty('remitente_name', $client->business_name);
+        }
+
+        // Destinatario: mejor esfuerzo. Preferir factura si existe, si no, caer al cliente de la orden.
+        if ($invoice) {
+            $destDoc = $normalizeDocumentNumber($invoice->ruc_receptor ?? null);
+            if ($destDoc !== '' && strlen($destDoc) <= 11) {
+                $setIfEmpty('destinatario_document_type', $guessDocumentType($destDoc) ?? '6');
+                $setIfEmpty('destinatario_document_number', $destDoc);
+            }
+            $destName = $invoice->client?->business_name ?: null;
+            $setIfEmpty('destinatario_name', $destName);
+        }
+
+        if ($client) {
+            $fallbackDoc = $normalizeDocumentNumber($client->tax_id ?? null);
+            if ($fallbackDoc !== '' && strlen($fallbackDoc) <= 11) {
+                $setIfEmpty('destinatario_document_type', $guessDocumentType($fallbackDoc) ?? '6');
+                $setIfEmpty('destinatario_document_number', $fallbackDoc);
+            }
+            $setIfEmpty('destinatario_name', $client->business_name);
+        }
+    }
+
+    protected function applySenderGuideReferenceFromOrder(?int $orderId): void
     {
         if (! $orderId) {
             return;
+        }
+
+        if ($this->type !== TransportGuide::TYPE_TRANSPORTISTA) {
+            return;
+        }
+
+        if (trim((string) ($this->form['related_sender_guide_number'] ?? '')) !== '') {
+            return;
+        }
+
+        $remitterGuide = TransportGuide::query()
+            ->where('type', TransportGuide::TYPE_REMITENTE)
+            ->where('order_id', $orderId)
+            ->orderByDesc('issue_date')
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (! $remitterGuide) {
+            return;
+        }
+
+        $this->form['related_sender_guide_number'] = $remitterGuide->full_code ?: $remitterGuide->display_code;
+    }
+
+    protected function applyInvoiceFromOrder(?int $orderId, bool $enforceOrderMatch = false): ?Invoice
+    {
+        if (! $orderId) {
+            return null;
         }
 
         $currentRelatedInvoiceId = $this->form['related_invoice_id'] ?? null;
@@ -375,16 +489,16 @@ protected function applyAssignment(Assignment $assignment): void
         if ($currentRelatedInvoiceId) {
             $invoice = Invoice::with('client')->find((int) $currentRelatedInvoiceId);
             if (! $invoice) {
-                return;
+                return null;
             }
 
-            if ($invoice->order_id && (int) $invoice->order_id !== $orderId) {
+            if ($enforceOrderMatch && $invoice->order_id && (int) $invoice->order_id !== $orderId) {
                 $this->form['related_invoice_id'] = null;
                 $this->form['related_invoice_number'] = null;
                 $invoice = null;
             }
         } elseif ($currentRelatedInvoiceNumber !== '') {
-            return;
+            return null;
         }
 
         if (! $invoice) {
@@ -396,7 +510,7 @@ protected function applyAssignment(Assignment $assignment): void
                 ->get();
 
             if ($candidates->isEmpty()) {
-                return;
+                return null;
             }
 
             $isPaid = static function (Invoice $candidate): bool {
@@ -417,11 +531,21 @@ protected function applyAssignment(Assignment $assignment): void
                     || in_array('aceptado', $normalized, true);
             };
 
-            $invoice = $candidates->first(fn (Invoice $candidate) => $isPaid($candidate)) ?: $candidates->first();
+            $latestTimestamp = (int) $candidates->max(function (Invoice $candidate): int {
+                return $candidate->issue_date?->getTimestamp() ?? $candidate->created_at?->getTimestamp() ?? 0;
+            });
+
+            $latestCandidates = $candidates->filter(function (Invoice $candidate) use ($latestTimestamp): bool {
+                $ts = $candidate->issue_date?->getTimestamp() ?? $candidate->created_at?->getTimestamp() ?? 0;
+
+                return $ts === $latestTimestamp;
+            })->values();
+
+            $invoice = $latestCandidates->first(fn (Invoice $candidate) => $isPaid($candidate)) ?: $latestCandidates->first();
         }
 
         if (! $invoice) {
-            return;
+            return null;
         }
 
         $this->ensureInvoiceInList($invoice);
@@ -463,6 +587,8 @@ protected function applyAssignment(Assignment $assignment): void
         } finally {
             $this->syncingInvoice = false;
         }
+
+        return $invoice;
     }
 
     protected function ensureInvoiceInList(Invoice $invoice): void
@@ -570,8 +696,36 @@ protected function applyAssignment(Assignment $assignment): void
             return;
         }
 
+        $previousOrderId = is_numeric($this->form['order_id'] ?? null) ? (int) $this->form['order_id'] : null;
+
         $this->applyAssignment($assignment);
-        $this->applyInvoiceFromOrder(isset($this->form['order_id']) ? (int) $this->form['order_id'] : ($assignment->order_id ? (int) $assignment->order_id : null));
+
+        $orderId = isset($this->form['order_id'])
+            ? (int) $this->form['order_id']
+            : ($assignment->order_id ? (int) $assignment->order_id : null);
+
+        if ($previousOrderId && $orderId && $previousOrderId !== $orderId) {
+            $this->form['client_id'] = null;
+            $this->form['related_invoice_id'] = null;
+            $this->form['related_invoice_number'] = null;
+            $this->form['related_sender_guide_number'] = null;
+
+            $this->form['destinatario_document_type'] = null;
+            $this->form['destinatario_document_number'] = null;
+            $this->form['destinatario_name'] = null;
+
+            if ($this->type === TransportGuide::TYPE_TRANSPORTISTA) {
+                $this->form['remitente_document_type'] = null;
+                $this->form['remitente_document_number'] = null;
+                $this->form['remitente_ruc'] = null;
+                $this->form['remitente_name'] = null;
+            }
+        }
+
+        $invoice = $this->applyInvoiceFromOrder($orderId, true);
+        $this->applyClientFromAssignment($assignment, $invoice, true);
+        $this->applySenderGuideReferenceFromOrder($orderId);
+
         $this->loadAssignments();
     }
 
