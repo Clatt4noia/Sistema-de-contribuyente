@@ -10,10 +10,11 @@
     <div class="flex items-center justify-between">
         <div class="space-y-1">
             <p class="text-sm font-semibold text-accent">{{ $greLabel }}</p>
-            <h1 class="text-2xl font-bold text-token">{{ $isEdit ? "Editar guía de $guideLabel ($greLabel)" : "Nueva guía de $guideLabel ($greLabel)" }}</h1>
+            <h1 class="text-2xl font-bold text-token">
+                {{ $isEdit ? "Editar guía de $guideLabel ($greLabel)" : "Nueva guía de $guideLabel ($greLabel)" }}
+            </h1>
             <p class="text-sm text-token-muted">Completa los datos exigidos por SUNAT para emitir la {{ $greLabel }}.</p>
         </div>
-
         <div class="flex gap-3">
             <a href="{{ $backRoute }}" class="btn btn-secondary">Volver</a>
             @if($isEdit && $transportGuide->sunat_status === \App\Models\TransportGuide::STATUS_DRAFT)
@@ -38,61 +39,14 @@
 
     <form wire:submit.prevent="save" class="space-y-6">
 
-        {{-- 1) Servicio / Orden (FUENTE DE VERDAD) --}}
-        <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
-            <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-token">
-                    Servicio / Orden
-                </h2>
-                @if(!empty($form['assignment_id']))
-                    <span class="text-xs text-token-muted">Autorrelleno activo</span>
-                @endif
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div class="md:col-span-2">
-                    <label class="form-label" for="assignment_id">Asignación / Servicio</label>
-                    <select id="assignment_id"
-                            wire:model.live="form.assignment_id"
-                            class="form-control @error('form.assignment_id') is-invalid @enderror">
-                        <option value="">Opcional</option>
-                        @foreach($assignments as $assignment)
-                            @php
-                                $assignmentOrderLabel = $assignment->order
-                                    ? trim($assignment->order->reference.' - '.$assignment->order->origin.' -> '.$assignment->order->destination)
-                                    : null;
-
-                                $assignmentLabel = $assignmentOrderLabel ?: ($assignment->description
-                                    ?: trim(implode(' / ', array_filter([
-                                        optional($assignment->truck)->plate_number,
-                                        optional($assignment->driver)->name,
-                                    ]))));
-                            @endphp
-                            <option value="{{ $assignment->id }}">#{{ $assignment->id }} - {{ $assignmentLabel ?: 'Servicio' }} ({{ $assignment->status }})</option>
-                        @endforeach
-                    </select>
-                    @error('form.assignment_id') <p class="form-error">{{ $message }}</p> @enderror
-
-                    <p class="form-help">
-                        Selecciona una asignación para autollenar cliente, factura, vehículo y conductor. Todo se puede corregir manualmente si falta info.
-                    </p>
-                </div>
-
-                <div>
-                    <label class="form-label" for="order_id">Orden (referencia)</label>
-                    <input id="order_id" type="text"
-                           wire:model.defer="form.order_id"
-                           class="form-control @error('form.order_id') is-invalid @enderror"
-                           placeholder="Se llena desde la asignación / factura">
-                    @error('form.order_id') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-            </div>
-        </div>
-
-        {{-- 2) Identificación del documento (serie/correlativo/tipo/obs) --}}
+        {{-- 1) Identificación + Servicio (GRE-T) --}}
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
             <h2 class="text-lg font-semibold text-token">
-                Identificación del documento
+                @if($isTransportista)
+                    Identificación y datos del servicio
+                @else
+                    Identificación de la guía
+                @endif
             </h2>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -117,21 +71,47 @@
                     <label class="form-label" for="document_type_code">Tipo de documento (fijo)</label>
                     <input id="document_type_code" type="text"
                            wire:model.defer="form.document_type_code"
-                           class="form-control @error('form.document_type_code') is-invalid @enderror" readonly>
+                           class="form-control @error('form.document_type_code') is-invalid @enderror"
+                           readonly>
                     @error('form.document_type_code') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="md:col-span-3">
-                    <label class="form-label" for="observations">Observaciones</label>
-                    <textarea id="observations"
-                              wire:model.defer="form.observations"
-                              class="form-control @error('form.observations') is-invalid @enderror"></textarea>
-                    @error('form.observations') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
+                @if($isTransportista)
+                    <div class="md:col-span-3">
+                        <label class="form-label" for="assignment_id">Asignación / Servicio (recomendado)</label>
+                        <select id="assignment_id"
+                                wire:model.live="form.assignment_id"
+                                class="form-control @error('form.assignment_id') is-invalid @enderror">
+                            <option value="">Opcional</option>
+                            @foreach($assignments as $assignment)
+                                @php
+                                    $assignmentOrderLabel = $assignment->order
+                                        ? trim($assignment->order->reference.' - '.$assignment->order->origin.' -> '.$assignment->order->destination)
+                                        : null;
+
+                                    $assignmentLabel = $assignmentOrderLabel ?: ($assignment->description
+                                        ?: trim(implode(' / ', array_filter([
+                                            optional($assignment->truck)->plate_number,
+                                            optional($assignment->driver)->name,
+                                        ]))));
+                                @endphp
+                                <option value="{{ $assignment->id }}">
+                                    #{{ $assignment->id }} - {{ $assignmentLabel ?: 'Servicio' }} ({{ $assignment->status }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('form.assignment_id') <p class="form-error">{{ $message }}</p> @enderror
+
+                        <p class="form-help">
+                            Al elegir una asignación, el sistema intentará autollenar: <b>cliente/remitente</b>, <b>destinatario</b> (si hay factura),
+                            <b>factura relacionada</b> (si existe para la orden), y <b>vehículo/conductor</b>. Puedes corregir lo que falte.
+                        </p>
+                    </div>
+                @endif
             </div>
         </div>
 
-        {{-- 3) Cliente / Remitente / Destinatario --}}
+        {{-- 2) Cliente y partes --}}
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
             <h2 class="text-lg font-semibold text-token">
                 @if($isTransportista)
@@ -150,7 +130,8 @@
                             Cliente (Destinatario)
                         @endif
                     </label>
-                    <select id="client_id" wire:model.live="form.client_id"
+                    <select id="client_id"
+                            wire:model.live="form.client_id"
                             class="form-control @error('form.client_id') is-invalid @enderror">
                         <option value="">Seleccione cliente</option>
                         @foreach($clients as $client)
@@ -161,6 +142,7 @@
                 </div>
 
                 @if($isTransportista)
+                    {{-- GRE-T: Remitente = cliente --}}
                     <div>
                         <label class="form-label" for="remitente_document_number">RUC Remitente</label>
                         <input id="remitente_document_number" type="text"
@@ -178,6 +160,7 @@
                     </div>
                 @endif
 
+                {{-- Destinatario (siempre visible; en GRE-T idealmente viene de factura u otra fuente confiable) --}}
                 <div>
                     <label class="form-label" for="destinatario_document_number">RUC destinatario</label>
                     <input id="destinatario_document_number" type="text"
@@ -193,10 +176,18 @@
                            class="form-control bg-surface-muted" readonly>
                     @error('form.destinatario_name') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
+
+                <div class="md:col-span-3">
+                    <label class="form-label" for="observations">Observaciones</label>
+                    <textarea id="observations"
+                              wire:model.defer="form.observations"
+                              class="form-control @error('form.observations') is-invalid @enderror"></textarea>
+                    @error('form.observations') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
             </div>
         </div>
 
-        {{-- 4) Documentos relacionados (después del autollenado por orden) --}}
+        {{-- 3) Documentos relacionados --}}
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
             <h2 class="text-lg font-semibold text-token">Documentos relacionados</h2>
 
@@ -208,10 +199,16 @@
                             class="form-control @error('form.related_invoice_id') is-invalid @enderror">
                         <option value="">Opcional</option>
                         @foreach($invoices as $invoice)
-                            <option value="{{ $invoice->id }}">{{ $invoice->invoice_number }} - {{ $invoice->client->business_name ?? '' }}</option>
+                            <option value="{{ $invoice->id }}">
+                                {{ $invoice->invoice_number }} - {{ $invoice->client->business_name ?? '' }}
+                            </option>
                         @endforeach
                     </select>
                     @error('form.related_invoice_id') <p class="form-error">{{ $message }}</p> @enderror
+
+                    <p class="form-help">
+                        Si la orden tiene una factura, se debería autoseleccionar aquí. Si no, puedes elegirla manualmente.
+                    </p>
                 </div>
 
                 <div>
@@ -223,12 +220,24 @@
                 </div>
 
                 <div>
-                    <label class="form-label" for="related_sender_guide_number">Guía del remitente (GRE-R)</label>
+                    <label class="form-label" for="related_sender_guide_number">
+                        @if($isTransportista)
+                            Guía del remitente (GRE-R)
+                        @else
+                            Guía del remitente
+                        @endif
+                    </label>
                     <input id="related_sender_guide_number" type="text"
                            wire:model.defer="form.related_sender_guide_number"
                            class="form-control @error('form.related_sender_guide_number') is-invalid @enderror"
-                           placeholder="Ej: T001-00001234">
+                           placeholder="{{ $isTransportista ? 'Ej: T001-00001234' : '' }}">
                     @error('form.related_sender_guide_number') <p class="form-error">{{ $message }}</p> @enderror
+
+                    @if($isTransportista)
+                        <p class="form-help">
+                            Si existe una GRE-R registrada para la orden, se intentará autollenar. Si el cliente te la dio, regístrala aquí.
+                        </p>
+                    @endif
                 </div>
 
                 <div class="md:col-span-3">
@@ -241,103 +250,7 @@
             </div>
         </div>
 
-        {{-- 5) Vehículo y conductor (ya autollenado, editable) --}}
-        <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
-            <h2 class="text-lg font-semibold text-token">Vehículo y conductor</h2>
-
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div>
-                    <label class="form-label" for="truck_id">Vehículo</label>
-                    <select id="truck_id"
-                            wire:model.live="form.truck_id"
-                            class="form-control @error('form.truck_id') is-invalid @enderror"
-                            @disabled(!empty($form['assignment_id']))>
-                        <option value="">Seleccione</option>
-                        @foreach($trucks as $truck)
-                            @if($truck->status === 'available')
-                                <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                    @error('form.truck_id') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="driver_id">Conductor</label>
-                    <select id="driver_id"
-                            wire:model.live="form.driver_id"
-                            class="form-control @error('form.driver_id') is-invalid @enderror"
-                            @disabled(!empty($form['assignment_id']))>
-                        <option value="">Seleccione</option>
-                        @foreach($drivers as $driver)
-                            @if($driver->status === 'active')
-                                <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->license_number }})</option>
-                            @endif
-                        @endforeach
-                    </select>
-                    @error('form.driver_id') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="vehicle_plate">Placa</label>
-                    <input id="vehicle_plate" type="text"
-                           wire:model.defer="form.vehicle_plate"
-                           class="form-control @error('form.vehicle_plate') is-invalid @enderror">
-                    @error('form.vehicle_plate') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="vehicle_brand">Marca</label>
-                    <input id="vehicle_brand" type="text"
-                           wire:model.defer="form.vehicle_brand"
-                           class="form-control @error('form.vehicle_brand') is-invalid @enderror">
-                    @error('form.vehicle_brand') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="mtc_registration_number">Certificado MTC</label>
-                    <input id="mtc_registration_number" type="text"
-                           wire:model.defer="form.mtc_registration_number"
-                           class="form-control @error('form.mtc_registration_number') is-invalid @enderror">
-                    @error('form.mtc_registration_number') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="driver_document_type">Tipo doc. conductor</label>
-                    <input id="driver_document_type" type="text"
-                           wire:model.defer="form.driver_document_type"
-                           class="form-control @error('form.driver_document_type') is-invalid @enderror"
-                           placeholder="Ej: DNI / CE / PAS">
-                    @error('form.driver_document_type') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="driver_document_number">Número doc. conductor</label>
-                    <input id="driver_document_number" type="text"
-                           wire:model.defer="form.driver_document_number"
-                           class="form-control @error('form.driver_document_number') is-invalid @enderror">
-                    @error('form.driver_document_number') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="driver_name">Nombre del conductor</label>
-                    <input id="driver_name" type="text"
-                           wire:model.defer="form.driver_name"
-                           class="form-control @error('form.driver_name') is-invalid @enderror">
-                    @error('form.driver_name') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="form-label" for="driver_license_number">Licencia de conducir</label>
-                    <input id="driver_license_number" type="text"
-                           wire:model.defer="form.driver_license_number"
-                           class="form-control @error('form.driver_license_number') is-invalid @enderror">
-                    @error('form.driver_license_number') <p class="form-error">{{ $message }}</p> @enderror
-                </div>
-            </div>
-        </div>
-
-        {{-- 6) Datos de traslado (ya con cliente/vehículo definidos) --}}
+        {{-- 4) Datos de traslado --}}
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
             <h2 class="text-lg font-semibold text-token">Datos de traslado</h2>
 
@@ -411,6 +324,7 @@
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="space-y-2">
                     <h3 class="text-sm font-semibold text-token">Punto de partida</h3>
+
                     <label class="form-label" for="origin_ubigeo">Ubigeo</label>
                     <input id="origin_ubigeo" type="text"
                            wire:model.defer="form.origin_ubigeo"
@@ -427,6 +341,7 @@
 
                 <div class="space-y-2">
                     <h3 class="text-sm font-semibold text-token">Punto de llegada</h3>
+
                     <label class="form-label" for="destination_ubigeo">Ubigeo</label>
                     <input id="destination_ubigeo" type="text"
                            wire:model.defer="form.destination_ubigeo"
@@ -443,7 +358,112 @@
             </div>
         </div>
 
-        {{-- 7) Detalle de bienes --}}
+        {{-- 5) Vehículo y conductor --}}
+        <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
+            <h2 class="text-lg font-semibold text-token">Vehículo y conductor</h2>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                    <label class="form-label" for="truck_id">Vehículo</label>
+                     <select id="truck_id"
+                             wire:model.live="form.truck_id"
+                             class="form-control @error('form.truck_id') is-invalid @enderror"
+                             @disabled(!empty($form['assignment_id']))>
+                         <option value="">Seleccione</option>
+                         @foreach($trucks as $truck)
+                            @if($truck->status === 'available' || (!empty($form['truck_id']) && (string) $form['truck_id'] === (string) $truck->id))
+                                 <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }}</option>
+                             @endif
+                         @endforeach
+                     </select>
+                    @error('form.truck_id') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="driver_id">Conductor</label>
+                     <select id="driver_id"
+                             wire:model.live="form.driver_id"
+                             class="form-control @error('form.driver_id') is-invalid @enderror"
+                             @disabled(!empty($form['assignment_id']))>
+                         <option value="">Seleccione</option>
+                         @foreach($drivers as $driver)
+                            @if($driver->status === 'active' || (!empty($form['driver_id']) && (string) $form['driver_id'] === (string) $driver->id))
+                                 <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->license_number }})</option>
+                             @endif
+                         @endforeach
+                     </select>
+                    @error('form.driver_id') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="md:col-span-3">
+                    @if(!empty($form['assignment_id']))
+                        <p class="form-help">
+                            Vehículo y conductor se llenan automáticamente según la asignación, pero puedes corregir los campos si falta información.
+                        </p>
+                    @endif
+                </div>
+
+                {{-- Editable (sin readonly) --}}
+                <div>
+                    <label class="form-label" for="vehicle_plate">Placa</label>
+                    <input id="vehicle_plate" type="text"
+                           wire:model.defer="form.vehicle_plate"
+                           class="form-control @error('form.vehicle_plate') is-invalid @enderror">
+                    @error('form.vehicle_plate') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="vehicle_brand">Marca</label>
+                    <input id="vehicle_brand" type="text"
+                           wire:model.defer="form.vehicle_brand"
+                           class="form-control @error('form.vehicle_brand') is-invalid @enderror">
+                    @error('form.vehicle_brand') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="mtc_registration_number">Certificado MTC</label>
+                    <input id="mtc_registration_number" type="text"
+                           wire:model.defer="form.mtc_registration_number"
+                           class="form-control @error('form.mtc_registration_number') is-invalid @enderror">
+                    @error('form.mtc_registration_number') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="driver_document_type">Tipo doc. conductor</label>
+                    <input id="driver_document_type" type="text"
+                           wire:model.defer="form.driver_document_type"
+                           class="form-control @error('form.driver_document_type') is-invalid @enderror"
+                           placeholder="Ej: DNI / CE / PAS">
+                    @error('form.driver_document_type') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="driver_document_number">Número doc. conductor</label>
+                    <input id="driver_document_number" type="text"
+                           wire:model.defer="form.driver_document_number"
+                           class="form-control @error('form.driver_document_number') is-invalid @enderror">
+                    @error('form.driver_document_number') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="driver_name">Nombre del conductor</label>
+                    <input id="driver_name" type="text"
+                           wire:model.defer="form.driver_name"
+                           class="form-control @error('form.driver_name') is-invalid @enderror">
+                    @error('form.driver_name') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="form-label" for="driver_license_number">Licencia de conducir</label>
+                    <input id="driver_license_number" type="text"
+                           wire:model.defer="form.driver_license_number"
+                           class="form-control @error('form.driver_license_number') is-invalid @enderror">
+                    @error('form.driver_license_number') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- 6) Ítems --}}
         <div class="surface-card rounded-xl border border-token p-6 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-token">Detalle de bienes transportados</h2>
@@ -504,6 +524,5 @@
                 Guardar guía
             </button>
         </div>
-
     </form>
 </div>
