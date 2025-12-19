@@ -21,10 +21,14 @@ class SaveOrderAction
                 'cargo_type_id' => $form['cargo_type_id'] ?: null,
 
                 'origin' => $form['origin'],
+                'origin_ubigeo' => $this->normalizeUbigeo($form['origin_ubigeo'] ?? null),
+                'origin_address' => $this->stringOrNull($form['origin_address'] ?? null),
                 'origin_latitude' => $this->numericOrNull($form['origin_latitude'] ?? null),
                 'origin_longitude' => $this->numericOrNull($form['origin_longitude'] ?? null),
 
                 'destination' => $form['destination'],
+                'destination_ubigeo' => $this->normalizeUbigeo($form['destination_ubigeo'] ?? null),
+                'destination_address' => $this->stringOrNull($form['destination_address'] ?? null),
                 'destination_latitude' => $this->numericOrNull($form['destination_latitude'] ?? null),
                 'destination_longitude' => $this->numericOrNull($form['destination_longitude'] ?? null),
 
@@ -33,6 +37,11 @@ class SaveOrderAction
                 'cargo_details' => $form['cargo_details'] ?? null,
                 'cargo_weight_kg' => $this->numericOrNull($form['cargo_weight_kg'] ?? null),
                 'cargo_volume_m3' => $this->numericOrNull($form['cargo_volume_m3'] ?? null),
+                'total_packages' => $this->intOrNull($form['total_packages'] ?? null),
+
+                'destinatario_document_type' => $this->stringOrNull($form['destinatario_document_type'] ?? null),
+                'destinatario_document_number' => $this->normalizeDocumentNumber($form['destinatario_document_number'] ?? null),
+                'destinatario_name' => $this->stringOrNull($form['destinatario_name'] ?? null),
 
                 'estimated_distance_km' => $this->numericOrNull($form['estimated_distance_km'] ?? null),
                 'estimated_duration_hours' => $this->numericOrNull($form['estimated_duration_hours'] ?? null),
@@ -80,6 +89,13 @@ class SaveOrderAction
         // Strings
         $form['cargo_details'] = trim((string)($form['cargo_details'] ?? '')) ?: null;
         $form['notes']         = trim((string)($form['notes'] ?? '')) ?: null;
+        $form['origin_address'] = trim((string) ($form['origin_address'] ?? '')) ?: null;
+        $form['destination_address'] = trim((string) ($form['destination_address'] ?? '')) ?: null;
+        $form['destinatario_document_type'] = trim((string) ($form['destinatario_document_type'] ?? '')) ?: null;
+        $form['destinatario_document_number'] = trim((string) ($form['destinatario_document_number'] ?? '')) ?: null;
+        $form['destinatario_name'] = trim((string) ($form['destinatario_name'] ?? '')) ?: null;
+        $form['origin_ubigeo'] = trim((string) ($form['origin_ubigeo'] ?? '')) ?: null;
+        $form['destination_ubigeo'] = trim((string) ($form['destination_ubigeo'] ?? '')) ?: null;
 
         // Numeric (si viene vacío o no existe => null)
         foreach ([
@@ -136,5 +152,39 @@ class SaveOrderAction
         if (!is_numeric($value)) return null;
 
         return (float) $value;
+    }
+
+    protected function intOrNull($value): ?int
+    {
+        if ($value === '' || $value === null) {
+            return null;
+        }
+
+        if (! is_numeric($value)) {
+            return null;
+        }
+
+        return (int) $value;
+    }
+
+    protected function stringOrNull($value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value !== '' ? $value : null;
+    }
+
+    protected function normalizeUbigeo($value): ?string
+    {
+        $digits = preg_replace('/\\D+/', '', (string) $value) ?: '';
+
+        return strlen($digits) === 6 ? $digits : null;
+    }
+
+    protected function normalizeDocumentNumber($value): ?string
+    {
+        $digits = preg_replace('/\\D+/', '', (string) $value) ?: '';
+
+        return $digits !== '' ? $digits : null;
     }
 }

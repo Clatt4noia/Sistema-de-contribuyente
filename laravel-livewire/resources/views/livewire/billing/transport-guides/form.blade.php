@@ -165,7 +165,7 @@
                     <label class="form-label" for="destinatario_document_number">RUC destinatario</label>
                     <input id="destinatario_document_number" type="text"
                            wire:model="form.destinatario_document_number"
-                           class="form-control bg-surface-muted" readonly>
+                           class="form-control">
                     @error('form.destinatario_document_number') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
@@ -173,7 +173,7 @@
                     <label class="form-label" for="destinatario_name">Razón social destinatario</label>
                     <input id="destinatario_name" type="text"
                            wire:model="form.destinatario_name"
-                           class="form-control bg-surface-muted" readonly>
+                           class="form-control">
                     @error('form.destinatario_name') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
@@ -195,7 +195,7 @@
                 <div>
                     <label class="form-label" for="related_invoice_id">Factura relacionada</label>
                     <select id="related_invoice_id"
-                            wire:model.defer="form.related_invoice_id"
+                            wire:model.live="form.related_invoice_id"
                             class="form-control @error('form.related_invoice_id') is-invalid @enderror">
                         <option value="">Opcional</option>
                         @foreach($invoices as $invoice)
@@ -372,7 +372,9 @@
                          <option value="">Seleccione</option>
                          @foreach($trucks as $truck)
                             @if($truck->status === 'available' || (!empty($form['truck_id']) && (string) $form['truck_id'] === (string) $truck->id))
-                                 <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }}</option>
+                                 <option value="{{ $truck->id }}" @selected((string) ($form['truck_id'] ?? '') === (string) $truck->id)>
+                                     {{ $truck->plate_number }} - {{ $truck->brand }}
+                                 </option>
                              @endif
                          @endforeach
                      </select>
@@ -388,7 +390,9 @@
                          <option value="">Seleccione</option>
                          @foreach($drivers as $driver)
                             @if($driver->status === 'active' || (!empty($form['driver_id']) && (string) $form['driver_id'] === (string) $driver->id))
-                                 <option value="{{ $driver->id }}">{{ $driver->name }} ({{ $driver->license_number }})</option>
+                                 <option value="{{ $driver->id }}" @selected((string) ($form['driver_id'] ?? '') === (string) $driver->id)>
+                                     {{ $driver->name }} ({{ $driver->license_number }})
+                                 </option>
                              @endif
                          @endforeach
                      </select>

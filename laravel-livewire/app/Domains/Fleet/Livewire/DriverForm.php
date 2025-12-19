@@ -29,6 +29,7 @@ class DriverForm extends Component
             // Datos basicos del chofer.
             'form.name' => ['required', 'string', 'max:100'],
             'form.last_name' => ['required', 'string', 'max:100'],
+            'form.document_type' => ['required', 'string', 'max:4', Rule::in(['1', '4', '7'])],
             'form.document_number' => [
                 'required',
                 'string',
@@ -83,6 +84,7 @@ class DriverForm extends Component
         $this->form = [
             'name' => $this->driver->name ?? '',
             'last_name' => $this->driver->last_name ?? '',
+            'document_type' => $this->driver->document_type ?? '1',
             'document_number' => $this->driver->document_number ?? '',
             'license_number' => $this->driver->license_number ?? '',
             'license_expiration' => optional($this->driver->license_expiration)->format('Y-m-d'),

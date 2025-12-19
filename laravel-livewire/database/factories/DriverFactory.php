@@ -19,6 +19,7 @@ class DriverFactory extends Factory
         return [
             'name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
+            'document_type' => $this->faker->randomElement(['1', '4']),
             'document_number' => $this->faker->unique()->numerify('########'),
             'license_number' => $this->faker->unique()->bothify('??######'),
             'license_expiration' => $licenseExpiration,

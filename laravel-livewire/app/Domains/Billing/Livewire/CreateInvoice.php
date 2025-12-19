@@ -410,13 +410,36 @@ class CreateInvoice extends Component
             return;
         }
 
+        $companyRuc = $this->normalizeDocumentNumber(\App\Models\Company::query()->first()?->ruc);
+        $envRuc = $this->normalizeDocumentNumber(Config::get('billing.sunat.ruc'));
+
+        $emitterRuc = (is_string($companyRuc) && strlen($companyRuc) === 11) ? $companyRuc : $envRuc;
+        if (! $emitterRuc || strlen($emitterRuc) !== 11) {
+            $this->addError('save', 'El RUC del emisor no está configurado correctamente (debe tener 11 dígitos). Revisa Company o BILLING_SUNAT_RUC.');
+
+            return;
+        }
+
+        $receiverDoc = $this->normalizeDocumentNumber($client->tax_id ?? $client->document_number ?? null);
+        if (! $receiverDoc) {
+            $this->addError('save', 'El documento del receptor no está configurado. Revisa el cliente (RUC/DNI).');
+
+            return;
+        }
+
+        if ($this->documentType === '01' && strlen($receiverDoc) !== 11) {
+            $this->addError('save', 'Para Factura (01), el receptor debe tener RUC de 11 dígitos. Revisa el cliente.');
+
+            return;
+        }
+
         $invoice = null;
         $orderIds = collect($this->invoiceItems)
             ->pluck('order_id')
             ->filter()
             ->values();
 
-        DB::transaction(function () use (&$invoice, $client, $orderIds): void {
+        DB::transaction(function () use (&$invoice, $client, $orderIds, $emitterRuc, $receiverDoc): void {
 
             $issueDate = Carbon::parse($this->issueDate);
             $dueDate = $this->dueDate ? Carbon::parse($this->dueDate) : null;
@@ -431,8 +454,8 @@ class CreateInvoice extends Component
                 'invoice_number' => $this->series.'-'.$this->correlative,
                 'issue_date' => $issueDate,
                 'due_date' => $dueDate,
-                'ruc_emisor' => \App\Models\Company::first()->ruc ?? Config::get('billing.sunat.ruc'),
-                'ruc_receptor' => $client->tax_id ?? $client->document_number ?? null,
+                'ruc_emisor' => $emitterRuc,
+                'ruc_receptor' => $receiverDoc,
                 'currency' => $this->currency,
                 'subtotal' => $this->subtotal,
                 'taxable_amount' => $this->subtotal,
@@ -803,5 +826,12 @@ class CreateInvoice extends Component
         $numeric++;
 
         return str_pad((string) $numeric, 8, '0', STR_PAD_LEFT);
+    }
+
+    protected function normalizeDocumentNumber($value): ?string
+    {
+        $digits = preg_replace('/\\D+/', '', (string) $value) ?: '';
+
+        return $digits !== '' ? $digits : null;
     }
 }

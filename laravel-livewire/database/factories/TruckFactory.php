@@ -22,6 +22,7 @@ class TruckFactory extends Factory
             'model' => $this->faker->randomElement(['FH', 'R-Series', 'Actros', 'TGX']) . ' ' . $this->faker->numberBetween(2000, 2024),
             'year' => $this->faker->numberBetween(2018, 2024),
             'type' => $this->faker->randomElement(['semi-trailer', 'straight', 'box', 'flatbed']),
+            'mtc_registration_number' => $this->faker->boolean(70) ? strtoupper($this->faker->bothify('MTC-####')) : null,
             'capacity' => $this->faker->numberBetween(10, 30) * 1000,
             'mileage' => $this->faker->numberBetween(5000, 250000),
             'status' => $this->faker->randomElement(['available', 'maintenance', 'in_use']),

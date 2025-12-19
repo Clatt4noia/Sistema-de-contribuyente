@@ -45,6 +45,16 @@
  </div>
 
  <div class="form-field">
+ <label for="document_type" class="form-label">Tipo de documento *</label>
+ <select id="document_type" wire:model.defer="form.document_type" class="form-control">
+ <option value="1">DNI (1)</option>
+ <option value="4">CE (4)</option>
+ <option value="7">PAS (7)</option>
+ </select>
+ @error('form.document_type') <span class="form-error">{{ $message }}</span> @enderror
+ </div>
+
+ <div class="form-field">
  <label for="document_number" class="form-label">Número de documento *</label>
  <input type="text" id="document_number" wire:model.defer="form.document_number" class="form-control">
  @error('form.document_number') <span class="form-error">{{ $message }}</span> @enderror

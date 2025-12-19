@@ -6,6 +6,7 @@ use App\Models\Assignment;
 use App\Models\Client;
 use App\Models\Driver;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\TransportGuide;
 use App\Models\TransportGuideItem;
 use App\Models\Truck;
@@ -253,6 +254,9 @@ class TransportGuideForm extends Component
             $invoice = $this->applyInvoiceFromOrder($orderId, false);
             $this->applyClientFromAssignment($selectedAssignment, $invoice);
             $this->applySenderGuideReferenceFromOrder($orderId);
+            if ($selectedAssignment->order) {
+                $this->applyGuideFieldsFromOrder($selectedAssignment->order, $invoice);
+            }
         }
     }
 
@@ -352,12 +356,34 @@ protected function applyAssignment(Assignment $assignment): void
     }
 
     if ($assignment->driver) {
-        if (!empty($assignment->driver->document_number)) {
-            $this->form['driver_document_number'] = $assignment->driver->document_number;
+        $rawDocumentNumber = trim((string) ($assignment->driver->document_number ?? ''));
+        $digitsDocumentNumber = preg_replace('/\\D+/', '', $rawDocumentNumber) ?: '';
+
+        if ($rawDocumentNumber !== '') {
+            // Si el tipo de doc es DNI/CE (códigos SUNAT), guardar solo dígitos para evitar valores tipo "DNI00000000".
+            $driverType = trim((string) ($assignment->driver->document_type ?? ''));
+            if (in_array($driverType, ['1', '4', '6'], true) && $digitsDocumentNumber !== '') {
+                $this->form['driver_document_number'] = $digitsDocumentNumber;
+            } else {
+                $this->form['driver_document_number'] = $rawDocumentNumber;
+            }
         }
-        // CLAVE: si el driver no tiene document_type, NO lo pises (para que el usuario lo complete)
-        if (!empty($assignment->driver->document_type)) {
-            $this->form['driver_document_type'] = $assignment->driver->document_type;
+
+        // CLAVE: si el driver no tiene document_type, NO lo pises (para que el usuario lo complete).
+        // Pero si se puede inferir de forma segura (DNI/RUC), completar.
+        $driverType = trim((string) ($assignment->driver->document_type ?? ''));
+        if ($driverType !== '') {
+            $this->form['driver_document_type'] = $driverType;
+        } elseif ($digitsDocumentNumber !== '') {
+            $guessed = match (strlen($digitsDocumentNumber)) {
+                8 => '1',   // DNI
+                11 => '6',  // RUC (no común para conductor, pero evita vacío si lo ingresaron así)
+                default => null,
+            };
+
+            if ($guessed && blank($this->form['driver_document_type'] ?? null)) {
+                $this->form['driver_document_type'] = $guessed;
+            }
         }
         if (!empty($assignment->driver->name)) {
             $this->form['driver_name'] = $assignment->driver->name;
@@ -426,6 +452,9 @@ protected function applyAssignment(Assignment $assignment): void
             $setIfEmpty('remitente_name', $client->business_name);
         }
 
+        // Asegurar remitente siempre (GRE-T), incluso si el hook del select no se dispara.
+        $this->syncRemitenteFromClient($client);
+
         // Destinatario: mejor esfuerzo. Preferir factura si existe, si no, caer al cliente de la orden.
         if ($invoice) {
             $destDoc = $normalizeDocumentNumber($invoice->ruc_receptor ?? null);
@@ -446,6 +475,32 @@ protected function applyAssignment(Assignment $assignment): void
             }
             $setIfEmpty('destinatario_name', $client->business_name);
         }
+    }
+
+    protected function syncRemitenteFromClient(?Client $client): void
+    {
+        if ($this->type !== TransportGuide::TYPE_TRANSPORTISTA) {
+            return;
+        }
+
+        if (! $client) {
+            return;
+        }
+
+        $digits = preg_replace('/\\D+/', '', (string) ($client->tax_id ?? '')) ?: '';
+
+        $documentType = match (strlen($digits)) {
+            11 => '6', // RUC
+            8 => '1',  // DNI
+            default => '6',
+        };
+
+        $number = $digits !== '' ? $digits : (string) ($client->tax_id ?? '');
+
+        $this->form['remitente_document_type'] = $documentType;
+        $this->form['remitente_document_number'] = $number;
+        $this->form['remitente_ruc'] = $number;
+        $this->form['remitente_name'] = $client->business_name;
     }
 
     protected function applySenderGuideReferenceFromOrder(?int $orderId): void
@@ -474,6 +529,80 @@ protected function applyAssignment(Assignment $assignment): void
         }
 
         $this->form['related_sender_guide_number'] = $remitterGuide->full_code ?: $remitterGuide->display_code;
+    }
+
+    protected function applyGuideFieldsFromOrder(Order $order, ?Invoice $invoice = null): void
+    {
+        $setIfEmpty = function (string $key, $value): void {
+            if ($value === null) {
+                return;
+            }
+
+            if (is_string($value) && trim($value) === '') {
+                return;
+            }
+
+            if (blank($this->form[$key] ?? null)) {
+                $this->form[$key] = $value;
+            }
+        };
+
+        $normalizeUbigeo = static function ($value): ?string {
+            $digits = preg_replace('/\\D+/', '', (string) $value) ?: '';
+
+            return strlen($digits) === 6 ? $digits : null;
+        };
+
+        $limit = static function (?string $value, int $max): ?string {
+            $value = $value !== null ? trim($value) : '';
+
+            if ($value === '') {
+                return null;
+            }
+
+            return mb_substr($value, 0, $max);
+        };
+
+        $setIfEmpty('origin_ubigeo', $normalizeUbigeo($order->origin_ubigeo));
+        $setIfEmpty('origin_address', $limit($order->origin_address, 100));
+        $setIfEmpty('destination_ubigeo', $normalizeUbigeo($order->destination_ubigeo));
+        $setIfEmpty('destination_address', $limit($order->destination_address, 100));
+
+        if (blank($this->form['total_packages'] ?? null) && filled($order->total_packages)) {
+            $this->form['total_packages'] = (int) $order->total_packages;
+        }
+
+        if (blank($this->form['gross_weight'] ?? null) && filled($order->cargo_weight_kg) && (float) $order->cargo_weight_kg > 0) {
+            $this->form['gross_weight'] = (float) $order->cargo_weight_kg;
+        }
+
+        // Si el formulario estรก en defaults, preferir fechas de la orden.
+        if (! empty($order->pickup_date) && filled($this->form['start_transport_date'] ?? null)) {
+            $currentStart = Carbon::parse($this->form['start_transport_date'])->toDateString();
+            if ($currentStart === now()->toDateString()) {
+                $this->form['start_transport_date'] = optional($order->pickup_date)->format('Y-m-d');
+            }
+        }
+
+        if (empty($this->form['delivery_date']) && ! empty($order->delivery_date)) {
+            $this->form['delivery_date'] = optional($order->delivery_date)->format('Y-m-d');
+        }
+
+        // Destinatario: si la factura no trae receptor (o no hay factura), caer a los datos guardados en la orden.
+        $hasInvoiceReceiver = $invoice && ! blank($invoice->ruc_receptor ?? null);
+        if (! $hasInvoiceReceiver) {
+            $setIfEmpty('destinatario_document_type', $limit($order->destinatario_document_type, 2));
+            $setIfEmpty('destinatario_document_number', $limit($order->destinatario_document_number, 20));
+            $setIfEmpty('destinatario_name', $limit($order->destinatario_name, 100));
+        }
+
+        // Items: si no hay descripciรn y la orden tiene detalle de carga, prellenar el primer item.
+        if (! empty($order->cargo_details) && is_array($this->items) && count($this->items) > 0) {
+            $firstDescription = trim((string) ($this->items[0]['description'] ?? ''));
+            if ($firstDescription === '') {
+                $this->items[0]['description'] = mb_substr(trim((string) $order->cargo_details), 0, 250);
+            }
+        }
     }
 
     protected function applyInvoiceFromOrder(?int $orderId, bool $enforceOrderMatch = false): ?Invoice
@@ -659,8 +788,25 @@ protected function applyAssignment(Assignment $assignment): void
 
         $driver = Driver::find($driverId);
         if ($driver) {
-            $this->form['driver_document_number'] = $driver->document_number;
-            $this->form['driver_document_type'] = $driver->document_type;
+            $rawDocumentNumber = trim((string) ($driver->document_number ?? ''));
+            $digitsDocumentNumber = preg_replace('/\\D+/', '', $rawDocumentNumber) ?: '';
+
+            $driverType = trim((string) ($driver->document_type ?? ''));
+            if (in_array($driverType, ['1', '4', '6'], true) && $digitsDocumentNumber !== '') {
+                $this->form['driver_document_number'] = $digitsDocumentNumber;
+            } else {
+                $this->form['driver_document_number'] = $rawDocumentNumber;
+            }
+
+            if ($driverType !== '') {
+                $this->form['driver_document_type'] = $driverType;
+            } elseif ($digitsDocumentNumber !== '') {
+                $this->form['driver_document_type'] = match (strlen($digitsDocumentNumber)) {
+                    8 => '1',
+                    11 => '6',
+                    default => $this->form['driver_document_type'] ?? null,
+                };
+            }
             $this->form['driver_name'] = $driver->name;
             $this->form['driver_license_number'] = $driver->license_number;
         }
@@ -711,6 +857,15 @@ protected function applyAssignment(Assignment $assignment): void
             $this->form['related_invoice_number'] = null;
             $this->form['related_sender_guide_number'] = null;
 
+            $this->form['gross_weight'] = null;
+            $this->form['total_packages'] = null;
+            $this->form['origin_ubigeo'] = null;
+            $this->form['origin_address'] = null;
+            $this->form['destination_ubigeo'] = null;
+            $this->form['destination_address'] = null;
+            $this->form['start_transport_date'] = now()->toDateString();
+            $this->form['delivery_date'] = null;
+
             $this->form['destinatario_document_type'] = null;
             $this->form['destinatario_document_number'] = null;
             $this->form['destinatario_name'] = null;
@@ -726,6 +881,9 @@ protected function applyAssignment(Assignment $assignment): void
         $invoice = $this->applyInvoiceFromOrder($orderId, true);
         $this->applyClientFromAssignment($assignment, $invoice, true);
         $this->applySenderGuideReferenceFromOrder($orderId);
+        if ($assignment->order) {
+            $this->applyGuideFieldsFromOrder($assignment->order, $invoice);
+        }
 
         $this->loadAssignments();
     }
@@ -775,10 +933,7 @@ protected function applyAssignment(Assignment $assignment): void
             $this->form['destinatario_name'] = $client->business_name;
         } else {
             // GRE-T: El cliente es el REMITENTE (dueño de la mercancía)
-            $this->form['remitente_document_type'] = '6'; // RUC
-            $this->form['remitente_document_number'] = $client->tax_id;
-            $this->form['remitente_ruc'] = $client->tax_id;
-            $this->form['remitente_name'] = $client->business_name;
+            $this->syncRemitenteFromClient($client);
             // NO setear destinatario por defecto en GRE-T.
             // El destinatario debe venir de factura/orden (si existe) o lo ingresa el usuario.
         }
@@ -880,11 +1035,26 @@ protected function applyAssignment(Assignment $assignment): void
             }
 
             if ($assignment->driver) {
-                if (!empty($assignment->driver->document_number)) {
-                    $data['driver_document_number'] = $assignment->driver->document_number;
+                $rawDocumentNumber = trim((string) ($assignment->driver->document_number ?? ''));
+                $digitsDocumentNumber = preg_replace('/\\D+/', '', $rawDocumentNumber) ?: '';
+
+                if ($rawDocumentNumber !== '') {
+                    $driverType = trim((string) ($assignment->driver->document_type ?? ''));
+                    if (in_array($driverType, ['1', '4', '6'], true) && $digitsDocumentNumber !== '') {
+                        $data['driver_document_number'] = $digitsDocumentNumber;
+                    } else {
+                        $data['driver_document_number'] = $rawDocumentNumber;
+                    }
                 }
+
                 if (!empty($assignment->driver->document_type)) {
                     $data['driver_document_type'] = $assignment->driver->document_type;
+                } elseif ($digitsDocumentNumber !== '') {
+                    $data['driver_document_type'] = match (strlen($digitsDocumentNumber)) {
+                        8 => '1',
+                        11 => '6',
+                        default => $data['driver_document_type'] ?? null,
+                    };
                 }
                 if (!empty($assignment->driver->name)) {
                     $data['driver_name'] = $assignment->driver->name;
@@ -1044,6 +1214,10 @@ protected function applyAssignment(Assignment $assignment): void
             $this->form['related_invoice_number'] = $invoice->numero_completo ?: $invoice->invoice_number;
             $this->form['client_id'] = $invoice->client_id;
             $this->form['order_id'] = $invoice->order_id;
+
+            if ($this->type === TransportGuide::TYPE_TRANSPORTISTA) {
+                $this->syncRemitenteFromClient($invoice->client);
+            }
 
             $this->form['destinatario_document_number'] = $invoice->ruc_receptor;
             $this->form['destinatario_name'] = $invoice->client?->business_name ?: $this->form['destinatario_name'];

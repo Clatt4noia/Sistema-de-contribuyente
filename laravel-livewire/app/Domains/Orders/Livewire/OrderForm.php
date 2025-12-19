@@ -62,7 +62,11 @@ class OrderForm extends Component
             'form.reference' => 'required|string|max:50|unique:orders,reference,' . $orderId,
             'form.cargo_type_id' => 'nullable|exists:cargo_types,id',
             'form.origin' => 'required|string|max:150',
+            'form.origin_ubigeo' => ['nullable', 'string', 'size:6', 'regex:/^\\d{6}$/'],
+            'form.origin_address' => ['nullable', 'string', 'max:255'],
             'form.destination' => 'required|string|max:150',
+            'form.destination_ubigeo' => ['nullable', 'string', 'size:6', 'regex:/^\\d{6}$/'],
+            'form.destination_address' => ['nullable', 'string', 'max:255'],
 
             // Coordenadas (opcionales)
             'form.origin_latitude' => 'nullable|numeric|between:-90,90',
@@ -80,7 +84,13 @@ class OrderForm extends Component
             // Carga (sintetizado)
             'form.cargo_weight_kg' => 'nullable|numeric|min:0',
             'form.cargo_volume_m3' => 'nullable|numeric|min:0',
+            'form.total_packages' => 'nullable|integer|min:1',
             'form.cargo_details' => 'nullable|string',
+
+            // Destinatario (opcional) para autocompletar GRE-T desde la orden
+            'form.destinatario_document_type' => ['nullable', 'string', 'max:2'],
+            'form.destinatario_document_number' => ['nullable', 'string', 'max:20'],
+            'form.destinatario_name' => ['nullable', 'string', 'max:150'],
 
             // Si quieres permitir override manual:
             'form.estimated_cost' => 'nullable|numeric|min:0',
@@ -119,12 +129,19 @@ class OrderForm extends Component
 
         $this->form = [
             'client_id' => $this->order->client_id ?? '',
+            'destinatario_document_type' => $this->order->destinatario_document_type ?? '',
+            'destinatario_document_number' => $this->order->destinatario_document_number ?? '',
+            'destinatario_name' => $this->order->destinatario_name ?? '',
             'reference' => $this->order->reference ?? '',
             'cargo_type_id' => $this->order->cargo_type_id ?? '',
             'origin' => $this->order->origin ?? '',
+            'origin_ubigeo' => $this->order->origin_ubigeo ?? '',
+            'origin_address' => $this->order->origin_address ?? '',
             'origin_latitude' => $this->order->origin_latitude,
             'origin_longitude' => $this->order->origin_longitude,
             'destination' => $this->order->destination ?? '',
+            'destination_ubigeo' => $this->order->destination_ubigeo ?? '',
+            'destination_address' => $this->order->destination_address ?? '',
             'destination_latitude' => $this->order->destination_latitude,
             'destination_longitude' => $this->order->destination_longitude,
             'pickup_date' => optional($this->order->pickup_date)->format('Y-m-d\TH:i'),
@@ -133,6 +150,7 @@ class OrderForm extends Component
             'cargo_details' => $this->order->cargo_details ?? '',
             'cargo_weight_kg' => $this->order->cargo_weight_kg,
             'cargo_volume_m3' => $this->order->cargo_volume_m3,
+            'total_packages' => $this->order->total_packages,
             'estimated_distance_km' => $this->order->estimated_distance_km ?? null,
             'estimated_duration_hours' => $this->order->estimated_duration_hours ?? null,
 

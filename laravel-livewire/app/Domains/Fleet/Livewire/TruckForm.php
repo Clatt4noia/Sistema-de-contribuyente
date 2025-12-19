@@ -56,6 +56,7 @@ class TruckForm extends Component
             'form.model' => ['required', 'string', 'max:50'],
             'form.year' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
             'form.type' => ['required', 'string', 'max:50'],
+            'form.mtc_registration_number' => ['nullable', 'string', 'max:50'],
             'form.capacity' => ['nullable', 'numeric', 'min:0'],
             'form.mileage' => ['nullable', 'integer', 'min:0'],
             'form.status' => ['required', 'string', 'in:available,in_use,maintenance,out_of_service'],
@@ -87,6 +88,7 @@ class TruckForm extends Component
             'model' => $this->truck->model ?? '',
             'year' => $this->truck->year ?? (int) date('Y'),
             'type' => $this->truck->type ?? '',
+            'mtc_registration_number' => $this->truck->mtc_registration_number ?? '',
             'capacity' => $this->truck->capacity ?? null,
             'mileage' => $this->truck->mileage ?? 0,
             'status' => $this->truck->status ?? 'available',
@@ -122,6 +124,7 @@ class TruckForm extends Component
         // Normalizamos valores numericos y fechas para evitar nulos inconsistentes.
         $data['capacity'] = $data['capacity'] !== null ? (float) $data['capacity'] : null;
         $data['mileage'] = $data['mileage'] !== null ? (int) $data['mileage'] : 0;
+        $data['mtc_registration_number'] = trim((string) ($data['mtc_registration_number'] ?? '')) ?: null;
         $data['last_maintenance'] = $data['last_maintenance'] ?: null;
         $data['next_maintenance'] = $data['next_maintenance'] ?: null;
         $data['technical_details'] = trim((string) $data['technical_details']) ?: null;

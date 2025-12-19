@@ -98,6 +98,13 @@
           <input type="number" step="0.01" wire:model.defer="form.cargo_volume_m3" class="form-control" placeholder="Ej: 4.5">
           @error('form.cargo_volume_m3') <span class="form-error">{{ $message }}</span> @enderror
         </div>
+
+        <div class="form-field">
+          <label class="form-label">Total de bultos</label>
+          <input type="number" min="1" wire:model.defer="form.total_packages" class="form-control" placeholder="Ej: 10">
+          @error('form.total_packages') <span class="form-error">{{ $message }}</span> @enderror
+          <p class="mt-1 text-xs text-token-muted">Se usa para autocompletar la Guía (GRE). Opcional.</p>
+        </div>
       </div>
 
       <div class="form-field">
@@ -105,6 +112,74 @@
         <textarea rows="3" wire:model.defer="form.cargo_details" class="form-control" placeholder="Qué se transporta, observaciones, etc."></textarea>
         @error('form.cargo_details') <span class="form-error">{{ $message }}</span> @enderror
       </div>
+
+      {{-- 2.1) Datos para Guía (SUNAT) --}}
+      <details class="rounded-2xl border border-token p-4">
+        <summary class="cursor-pointer select-none text-sm font-semibold text-token">
+          Datos para Guía (SUNAT) - Recomendado
+        </summary>
+
+        <div class="mt-4 space-y-6">
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div class="form-field">
+              <label class="form-label">Ubigeo origen (6 digitos)</label>
+              <input type="text" maxlength="6" inputmode="numeric" wire:model.defer="form.origin_ubigeo" class="form-control" placeholder="Ej: 150101">
+              @error('form.origin_ubigeo') <span class="form-error">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Ubigeo destino (6 digitos)</label>
+              <input type="text" maxlength="6" inputmode="numeric" wire:model.defer="form.destination_ubigeo" class="form-control" placeholder="Ej: 200101">
+              @error('form.destination_ubigeo') <span class="form-error">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Direccion origen</label>
+              <input type="text" wire:model.defer="form.origin_address" class="form-control" placeholder="Av / Jr / Mz / Lt...">
+              @error('form.origin_address') <span class="form-error">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Direccion destino</label>
+              <input type="text" wire:model.defer="form.destination_address" class="form-control" placeholder="Av / Jr / Mz / Lt...">
+              @error('form.destination_address') <span class="form-error">{{ $message }}</span> @enderror
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-token bg-surface p-4 space-y-4">
+            <div class="text-sm font-semibold text-token">Destinatario (opcional)</div>
+            <p class="text-xs text-token-muted">
+              Si llenas estos datos en la Orden, la Guia GRE-T puede autocompletar al destinatario aunque no exista factura.
+            </p>
+
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div class="form-field">
+                <label class="form-label">Tipo doc</label>
+                <select wire:model.defer="form.destinatario_document_type" class="form-control">
+                  <option value="">-</option>
+                  <option value="6">RUC (6)</option>
+                  <option value="1">DNI (1)</option>
+                  <option value="4">CE (4)</option>
+                  <option value="7">PAS (7)</option>
+                </select>
+                @error('form.destinatario_document_type') <span class="form-error">{{ $message }}</span> @enderror
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Numero doc</label>
+                <input type="text" wire:model.defer="form.destinatario_document_number" class="form-control">
+                @error('form.destinatario_document_number') <span class="form-error">{{ $message }}</span> @enderror
+              </div>
+
+              <div class="form-field md:col-span-1">
+                <label class="form-label">Razon social / Nombre</label>
+                <input type="text" wire:model.defer="form.destinatario_name" class="form-control">
+                @error('form.destinatario_name') <span class="form-error">{{ $message }}</span> @enderror
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
 
       {{-- 3) Costo referencial MTC (colapsable) --}}
       <details class="rounded-2xl border border-token p-4" open>

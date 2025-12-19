@@ -47,6 +47,12 @@
  </div>
 
  <div class="form-field">
+ <label for="mtc_registration_number" class="form-label">Certificado MTC</label>
+ <input type="text" id="mtc_registration_number" wire:model.defer="form.mtc_registration_number" class="form-control">
+ @error('form.mtc_registration_number') <span class="form-error">{{ $message }}</span> @enderror
+ </div>
+
+ <div class="form-field">
  <label for="capacity" class="form-label">Capacidad (Ton)</label>
  <input type="number" step="0.01" id="capacity" wire:model.defer="form.capacity" class="form-control">
  @error('form.capacity') <span class="form-error">{{ $message }}</span> @enderror
