@@ -117,6 +117,40 @@ class Truck extends Model
         return $byInterval->lessThanOrEqualTo($scheduled) ? $byInterval : $scheduled;
     }
 
+    public function maintenanceNextSource(): string
+    {
+        if ($this->nextScheduledMaintenanceDate()) {
+            return 'scheduled';
+        }
+
+        $last = $this->lastCompletedMaintenanceDate() ?? $this->last_maintenance;
+        $intervalDays = max((int) ($this->maintenance_interval_days ?? 0), 0);
+
+        if ($last && $intervalDays > 0) {
+            return 'policy';
+        }
+
+        return 'none';
+    }
+
+    public function maintenanceNextSourceLabel(): string
+    {
+        return match ($this->maintenanceNextSource()) {
+            'scheduled' => 'Programado',
+            'policy' => 'Por política',
+            default => 'No programado',
+        };
+    }
+
+    public function maintenanceNextSourceBadgeClasses(): string
+    {
+        return match ($this->maintenanceNextSource()) {
+            'scheduled' => 'bg-success-soft text-success-strong ',
+            'policy' => 'bg-warning-soft text-warning ',
+            default => 'bg-surface-muted text-token ',
+        };
+    }
+
     public function cargoTypes(): BelongsToMany
     {
         return $this->belongsToMany(CargoType::class)->withTimestamps();
@@ -151,9 +185,10 @@ class Truck extends Model
     {
         $referenceDate = $referenceDate ? Carbon::instance($referenceDate) : now();
 
-        $dueByDate = $this->last_maintenance && $this->maintenance_interval_days
-            ? $this->last_maintenance->copy()->addDays($this->maintenance_interval_days)
-            : null;
+        $dueByDate = $this->next_maintenance_derived
+            ?? ($this->last_maintenance_derived && $this->maintenance_interval_days
+                ? $this->last_maintenance_derived->copy()->addDays((int) $this->maintenance_interval_days)
+                : null);
 
         $dueByMileage = $this->last_maintenance_mileage && $this->maintenance_mileage_threshold
             ? ($this->mileage - $this->last_maintenance_mileage) >= $this->maintenance_mileage_threshold
@@ -174,9 +209,10 @@ class Truck extends Model
 
         $referenceDate = $referenceDate ? Carbon::instance($referenceDate) : now();
 
-        $dueByDate = $this->last_maintenance && $this->maintenance_interval_days
-            ? $this->last_maintenance->copy()->addDays($this->maintenance_interval_days)
-            : null;
+        $dueByDate = $this->next_maintenance_derived
+            ?? ($this->last_maintenance_derived && $this->maintenance_interval_days
+                ? $this->last_maintenance_derived->copy()->addDays((int) $this->maintenance_interval_days)
+                : null);
 
         if ($dueByDate && $dueByDate->diffInDays($referenceDate, false) >= -15) {
             return 'warning';

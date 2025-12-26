@@ -23,6 +23,8 @@ class SyncTruckMaintenanceSnapshot
     {
         $truck->refresh();
 
+        $originalTruckStatus = $truck->status;
+
         $lastCompleted = $truck->maintenances()
             ->where('status', MaintenanceStatus::Completed->value)
             ->orderByDesc('maintenance_date')
@@ -57,24 +59,49 @@ class SyncTruckMaintenanceSnapshot
             $truck->mileage = max((int) ($truck->mileage ?? 0), (int) $lastCompleted->odometer);
         }
 
-        $truck->status = $this->resolveTruckStatus($truck);
+        $truck->status = $this->resolveTruckStatus($truck, $originalTruckStatus);
 
-        $truck->save();
+        $dirtyFields = [
+            'status',
+            'last_maintenance',
+            'next_maintenance',
+            'mileage',
+            'last_maintenance_mileage',
+        ];
+
+        if ($truck->isDirty($dirtyFields)) {
+            if (method_exists($truck, 'saveQuietly')) {
+                $truck->saveQuietly();
+            } else {
+                Truck::withoutEvents(fn () => $truck->save());
+            }
+        }
 
         return $truck;
     }
 
-    protected function resolveTruckStatus(Truck $truck): TruckStatus
+    protected function resolveTruckStatus(Truck $truck, TruckStatus|string|null $originalStatus): TruckStatus
     {
-        if ($truck->status === TruckStatus::OutOfService) {
+        $originalStatusValue = $originalStatus instanceof TruckStatus ? $originalStatus->value : $originalStatus;
+
+        if ($originalStatusValue === TruckStatus::OutOfService->value) {
             return TruckStatus::OutOfService;
         }
 
-        $hasPendingMaintenance = $truck->maintenances()
-            ->whereIn('status', [MaintenanceStatus::Scheduled->value, MaintenanceStatus::InProgress->value])
+        $hasInProgressMaintenance = $truck->maintenances()
+            ->where('status', MaintenanceStatus::InProgress->value)
             ->exists();
 
-        if ($hasPendingMaintenance) {
+        if ($hasInProgressMaintenance) {
+            return TruckStatus::Maintenance;
+        }
+
+        $hasDueScheduledMaintenance = $truck->maintenances()
+            ->where('status', MaintenanceStatus::Scheduled->value)
+            ->whereDate('maintenance_date', '<=', Carbon::today())
+            ->exists();
+
+        if ($hasDueScheduledMaintenance) {
             return TruckStatus::Maintenance;
         }
 

@@ -44,12 +44,28 @@
                     <option value="Volquete">Volquete</option>
                 </select>
                 @error('form.type') <span class="form-error">{{ $message }}</span> @enderror
-            </div>
+           </div>
 
-            <div class="form-field">
-                <label for="mtc_registration_number" class="form-label">Certificado MTC</label>
-                <input type="text" id="mtc_registration_number" wire:model.defer="form.mtc_registration_number" class="form-control">
-                @error('form.mtc_registration_number') <span class="form-error">{{ $message }}</span> @enderror
+           <div class="form-field">
+            <label for="mtc_registration_number" class="form-label">N° Registro MTC (opcional)</label>
+
+            <input
+                type="text"
+                id="mtc_registration_number"
+                wire:model.defer="form.mtc_registration_number"
+                class="form-control"
+                placeholder="Ej. MTC-2025-00123"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                aria-label="Registro MTC"
+                title=""
+                style="text-overflow: clip; overflow: hidden; white-space: nowrap;"
+            >
+
+            @error('form.mtc_registration_number')
+                <span class="form-error">{{ $message }}</span>
+            @enderror
             </div>
 
             <div class="form-field">
@@ -112,10 +128,19 @@
     </form>
  </div>
 
- <x-fleet.document-panel :is-edit="$isEdit" documentable-type="truck" :documentable-id="$truck->id ?? null" pending-message="{{ $isEdit
- ? 'Guarda el camión para poder adjuntar pólizas, SOAT u otros documentos.'
- : 'Guarda el camión para habilitar la carga de documentos (SOAT, pólizas, revisiones técnicas).'
- }}"
+ @if ($isEdit)
+     <div class="surface-card p-4 shadow-sm">
+         <p class="text-sm text-token ">
+             Para cumplimiento, sube el Certificado MTC como documento tipo "Certificado MTC" e ingresa su fecha de vencimiento.
+         </p>
+     </div>
+ @endif
+
+ <x-fleet.document-panel
+     :is-edit="$isEdit"
+     documentable-type="truck"
+     :documentable-id="$truck->id ?? null"
+     pending-message="Guarda el camión para habilitar la carga del Certificado MTC (PDF/imagen), SOAT, pólizas y revisiones técnicas."
  />
 
  @if($isEdit)

@@ -81,7 +81,7 @@
               'out_of_service' => ['label' => 'Fuera de servicio', 'class' => 'bg-danger-soft text-danger-strong '],
             ];
             $statusConfig = $statusStyles[$truck->status->value] ?? $statusStyles['available'];
-            $nextMaintenance = $truck->next_maintenance;
+            $nextMaintenance = $truck->next_maintenance_derived ?? $truck->next_maintenance;
             $isPastDue = $nextMaintenance && $nextMaintenance->isPast();
             $isDueSoon = $nextMaintenance && !$isPastDue && $nextMaintenance->lessThanOrEqualTo(now()->addDays(30));
             $nextClass = $isPastDue
@@ -102,8 +102,15 @@
                 {{ $statusConfig['label'] }}
               </span>
             </td>
-            <td class="table-cell {{ $nextClass }}">
-              {{ $nextMaintenance ? $nextMaintenance->format('d/m/Y') : 'No programado' }}
+            <td class="table-cell">
+              <div class="{{ $nextClass }}">
+                {{ $nextMaintenance ? $nextMaintenance->format('d/m/Y') : 'No programado' }}
+              </div>
+              <div class="mt-1">
+                <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold {{ $truck->maintenanceNextSourceBadgeClasses() }}">
+                  {{ $truck->maintenanceNextSourceLabel() }}
+                </span>
+              </div>
             </td>
             <td class="table-cell">
               <span @class([

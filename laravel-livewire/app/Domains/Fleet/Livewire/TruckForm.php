@@ -108,16 +108,21 @@ class TruckForm extends Component
             'technical_details' => $this->truck->technical_details ?? '',
         ];
 
-        $lastDerived = $this->truck->last_maintenance_derived;
-        $nextDerived = $this->truck->next_maintenance_derived;
+        if (! $this->truck->exists) {
+            $this->lastMaintenanceDisplay = 'No registrado';
+            $this->nextMaintenanceDisplay = 'No programado';
+        } else {
+            $lastDerived = $this->truck->last_maintenance_derived;
+            $nextDerived = $this->truck->next_maintenance_derived;
 
-        $this->lastMaintenanceDisplay = $lastDerived?->format('d/m/Y')
-            ?? $this->truck->last_maintenance?->format('d/m/Y')
-            ?? 'No registrado';
+            $this->lastMaintenanceDisplay = $lastDerived?->format('d/m/Y')
+                ?? $this->truck->last_maintenance?->format('d/m/Y')
+                ?? 'No registrado';
 
-        $this->nextMaintenanceDisplay = $nextDerived?->format('d/m/Y')
-            ?? $this->truck->next_maintenance?->format('d/m/Y')
-            ?? 'No programado';
+            $this->nextMaintenanceDisplay = $nextDerived?->format('d/m/Y')
+                ?? $this->truck->next_maintenance?->format('d/m/Y')
+                ?? 'No programado';
+        }
 
         $this->maintenanceHistory = $this->truck->exists
             ? $this->truck->maintenances()
@@ -153,9 +158,15 @@ class TruckForm extends Component
         $this->truck->fill($data);
         $this->truck->save();
 
-        session()->flash('message', $this->isEdit ? 'Camion actualizado correctamente.' : 'Camion creado correctamente.');
+        if ($this->isEdit) {
+            session()->flash('message', 'Camión actualizado correctamente.');
 
-        return redirect()->route('fleet.trucks.index');
+            return redirect()->route('fleet.trucks.index');
+        }
+
+        session()->flash('message', 'Camión creado. Ahora puedes adjuntar documentos (Certificado MTC, SOAT, etc.).');
+
+        return redirect()->route('fleet.trucks.edit', $this->truck);
     }
 
     public function render()

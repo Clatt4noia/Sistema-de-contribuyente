@@ -31,13 +31,32 @@ class DocumentManager extends Component
 
     protected function rules(): array
     {
+        $documentType = (string) ($this->form['document_type'] ?? '');
+
+        $expiresRules = ['nullable', 'date'];
+
+        if ($documentType === 'cert_mtc') {
+            $expiresRules[] = 'required';
+        }
+
+        if (! empty($this->form['issued_at'])) {
+            $expiresRules[] = 'after_or_equal:form.issued_at';
+        }
+
         return [
             'form.document_type' => ['required', 'string', 'max:100', Rule::in(array_keys($this->typeOptions))],
-            'form.title' => ['required', 'string', 'max:150'],
+            'form.title' => ['nullable', 'string', 'max:150'],
             'form.issued_at' => ['nullable', 'date'],
-            'form.expires_at' => ['nullable', 'date', 'after_or_equal:form.issued_at'],
+            'form.expires_at' => $expiresRules,
             'form.notes' => ['nullable', 'string', 'max:500'],
             'file' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'form.expires_at.required' => 'El Certificado MTC requiere fecha de vencimiento.',
         ];
     }
 
@@ -62,7 +81,16 @@ class DocumentManager extends Component
 
         $validated = $this->validate();
 
-        $title = $validated['form']['title'];
+        $title = trim((string) ($validated['form']['title'] ?? ''));
+        if ($title === '') {
+            $title = $this->typeOptions[$validated['form']['document_type']] ?? 'Documento';
+        }
+
+        $issuedAt = $validated['form']['issued_at'] ?: null;
+        $expiresAt = $validated['form']['expires_at'] ?: null;
+        $notes = trim((string) ($validated['form']['notes'] ?? ''));
+        $notes = $notes !== '' ? $notes : null;
+
         $extension = $this->file->getClientOriginalExtension();
         $filename = Str::slug($title ?: $validated['form']['document_type']);
         $filename = trim($filename, '-') ?: 'documento';
@@ -80,9 +108,9 @@ class DocumentManager extends Component
             'documentable_id' => $owner->getKey(),
             'document_type' => $validated['form']['document_type'],
             'title' => $title,
-            'issued_at' => $validated['form']['issued_at'] ?: null,
-            'expires_at' => $validated['form']['expires_at'] ?: null,
-            'notes' => $validated['form']['notes'] ?: null,
+            'issued_at' => $issuedAt,
+            'expires_at' => $expiresAt,
+            'notes' => $notes,
             'file_path' => $path,
         ]);
 

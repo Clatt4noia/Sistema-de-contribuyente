@@ -19,6 +19,7 @@ class Document extends Model
 
     protected const BASE_TYPE_LABELS = [
         'soat' => 'SOAT',
+        'cert_mtc' => 'Certificado MTC',
         'insurance' => 'Póliza de seguro',
         'technical_inspection' => 'Revisión técnica',
         'operation_permit' => 'Permiso de operación',
@@ -51,6 +52,7 @@ class Document extends Model
         return match ($documentableType) {
             'truck' => [
                 'soat' => self::BASE_TYPE_LABELS['soat'],
+                'cert_mtc' => self::BASE_TYPE_LABELS['cert_mtc'],
                 'insurance' => self::BASE_TYPE_LABELS['insurance'],
                 'technical_inspection' => self::BASE_TYPE_LABELS['technical_inspection'],
                 'operation_permit' => self::BASE_TYPE_LABELS['operation_permit'],

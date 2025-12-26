@@ -33,8 +33,19 @@
  </div>
 
  <div class="form-field">
- <label class="form-label" for="expires_at">Vence</label>
+ <label class="form-label" for="expires_at">
+ @if (($form['document_type'] ?? '') === 'cert_mtc')
+ Vence (obligatorio)
+ @else
+ Vence
+ @endif
+ </label>
  <input type="date" id="expires_at" wire:model.defer="form.expires_at" class="form-control">
+ @if (($form['document_type'] ?? '') === 'cert_mtc')
+ <p class="mt-1 text-xs text-token ">Obligatorio para Certificado MTC</p>
+ @else
+ <p class="mt-1 text-xs text-token ">Opcional</p>
+ @endif
  @error('form.expires_at') <span class="form-error">{{ $message }}</span> @enderror
  </div>
 
