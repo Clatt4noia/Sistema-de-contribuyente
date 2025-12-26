@@ -27,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         // Registrar observer de órdenes
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
         \App\Models\Invoice::observe(\App\Observers\InvoiceObserver::class);
+        \App\Models\Maintenance::observe(\App\Observers\MaintenanceObserver::class);
 
 
         Date::setLocale('es');

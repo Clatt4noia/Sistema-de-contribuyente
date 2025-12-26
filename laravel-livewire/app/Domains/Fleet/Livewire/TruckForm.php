@@ -17,6 +17,8 @@ class TruckForm extends Component
     public bool $isEdit = false;
     public array $form = [];
     public array $maintenanceHistory = [];
+    public ?string $lastMaintenanceDisplay = null;
+    public ?string $nextMaintenanceDisplay = null;
 
     /**
      * @var array<string, string> $statusLabels
@@ -69,8 +71,6 @@ class TruckForm extends Component
             'form.capacity' => ['nullable', 'numeric', 'min:0'],
             'form.mileage' => ['nullable', 'integer', 'min:0'],
             'form.status' => ['required', 'string', 'in:' . implode(',', $truckStatusValues)],
-            'form.last_maintenance' => ['nullable', 'date'],
-            'form.next_maintenance' => ['nullable', 'date'],
             'form.technical_details' => ['nullable', 'string'],
         ];
     }
@@ -105,10 +105,19 @@ class TruckForm extends Component
             'capacity' => $this->truck->capacity ?? null,
             'mileage' => $this->truck->mileage ?? 0,
             'status' => $statusValue,
-            'last_maintenance' => optional($this->truck->last_maintenance)->format('Y-m-d'),
-            'next_maintenance' => optional($this->truck->next_maintenance)->format('Y-m-d'),
             'technical_details' => $this->truck->technical_details ?? '',
         ];
+
+        $lastDerived = $this->truck->last_maintenance_derived;
+        $nextDerived = $this->truck->next_maintenance_derived;
+
+        $this->lastMaintenanceDisplay = $lastDerived?->format('d/m/Y')
+            ?? $this->truck->last_maintenance?->format('d/m/Y')
+            ?? 'No registrado';
+
+        $this->nextMaintenanceDisplay = $nextDerived?->format('d/m/Y')
+            ?? $this->truck->next_maintenance?->format('d/m/Y')
+            ?? 'No programado';
 
         $this->maintenanceHistory = $this->truck->exists
             ? $this->truck->maintenances()
@@ -138,8 +147,6 @@ class TruckForm extends Component
         $data['capacity'] = $data['capacity'] !== null ? (float) $data['capacity'] : null;
         $data['mileage'] = $data['mileage'] !== null ? (int) $data['mileage'] : 0;
         $data['mtc_registration_number'] = trim((string) ($data['mtc_registration_number'] ?? '')) ?: null;
-        $data['last_maintenance'] = $data['last_maintenance'] ?: null;
-        $data['next_maintenance'] = $data['next_maintenance'] ?: null;
         $data['technical_details'] = trim((string) $data['technical_details']) ?: null;
 
         // Sincronizamos la informacion con el modelo Eloquent y persistimos.

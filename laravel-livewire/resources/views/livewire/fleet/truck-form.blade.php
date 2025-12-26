@@ -75,15 +75,23 @@
             </div>
 
             <div class="form-field">
-                <label for="last_maintenance" class="form-label">Ultimo mantenimiento</label>
-                <input type="date" id="last_maintenance" wire:model.defer="form.last_maintenance" class="form-control">
-                @error('form.last_maintenance') <span class="form-error">{{ $message }}</span> @enderror
+                <label class="form-label">Último mantenimiento</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{ $lastMaintenanceDisplay }}"
+                    readonly
+                >
             </div>
 
             <div class="form-field">
-                <label for="next_maintenance" class="form-label">Proximo mantenimiento</label>
-                <input type="date" id="next_maintenance" wire:model.defer="form.next_maintenance" class="form-control">
-                @error('form.next_maintenance') <span class="form-error">{{ $message }}</span> @enderror
+                <label class="form-label">Próximo mantenimiento</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{ $nextMaintenanceDisplay }}"
+                    readonly
+                >
             </div>
         </div>
 
