@@ -61,7 +61,7 @@
           <tr class="table-row">
             <th class="table-header">Orden</th>
             <th class="table-header">Vehiculo</th>
-            <th class="table-header">Conductor</th>
+            <th class="table-header">Chofer</th>
             <th class="table-header">Inicio</th>
             <th class="table-header">Fin</th>
             <th class="table-header">Estado</th>

@@ -79,7 +79,7 @@
     {{-- RESUMEN CONDUCTORES / ASIGNACIONES --}}
     <section class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div class="surface-card rounded-2xl p-4 shadow-sm">
-            <h2 class="text-lg font-semibold text-token">Conductores</h2>
+            <h2 class="text-lg font-semibold text-token">Choferes</h2>
             <ul class="mt-3 space-y-2 text-sm text-token">
                 <li>Activos: <span class="font-semibold">{{ $driverTotals['active'] ?? 0 }}</span></li>
                 <li>Asignados: <span class="font-semibold">{{ $driverTotals['assigned'] ?? 0 }}</span></li>
@@ -108,7 +108,7 @@
                 <table class="table table-sm mt-3">
                     <thead>
                         <tr class="table-row">
-                            <th class="table-header">Conductor</th>
+                            <th class="table-header">Chofer</th>
                             <th class="table-header">Asignaciones</th>
                         </tr>
                     </thead>
@@ -132,7 +132,7 @@
                 <table class="table table-sm mt-3">
                     <thead>
                         <tr class="table-row">
-                            <th class="table-header">Conductor</th>
+                            <th class="table-header">Chofer</th>
                             <th class="table-header">Vence</th>
                         </tr>
                     </thead>

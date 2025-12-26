@@ -76,7 +76,7 @@
                 <p class="text-sm text-token-muted">MTC {{ $transportGuide->mtc_registration_number }}</p>
             </div>
             <div>
-                <h2 class="text-lg font-semibold text-token">Conductor</h2>
+                <h2 class="text-lg font-semibold text-token">Chofer</h2>
                 <p class="text-sm text-token">{{ $transportGuide->driver_name }}</p>
                 <p class="text-sm text-token-muted">Licencia {{ $transportGuide->driver_license_number }} | Doc. {{ $transportGuide->driver_document_type }} {{ $transportGuide->driver_document_number }}</p>
             </div>

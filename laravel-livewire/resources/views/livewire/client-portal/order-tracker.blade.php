@@ -88,7 +88,7 @@
         <thead>
           <tr class="table-row">
             <th class="table-header">{{ __('Vehículo') }}</th>
-            <th class="table-header">{{ __('Conductor') }}</th>
+            <th class="table-header">{{ __('Chofer') }}</th>
             <th class="table-header">{{ __('Estado') }}</th>
             <th class="table-header">{{ __('Inicio') }}</th>
           </tr>

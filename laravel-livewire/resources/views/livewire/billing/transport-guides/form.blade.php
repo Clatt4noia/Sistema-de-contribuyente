@@ -382,7 +382,7 @@
                 </div>
 
                 <div>
-                    <label class="form-label" for="driver_id">Conductor</label>
+                    <label class="form-label" for="driver_id">Chofer</label>
                      <select id="driver_id"
                              wire:model.live="form.driver_id"
                              class="form-control @error('form.driver_id') is-invalid @enderror"

@@ -48,7 +48,7 @@
                         <th class="table-header">Emisión</th>
                         <th class="table-header">Serie / Número</th>
                         <th class="table-header">Vehículo</th>
-                        <th class="table-header">Conductor</th>
+                        <th class="table-header">Chofer</th>
                         <th class="table-header">Estado interno</th>
                         <th class="table-header">Estado SUNAT</th>
                         <th class="table-header">Acciones</th>

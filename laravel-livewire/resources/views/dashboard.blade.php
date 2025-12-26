@@ -24,7 +24,7 @@
  <dd class="text-2xl font-semibold text-token ">{{ \App\Models\Truck::where('status', \App\Enums\Fleet\TruckStatus::Available->value)->count() }}</dd>
  </div>
  <div class="surface-muted px-4 py-3">
- <dt class="text-xs uppercase tracking-wide text-accent-soft ">Conductores</dt>
+ <dt class="text-xs uppercase tracking-wide text-accent-soft ">Choferes</dt>
  <dd class="text-2xl font-semibold text-token ">{{ \App\Models\Driver::count() }}</dd>
  </div>
  </dl>
@@ -36,7 +36,7 @@
  <span class="text-accent-soft transition group-hover:translate-x-0.5 ">&rarr;</span>
  </a>
  <a href="{{ route('fleet.drivers.index') }}" class="group surface-muted flex transform items-center justify-between px-4 py-3 text-sm font-semibold text-accent transition hover:-translate-y-0.5">
- <span>Conductores</span>
+ <span>Choferes</span>
  <span class="text-accent-soft transition group-hover:translate-x-0.5 ">&rarr;</span>
  </a>
  <a href="{{ route('fleet.assignments.index') }}" class="group surface-muted flex transform items-center justify-between px-4 py-3 text-sm font-semibold text-accent transition hover:-translate-y-0.5">

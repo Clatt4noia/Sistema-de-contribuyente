@@ -6,7 +6,7 @@ BEGIN;
 -- Insert drivers
 INSERT INTO drivers (name, last_name, document_number, license_number, license_expiration, phone, email, address, status, notes)
 VALUES
-    ('Juan', 'Perez', 'DNI00112233', 'LIC-PER-2025', '2026-04-01', '+51 900 111 111', 'juan.perez@example.com', 'Av. Arequipa 123, Lima', 'available', 'Conductor con experiencia en rutas de la sierra.'),
+    ('Juan', 'Perez', 'DNI00112233', 'LIC-PER-2025', '2026-04-01', '+51 900 111 111', 'juan.perez@example.com', 'Av. Arequipa 123, Lima', 'available', 'Chofer con experiencia en rutas de la sierra.'),
     ('Maria', 'Lopez', 'DNI00445566', 'LIC-LOP-2030', '2027-08-15', '+51 900 222 222', 'maria.lopez@example.com', 'Jr. Trujillo 456, Trujillo', 'available', 'Especialista en transporte refrigerado.'),
     ('Carlos', 'Ramos', 'DNI00778899', 'LIC-RAM-2028', '2025-12-31', '+51 900 333 333', 'carlos.ramos@example.com', 'Calle Cusco 789, Arequipa', 'on_trip', 'Actualmente asignado a ruta Arequipa - Cusco.'),
     ('Ana', 'Gutierrez', 'DNI00990011', 'LIC-GUT-2027', '2028-06-20', '+51 900 444 444', 'ana.gutierrez@example.com', 'Av. Brasil 321, Lima', 'available', 'Certificada en manejo defensivo.'),

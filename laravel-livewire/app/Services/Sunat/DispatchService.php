@@ -34,26 +34,26 @@ class DispatchService
         }
 
         $see = $this->greenterService->getSee($company);
-        
+
         // 1. Construir Objeto Despatch
         $despatch = $this->buildDespatch($guide, $company);
-        
+
         // 2. Generar XML firmado
         $xml = $see->getXmlSigned($despatch);
-        
+
         // 3. Guardar XML y Hash
         $guide->xml_path = 'xml/' . $despatch->getName() . '.xml';
         // Calcular hash (digest value)
         // Greenter no guarda el hash en el objeto Despatch tras firmas automáticamente expuesto,
         // pero se puede extraer del XML.
-        // Ojo: TransportGuide no tiene campo 'hash' explícito en el modelo mostrado anteriormente, 
+        // Ojo: TransportGuide no tiene campo 'hash' explícito en el modelo mostrado anteriormente,
         // pero sí 'xml_path'. Si se requiere hash, se puede guardar en 'sunat_notes' o agregar columna.
-        
+
         $guide->sunat_status = 'signed'; // O equivalente
         $guide->save();
-        
+
         Storage::disk('public')->put($guide->xml_path, $xml);
-        
+
         return $despatch;
     }
 
@@ -74,7 +74,7 @@ class DispatchService
             $cdr = $result->getCdrResponse();
             $guide->cdr_path = 'cdr/R-' . $despatch->getName() . '.zip';
             Storage::disk('public')->put($guide->cdr_path, $result->getCdrZip());
-            
+
             $guide->sunat_ticket = $cdr->getId();
             $guide->sunat_notes = $cdr->getDescription() . ' | ' . json_encode($cdr->getNotes());
 
@@ -89,7 +89,7 @@ class DispatchService
             $guide->sunat_status = 'error';
             $guide->sunat_notes = $error->getCode() . ': ' . $error->getMessage();
         }
-        
+
         $guide->save();
         return $result;
     }
@@ -129,8 +129,8 @@ class DispatchService
             $transportista->setRznSocial($guide->transportista_name);
             $shipment->setTransportista($transportista);
         }
-        
-        // Vehículo / Conductor (Si es Privado - 02)
+
+        // Vehículo / Chofer (Si es Privado - 02)
         if ($guide->transport_mode_code === '02') {
             // Driver
             $driver = new \Greenter\Model\Despatch\Driver();
@@ -139,18 +139,18 @@ class DispatchService
             $driver->setNombres($guide->driver_name);
             $driver->setLicencia($guide->driver_license_number);
             $shipment->setConductor($driver);
-            
+
             // Vehicle
             $vehicle = new \Greenter\Model\Despatch\Vehicle();
             $vehicle->setPlaca($guide->vehicle_plate);
-            
+
             if ($guide->mtc_registration_number) {
                 $vehicle->setNumero($guide->mtc_registration_number);
             }
-            
+
             $shipment->setVehiculo($vehicle);
         }
-        
+
         // Despatch
         $despatch = new Despatch();
         $despatch->setTipoDoc($guide->document_type_code) // '09' para GRE-R, '31' para GRE-T

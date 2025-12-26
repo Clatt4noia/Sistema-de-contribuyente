@@ -201,7 +201,7 @@ class TransportGuideIssuer
         $driverPerson->appendChild($driverId);
         $driverPerson->appendChild($document->createElement('cbc:FirstName', $this->sanitizeText($transportGuide->driver_name)));
         $driverPerson->appendChild($document->createElement('cbc:FamilyName', ''));
-        $driverPerson->appendChild($document->createElement('cbc:JobTitle', 'Conductor'));
+        $driverPerson->appendChild($document->createElement('cbc:JobTitle', 'Chofer'));
         $driverPerson->appendChild($document->createElement('cbc:Name', $this->sanitizeText($transportGuide->driver_name)));
 
         $transportMeans = $shipmentStage->appendChild($document->createElement('cac:TransportMeans'));

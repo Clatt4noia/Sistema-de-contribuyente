@@ -36,7 +36,7 @@ class OrderAssignedNotification extends Notification
             ->greeting(__('Hola :name', ['name' => $recipientName]))
             ->line(__('Se te ha asignado la Orden :reference.', ['reference' => $order->reference]))
             ->line(__('Vehículo: :truck', ['truck' => $truck?->plate_number ?? __('No disponible')]))
-            ->line(__('Conductor: :driver', ['driver' => $driver?->full_name ?? __('No disponible')]))
+            ->line(__('Chofer: :driver', ['driver' => $driver?->full_name ?? __('No disponible')]))
             ->line(__('Fecha de recogida: :date', ['date' => optional($order->pickup_date)->format('d/m/Y H:i')]))
             ->line(__('Ventana de entrega: :start - :end', [
                 'start' => optional($order->delivery_window_start)->format('d/m/Y H:i') ?? __('No definida'),

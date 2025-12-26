@@ -115,7 +115,7 @@ class MainMenu
                 'roles' => [User::ROLE_LOGISTICS_MANAGER, User::ROLE_FLEET_MANAGER, User::ROLE_ADMIN],
             ],
             [
-                'label' => __('Conductores'),
+                'label' => __('Choferes'),
                 'icon' => 'heroicon-o-identification',
 
                 'route' => 'fleet.drivers.index',

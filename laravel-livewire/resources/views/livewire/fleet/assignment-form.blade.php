@@ -91,7 +91,7 @@
 
             <div class="form-field">
                 <label for="driver_id" class="form-label">
-                    <span class="required">Conductor</span>
+                    <span class="required">Chofer</span>
                 </label>
                 <select
                     id="driver_id"

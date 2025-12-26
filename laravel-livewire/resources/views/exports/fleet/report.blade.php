@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <h2>Conductores</h2>
+    <h2>Choferes</h2>
     <table>
         <thead>
             <tr>
@@ -103,7 +103,7 @@
     <table>
         <thead>
             <tr>
-                <th>Conductor</th>
+                <th>Chofer</th>
                 <th>Asignaciones</th>
             </tr>
         </thead>
@@ -125,7 +125,7 @@
     <table>
         <thead>
             <tr>
-                <th>Conductor</th>
+                <th>Chofer</th>
                 <th>Vence</th>
             </tr>
         </thead>
