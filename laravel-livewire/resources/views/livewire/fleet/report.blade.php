@@ -100,7 +100,7 @@
     </section>
 
     {{-- BLOQUE ANALÍTICO: TABLAS --}}
-    <section class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+    <section class="grid grid-cols-1 gap-4 xl:grid-cols-4">
         {{-- Columna izquierda: tres tablas pequeñas apiladas --}}
         <div class="space-y-4 xl:col-span-2">
             <div class="surface-card rounded-2xl p-4 shadow-sm">
@@ -183,7 +183,7 @@
         </div>
 
         {{-- Columna derecha: documentos críticos, ocupa alto completo en xl --}}
-        <div class="surface-card rounded-2xl p-4 shadow-sm xl:row-span-3">
+        <div class="surface-card rounded-2xl p-4 shadow-sm xl:col-span-2">
             <h2 class="text-lg font-semibold text-token">Documentos críticos</h2>
 
             <table class="table table-sm mt-3 w-full">
