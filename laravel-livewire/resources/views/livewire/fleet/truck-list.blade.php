@@ -80,7 +80,7 @@
               'maintenance' => ['label' => 'En mantenimiento', 'class' => 'bg-warning-soft text-warning '],
               'out_of_service' => ['label' => 'Fuera de servicio', 'class' => 'bg-danger-soft text-danger-strong '],
             ];
-            $statusConfig = $statusStyles[$truck->status] ?? $statusStyles['available'];
+            $statusConfig = $statusStyles[$truck->status->value] ?? $statusStyles['available'];
             $nextMaintenance = $truck->next_maintenance;
             $isPastDue = $nextMaintenance && $nextMaintenance->isPast();
             $isDueSoon = $nextMaintenance && !$isPastDue && $nextMaintenance->lessThanOrEqualTo(now()->addDays(30));

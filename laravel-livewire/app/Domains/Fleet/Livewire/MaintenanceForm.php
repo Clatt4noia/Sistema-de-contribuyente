@@ -2,6 +2,9 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\MaintenanceStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\Maintenance;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -23,12 +26,14 @@ class MaintenanceForm extends Component
 
     protected function rules()
     {
+        $maintenanceStatuses = array_map(static fn (MaintenanceStatus $status) => $status->value, MaintenanceStatus::cases());
+
         return [
             'form.truck_id' => 'required|exists:trucks,id',
             'form.maintenance_date' => 'required|date',
             'form.maintenance_type' => 'required|string|max:100',
             'form.cost' => 'required|numeric|min:0',
-            'form.status' => 'required|string|in:scheduled,in_progress,completed,cancelled',
+            'form.status' => ['required', 'string', 'in:' . implode(',', $maintenanceStatuses)],
             'form.odometer' => 'nullable|integer|min:0',
             'form.description' => 'nullable|string',
             'form.notes' => 'nullable|string',
@@ -44,16 +49,20 @@ class MaintenanceForm extends Component
         } else {
             $this->authorize('create', Maintenance::class);
             $this->maintenance = new Maintenance();
-            $this->maintenance->status = 'scheduled';
+            $this->maintenance->status = MaintenanceStatus::Scheduled;
             $this->maintenance->maintenance_date = now()->format('Y-m-d');
         }
+
+        $statusValue = $this->maintenance->status instanceof MaintenanceStatus
+            ? $this->maintenance->status->value
+            : ($this->maintenance->status ?? MaintenanceStatus::Scheduled->value);
 
         $this->form = [
             'truck_id' => $this->maintenance->truck_id ?? '',
             'maintenance_date' => optional($this->maintenance->maintenance_date)->format('Y-m-d') ?? now()->format('Y-m-d'),
             'maintenance_type' => $this->maintenance->maintenance_type ?? '',
             'cost' => $this->maintenance->cost ?? 0,
-            'status' => $this->maintenance->status ?? 'scheduled',
+            'status' => $statusValue,
             'odometer' => $this->maintenance->odometer ?? null,
             'description' => $this->maintenance->description ?? '',
             'notes' => $this->maintenance->notes ?? '',
@@ -77,7 +86,7 @@ class MaintenanceForm extends Component
             'maintenance_date' => Carbon::parse($data['maintenance_date']),
             'maintenance_type' => $data['maintenance_type'],
             'cost' => $data['cost'],
-            'status' => $data['status'],
+            'status' => MaintenanceStatus::from($data['status']),
             'odometer' => $data['odometer'] ?? null,
             'description' => $data['description'],
             'notes' => $data['notes'],
@@ -88,7 +97,7 @@ class MaintenanceForm extends Component
         $truck = $this->maintenance->truck;
 
         if ($truck) {
-            if ($this->maintenance->status === 'completed') {
+            if ($this->maintenance->status === MaintenanceStatus::Completed) {
                 $maintenanceDate = Carbon::parse($this->maintenance->maintenance_date);
                 $truck->last_maintenance = $maintenanceDate;
                 $intervalDays = max((int) ($truck->maintenance_interval_days ?? 90), 1);
@@ -103,9 +112,9 @@ class MaintenanceForm extends Component
                 }
             }
 
-            if (in_array($this->maintenance->status, ['scheduled', 'in_progress'], true)) {
-                $truck->status = 'maintenance';
-            } elseif (in_array($this->maintenance->status, ['completed', 'cancelled'], true)) {
+            if (in_array($this->maintenance->status, [MaintenanceStatus::Scheduled, MaintenanceStatus::InProgress], true)) {
+                $truck->status = TruckStatus::Maintenance;
+            } elseif (in_array($this->maintenance->status, [MaintenanceStatus::Completed, MaintenanceStatus::Cancelled], true)) {
                 $truck->status = $this->resolveTruckStatus($truck);
             }
 
@@ -117,26 +126,26 @@ class MaintenanceForm extends Component
         return redirect()->route('fleet.maintenance.index');
     }
 
-    protected function resolveTruckStatus(Truck $truck): string
+    protected function resolveTruckStatus(Truck $truck): TruckStatus
     {
         $hasPendingMaintenance = $truck->maintenances()
             ->where('id', '!=', $this->maintenance->id)
-            ->whereIn('status', ['scheduled', 'in_progress'])
+            ->whereIn('status', [MaintenanceStatus::Scheduled->value, MaintenanceStatus::InProgress->value])
             ->exists();
 
         if ($hasPendingMaintenance) {
-            return 'maintenance';
+            return TruckStatus::Maintenance;
         }
 
         $hasActiveAssignments = $truck->assignments()
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->exists();
 
         if ($hasActiveAssignments) {
-            return 'in_use';
+            return TruckStatus::InUse;
         }
 
-        return $truck->status === 'out_of_service' ? 'out_of_service' : 'available';
+        return $truck->status === TruckStatus::OutOfService ? TruckStatus::OutOfService : TruckStatus::Available;
     }
 
     public function render()

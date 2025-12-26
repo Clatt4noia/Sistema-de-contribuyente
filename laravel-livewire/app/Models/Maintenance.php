@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\Fleet\MaintenanceStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Maintenance extends Model
 {
     use HasFactory;
+
+    protected $attributes = [
+        'status' => MaintenanceStatus::Scheduled->value,
+    ];
 
     protected $fillable = [
         'truck_id',
@@ -24,6 +29,7 @@ class Maintenance extends Model
         'maintenance_date' => 'date',
         'cost' => 'decimal:2',
         'odometer' => 'integer',
+        'status' => MaintenanceStatus::class,
     ];
 
     public function truck()

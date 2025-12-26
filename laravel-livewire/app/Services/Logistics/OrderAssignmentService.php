@@ -2,11 +2,13 @@
 
 namespace App\Services\Logistics;
 
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\Order;
 use App\Models\Truck;
-use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -33,15 +35,15 @@ class OrderAssignmentService
                     'driver_id' => $driver->id,
                     'start_date' => $order->pickup_date ?? now(),
                     'end_date' => $order->delivery_date,
-                    'status' => 'scheduled',
+                    'status' => AssignmentStatus::Scheduled,
                     'description' => __('Asignación automática generada para el Orden :reference', [
                         'reference' => $order->reference,
                     ]),
                 ]
             );
 
-            $truck->update(['status' => 'reserved']);
-            $driver->update(['status' => 'assigned']);
+            $truck->update(['status' => TruckStatus::Reserved]);
+            $driver->update(['status' => DriverStatus::Assigned]);
 
             return $assignment;
         });
@@ -49,7 +51,10 @@ class OrderAssignmentService
 
     protected function selectTruck(Order $order): ?Truck
     {
-        $query = Truck::query()->operational()->whereIn('status', ['available', 'active', 'reserved']);
+        $query = Truck::query()->operational()->whereIn('status', [
+            TruckStatus::Available->value,
+            TruckStatus::Reserved->value,
+        ]);
 
         if ($order->cargoType) {
             $query->whereHas('cargoTypes', fn ($q) => $q->where('cargo_type_id', $order->cargo_type_id));
@@ -69,7 +74,7 @@ class OrderAssignmentService
         }
 
         $availableDrivers = Driver::query()
-            ->where('status', 'available')
+            ->where('status', DriverStatus::Active->value)
             ->with('schedules')
             ->get();
 
@@ -78,7 +83,7 @@ class OrderAssignmentService
                 return true;
             }
 
-            $pickup = $order->pickup_date->copy()->setTimezone('UTC');
+            $pickup = $order->pickup_date->copy();
             $pickupDay = $pickup->isoWeekday();
 
             $hasShift = $driver->schedules->first(function ($schedule) use ($pickup, $pickupDay) {
@@ -86,8 +91,8 @@ class OrderAssignmentService
                     return false;
                 }
 
-                $start = CarbonInterval::createFromDateString($schedule->start_time)->totalMinutes;
-                $end = CarbonInterval::createFromDateString($schedule->end_time)->totalMinutes;
+                $start = $this->timeToMinutes($schedule->start_time);
+                $end = $this->timeToMinutes($schedule->end_time);
                 $pickupMinutes = $pickup->hour * 60 + $pickup->minute;
 
                 return $pickupMinutes >= $start && $pickupMinutes <= $end;
@@ -97,5 +102,18 @@ class OrderAssignmentService
         });
 
         return $filtered->sortBy('id')->first();
+    }
+
+    private function timeToMinutes(mixed $time): int
+    {
+        if ($time instanceof \DateTimeInterface) {
+            return ((int) $time->format('H')) * 60 + (int) $time->format('i');
+        }
+
+        if (is_string($time) && preg_match('/(\\d{2}):(\\d{2})/', $time, $matches)) {
+            return ((int) $matches[1]) * 60 + (int) $matches[2];
+        }
+
+        return 0;
     }
 }

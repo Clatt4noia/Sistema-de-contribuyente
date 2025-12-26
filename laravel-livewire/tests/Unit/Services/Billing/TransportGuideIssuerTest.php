@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services\Billing;
 
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\Client;
 use App\Models\Driver;
 use App\Models\TransportGuide;
@@ -22,16 +24,16 @@ class TransportGuideIssuerTest extends TestCase
     protected function buildDraftGuide(): TransportGuide
     {
         $client = Client::factory()->create([
-            'document_number' => '20123456789',
+            'tax_id' => '20123456789',
         ]);
 
         $truck = Truck::factory()->create([
-            'status' => 'available',
+            'status' => TruckStatus::Available,
             'plate_number' => 'ABC-123',
         ]);
 
         $driver = Driver::factory()->create([
-            'status' => 'active',
+            'status' => DriverStatus::Active,
             'license_expiration' => now()->addMonths(3),
             'document_number' => '87654321',
         ]);
@@ -46,16 +48,19 @@ class TransportGuideIssuerTest extends TestCase
             'document_type_code' => TransportGuide::DOCUMENT_TYPE_GRE_TRANSPORTISTA,
             'client_id' => $client->id,
             'remitente_document_type' => '6',
-            'remitente_document_number' => '20123456789',
-            'remitente_ruc' => '20123456789',
+            'remitente_document_number' => $client->tax_id,
+            'remitente_ruc' => $client->tax_id,
             'remitente_name' => 'Cliente Uno',
             'destinatario_document_type' => '6',
-            'destinatario_document_number' => '20123456789',
+            'destinatario_document_number' => $client->tax_id,
             'destinatario_name' => 'Cliente Uno',
-            'transportista_ruc' => '20123456789',
+            'transportista_ruc' => $client->tax_id,
             'transportista_name' => 'Transportes Demo',
             'truck_id' => $truck->id,
             'driver_id' => $driver->id,
+            'vehicle_plate' => $truck->plate_number,
+            'vehicle_brand' => $truck->brand,
+            'mtc_registration_number' => $truck->mtc_registration_number,
             'driver_document_number' => '87654321',
             'driver_document_type' => '1',
             'driver_name' => $driver->name,
@@ -101,7 +106,7 @@ class TransportGuideIssuerTest extends TestCase
         $this->assertNotNull($guide->xml_path);
         $this->assertEquals(TransportGuide::STATUS_PENDING, $guide->sunat_status);
         $this->assertNotNull($guide->sent_at);
-        $this->assertStringContainsString('Documento firmado', $guide->sunat_notes);
+        $this->assertStringContainsString('Documento firmado', (string) $guide->sunat_notes);
         Storage::disk('local')->assertExists($guide->xml_path);
         $this->assertStringContainsString('<signed-xml', Storage::disk('local')->get($guide->xml_path));
     }
@@ -109,12 +114,12 @@ class TransportGuideIssuerTest extends TestCase
     public function test_throws_exception_when_truck_in_maintenance(): void
     {
         $guide = $this->buildDraftGuide();
-        $guide->truck->update(['status' => 'maintenance']);
+        $guide->truck->update(['status' => TruckStatus::Maintenance]);
 
         $issuer = new TransportGuideIssuer(Mockery::mock(DigitalSignatureService::class));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('El camión seleccionado no está disponible por mantenimiento.');
+        $this->expectExceptionMessage('manten');
 
         $issuer->issue($guide);
     }

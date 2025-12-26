@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Orders\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +14,10 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Order extends Model
 {
     use HasFactory;
+
+    protected $attributes = [
+        'status' => OrderStatus::Pending->value,
+    ];
 
     protected $fillable = [
         'client_id',
@@ -71,6 +77,7 @@ class Order extends Model
         'estimated_cost' => 'decimal:2',
         'referential_rate_sxtm' => 'decimal:2',
         'referential_year' => 'integer',
+        'status' => OrderStatus::class,
     ];
 
     public function client(): BelongsTo
@@ -90,7 +97,10 @@ class Order extends Model
 
     public function activeAssignment(): HasOne
     {
-        return $this->hasOne(Assignment::class)->whereNotIn('status', ['completed', 'cancelled']);
+        return $this->hasOne(Assignment::class)->whereNotIn('status', [
+            AssignmentStatus::Completed->value,
+            AssignmentStatus::Cancelled->value,
+        ]);
     }
 
     public function routePlans(): HasMany

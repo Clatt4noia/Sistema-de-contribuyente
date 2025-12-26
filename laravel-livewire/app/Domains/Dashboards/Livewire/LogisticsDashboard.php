@@ -2,6 +2,8 @@
 
 namespace App\Domains\Dashboards\Livewire;
 
+use App\Enums\Fleet\TruckStatus;
+use App\Enums\Orders\OrderStatus;
 use App\Models\Assignment;
 use App\Models\InventoryReservation;
 use App\Models\Order;
@@ -29,20 +31,20 @@ class LogisticsDashboard extends Component
 
         $ordersSummary = [
             'total' => (clone $orderQuery)->count(),
-            'en_route' => Order::where('status', 'en_route')->count(),
-            'pending' => Order::where('status', 'pending')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
+            'en_route' => Order::where('status', OrderStatus::EnRoute->value)->count(),
+            'pending' => Order::where('status', OrderStatus::Pending->value)->count(),
+            'delivered' => Order::where('status', OrderStatus::Delivered->value)->count(),
         ];
 
         $hasDeliveryWindowColumns = Schema::hasColumn('orders', 'delivery_window_end')
             && Schema::hasColumn('orders', 'delivery_window_start');
 
         if ($hasDeliveryWindowColumns) {
-            $deliveriesWithWindow = Order::where('status', 'delivered')
+            $deliveriesWithWindow = Order::where('status', OrderStatus::Delivered->value)
                 ->whereNotNull('delivery_window_end')
                 ->count();
 
-            $onTimeDeliveries = Order::where('status', 'delivered')
+            $onTimeDeliveries = Order::where('status', OrderStatus::Delivered->value)
                 ->whereNotNull('delivery_window_end')
                 ->whereColumn('delivery_date', '<=', 'delivery_window_end')
                 ->count();
@@ -60,7 +62,7 @@ class LogisticsDashboard extends Component
         $activeIncidents = RouteIncident::where('status', '!=', 'resolved')->count();
         $openReservations = InventoryReservation::where('status', 'confirmed')->count();
 
-        $availableTrucks = Truck::whereIn('status', ['available', 'active'])->count();
+        $availableTrucks = Truck::where('status', TruckStatus::Available->value)->count();
 
         $upcomingAssignments = Assignment::with(['order', 'driver', 'truck'])
             ->whereDate('start_date', '>=', now()->startOfDay())

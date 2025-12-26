@@ -132,9 +132,18 @@ class Report extends Component
             ->groupBy('status')
             ->pluck('total', 'status');
 
+        $days = (int) config('documents.expiring_days', 30);
+        $today = now()->toDateString();
+        $threshold = now()->addDays($days)->toDateString();
+
         $documentAlerts = Document::with('documentable')
-            ->whereIn('status', [Document::STATUS_WARNING, Document::STATUS_EXPIRED])
-            ->orderByRaw("CASE WHEN status = '" . Document::STATUS_EXPIRED . "' THEN 0 ELSE 1 END")
+            ->where(function ($query) use ($days) {
+                $query->expired()->orWhere(fn ($subQuery) => $subQuery->expiring($days));
+            })
+            ->orderByRaw(
+                'CASE WHEN expires_at IS NULL THEN 2 WHEN expires_at < ? THEN 0 WHEN expires_at <= ? THEN 1 ELSE 2 END',
+                [$today, $threshold]
+            )
             ->orderBy('expires_at')
             ->take(10)
             ->get();

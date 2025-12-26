@@ -7,6 +7,7 @@ use App\Exports\Pdf\SunatStatusPdfExport;
 use App\Http\Controllers\Controller;
 use App\Domains\Billing\Http\Requests\SunatDashboardFilterRequest;
 use App\Domains\Billing\Support\SunatStatusAggregator;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class SunatDashboardExportController extends Controller
@@ -15,7 +16,9 @@ class SunatDashboardExportController extends Controller
     {
         $rows = $aggregator->forFilters($request->validated());
 
-        return new SunatStatusExport($rows);
+        $export = new SunatStatusExport($rows);
+
+        return Excel::download($export, $export->fileName());
     }
 
     public function pdf(SunatDashboardFilterRequest $request, SunatStatusAggregator $aggregator)

@@ -10,10 +10,18 @@ class DigitalSignatureServiceTest extends TestCase
 {
     public function test_it_signs_xml_using_pfx_certificate(): void
     {
+        if (! function_exists('openssl_pkey_new')) {
+            $this->markTestSkipped('OpenSSL extension is not available.');
+        }
+
         $privateKey = openssl_pkey_new([
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ]);
+
+        if ($privateKey === false) {
+            $this->markTestSkipped('Unable to generate private key with OpenSSL.');
+        }
 
         $csr = openssl_csr_new([
             'commonName' => 'Test Cert',
@@ -21,10 +29,20 @@ class DigitalSignatureServiceTest extends TestCase
             'countryName' => 'PE',
         ], $privateKey);
 
+        if ($csr === false) {
+            $this->markTestSkipped('Unable to generate CSR with OpenSSL.');
+        }
+
         $certificate = openssl_csr_sign($csr, null, $privateKey, 365);
 
+        if ($certificate === false) {
+            $this->markTestSkipped('Unable to self-sign CSR with OpenSSL.');
+        }
+
         $pkcs12 = null;
-        openssl_pkcs12_export($certificate, $pkcs12, $privateKey, 'secret');
+        if (! openssl_pkcs12_export($certificate, $pkcs12, $privateKey, 'secret')) {
+            $this->markTestSkipped('Unable to export PKCS#12 bundle with OpenSSL.');
+        }
 
         $path = tempnam(sys_get_temp_dir(), 'pfx');
         file_put_contents($path, $pkcs12);

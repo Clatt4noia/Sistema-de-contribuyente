@@ -21,7 +21,7 @@
  <dl class="grid gap-3 text-right text-sm text-token sm:grid-cols-2">
  <div class="surface-muted px-4 py-3">
  <dt class="text-xs uppercase tracking-wide text-accent-soft ">Camiones activos</dt>
- <dd class="text-2xl font-semibold text-token ">{{ \App\Models\Truck::where('status', 'active')->count() }}</dd>
+ <dd class="text-2xl font-semibold text-token ">{{ \App\Models\Truck::where('status', \App\Enums\Fleet\TruckStatus::Available->value)->count() }}</dd>
  </div>
  <div class="surface-muted px-4 py-3">
  <dt class="text-xs uppercase tracking-wide text-accent-soft ">Conductores</dt>
@@ -201,7 +201,7 @@
               </tr>
             </thead>
             <tbody>
-              @foreach(\App\Models\Truck::where('status', 'available')->orderBy('plate_number')->take(5)->get() as $truck)
+              @foreach(\App\Models\Truck::where('status', \App\Enums\Fleet\TruckStatus::Available->value)->orderBy('plate_number')->take(5)->get() as $truck)
                 <tr class="table-row table-row-hover">
                   <td class="table-cell text-sm font-medium text-token ">{{ $truck->plate_number }}</td>
                   <td class="table-cell text-sm text-token ">{{ $truck->brand }} {{ $truck->model }}</td>
@@ -241,7 +241,7 @@
               </tr>
             </thead>
             <tbody>
-              @foreach(\App\Models\Maintenance::where('status', 'scheduled')->with('truck')->orderBy('maintenance_date')->take(5)->get() as $maintenance)
+              @foreach(\App\Models\Maintenance::where('status', \App\Enums\Fleet\MaintenanceStatus::Scheduled->value)->with('truck')->orderBy('maintenance_date')->take(5)->get() as $maintenance)
                 <tr class="table-row table-row-hover">
                   <td class="table-cell text-sm font-medium text-token ">{{ $maintenance->truck->plate_number }}</td>
                   <td class="table-cell text-sm text-token ">{{ $maintenance->maintenance_date->format('d/m/Y') }}</td>

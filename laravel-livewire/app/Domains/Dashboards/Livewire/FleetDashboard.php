@@ -4,6 +4,7 @@ namespace App\Domains\Dashboards\Livewire;
 
 use App\Models\Assignment;
 
+use App\Enums\Documents\DocumentComputedStatus;
 use App\Models\Document;
 use App\Models\Driver;
 use App\Models\Maintenance;
@@ -34,7 +35,7 @@ class FleetDashboard extends Component
         // Paso 2: convertir el resumen anterior en los indicadores que espera la vista.
         $fleetStats = [
             // Sumamos estados equivalentes para evitar perder camiones con nomenclaturas distintas.
-            'available' => ($statusBreakdown['available'] ?? 0) + ($statusBreakdown['active'] ?? 0),
+            'available' => ($statusBreakdown['available'] ?? 0),
             // Consideramos diferentes etiquetas comunes para unidades en mantenimiento.
             'inMaintenance' => ($statusBreakdown['in_maintenance'] ?? 0) + ($statusBreakdown['maintenance'] ?? 0),
         ];
@@ -171,8 +172,8 @@ class FleetDashboard extends Component
                     'resource_label' => $document->owner_label,
                     'name' => $document->title ?: $document->type_label,
                     'expires_at' => $document->expires_at,
-                    'status' => $document->status,
-                    'status_label' => $document->status_label,
+                    'status' => $document->computed_status,
+                    'status_label' => $document->computed_status->label(),
                 ];
             });
 
@@ -189,8 +190,8 @@ class FleetDashboard extends Component
                 ->get()
                 ->map(static function (Driver $driver) {
                     $status = optional($driver->license_expiration)->isPast()
-                        ? Document::STATUS_EXPIRED
-                        : Document::STATUS_WARNING;
+                        ? DocumentComputedStatus::EXPIRED
+                        : DocumentComputedStatus::EXPIRING;
 
                     return (object) [
                         'owner_type' => Driver::class,
@@ -199,10 +200,7 @@ class FleetDashboard extends Component
                         'name' => __('Licencia de conducir'),
                         'expires_at' => $driver->license_expiration,
                         'status' => $status,
-                        'status_label' => match ($status) {
-                            Document::STATUS_EXPIRED => __('Vencido'),
-                            default => __('Por vencer'),
-                        },
+                        'status_label' => $status->label(),
                     ];
                 });
 

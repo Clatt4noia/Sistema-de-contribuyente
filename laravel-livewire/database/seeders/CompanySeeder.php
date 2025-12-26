@@ -2,34 +2,40 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use App\Models\Company;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class CompanySeeder extends Seeder
 {
     public function run(): void
     {
-        // Datos oficiales de prueba SUNAT (Entorno BETA)
-        // RUC: 20123456789 (RUC ficticio aceptado en beta con usuarios beta)
-        // O usamos el clásico 20000000001 de los ejemplos de Greenter si usamos el endpoint de demo, 
-        // pero Greenter suele usar 20123456789 para pruebas de integración o mocks.
-        // Usaremos: 20000000001 (RUC Demo de Greenter / SUNAT Beta legacy)
-        // Usuario: MODDATOS
-        // Clave: MODDATOS
-        
-        Company::create([
+        $mode = (string) config('billing.sunat.mode', 'homologation');
+        $solUser = (string) config('billing.sunat.user', 'MODDATOS');
+        $solPass = (string) config('billing.sunat.password', 'MODDATOS');
+
+        $certPath = (string) (config('billing.certificate.path') ?: 'secure/sunat/certificate.pfx');
+        $certPath = str_replace('\\', '/', $certPath);
+
+        if (
+            Str::startsWith($certPath, ['app/', '/app/', 'laravel-livewire/app/'])
+            || Str::contains($certPath, ['/app/billing/', '/laravel-livewire/app/'])
+        ) {
+            $certPath = 'secure/sunat/certificate.pfx';
+        }
+
+        Company::updateOrCreate(['ruc' => '20000000001'], [
             'ruc' => '20000000001',
             'razon_social' => 'EMPRESA DE PRUEBA S.A.C.',
             'nombre_comercial' => 'DEMO STORE',
             'address' => 'AV. DEMO 123 LIMA - LIMA - LIMA',
             'ubigeo' => '150101',
-            'sol_user' => 'MODDATOS',
-            'sol_pass' => 'MODDATOS',
-            'cert_path' => 'app/billing/combinado.pem', // Ruta relativa al root del proyecto
-            'production' => false,
-            'client_id' => 'test-client-id',
-            'client_secret' => 'test-client-secret',
+            'sol_user' => $solUser,
+            'sol_pass' => $solPass,
+            'cert_path' => $certPath,
+            'production' => $mode === 'production',
+            'client_id' => env('SUNAT_CLIENT_ID'),
+            'client_secret' => env('SUNAT_CLIENT_SECRET'),
         ]);
     }
 }

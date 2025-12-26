@@ -27,10 +27,7 @@ class AssignmentPolicyV2
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole([
-            UserRole::ADMIN,
-            UserRole::LOGISTICS_MANAGER,
-        ]);
+        return $user->hasAnyRole(UserRole::forLogistics());
     }
 
     public function update(User $user, Assignment $assignment): bool

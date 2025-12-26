@@ -75,13 +75,6 @@
         </tr>
       </thead>
       <tbody>
-        @php
-          $statusClasses = [
-            'valid' => 'bg-success-soft text-success-strong ',
-            'warning' => 'bg-warning-soft text-warning ',
-            'expired' => 'bg-danger-soft text-danger-strong ',
-          ];
-        @endphp
         @forelse($documents as $document)
         <tr class="table-row table-row-hover">
           <td class="table-cell text-sm text-token ">{{ $document['type_label'] }}</td>
@@ -89,8 +82,8 @@
           <td class="table-cell text-sm text-token ">{{ $document['issued_at'] ?? '—' }}</td>
           <td class="table-cell text-sm text-token ">{{ $document['expires_at'] ?? '—' }}</td>
           <td class="table-cell">
-            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document['status']] ?? $statusClasses['valid'] }}">
-              {{ $document['status_label'] }}
+            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $document['computed_status_badge_classes'] ?? 'bg-success-soft text-success-strong ' }}">
+              {{ $document['computed_status_label'] ?? __('VIGENTE') }}
             </span>
           </td>
           <td class="table-cell text-right text-sm">

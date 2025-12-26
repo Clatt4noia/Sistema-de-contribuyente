@@ -77,6 +77,7 @@
         <tbody>
           @forelse($orders as $order)
             @php
+              $statusKey = $order->status->value;
               $statusStyles = [
                 'pending' => 'badge badge-warning',
                 'en_route' => 'badge badge-accent',
@@ -88,7 +89,7 @@
                 'en_route' => 'En ruta',
                 'delivered' => 'Entregado',
                 'cancelled' => 'Cancelado',
-              ][$order->status] ?? 'Pendiente';
+              ][$statusKey] ?? 'Pendiente';
             @endphp
             <tr class="table-row table-row-hover">
               <td class="table-cell whitespace-nowrap text-sm font-semibold text-token ">{{ $order->reference }}</td>
@@ -102,14 +103,14 @@
                 <div>Entrega: {{ optional($order->delivery_date)->format('d/m/Y H:i') ?? 'Sin definir' }}</div>
               </td>
               <td class="table-cell whitespace-nowrap">
-                <span class="{{ $statusStyles[$order->status] ?? 'badge badge-accent' }}">
+                <span class="{{ $statusStyles[$statusKey] ?? 'badge badge-accent' }}">
                   {{ $statusLabel }}
                 </span>
               </td>
               <td class="table-cell text-sm text-token ">
                 @if($order->activeAssignment)
                   <div>{{ $order->activeAssignment->truck->plate_number }} / {{ $order->activeAssignment->driver->name }}</div>
-                  <div class="text-xs text-token-muted ">{{ $order->activeAssignment->status }}</div>
+                  <div class="text-xs text-token-muted ">{{ $order->activeAssignment->status->label() }}</div>
                 @else
                   <span class="text-xs text-token-muted ">Sin asignacion activa</span>
                 @endif

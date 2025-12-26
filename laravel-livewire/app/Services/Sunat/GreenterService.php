@@ -5,7 +5,7 @@ namespace App\Services\Sunat;
 use App\Models\Company;
 use Greenter\See;
 use Greenter\Ws\Services\SunatEndpoints;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class GreenterService
 {
@@ -20,12 +20,29 @@ class GreenterService
             'company_ruc' => $company->ruc,
         ]);
         
-        // Try multiple paths for certificate
-        $paths = [
-            Storage::path($company->cert_path), // storage/app/...
-            base_path($company->cert_path),     // project root
-            storage_path($company->cert_path),  // storage/...
-        ];
+        $certPath = trim((string) $company->cert_path);
+        $paths = [];
+
+        if ($certPath !== '') {
+            $normalized = str_replace('\\', '/', $certPath);
+
+            // Absolute path: allow external location (recommended for production).
+            $isAbsolute = Str::startsWith($normalized, ['/'])
+                || preg_match('/^[A-Za-z]:\\//', $normalized) === 1;
+
+            if ($isAbsolute) {
+                $paths[] = $normalized;
+            } else {
+                // Relative path: force under storage/app/secure (never inside app/ nor repo).
+                $relative = ltrim($normalized, '/');
+
+                if (! Str::startsWith($relative, 'secure/')) {
+                    $relative = 'secure/' . $relative;
+                }
+
+                $paths[] = storage_path('app/' . $relative);
+            }
+        }
         
         \Log::info('GreenterService: Rutas a verificar', ['paths' => $paths]);
         

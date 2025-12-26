@@ -96,20 +96,13 @@
           </tr>
         </thead>
         <tbody>
-          @php
-            $badgeStyles = [
-              \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong ',
-              \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning ',
-              \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong ',
-            ];
-          @endphp
           @forelse ($expiringDocuments as $document)
             <tr class="table-row table-row-hover">
               <td class="table-cell text-sm font-medium text-token ">{{ $document->resource_label }}</td>
               <td class="table-cell text-sm text-token ">{{ $document->name ?? '—' }}</td>
               <td class="table-cell text-sm text-token ">{{ optional($document->expires_at)?->format('d/m/Y') ?? '—' }}</td>
               <td class="table-cell">
-                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $badgeStyles[$document->status] ?? $badgeStyles[\App\Models\Document::STATUS_WARNING] }}">{{ $document->status_label ?? __('Pendiente') }}</span>
+                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $document->status?->badgeClasses() ?? 'bg-warning-soft text-warning ' }}">{{ $document->status_label ?? __('Pendiente') }}</span>
               </td>
             </tr>
           @empty
@@ -252,4 +245,3 @@
  });
  });
 </script>
-

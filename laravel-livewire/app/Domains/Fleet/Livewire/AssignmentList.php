@@ -2,6 +2,10 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\TruckStatus;
+use App\Enums\Orders\OrderStatus;
 use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\Order;
@@ -88,9 +92,11 @@ class AssignmentList extends Component
             }
 
             if ($order) {
-                $order->status = $order->assignments()->whereNotIn('status', ['completed', 'cancelled'])->exists()
-                    ? 'en_route'
-                    : 'pending';
+                $hasActiveAssignments = $order->assignments()
+                    ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
+                    ->exists();
+
+                $order->status = $hasActiveAssignments ? OrderStatus::EnRoute : OrderStatus::Pending;
                 $order->save();
             }
         });
@@ -119,7 +125,13 @@ class AssignmentList extends Component
                         });
                 });
             })
-            ->when($this->status, fn ($query) => $query->where('status', $this->status))
+            ->when($this->status, function ($query) {
+                $status = AssignmentStatus::tryFrom($this->status);
+
+                if ($status) {
+                    $query->where('status', $status->value);
+                }
+            })
             ->when($this->truck_id, fn ($query) => $query->where('truck_id', $this->truck_id))
             ->when($this->driver_id, fn ($query) => $query->where('driver_id', $this->driver_id))
             ->when($this->order_id, fn ($query) => $query->where('order_id', $this->order_id))
@@ -137,7 +149,7 @@ class AssignmentList extends Component
     protected function releaseTruck(int $truckId): void
     {
         $hasActive = Assignment::where('truck_id', $truckId)
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->exists();
 
         if ($hasActive) {
@@ -146,7 +158,7 @@ class AssignmentList extends Component
 
         $truck = Truck::find($truckId);
         if ($truck) {
-            $truck->status = 'available';
+            $truck->status = TruckStatus::Available;
             $truck->save();
         }
     }
@@ -154,7 +166,7 @@ class AssignmentList extends Component
     protected function releaseDriver(int $driverId): void
     {
         $hasActive = Assignment::where('driver_id', $driverId)
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->exists();
 
         if ($hasActive) {
@@ -163,7 +175,7 @@ class AssignmentList extends Component
 
         $driver = Driver::find($driverId);
         if ($driver) {
-            $driver->status = 'active';
+            $driver->status = DriverStatus::Active;
             $driver->save();
         }
     }

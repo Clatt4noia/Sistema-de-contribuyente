@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\DriverStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +13,10 @@ use Illuminate\Support\Carbon;
 class Driver extends Model
 {
     use HasFactory;
+
+    protected $attributes = [
+        'status' => DriverStatus::Active->value,
+    ];
 
     protected $fillable = [
         'name',
@@ -31,43 +36,8 @@ class Driver extends Model
     protected $casts = [
         'license_expiration' => 'date',
         'work_schedule' => 'array',
+        'status' => DriverStatus::class,
     ];
-
-    protected function status(): Attribute
-    {
-        return Attribute::make(
-            get: static function (?string $value) {
-                if ($value === null) {
-                    return null;
-                }
-
-                $normalized = strtolower(trim($value));
-
-                return match ($normalized) {
-                    'active', 'activo', 'available' => 'active',
-                    'assigned', 'asignado' => 'assigned',
-                    'inactive', 'inactivo', 'baja', 'desactivado' => 'inactive',
-                    'on_leave', 'permiso', 'de permiso', 'leave' => 'on_leave',
-                    default => $normalized,
-                };
-            },
-            set: static function (?string $value) {
-                if ($value === null) {
-                    return null;
-                }
-
-                $normalized = strtolower(trim($value));
-
-                return match ($normalized) {
-                    'activo', 'available' => 'active',
-                    'asignado' => 'assigned',
-                    'inactivo', 'baja', 'desactivado' => 'inactive',
-                    'permiso', 'de permiso', 'leave' => 'on_leave',
-                    default => $normalized,
-                };
-            }
-        );
-    }
 
     public function trainings(): HasMany
     {
@@ -108,7 +78,7 @@ class Driver extends Model
 
         $hasOverlap = $this->assignments()
             ->when($ignoreAssignmentId, fn ($query) => $query->where('id', '!=', $ignoreAssignmentId))
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->where(function ($query) use ($start, $end) {
                 $query->whereBetween('start_date', [$start, $end])
                     ->orWhereBetween('end_date', [$start, $end])

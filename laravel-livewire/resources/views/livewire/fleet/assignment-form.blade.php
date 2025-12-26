@@ -22,7 +22,7 @@
                 >
                     <option value="">Seleccione un Orden</option>
                     @foreach($orders as $order)
-                        <option value="{{ $order->id }}">{{ $order->reference }} - {{ $order->origin }} -> {{ $order->destination }}</option>
+                        <option value="{{ $order['id'] }}">{{ $order['reference'] }} - {{ $order['origin'] }} -> {{ $order['destination'] }}</option>
                     @endforeach
                 </select>
                 @error('form.order_id')
@@ -70,20 +70,20 @@
                 >
                     <option value="">Seleccione un vehiculo</option>
                     @foreach($trucks as $truck)
-                        <option value="{{ $truck->id }}">{{ $truck->plate_number }} - {{ $truck->brand }} {{ $truck->model }} ({{ __($truck->status) }})</option>
+                        <option value="{{ $truck['id'] }}">{{ $truck['plate_number'] }} - {{ $truck['brand'] }} {{ $truck['model'] }} ({{ $truck['status_label'] }})</option>
                     @endforeach
                 </select>
                 @error('form.truck_id')
                     <p id="truck_id-error" class="form-error">{{ $message }}</p>
                 @enderror
-                @if ($form['truck_id'])
+                @if (! empty($form['truck_id']))
                     @php
-                        $selectedTruck = $trucks->firstWhere('id', (int) $form['truck_id']);
+                        $selectedTruck = collect($trucks)->firstWhere('id', (int) $form['truck_id']);
  @endphp
  @if ($selectedTruck)
                         <div class="mt-3 rounded-lg border border-token bg-surface p-3 text-xs text-token-muted">
-                            <p><span class="font-semibold text-token">Mantenimiento prox.:</span> {{ optional($selectedTruck->next_maintenance)->format('d/m/Y') ?? 'No definido' }}</p>
-                            <p><span class="font-semibold text-token">Km acumulado:</span> {{ number_format($selectedTruck->mileage) }} km</p>
+                            <p><span class="font-semibold text-token">Mantenimiento prox.:</span> {{ $selectedTruck['next_maintenance'] ?? 'No definido' }}</p>
+                            <p><span class="font-semibold text-token">Km acumulado:</span> {{ number_format($selectedTruck['mileage']) }} km</p>
                         </div>
                     @endif
                 @endif
@@ -101,20 +101,22 @@
                 >
                     <option value="">Seleccione un conductor</option>
                     @foreach($drivers as $driver)
-                        <option value="{{ $driver->id }}">{{ $driver->name }} {{ $driver->last_name }} ({{ __($driver->status) }})</option>
+                        <option value="{{ $driver['id'] }}">{{ $driver['full_name'] }} ({{ $driver['status_label'] }})</option>
                     @endforeach
                 </select>
                 @error('form.driver_id')
                     <p id="driver_id-error" class="form-error">{{ $message }}</p>
                 @enderror
-                @if ($form['driver_id'])
+                @if (! empty($form['driver_id']))
                     @php
-                        $selectedDriver = $drivers->firstWhere('id', (int) $form['driver_id']);
+                        $selectedDriver = collect($drivers)->firstWhere('id', (int) $form['driver_id']);
  @endphp
  @if ($selectedDriver)
                         <div class="mt-3 rounded-lg border border-token bg-surface p-3 text-xs text-token-muted">
-                            <p><span class="font-semibold text-token">Licencia:</span> {{ optional($selectedDriver->license_expiration)->format('d/m/Y') }}</p>
-                            <p><span class="font-semibold text-token">Capacitaciones vigentes:</span> {{ $selectedDriver->trainings->filter(fn($training) => ! $training->expires_at || $training->expires_at->isFuture())->count() }}</p>
+                            <p><span class="font-semibold text-token">Licencia:</span> {{ $selectedDriver['license_expiration'] ?? '-' }}</p>
+                            @if (array_key_exists('valid_trainings_count', $selectedDriver))
+                                <p><span class="font-semibold text-token">Capacitaciones vigentes:</span> {{ $selectedDriver['valid_trainings_count'] }}</p>
+                            @endif
                         </div>
                     @endif
                 @endif
@@ -221,15 +223,15 @@
  <dl class="mt-4 space-y-2 text-sm text-token ">
  <div class="flex items-center gap-2">
  <dt class="font-semibold text-token ">Ruta:</dt>
- <dd>{{ $orderPreview->origin }} -> {{ $orderPreview->destination }}</dd>
+ <dd>{{ $orderPreview['origin'] }} -> {{ $orderPreview['destination'] }}</dd>
  </div>
  <div class="flex items-center gap-2">
  <dt class="font-semibold text-token ">Estado actual:</dt>
- <dd>{{ __($orderPreview->status) }}</dd>
+ <dd>{{ $orderPreview['status_label'] }}</dd>
  </div>
  <div>
  <dt class="font-semibold text-token ">Detalle:</dt>
- <dd>{{ $orderPreview->cargo_details ?: 'Sin detalle de carga' }}</dd>
+ <dd>{{ $orderPreview['cargo_details'] ?: 'Sin detalle de carga' }}</dd>
  </div>
  </dl>
  </div>

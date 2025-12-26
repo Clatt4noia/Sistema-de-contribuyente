@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Fleet\AssignmentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,6 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Assignment extends Model
 {
     use HasFactory;
+
+    protected $attributes = [
+        'status' => AssignmentStatus::Scheduled->value,
+    ];
 
     protected $fillable = [
         'truck_id',
@@ -25,6 +30,7 @@ class Assignment extends Model
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
+        'status' => AssignmentStatus::class,
     ];
 
     public function truck(): BelongsTo

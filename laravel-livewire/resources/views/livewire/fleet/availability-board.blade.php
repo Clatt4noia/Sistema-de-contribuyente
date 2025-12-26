@@ -89,7 +89,7 @@
                     </h3>
 
                     <p class="text-xs text-token">
-                        {{ __($truck->status) }} · {{ number_format($truck->mileage) }} km
+                        {{ $truck->status->label() }} · {{ number_format($truck->mileage) }} km
                     </p>
                 </div>
 
@@ -182,16 +182,13 @@
                         </div>
                         @php
                             $driverBadgeClass = match($driver->status) {
-                                'active' => 'bg-success-soft text-success-strong ',
-                                'assigned' => 'bg-accent-soft text-accent ',
-                                'on_leave' => 'bg-warning-soft text-warning ',
-                                'inactive' => 'bg-surface-strong text-token ',
+                                \App\Enums\Fleet\DriverStatus::Active => 'bg-success-soft text-success-strong ',
+                                \App\Enums\Fleet\DriverStatus::Assigned => 'bg-accent-soft text-accent ',
+                                \App\Enums\Fleet\DriverStatus::OnLeave => 'bg-warning-soft text-warning ',
+                                \App\Enums\Fleet\DriverStatus::Inactive => 'bg-surface-strong text-token ',
                                 default => 'bg-surface-muted text-token ',
                             };
-                            $driverBadgeLabel = match($driver->status) {
-                                'active' => 'Activo',
-                                default => __($driver->status),
-                            };
+                            $driverBadgeLabel = $driver->status->label();
                         @endphp
                         <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shrink-0 {{ $driverBadgeClass }}">
                             {{ $driverBadgeLabel }}

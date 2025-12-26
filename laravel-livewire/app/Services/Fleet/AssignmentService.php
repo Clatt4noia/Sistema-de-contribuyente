@@ -2,6 +2,11 @@
 
 namespace App\Services\Fleet;
 
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\MaintenanceStatus;
+use App\Enums\Fleet\TruckStatus;
+use App\Enums\Orders\OrderStatus;
 use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\DriverTraining;
@@ -31,6 +36,7 @@ class AssignmentService
             $originalTruck = $assignment->getOriginal('truck_id');
             $originalDriver = $assignment->getOriginal('driver_id');
             $originalStatus = $assignment->getOriginal('status');
+            $originalStatusValue = $originalStatus instanceof AssignmentStatus ? $originalStatus->value : $originalStatus;
 
             $assignment->fill([
                 'order_id' => $data['order_id'],
@@ -47,7 +53,7 @@ class AssignmentService
 
             $this->syncTruckAvailability($assignment, $originalTruck);
             $this->syncDriverAvailability($assignment, $originalDriver);
-            $this->syncOrderStatus($assignment, $originalStatus);
+            $this->syncOrderStatus($assignment, $originalStatusValue);
         });
 
         return $assignment;
@@ -73,7 +79,7 @@ class AssignmentService
                 }
 
                 $hasPendingMaintenance = $truck->maintenances
-                    ->filter(fn ($maintenance) => in_array($maintenance->status, ['scheduled', 'in_progress'], true))
+                    ->filter(fn ($maintenance) => in_array($maintenance->status, [MaintenanceStatus::Scheduled, MaintenanceStatus::InProgress], true))
                     ->first(fn ($maintenance) => $maintenance->maintenance_date && $maintenance->maintenance_date->between($start->copy()->startOfDay(), $end->copy()->endOfDay()));
 
                 return ! $hasPendingMaintenance;
@@ -84,7 +90,7 @@ class AssignmentService
     {
         return Driver::query()
             ->with('trainings')
-            ->whereIn('status', ['active'])
+            ->where('status', DriverStatus::Active->value)
             ->orderBy('license_expiration')
             ->get()
             ->first(function (Driver $driver) use ($assignment, $start, $end) {
@@ -103,7 +109,7 @@ class AssignmentService
     public function resourceOccupied(string $column, int $id, Carbon $start, Carbon $end, ?int $ignoreAssignmentId = null): bool
     {
         return Assignment::where($column, $id)
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->when($ignoreAssignmentId, fn ($query) => $query->where('id', '!=', $ignoreAssignmentId))
             ->where(function ($query) use ($start, $end) {
                 $query->whereBetween('start_date', [$start, $end])
@@ -153,7 +159,7 @@ class AssignmentService
             ]);
         }
 
-        if (in_array($truck->status, ['maintenance', 'out_of_service'], true)) {
+        if (in_array($truck->status, [TruckStatus::Maintenance, TruckStatus::OutOfService], true)) {
             throw ValidationException::withMessages([
                 'form.truck_id' => 'El camion seleccionado no esta disponible (mantenimiento o fuera de servicio).',
             ]);
@@ -166,7 +172,7 @@ class AssignmentService
         }
 
         $pendingMaintenance = $truck->maintenances
-            ->filter(fn ($maintenance) => in_array($maintenance->status, ['scheduled', 'in_progress'], true))
+            ->filter(fn ($maintenance) => in_array($maintenance->status, [MaintenanceStatus::Scheduled, MaintenanceStatus::InProgress], true))
             ->first(fn ($maintenance) => $maintenance->maintenance_date && $maintenance->maintenance_date->between($start->copy()->startOfDay(), $end->copy()->endOfDay()));
 
         if ($pendingMaintenance) {
@@ -211,40 +217,40 @@ class AssignmentService
             return;
         }
 
-        if (in_array($assignment->status, ['scheduled', 'in_progress'], true)) {
-            $order->status = 'en_route';
+        if (in_array($assignment->status, [AssignmentStatus::Scheduled, AssignmentStatus::InProgress], true)) {
+            $order->status = OrderStatus::EnRoute;
         }
 
-        if ($assignment->status === 'completed') {
-            $order->status = 'delivered';
+        if ($assignment->status === AssignmentStatus::Completed) {
+            $order->status = OrderStatus::Delivered;
             $order->delivery_date = $assignment->end_date ?? now();
         }
 
-        if ($assignment->status === 'cancelled') {
-            $order->status = 'cancelled';
+        if ($assignment->status === AssignmentStatus::Cancelled) {
+            $order->status = OrderStatus::Cancelled;
         }
 
-        if ($originalStatus === 'cancelled' && $assignment->status === 'scheduled') {
-            $order->status = 'pending';
+        if ($originalStatus === AssignmentStatus::Cancelled->value && $assignment->status === AssignmentStatus::Scheduled) {
+            $order->status = OrderStatus::Pending;
         }
 
         $order->save();
     }
 
-    protected function applyTruckStatus(int $truckId, string $assignmentStatus): void
+    protected function applyTruckStatus(int $truckId, AssignmentStatus $assignmentStatus): void
     {
         $truck = Truck::find($truckId);
         if (!$truck) {
             return;
         }
 
-        if (in_array($assignmentStatus, ['scheduled', 'in_progress'], true)) {
-            $truck->status = 'in_use';
+        if (in_array($assignmentStatus, [AssignmentStatus::Scheduled, AssignmentStatus::InProgress], true)) {
+            $truck->status = TruckStatus::InUse;
             $truck->save();
             return;
         }
 
-        if (in_array($assignmentStatus, ['completed', 'cancelled'], true)) {
+        if (in_array($assignmentStatus, [AssignmentStatus::Completed, AssignmentStatus::Cancelled], true)) {
             $this->releaseTruck($truckId);
         }
     }
@@ -258,29 +264,29 @@ class AssignmentService
 
         $hasOtherAssignments = Assignment::query()
             ->where('truck_id', $truckId)
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->exists();
 
         if (!$hasOtherAssignments) {
-            $truck->status = 'available';
+            $truck->status = TruckStatus::Available;
             $truck->save();
         }
     }
 
-    protected function applyDriverStatus(int $driverId, string $assignmentStatus): void
+    protected function applyDriverStatus(int $driverId, AssignmentStatus $assignmentStatus): void
     {
         $driver = Driver::find($driverId);
         if (!$driver) {
             return;
         }
 
-        if (in_array($assignmentStatus, ['scheduled', 'in_progress'], true)) {
-            $driver->status = 'assigned';
+        if (in_array($assignmentStatus, [AssignmentStatus::Scheduled, AssignmentStatus::InProgress], true)) {
+            $driver->status = DriverStatus::Assigned;
             $driver->save();
             return;
         }
 
-        if (in_array($assignmentStatus, ['completed', 'cancelled'], true)) {
+        if (in_array($assignmentStatus, [AssignmentStatus::Completed, AssignmentStatus::Cancelled], true)) {
             $this->releaseDriver($driverId);
         }
     }
@@ -294,11 +300,11 @@ class AssignmentService
 
         $hasOtherAssignments = Assignment::query()
             ->where('driver_id', $driverId)
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->exists();
 
         if (!$hasOtherAssignments) {
-            $driver->status = 'active';
+            $driver->status = DriverStatus::Active;
             $driver->save();
         }
     }

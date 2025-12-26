@@ -44,8 +44,8 @@ if (!file_exists($certificatePath)) {
     
     // Sugerir rutas alternativas
     $possiblePaths = [
-        __DIR__ . '/app/billing/certificado.pfx',
-        __DIR__ . '/storage/certificados/certificado.pfx',
+        __DIR__ . '/storage/app/secure/sunat/certificado.pfx',
+        'C:/certs/sunat/certificado.pfx',
         'C:/certificados/certificado.pfx',
     ];
     

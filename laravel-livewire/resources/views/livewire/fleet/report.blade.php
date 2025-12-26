@@ -196,14 +196,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $statusClasses = [
-                            \App\Models\Document::STATUS_WARNING => 'bg-warning-soft text-warning',
-                            \App\Models\Document::STATUS_EXPIRED => 'bg-danger-soft text-danger-strong',
-                            \App\Models\Document::STATUS_VALID => 'bg-success-soft text-success-strong',
-                        ];
-                    @endphp
-
                     @forelse($documentAlerts as $document)
                         <tr class="table-row table-row-hover">
                             <td class="table-cell text-token">{{ $document->owner_label }}</td>
@@ -213,9 +205,9 @@
                             </td>
                             <td class="table-cell">
                                 <span
-                                    class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusClasses[$document->status] ?? $statusClasses[\App\Models\Document::STATUS_WARNING] }}"
+                                    class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $document->computed_status->badgeClasses() }}"
                                 >
-                                    {{ $document->status_label }}
+                                    {{ $document->computed_status->label() }}
                                 </span>
                             </td>
                         </tr>

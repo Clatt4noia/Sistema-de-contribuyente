@@ -2,6 +2,8 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\MaintenanceStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
@@ -43,6 +45,13 @@ class TruckForm extends Component
 
     protected function rules(): array
     {
+        $truckStatuses = array_filter(
+            TruckStatus::cases(),
+            static fn (TruckStatus $status) => $status !== TruckStatus::Reserved
+        );
+
+        $truckStatusValues = array_map(static fn (TruckStatus $status) => $status->value, $truckStatuses);
+
         return [
             // Validamos la placa garantizando unicidad, formato y longitud.
             'form.plate_number' => [
@@ -59,7 +68,7 @@ class TruckForm extends Component
             'form.mtc_registration_number' => ['nullable', 'string', 'max:50'],
             'form.capacity' => ['nullable', 'numeric', 'min:0'],
             'form.mileage' => ['nullable', 'integer', 'min:0'],
-            'form.status' => ['required', 'string', 'in:available,in_use,maintenance,out_of_service'],
+            'form.status' => ['required', 'string', 'in:' . implode(',', $truckStatusValues)],
             'form.last_maintenance' => ['nullable', 'date'],
             'form.next_maintenance' => ['nullable', 'date'],
             'form.technical_details' => ['nullable', 'string'],
@@ -75,10 +84,14 @@ class TruckForm extends Component
         } else {
             $this->authorize('create', Truck::class);
             $this->truck = new Truck([
-                'status' => 'available',
+                'status' => TruckStatus::Available,
                 'mileage' => 0,
             ]);
         }
+
+        $statusValue = $this->truck->status instanceof TruckStatus
+            ? $this->truck->status->value
+            : ($this->truck->status ?? TruckStatus::Available->value);
 
         // Inicializamos el formulario a partir del modelo para que los campos
         // siempre tengan un valor consistente antes de interactuar con Livewire.
@@ -91,7 +104,7 @@ class TruckForm extends Component
             'mtc_registration_number' => $this->truck->mtc_registration_number ?? '',
             'capacity' => $this->truck->capacity ?? null,
             'mileage' => $this->truck->mileage ?? 0,
-            'status' => $this->truck->status ?? 'available',
+            'status' => $statusValue,
             'last_maintenance' => optional($this->truck->last_maintenance)->format('Y-m-d'),
             'next_maintenance' => optional($this->truck->next_maintenance)->format('Y-m-d'),
             'technical_details' => $this->truck->technical_details ?? '',
@@ -106,7 +119,7 @@ class TruckForm extends Component
                     'id' => $maintenance->id,
                     'date' => optional($maintenance->maintenance_date)->format('d/m/Y'),
                     'type' => $maintenance->maintenance_type,
-                    'status' => $maintenance->status,
+                    'status' => $maintenance->status instanceof MaintenanceStatus ? $maintenance->status->value : $maintenance->status,
                     'cost' => $maintenance->cost,
                 ])
                 ->toArray()

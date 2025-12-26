@@ -2,6 +2,7 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\DriverStatus;
 use App\Models\Driver;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
@@ -65,7 +66,11 @@ class DriverList extends Component
                 });
             })
             ->when($this->status, function ($query) {
-                $query->where('status', $this->status);
+                $status = DriverStatus::tryFrom($this->status);
+
+                if ($status) {
+                    $query->where('status', $status->value);
+                }
             })
             ->orderBy('name')
             ->paginate(10);

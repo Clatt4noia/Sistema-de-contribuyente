@@ -2,6 +2,7 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\MaintenanceStatus;
 use App\Models\Maintenance;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -47,7 +48,11 @@ class MaintenanceList extends Component
                 });
             })
             ->when($this->status, function ($query) {
-                $query->where('status', $this->status);
+                $status = MaintenanceStatus::tryFrom($this->status);
+
+                if ($status) {
+                    $query->where('status', $status->value);
+                }
             })
             ->when($this->truck_id, function ($query) {
                 $query->where('truck_id', $this->truck_id);

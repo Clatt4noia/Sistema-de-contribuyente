@@ -48,7 +48,7 @@
               <td class="table-cell text-sm text-token ">{{ $order->origin ?? '—' }}</td>
               <td class="table-cell text-sm text-token ">{{ $order->destination ?? '—' }}</td>
               <td class="table-cell">
-                <span class="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-primary ">{{ $order->status ? __($order->status) : __('pendiente') }}</span>
+                <span class="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-primary ">{{ $order->status ? $order->status->label() : __('Pendiente') }}</span>
               </td>
             </tr>
           @empty

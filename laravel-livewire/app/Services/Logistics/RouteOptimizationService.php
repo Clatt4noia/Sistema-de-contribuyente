@@ -12,12 +12,17 @@ class RouteOptimizationService
     {
         $orderedStops = $this->optimizeStops($order, $stops);
         $routeSummary = $this->buildRouteSummary($order, $orderedStops);
+        $routeSummaryText = sprintf(
+            'Distancia aprox. %s km · %s min',
+            $routeSummary['distance_km'] ?? 0,
+            $routeSummary['duration_minutes'] ?? 0
+        );
 
         return $order->routePlans()->updateOrCreate(
             ['id' => optional($order->routePlans()->latest()->first())->id],
             [
                 'planner' => auth()->user()->name ?? 'system',
-                'route_summary' => $routeSummary,
+                'route_summary' => $routeSummaryText,
                 'map_url' => $this->buildMapUrl($order, $orderedStops),
                 'route_data' => [
                     'stops' => $orderedStops,

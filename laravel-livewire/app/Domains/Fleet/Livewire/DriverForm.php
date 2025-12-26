@@ -2,6 +2,7 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\DriverStatus;
 use App\Models\Driver;
 use App\Models\DriverEvaluation;
 use App\Models\DriverSchedule;
@@ -77,9 +78,13 @@ class DriverForm extends Component
         } else {
             $this->authorize('create', Driver::class);
             $this->driver = new Driver([
-                'status' => 'active',
+                'status' => DriverStatus::Active,
             ]);
         }
+
+        $statusValue = $this->driver->status instanceof DriverStatus
+            ? $this->driver->status->value
+            : ($this->driver->status ?? DriverStatus::Active->value);
 
         $this->form = [
             'name' => $this->driver->name ?? '',
@@ -91,7 +96,7 @@ class DriverForm extends Component
             'phone' => $this->driver->phone ?? '',
             'email' => $this->driver->email ?? '',
             'address' => $this->driver->address ?? '',
-            'status' => $this->driver->status ?? 'active',
+            'status' => $statusValue,
             'notes' => $this->driver->notes ?? '',
         ];
 

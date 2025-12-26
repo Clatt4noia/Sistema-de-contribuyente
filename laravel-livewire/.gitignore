@@ -22,4 +22,12 @@ yarn-error.log
 /.vscode
 /.zed
 /app/billing
-
+/storage/app/secure
+/storage/app/secure/**
+/certs
+/certs/**
+/keys
+/keys/**
+*.pfx
+*.pem
+*.key

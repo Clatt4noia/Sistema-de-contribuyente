@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\Orders\OrderStatus;
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -27,13 +28,15 @@ class OrderStatusChangedNotification extends Notification
             ?? data_get($notifiable, 'email')
             ?? __('Cliente');
 
+        $previousLabel = OrderStatus::tryFrom($this->previousStatus)?->label() ?? __($this->previousStatus);
+
         return (new MailMessage())
             ->subject(__('Actualización de estado para el Orden :reference', ['reference' => $this->order->reference]))
             ->greeting(__('Hola :name', ['name' => $recipientName]))
             ->line(__('El Orden :reference cambió de :from a :to.', [
                 'reference' => $this->order->reference,
-                'from' => __($this->previousStatus),
-                'to' => __($this->order->status),
+                'from' => $previousLabel,
+                'to' => $this->order->status->label(),
             ]))
             ->line(__('Fecha estimada de entrega: :date', [
                 'date' => optional($this->order->delivery_date)->format('d/m/Y H:i') ?? __('No definida'),

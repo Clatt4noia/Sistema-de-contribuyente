@@ -25,5 +25,7 @@ class Company extends Model
 
     protected $casts = [
         'production' => 'boolean',
+        'sol_pass' => 'encrypted',
+        'client_secret' => 'encrypted',
     ];
 }

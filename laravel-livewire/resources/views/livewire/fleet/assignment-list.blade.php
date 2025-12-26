@@ -77,7 +77,7 @@
                 'completed' => ['label' => 'Completada', 'class' => 'bg-success-soft text-success-strong '],
                 'cancelled' => ['label' => 'Cancelada', 'class' => 'bg-danger-soft text-danger-strong '],
               ];
-              $statusConfig = $statusStyles[$assignment->status] ?? $statusStyles['scheduled'];
+              $statusConfig = $statusStyles[$assignment->status->value] ?? $statusStyles['scheduled'];
             @endphp
             <tr class="table-row table-row-hover">
               <td class="table-cell whitespace-nowrap">
@@ -133,4 +133,3 @@
     </div>
   </div>
 </div>
-

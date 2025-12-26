@@ -74,13 +74,13 @@
                 <span
                   @class([
                     'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm transition',
-                    'bg-success-soft text-success-strong ' => $maintenance->status === 'completed',
-                    'bg-accent-soft text-accent ' => $maintenance->status === 'in_progress',
-                    'bg-warning-soft text-warning ' => $maintenance->status === 'scheduled',
-                    'bg-danger-soft text-danger-strong ' => $maintenance->status === 'cancelled',
+                    'bg-success-soft text-success-strong ' => $maintenance->status === \App\Enums\Fleet\MaintenanceStatus::Completed,
+                    'bg-accent-soft text-accent ' => $maintenance->status === \App\Enums\Fleet\MaintenanceStatus::InProgress,
+                    'bg-warning-soft text-warning ' => $maintenance->status === \App\Enums\Fleet\MaintenanceStatus::Scheduled,
+                    'bg-danger-soft text-danger-strong ' => $maintenance->status === \App\Enums\Fleet\MaintenanceStatus::Cancelled,
                   ])
                 >
-                  {{ $maintenance->status === 'completed' ? 'Completado' : ($maintenance->status === 'in_progress' ? 'En progreso' : ($maintenance->status === 'scheduled' ? 'Programado' : 'Cancelado')) }}
+                  {{ $maintenance->status->label() }}
                 </span>
               </td>
               <td class="table-cell text-sm font-semibold">

@@ -2,6 +2,7 @@
 
 namespace App\Domains\Orders\Livewire;
 
+use App\Enums\Orders\OrderStatus;
 use App\Models\CargoType;
 use App\Models\Order;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -56,6 +57,7 @@ class OrderForm extends Component
     protected function rules(): array
     {
         $orderId = $this->order->id ?? 'NULL';
+        $orderStatuses = array_map(static fn (OrderStatus $status) => $status->value, OrderStatus::cases());
 
         return [
             'form.client_id' => 'required|exists:clients,id',
@@ -79,7 +81,7 @@ class OrderForm extends Component
             'form.delivery_date' => 'nullable|date|after_or_equal:form.pickup_date',
 
             // Estado
-            'form.status' => 'required|in:pending,en_route,delivered,cancelled',
+            'form.status' => ['required', 'string', 'in:' . implode(',', $orderStatuses)],
 
             // Carga (sintetizado)
             'form.cargo_weight_kg' => 'nullable|numeric|min:0',
@@ -124,8 +126,12 @@ class OrderForm extends Component
             }
         } else {
             $this->authorize('create', Order::class);
-            $this->order = new Order(['status' => 'pending']);
+            $this->order = new Order(['status' => OrderStatus::Pending]);
         }
+
+        $statusValue = $this->order->status instanceof OrderStatus
+            ? $this->order->status->value
+            : ($this->order->status ?? OrderStatus::Pending->value);
 
         $this->form = [
             'client_id' => $this->order->client_id ?? '',
@@ -146,7 +152,7 @@ class OrderForm extends Component
             'destination_longitude' => $this->order->destination_longitude,
             'pickup_date' => optional($this->order->pickup_date)->format('Y-m-d\TH:i'),
             'delivery_date' => optional($this->order->delivery_date)->format('Y-m-d\TH:i'),
-            'status' => $this->order->status ?? 'pending',
+            'status' => $statusValue,
             'cargo_details' => $this->order->cargo_details ?? '',
             'cargo_weight_kg' => $this->order->cargo_weight_kg,
             'cargo_volume_m3' => $this->order->cargo_volume_m3,

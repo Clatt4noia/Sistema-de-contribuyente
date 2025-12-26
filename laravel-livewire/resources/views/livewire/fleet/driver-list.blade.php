@@ -89,7 +89,7 @@
                 'on_leave' => ['label' => 'De permiso', 'class' => 'bg-warning-soft text-warning'],
                 'assigned' => ['label' => 'Asignado', 'class' => 'bg-accent-soft text-accent'],
               ];
-              $statusConfig = $statusStyles[$driver->status] ?? $statusStyles['active'];
+              $statusConfig = $statusStyles[$driver->status->value] ?? $statusStyles['active'];
 
               $scheduleSummary = $driver->schedules
                 ->map(fn ($s) => substr($s->day_of_week, 0, 3) . ' ' . ($s->start_time?->format('H:i') ?? '') . '-' . ($s->end_time?->format('H:i') ?? ''))
@@ -233,7 +233,7 @@
 
             <div>
               <p class="text-sm text-token/70">Estado</p>
-              <p class="mt-1 text-sm text-token">{{ $selectedDriver?->status ?? '-' }}</p>
+              <p class="mt-1 text-sm text-token">{{ $selectedDriver?->status?->label() ?? '-' }}</p>
             </div>
 
             <div class="md:col-span-2">

@@ -24,7 +24,7 @@
  <p class="text-sm text-token ">{{ optional($order->client)->business_name ?? optional($order->client)->contact_name }}</p>
  </div>
  <span class="badge badge-accent">
- {{ __($order->status) }}
+ {{ $order->status->label() }}
  </span>
  </header>
 
@@ -98,7 +98,7 @@
             <tr class="table-row table-row-hover">
               <td class="table-cell font-medium text-token ">{{ optional($assignment->truck)->plate_number ?? '—' }}</td>
               <td class="table-cell text-token ">{{ optional($assignment->driver)->full_name ?? optional($assignment->driver)->name ?? '—' }}</td>
-              <td class="table-cell text-token ">{{ __($assignment->status) }}</td>
+              <td class="table-cell text-token ">{{ $assignment->status->label() }}</td>
               <td class="table-cell text-token ">{{ optional($assignment->start_date)?->format('d/m/Y H:i') ?? '—' }}</td>
             </tr>
           @endforeach

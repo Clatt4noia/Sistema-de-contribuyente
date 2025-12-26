@@ -2,6 +2,8 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\MaintenanceStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
@@ -45,11 +47,15 @@ class TruckList extends Component
         }
         
         if ($this->status) {
-            $query->where('status', $this->status);
+            $status = TruckStatus::tryFrom($this->status);
+
+            if ($status) {
+                $query->where('status', $status->value);
+            }
         }
         
         $trucks = $query->withCount([
-                'maintenances as pending_maintenances_count' => fn ($q) => $q->whereIn('status', ['scheduled', 'in_progress'])
+                'maintenances as pending_maintenances_count' => fn ($q) => $q->whereIn('status', [MaintenanceStatus::Scheduled->value, MaintenanceStatus::InProgress->value])
             ])
             ->orderBy('plate_number')
             ->paginate(10);

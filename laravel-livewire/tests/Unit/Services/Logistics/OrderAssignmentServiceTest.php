@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services\Logistics;
 
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\Assignment;
 use App\Models\CargoType;
 use App\Models\Driver;
@@ -70,8 +72,8 @@ class OrderAssignmentServiceTest extends TestCase
         $this->assertEquals($order->id, $assignment->order_id);
         $this->assertEquals($preferredTruck->id, $assignment->truck_id);
         $this->assertEquals($driver->id, $assignment->driver_id);
-        $this->assertEquals('reserved', $preferredTruck->fresh()->status);
-        $this->assertEquals('assigned', $driver->fresh()->status);
+        $this->assertEquals(TruckStatus::Reserved, $preferredTruck->fresh()->status);
+        $this->assertEquals(DriverStatus::Assigned, $driver->fresh()->status);
     }
 
     public function test_returns_null_when_no_driver_available_for_pickup_window(): void

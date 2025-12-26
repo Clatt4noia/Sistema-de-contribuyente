@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Orders;
 
+use App\Enums\Orders\OrderStatus;
 use App\Events\Orders\OrderStatusChanged;
 use App\Models\Assignment;
 use App\Notifications\OrderStatusChangedNotification;
@@ -20,12 +21,12 @@ class HandleOrderStatusChange
 
         $this->notifyStakeholders($order, $event->previousStatus);
 
-        if ($order->status === 'delivered') {
+        if ($order->status === OrderStatus::Delivered) {
             $this->generateInvoice($order);
             $this->inventorySyncService->release($order);
         }
 
-        if ($order->status === 'cancelled') {
+        if ($order->status === OrderStatus::Cancelled) {
             $this->inventorySyncService->release($order);
         }
     }

@@ -2,6 +2,10 @@
 
 namespace App\Domains\Orders\Livewire;
 
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\TruckStatus;
+use App\Enums\Orders\OrderStatus;
 use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\Order;
@@ -73,7 +77,9 @@ class OrderList extends Component
 
     public function updateOrderStatus(int $orderId, string $status): void
     {
-        if (!in_array($status, ['pending', 'en_route', 'delivered', 'cancelled'], true)) {
+        $newStatus = OrderStatus::tryFrom($status);
+
+        if (! $newStatus) {
             return;
         }
 
@@ -81,8 +87,8 @@ class OrderList extends Component
 
         $this->authorize('update', $order);
 
-        $order->status = $status;
-        if ($status === 'delivered') {
+        $order->status = $newStatus;
+        if ($newStatus === OrderStatus::Delivered) {
             $order->delivery_date = $order->delivery_date ?? now();
         }
 
@@ -105,7 +111,11 @@ class OrderList extends Component
                 });
             })
             ->when($this->status, function ($query) {
-                $query->where('status', $this->status);
+                $status = OrderStatus::tryFrom($this->status);
+
+                if ($status) {
+                    $query->where('status', $status->value);
+                }
             })
             ->when($this->client_id, function ($query) {
                 $query->where('client_id', $this->client_id);
@@ -115,10 +125,10 @@ class OrderList extends Component
 
         $metrics = [
             'total' => Order::count(),
-            'pending' => Order::where('status', 'pending')->count(),
-            'en_route' => Order::where('status', 'en_route')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
-            'cancelled' => Order::where('status', 'cancelled')->count(),
+            'pending' => Order::where('status', OrderStatus::Pending->value)->count(),
+            'en_route' => Order::where('status', OrderStatus::EnRoute->value)->count(),
+            'delivered' => Order::where('status', OrderStatus::Delivered->value)->count(),
+            'cancelled' => Order::where('status', OrderStatus::Cancelled->value)->count(),
         ];
 
         $clients = \App\Models\Client::orderBy('business_name')->get();
@@ -133,7 +143,7 @@ class OrderList extends Component
     protected function releaseTruck(int $truckId): void
     {
         $hasOtherAssignments = Assignment::where('truck_id', $truckId)
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->exists();
 
         if ($hasOtherAssignments) {
@@ -142,7 +152,7 @@ class OrderList extends Component
 
         $truck = Truck::find($truckId);
         if ($truck) {
-            $truck->status = 'available';
+            $truck->status = TruckStatus::Available;
             $truck->save();
         }
     }
@@ -150,7 +160,7 @@ class OrderList extends Component
     protected function releaseDriver(int $driverId): void
     {
         $hasOtherAssignments = Assignment::where('driver_id', $driverId)
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])
             ->exists();
 
         if ($hasOtherAssignments) {
@@ -159,7 +169,7 @@ class OrderList extends Component
 
         $driver = Driver::find($driverId);
         if ($driver) {
-            $driver->status = 'active';
+            $driver->status = DriverStatus::Active;
             $driver->save();
         }
     }

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Truck;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<Truck>
@@ -11,6 +12,29 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class TruckFactory extends Factory
 {
     protected $model = Truck::class;
+
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Truck $truck) {
+            $status = $truck->status instanceof \BackedEnum ? $truck->status->value : (string) $truck->status;
+
+            if (! in_array($status, ['available', 'in_use'], true)) {
+                return;
+            }
+
+            $referenceDate = now()->addDay();
+
+            if (! $truck->requiresMaintenanceAlert($referenceDate)) {
+                return;
+            }
+
+            $intervalDays = (int) ($truck->maintenance_interval_days ?: 90);
+            $intervalDays = $intervalDays > 0 ? $intervalDays : 90;
+
+            $truck->last_maintenance = Carbon::now()->subDays(max(1, $intervalDays - 30));
+            $truck->next_maintenance = Carbon::parse($truck->last_maintenance)->addDays($intervalDays);
+        });
+    }
 
     public function definition(): array
     {

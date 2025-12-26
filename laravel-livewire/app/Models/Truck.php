@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Fleet\TruckStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,6 +13,10 @@ use Illuminate\Support\Carbon;
 class Truck extends Model
 {
     use HasFactory;
+
+    protected $attributes = [
+        'status' => TruckStatus::Available->value,
+    ];
 
     protected $fillable = [
         'plate_number',
@@ -38,6 +43,7 @@ class Truck extends Model
         'maintenance_interval_days' => 'integer',
         'maintenance_mileage_threshold' => 'integer',
         'last_maintenance_mileage' => 'integer',
+        'status' => TruckStatus::class,
     ];
 
     public function maintenances(): HasMany
@@ -62,7 +68,10 @@ class Truck extends Model
 
     public function scopeOperational($query)
     {
-        return $query->whereNotIn('status', ['maintenance', 'out_of_service']);
+        return $query->whereNotIn('status', [
+            TruckStatus::Maintenance->value,
+            TruckStatus::OutOfService->value,
+        ]);
     }
 
     public function requiresMaintenanceAlert(?\DateTimeInterface $referenceDate = null): bool

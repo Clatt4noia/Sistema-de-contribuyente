@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+use App\Enums\Documents\DocumentComputedStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -36,7 +38,6 @@ class Document extends Model
         'file_path',
         'issued_at',
         'expires_at',
-        'status',
         'notes',
     ];
 
@@ -44,13 +45,6 @@ class Document extends Model
         'issued_at' => 'date',
         'expires_at' => 'date',
     ];
-
-    protected static function booted(): void
-    {
-        static::saving(function (Document $document) {
-            $document->status = $document->computeStatus();
-        });
-    }
 
     public static function typeOptions(string $documentableType): array
     {
@@ -81,21 +75,28 @@ class Document extends Model
         return $this->morphTo();
     }
 
-    public function computeStatus(): string
+    public function computedStatus(?int $days = null): DocumentComputedStatus
     {
+        $days = $days ?? (int) config('documents.expiring_days', 30);
+
         if (! $this->expires_at instanceof Carbon) {
-            return self::STATUS_VALID;
+            return DocumentComputedStatus::VALID;
         }
 
         if ($this->expires_at->isPast()) {
-            return self::STATUS_EXPIRED;
+            return DocumentComputedStatus::EXPIRED;
         }
 
-        if ($this->expires_at->diffInDays(now(), false) <= 30) {
-            return self::STATUS_WARNING;
+        if (now()->diffInDays($this->expires_at, false) <= $days) {
+            return DocumentComputedStatus::EXPIRING;
         }
 
-        return self::STATUS_VALID;
+        return DocumentComputedStatus::VALID;
+    }
+
+    public function getComputedStatusAttribute(): DocumentComputedStatus
+    {
+        return $this->computedStatus();
     }
 
     public function getTypeLabelAttribute(): string
@@ -105,11 +106,35 @@ class Document extends Model
 
     public function getStatusLabelAttribute(): string
     {
-        return match ($this->status) {
-            self::STATUS_EXPIRED => __('Vencido'),
-            self::STATUS_WARNING => __('Por vencer'),
-            default => __('Vigente'),
-        };
+        return $this->computed_status->label();
+    }
+
+    public function scopeExpired(Builder $query): Builder
+    {
+        return $query
+            ->whereNotNull('expires_at')
+            ->whereDate('expires_at', '<', now()->toDateString());
+    }
+
+    public function scopeExpiring(Builder $query, int $days = 30): Builder
+    {
+        $today = now()->toDateString();
+        $threshold = now()->addDays($days)->toDateString();
+
+        return $query
+            ->whereNotNull('expires_at')
+            ->whereDate('expires_at', '>=', $today)
+            ->whereDate('expires_at', '<=', $threshold);
+    }
+
+    public function scopeValid(Builder $query, int $days = 30): Builder
+    {
+        $threshold = now()->addDays($days)->toDateString();
+
+        return $query->where(function (Builder $builder) use ($threshold) {
+            $builder->whereNull('expires_at')
+                ->orWhereDate('expires_at', '>', $threshold);
+        });
     }
 
     public function getOwnerLabelAttribute(): string

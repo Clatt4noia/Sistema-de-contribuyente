@@ -142,12 +142,18 @@ class DocumentManager extends Component
     protected function refreshDocuments(): void
     {
         $ownerClass = $this->ownerClass();
+        $days = (int) config('documents.expiring_days', 30);
+        $today = now()->toDateString();
+        $threshold = now()->addDays($days)->toDateString();
 
         $this->documents = Document::query()
             ->where('documentable_type', $ownerClass)
 
             ->where('documentable_id', $this->documentableId)
-            ->orderByRaw("CASE WHEN status = '" . Document::STATUS_EXPIRED . "' THEN 0 WHEN status = '" . Document::STATUS_WARNING . "' THEN 1 ELSE 2 END")
+            ->orderByRaw(
+                'CASE WHEN expires_at IS NULL THEN 2 WHEN expires_at < ? THEN 0 WHEN expires_at <= ? THEN 1 ELSE 2 END',
+                [$today, $threshold]
+            )
             ->orderBy('expires_at')
             ->get()
             ->map(function (Document $document) {
@@ -155,8 +161,9 @@ class DocumentManager extends Component
                     'id' => $document->id,
                     'title' => $document->title,
                     'type_label' => $document->type_label,
-                    'status' => $document->status,
-                    'status_label' => $document->status_label,
+                    'computed_status' => $document->computed_status->value,
+                    'computed_status_label' => $document->computed_status->label(),
+                    'computed_status_badge_classes' => $document->computed_status->badgeClasses(),
                     'issued_at' => optional($document->issued_at)->format('d/m/Y'),
                     'expires_at' => optional($document->expires_at)->format('d/m/Y'),
                     'file_url' => $document->file_url,

@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Enums\Orders\OrderStatus;
 use App\Events\Orders\OrderCostParametersChanged;
 use App\Events\Orders\OrderCreated;
 use App\Events\Orders\OrderScheduleChanged;
@@ -17,7 +18,8 @@ class OrderObserver
 
     public function updated(Order $order): void
     {
-        $previousStatus = (string) $order->getOriginal('status');
+        $previous = $order->getOriginal('status');
+        $previousStatus = $previous instanceof OrderStatus ? $previous->value : (string) $previous;
 
         if ($order->wasChanged('status')) {
             OrderStatusChanged::dispatch($order, $previousStatus);

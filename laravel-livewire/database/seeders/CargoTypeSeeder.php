@@ -57,6 +57,42 @@ class CargoTypeSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
+            [
+                'code' => 'ENCOM',
+                'name' => 'Encomiendas',
+                'description' => 'Paquetería y encomiendas con entrega programada y trazabilidad.',
+                'requires_refrigeration' => false,
+                'is_hazardous' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'code' => 'FRAGILE',
+                'name' => 'Frágil',
+                'description' => 'Mercadería frágil que requiere manipulación especial y sujeción adicional.',
+                'requires_refrigeration' => false,
+                'is_hazardous' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'code' => 'HEAVY',
+                'name' => 'Sobredimensionada',
+                'description' => 'Carga sobredimensionada o pesada que puede requerir permisos, rutas y equipos especiales.',
+                'requires_refrigeration' => false,
+                'is_hazardous' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'code' => 'LIQUID',
+                'name' => 'Líquidos',
+                'description' => 'Transporte de líquidos no peligrosos en contenedores o cisternas con control de derrames.',
+                'requires_refrigeration' => false,
+                'is_hazardous' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
         ];
 
         CargoType::query()->upsert($cargoTypes, ['code'], [

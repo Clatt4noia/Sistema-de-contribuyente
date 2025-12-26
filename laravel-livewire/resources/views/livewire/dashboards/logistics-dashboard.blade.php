@@ -108,7 +108,7 @@
                     @endphp
 
                     <span class="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent ">
-                      {{ $statusMap[$order->status ?? 'pending'] ?? 'Desconocido' }}
+                      {{ $order->status?->label() ?? 'Pendiente' }}
                     </span>
                   </td>
                   <td class="table-cell text-sm text-token ">{{ optional($order->pickup_date)?->format('d/m/Y') ?? '—' }}</td>
@@ -237,4 +237,3 @@
  </article>
  </section>
 </div>
-

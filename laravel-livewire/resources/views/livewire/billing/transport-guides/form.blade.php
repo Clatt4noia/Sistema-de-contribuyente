@@ -96,7 +96,7 @@
                                         ]))));
                                 @endphp
                                 <option value="{{ $assignment->id }}">
-                                    #{{ $assignment->id }} - {{ $assignmentLabel ?: 'Servicio' }} ({{ $assignment->status }})
+                                    #{{ $assignment->id }} - {{ $assignmentLabel ?: 'Servicio' }} ({{ $assignment->status->label() }})
                                 </option>
                             @endforeach
                         </select>
@@ -371,7 +371,7 @@
                              @disabled(!empty($form['assignment_id']))>
                          <option value="">Seleccione</option>
                          @foreach($trucks as $truck)
-                            @if($truck->status === 'available' || (!empty($form['truck_id']) && (string) $form['truck_id'] === (string) $truck->id))
+                            @if($truck->status === \App\Enums\Fleet\TruckStatus::Available || (!empty($form['truck_id']) && (string) $form['truck_id'] === (string) $truck->id))
                                  <option value="{{ $truck->id }}" @selected((string) ($form['truck_id'] ?? '') === (string) $truck->id)>
                                      {{ $truck->plate_number }} - {{ $truck->brand }}
                                  </option>
@@ -389,7 +389,7 @@
                              @disabled(!empty($form['assignment_id']))>
                          <option value="">Seleccione</option>
                          @foreach($drivers as $driver)
-                            @if($driver->status === 'active' || (!empty($form['driver_id']) && (string) $form['driver_id'] === (string) $driver->id))
+                            @if($driver->status === \App\Enums\Fleet\DriverStatus::Active || (!empty($form['driver_id']) && (string) $form['driver_id'] === (string) $driver->id))
                                  <option value="{{ $driver->id }}" @selected((string) ($form['driver_id'] ?? '') === (string) $driver->id)>
                                      {{ $driver->name }} ({{ $driver->license_number }})
                                  </option>

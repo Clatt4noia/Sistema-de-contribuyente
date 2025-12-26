@@ -946,7 +946,7 @@ protected function applyAssignment(Assignment $assignment): void
 
         $this->assignments = Assignment::query()
             ->with(['truck', 'driver', 'order'])
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('status', [\App\Enums\Fleet\AssignmentStatus::Completed->value, \App\Enums\Fleet\AssignmentStatus::Cancelled->value])
             ->orderByDesc('start_date')
             ->limit(50)
             ->get();

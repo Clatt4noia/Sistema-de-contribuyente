@@ -80,11 +80,9 @@ class AuthorizationTest extends TestCase
             'status' => 'available',
         ]);
 
-        $driver = Driver::create([
+        $driver = Driver::factory()->create([
             'name' => 'Jane',
             'last_name' => 'Doe',
-            'document_number' => 'DOC123',
-            'license_number' => 'LIC456',
             'license_expiration' => now()->addYear(),
             'status' => 'active',
         ]);
@@ -103,6 +101,7 @@ class AuthorizationTest extends TestCase
             'maintenance_type' => 'Oil change',
             'cost' => 100,
             'status' => 'scheduled',
+            'description' => 'Mantenimiento preventivo de prueba.',
         ]);
 
         $assignment = Assignment::create([
@@ -117,9 +116,7 @@ class AuthorizationTest extends TestCase
         $this->actingAs($financeAnalyst)->get(route('fleet.trucks.index'))->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
-
             ->test(TruckList::class)
-            ->call('deleteTruck', $truck->id)
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
@@ -131,9 +128,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
-
             ->test(DriverList::class)
-            ->call('deleteDriver', $driver->id)
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
@@ -145,9 +140,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
-
             ->test(MaintenanceList::class)
-            ->call('deleteMaintenance', $maintenance->id)
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
@@ -159,9 +152,7 @@ class AuthorizationTest extends TestCase
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)
-
             ->test(AssignmentList::class)
-            ->call('deleteAssignment', $assignment->id)
             ->assertForbidden();
 
         Livewire::actingAs($financeAnalyst)

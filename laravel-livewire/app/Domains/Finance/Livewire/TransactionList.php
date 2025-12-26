@@ -7,6 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -192,9 +193,16 @@ class TransactionList extends Component
     #[Computed]
     public function availableYears(): array
     {
+        $yearExpression = match (DB::connection()->getDriverName()) {
+            'sqlite' => "CAST(strftime('%Y', occurred_on) AS INTEGER)",
+            'mysql', 'mariadb' => "YEAR(occurred_on)",
+            'pgsql' => "EXTRACT(YEAR FROM occurred_on)::int",
+            default => "EXTRACT(YEAR FROM occurred_on)",
+        };
+
         $years = Transaction::query()
             ->forUser(auth()->id())
-            ->selectRaw("DISTINCT EXTRACT(YEAR FROM occurred_on)::int AS year")
+            ->selectRaw("DISTINCT {$yearExpression} AS year")
             ->orderByDesc('year')
             ->pluck('year')
             ->map(fn ($year) => (string) $year)

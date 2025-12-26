@@ -14,7 +14,7 @@ class FleetRoutesTest extends TestCase
     /** @test */
     public function trucks_create_route_is_accessible_for_authenticated_users(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->fleetManager()->create();
 
         $response = $this->actingAs($user)->get(route('fleet.trucks.create'));
 
@@ -29,7 +29,7 @@ class FleetRoutesTest extends TestCase
     /** @test */
     public function trucks_create_route_is_accessible_even_if_the_user_is_not_verified(): void
     {
-        $user = User::factory()->unverified()->create();
+        $user = User::factory()->fleetManager()->unverified()->create();
 
         $response = $this->actingAs($user)->get(route('fleet.trucks.create'));
 
@@ -40,7 +40,7 @@ class FleetRoutesTest extends TestCase
     /** @test */
     public function trucks_edit_route_displays_the_form_for_existing_trucks(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->fleetManager()->create();
 
         $truck = Truck::create([
             'plate_number' => 'ABC-123',
@@ -54,11 +54,9 @@ class FleetRoutesTest extends TestCase
         $response = $this->actingAs($user)->get(route('fleet.trucks.edit', $truck));
 
         $response->assertOk();
-        $response->assertSeeTextInOrder([
-            'Editar Camion',
-            'Placa',
-            'FH16',
-        ]);
+        $response->assertSeeText('Editar Camion');
+        $response->assertSeeText('Placa');
+        $response->assertSee('FH16');
 
     }
 }

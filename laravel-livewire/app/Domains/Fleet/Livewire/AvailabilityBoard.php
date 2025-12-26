@@ -2,7 +2,10 @@
 
 namespace App\Domains\Fleet\Livewire;
 
-use App\Models\Document;
+use App\Enums\Documents\DocumentComputedStatus;
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\Driver;
 use App\Models\Truck;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -31,12 +34,18 @@ class AvailabilityBoard extends Component
 
         $trucks = Truck::query()
             ->withCount(['assignments as active_assignments_count' => function ($query) {
-                $query->whereNotIn('status', ['completed', 'cancelled']);
+                $query->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value]);
             }])
             ->with(['documents' => function ($query) {
                 $query->orderBy('expires_at');
             }])
-            ->when($this->vehicleStatus, fn ($query) => $query->where('status', $this->vehicleStatus))
+            ->when($this->vehicleStatus, function ($query) {
+                $status = TruckStatus::tryFrom($this->vehicleStatus);
+
+                if ($status) {
+                    $query->where('status', $status->value);
+                }
+            })
             ->when($this->vehicleSearch, function ($query) {
                 $term = '%' . trim($this->vehicleSearch) . '%';
                 $query->where(function ($sub) use ($term) {
@@ -52,7 +61,7 @@ class AvailabilityBoard extends Component
             ->map(function (Truck $truck) {
                 $truck->alert_level = $truck->maintenanceAlertLevel();
                 $truck->document_alerts = $truck->documents
-                    ->filter(fn ($document) => in_array($document->status, [Document::STATUS_WARNING, Document::STATUS_EXPIRED], true))
+                    ->filter(fn ($document) => in_array($document->computed_status, [DocumentComputedStatus::EXPIRING, DocumentComputedStatus::EXPIRED], true))
                     ->take(2);
 
                 return $truck;
@@ -60,11 +69,17 @@ class AvailabilityBoard extends Component
 
         $drivers = Driver::query()
             ->with(['assignments' => function ($query) {
-                $query->whereNotIn('status', ['completed', 'cancelled'])->latest('start_date');
+                $query->whereNotIn('status', [AssignmentStatus::Completed->value, AssignmentStatus::Cancelled->value])->latest('start_date');
             }, 'trainings', 'documents' => function ($query) {
                 $query->orderBy('expires_at');
             }])
-            ->when($this->driverStatus, fn ($query) => $query->where('status', $this->driverStatus))
+            ->when($this->driverStatus, function ($query) {
+                $status = DriverStatus::tryFrom($this->driverStatus);
+
+                if ($status) {
+                    $query->where('status', $status->value);
+                }
+            })
             ->when($this->driverSearch, function ($query) {
                 $term = '%' . trim($this->driverSearch) . '%';
                 $query->where(function ($sub) use ($term) {
@@ -81,7 +96,7 @@ class AvailabilityBoard extends Component
                 $driver->next_assignment = $driver->assignments->first();
                 $driver->valid_trainings = $driver->trainings->filter(fn ($training) => ! $training->expires_at || $training->expires_at->isFuture());
                 $driver->document_alerts = $driver->documents
-                    ->filter(fn ($document) => in_array($document->status, [Document::STATUS_WARNING, Document::STATUS_EXPIRED], true))
+                    ->filter(fn ($document) => in_array($document->computed_status, [DocumentComputedStatus::EXPIRING, DocumentComputedStatus::EXPIRED], true))
                     ->take(2);
 
                 return $driver;

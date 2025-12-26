@@ -2,6 +2,11 @@
 
 namespace App\Domains\Fleet\Livewire;
 
+use App\Enums\Fleet\AssignmentStatus;
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\MaintenanceStatus;
+use App\Enums\Fleet\TruckStatus;
+use App\Enums\Orders\OrderStatus;
 use App\Models\Assignment;
 use App\Models\Driver;
 use App\Models\DriverTraining;
@@ -24,10 +29,10 @@ class AssignmentForm extends Component
     protected AssignmentService $assignmentService;
     public bool $isEdit = false;
     public array $form = [];
-    public $trucks = [];
-    public $drivers = [];
-    public $orders = [];
-    public ?Order $orderPreview = null;
+    public array $trucks = [];
+    public array $drivers = [];
+    public array $orders = [];
+    public ?array $orderPreview = null;
     public string $mode = 'manual';
     public ?string $autoAssignAlert = null;
 
@@ -38,13 +43,15 @@ class AssignmentForm extends Component
 
     protected function rules(): array
     {
+        $assignmentStatuses = array_map(static fn (AssignmentStatus $status) => $status->value, AssignmentStatus::cases());
+
         return [
             'form.order_id' => 'required|exists:orders,id',
             'form.truck_id' => 'required|exists:trucks,id',
             'form.driver_id' => 'required|exists:drivers,id',
             'form.start_date' => 'required|date',
             'form.end_date' => 'nullable|date|after_or_equal:form.start_date',
-            'form.status' => 'required|in:scheduled,in_progress,completed,cancelled',
+            'form.status' => ['required', 'string', 'in:' . implode(',', $assignmentStatuses)],
             'form.description' => 'required|string|max:255',
             'form.notes' => 'nullable|string',
             'mode' => 'required|in:manual,automatic',
@@ -68,10 +75,14 @@ class AssignmentForm extends Component
         } else {
             $this->authorize('create', Assignment::class);
             $this->assignment = new Assignment([
-                'status' => 'scheduled',
+                'status' => AssignmentStatus::Scheduled,
                 'start_date' => now()->format('Y-m-d\TH:i'),
             ]);
         }
+
+        $statusValue = $this->assignment->status instanceof AssignmentStatus
+            ? $this->assignment->status->value
+            : ($this->assignment->status ?? AssignmentStatus::Scheduled->value);
 
         $this->form = [
             'order_id' => $this->assignment->order_id ?? '',
@@ -83,7 +94,7 @@ class AssignmentForm extends Component
             'end_date' => $this->assignment->end_date instanceof Carbon
                 ? $this->assignment->end_date->format('Y-m-d\TH:i')
                 : ($this->assignment->end_date ?? ''),
-            'status' => $this->assignment->status ?? 'scheduled',
+            'status' => $statusValue,
             'description' => $this->assignment->description ?? '',
             'notes' => $this->assignment->notes ?? '',
         ];
@@ -117,7 +128,7 @@ class AssignmentForm extends Component
             $this->isEdit ? $this->assignment : Assignment::class
         );
 
-        if ($this->mode === 'automatic' && empty($this->form['truck_id']) && empty($this->form['driver_id'])) {
+        if ($this->mode === 'automatic' && (empty($this->form['truck_id']) || empty($this->form['driver_id']))) {
             $this->autoAssignResources();
 
             if (empty($this->form['truck_id']) || empty($this->form['driver_id'])) {
@@ -130,7 +141,7 @@ class AssignmentForm extends Component
         $this->assignmentService->save($this->assignment, $validated['form']);
 
         session()->flash('message', $this->isEdit ? 'Asignacion actualizada correctamente.' : 'Asignacion creada correctamente.');
-        return redirect()->route('fleet.assignments.index');
+        return $this->redirectRoute('fleet.assignments.index');
     }
 
     public function render()
@@ -150,9 +161,9 @@ class AssignmentForm extends Component
         $start = isset($this->form['start_date']) ? Carbon::parse($this->form['start_date']) : now();
         $end = isset($this->form['end_date']) && $this->form['end_date'] ? Carbon::parse($this->form['end_date']) : $start->copy();
 
-        $this->orders = Order::query()
+        $orders = Order::query()
             ->where(function ($query) use ($orderId) {
-                $query->whereIn('status', ['pending', 'en_route']);
+                $query->whereIn('status', [OrderStatus::Pending->value, OrderStatus::EnRoute->value]);
                 if ($orderId) {
                     $query->orWhere('id', $orderId);
                 }
@@ -160,10 +171,19 @@ class AssignmentForm extends Component
             ->orderBy('pickup_date')
             ->get();
 
-        $this->trucks = Truck::query()
+        $this->orders = $orders->map(fn (Order $order) => [
+            'id' => $order->id,
+            'reference' => $order->reference,
+            'origin' => $order->origin,
+            'destination' => $order->destination,
+            'cargo_details' => $order->cargo_details,
+            'status_label' => $order->status->label(),
+        ])->toArray();
+
+        $trucks = Truck::query()
             ->with('maintenances')
             ->where(function ($query) {
-                $query->whereIn('status', ['available', 'in_use']);
+                $query->whereIn('status', [TruckStatus::Available->value, TruckStatus::InUse->value]);
                 if (! empty($this->form['truck_id'])) {
                     $query->orWhere('id', $this->form['truck_id']);
                 }
@@ -180,17 +200,27 @@ class AssignmentForm extends Component
                 }
 
                 $hasPendingMaintenance = $truck->maintenances
-                    ->filter(fn ($maintenance) => in_array($maintenance->status, ['scheduled', 'in_progress'], true))
+                    ->filter(fn ($maintenance) => in_array($maintenance->status, [MaintenanceStatus::Scheduled, MaintenanceStatus::InProgress], true))
                     ->first(fn ($maintenance) => $maintenance->maintenance_date && $maintenance->maintenance_date->between($start->copy()->startOfDay(), $end->copy()->endOfDay()));
 
                 return ! $hasPendingMaintenance;
             })
             ->values();
 
-        $this->drivers = Driver::query()
+        $this->trucks = $trucks->map(fn (Truck $truck) => [
+            'id' => $truck->id,
+            'plate_number' => $truck->plate_number,
+            'brand' => $truck->brand,
+            'model' => $truck->model,
+            'status_label' => $truck->status->label(),
+            'mileage' => $truck->mileage,
+            'next_maintenance' => $truck->next_maintenance?->format('d/m/Y'),
+        ])->toArray();
+
+        $drivers = Driver::query()
             ->with('trainings')
             ->where(function ($query) {
-                $query->whereIn('status', ['active', 'assigned']);
+                $query->whereIn('status', [DriverStatus::Active->value, DriverStatus::Assigned->value]);
                 if (! empty($this->form['driver_id'])) {
                     $query->orWhere('id', $this->form['driver_id']);
                 }
@@ -214,8 +244,20 @@ class AssignmentForm extends Component
             })
             ->values();
 
+        $this->drivers = $drivers->map(fn (Driver $driver) => [
+            'id' => $driver->id,
+            'name' => $driver->name,
+            'last_name' => $driver->last_name,
+            'full_name' => $driver->full_name,
+            'status_label' => $driver->status->label(),
+            'license_expiration' => $driver->license_expiration?->format('d/m/Y'),
+            'valid_trainings_count' => $driver->trainings
+                ->filter(fn (DriverTraining $training) => ! $training->expires_at || $training->expires_at->greaterThanOrEqualTo($start))
+                ->count(),
+        ])->toArray();
+
         // Guardamos una vista previa del Orden seleccionado para alimentar el resumen lateral.
-        $this->orderPreview = $this->orders->firstWhere('id', (int) ($this->form['order_id'] ?? 0));
+        $this->orderPreview = collect($this->orders)->firstWhere('id', (int) ($this->form['order_id'] ?? 0));
     }
 
     public function autoAssignResources(): void
@@ -225,15 +267,24 @@ class AssignmentForm extends Component
         $start = isset($this->form['start_date']) ? Carbon::parse($this->form['start_date']) : now();
         $end = isset($this->form['end_date']) && $this->form['end_date'] ? Carbon::parse($this->form['end_date']) : $start->copy();
 
-        $truck = $this->assignmentService->findAvailableTruck($this->assignment, $start, $end);
-        $driver = $this->assignmentService->findAvailableDriver($this->assignment, $start, $end);
+        $truck = empty($this->form['truck_id'])
+            ? $this->assignmentService->findAvailableTruck($this->assignment, $start, $end)
+            : null;
+        $driver = empty($this->form['driver_id'])
+            ? $this->assignmentService->findAvailableDriver($this->assignment, $start, $end)
+            : null;
 
-        if (! $truck || ! $driver) {
+        if ($truck) {
+            $this->form['truck_id'] = $truck->id;
+        }
+
+        if ($driver) {
+            $this->form['driver_id'] = $driver->id;
+        }
+
+        if (empty($this->form['truck_id']) || empty($this->form['driver_id'])) {
             $this->autoAssignAlert = 'No hay camiones o choferes disponibles en el rango seleccionado.';
             return;
         }
-
-        $this->form['truck_id'] = $truck->id;
-        $this->form['driver_id'] = $driver->id;
     }
 }

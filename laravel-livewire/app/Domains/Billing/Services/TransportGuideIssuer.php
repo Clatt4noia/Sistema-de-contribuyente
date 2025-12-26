@@ -2,6 +2,8 @@
 
 namespace App\Domains\Billing\Services;
 
+use App\Enums\Fleet\DriverStatus;
+use App\Enums\Fleet\TruckStatus;
 use App\Models\TransportGuide;
 use DOMDocument;
 use DOMElement;
@@ -55,7 +57,7 @@ class TransportGuideIssuer
             throw new RuntimeException('No se ha asignado un camión para la guía de remisión.');
         }
 
-        if (in_array($truck->status, ['maintenance', 'out_of_service'], true)) {
+        if (in_array($truck->status, [TruckStatus::Maintenance, TruckStatus::OutOfService], true)) {
             throw new RuntimeException('El camión seleccionado no está disponible por mantenimiento.');
         }
 
@@ -63,7 +65,7 @@ class TransportGuideIssuer
             throw new RuntimeException('No se ha asignado un conductor para la guía de remisión.');
         }
 
-        if ($driver->status !== 'active') {
+        if ($driver->status !== DriverStatus::Active) {
             throw new RuntimeException('El conductor seleccionado no está disponible.');
         }
 
