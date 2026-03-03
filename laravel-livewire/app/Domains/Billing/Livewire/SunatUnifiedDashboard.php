@@ -102,7 +102,7 @@ class SunatUnifiedDashboard extends Component
         ];
 
         SendElectronicInvoice::dispatch($invoice, $items, $companyData, $customerData)
-            ->onQueue(config('billing.queues.sunat', 'sunat'));
+            ->onQueue(config('greenter.queues.sunat', 'sunat'));
 
         session()->flash('message', 'Se reenviará el comprobante a SUNAT. Revisa el estado en unos minutos.');
     }

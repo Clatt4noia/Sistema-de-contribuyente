@@ -2,14 +2,15 @@
 
 namespace App\Domains\Billing\Jobs;
 
+use App\Domains\Billing\Services\TransportGuideIssuer;
 use App\Models\TransportGuide;
-use App\Services\Sunat\TransportGuideService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SendTransportGuideToSunat implements ShouldQueue
 {
@@ -19,44 +20,25 @@ class SendTransportGuideToSunat implements ShouldQueue
 
     public function __construct(public TransportGuide $transportGuide)
     {
-        $this->onQueue(config('billing.queues.sunat', 'sunat'));
+        $this->onQueue(config('greenter.queues.sunat', 'sunat'));
     }
 
-    public function handle(TransportGuideService $transportGuideService): void
+    public function handle(TransportGuideIssuer $issuer): void
     {
         try {
-            $result = $transportGuideService->send($this->transportGuide);
-
-            if ($result->isSuccess()) {
-                Log::info('Guía de remitente enviada exitosamente a SUNAT', [
-                    'guide_id' => $this->transportGuide->id,
-                    'full_code' => $this->transportGuide->full_code,
-                ]);
-            } else {
-                Log::warning('Guía de remitente rechazada por SUNAT', [
-                    'guide_id' => $this->transportGuide->id,
-                    'full_code' => $this->transportGuide->full_code,
-                    'error' => $result->getError()->getMessage(),
-                ]);
-            }
-        } catch (\Exception $e) {
-            Log::error('Error al procesar guía de remitente', [
+            $issuer->issue($this->transportGuide);
+        } catch (Throwable $e) {
+            Log::error('Job de envío de guía a SUNAT falló', [
                 'guide_id' => $this->transportGuide->id,
                 'full_code' => $this->transportGuide->full_code,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            $this->transportGuide->update([
-                'sunat_status' => TransportGuide::STATUS_ERROR,
-                'sunat_notes' => 'Error al procesar: ' . $e->getMessage(),
             ]);
 
             throw $e;
         }
     }
 
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         Log::error('Job de envío de guía a SUNAT falló definitivamente', [
             'guide_id' => $this->transportGuide->id,
@@ -64,9 +46,9 @@ class SendTransportGuideToSunat implements ShouldQueue
             'error' => $exception->getMessage(),
         ]);
 
-        $this->transportGuide->update([
+        $this->transportGuide->forceFill([
             'sunat_status' => TransportGuide::STATUS_ERROR,
-            'sunat_notes' => 'Error al procesar guía: ' . $exception->getMessage(),
-        ]);
+            'sunat_notes' => 'Error al procesar guía en segundo plano: ' . $exception->getMessage(),
+        ])->save();
     }
 }

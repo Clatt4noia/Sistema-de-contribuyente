@@ -37,11 +37,11 @@ class AppServiceProvider extends ServiceProvider
             setlocale(LC_TIME, 'es_PE.UTF-8', 'es_PE', 'es');
         }
 
-        $disk = config('billing.storage.disk_xml_cdr');
+        $disk = config('greenter.storage.disk_xml_cdr');
         $directories = array_filter([
-            trim((string) config('billing.storage.xml_directory'), '/'),
-            trim((string) config('billing.storage.cdr_directory'), '/'),
-            trim((string) config('billing.storage.pdf_directory'), '/'),
+            trim((string) config('greenter.storage.xml_directory'), '/'),
+            trim((string) config('greenter.storage.cdr_directory'), '/'),
+            trim((string) config('greenter.storage.pdf_directory'), '/'),
         ]);
 
         try {

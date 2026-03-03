@@ -1,0 +1,182 @@
+[
+    {
+        "code": "010101",
+        "department": "AMAZONAS",
+        "province": "CHACHAPOYAS",
+        "district": "CHACHAPOYAS"
+    },
+    {
+        "code": "020101",
+        "department": "ANCASH",
+        "province": "HUARAZ",
+        "district": "HUARAZ"
+    },
+    {
+        "code": "030101",
+        "department": "APURIMAC",
+        "province": "ABANCAY",
+        "district": "ABANCAY"
+    },
+    {
+        "code": "040101",
+        "department": "AREQUIPA",
+        "province": "AREQUIPA",
+        "district": "AREQUIPA"
+    },
+    {
+        "code": "040102",
+        "department": "AREQUIPA",
+        "province": "AREQUIPA",
+        "district": "ALTO SELVA ALEGRE"
+    },
+    {
+        "code": "040103",
+        "department": "AREQUIPA",
+        "province": "AREQUIPA",
+        "district": "CAYMA"
+    },
+    {
+        "code": "040104",
+        "department": "AREQUIPA",
+        "province": "AREQUIPA",
+        "district": "CERRO COLORADO"
+    },
+    {
+        "code": "040105",
+        "department": "AREQUIPA",
+        "province": "AREQUIPA",
+        "district": "CHARACATO"
+    },
+    {
+        "code": "050101",
+        "department": "AYACUCHO",
+        "province": "HUAMANGA",
+        "district": "AYACUCHO"
+    },
+    {
+        "code": "060101",
+        "department": "CAJAMARCA",
+        "province": "CAJAMARCA",
+        "district": "CAJAMARCA"
+    },
+    {
+        "code": "070101",
+        "department": "CALLAO",
+        "province": "CALLAO",
+        "district": "CALLAO"
+    },
+    {
+        "code": "080101",
+        "department": "CUSCO",
+        "province": "CUSCO",
+        "district": "CUSCO"
+    },
+    {
+        "code": "080102",
+        "department": "CUSCO",
+        "province": "CUSCO",
+        "district": "CCORCA"
+    },
+    {
+        "code": "150101",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "LIMA"
+    },
+    {
+        "code": "150102",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "ANCON"
+    },
+    {
+        "code": "150103",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "ATE"
+    },
+    {
+        "code": "150104",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "BARRANCO"
+    },
+    {
+        "code": "150106",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "CARABAYLLO"
+    },
+    {
+        "code": "150110",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "COMAS"
+    },
+    {
+        "code": "150112",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "INDEPENDENCE"
+    },
+    {
+        "code": "150115",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "LA VICTORIA"
+    },
+    {
+        "code": "150117",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "LOS OLIVOS"
+    },
+    {
+        "code": "150130",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "SAN BORJA"
+    },
+    {
+        "code": "150131",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "SAN ISIDRO"
+    },
+    {
+        "code": "150132",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "SAN JUAN DE LURIGANCHO"
+    },
+    {
+        "code": "150133",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "SAN JUAN DE MIRAFLORES"
+    },
+    {
+        "code": "150135",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "SAN MARTIN DE PORRES"
+    },
+    {
+        "code": "150140",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "SANTIAGO DE SURCO"
+    },
+    {
+        "code": "150142",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "VILLA EL SALVADOR"
+    },
+    {
+        "code": "150143",
+        "department": "LIMA",
+        "province": "LIMA",
+        "district": "VILLA MARIA DEL TRIUNFO"
+    }
+]

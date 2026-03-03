@@ -11,6 +11,6 @@ class SendTransportGuideToSunatAction
     public function execute(TransportGuide $transportGuide): void
     {
         SendTransportGuideToSunat::dispatch($transportGuide)
-            ->onQueue(Config::get('billing.queues.sunat', 'sunat'));
+            ->onQueue(Config::get('greenter.queues.sunat', 'sunat'));
     }
 }

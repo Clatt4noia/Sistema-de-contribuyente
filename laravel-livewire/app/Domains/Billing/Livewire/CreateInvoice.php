@@ -411,7 +411,7 @@ class CreateInvoice extends Component
         }
 
         $companyRuc = $this->normalizeDocumentNumber(\App\Models\Company::query()->first()?->ruc);
-        $envRuc = $this->normalizeDocumentNumber(Config::get('billing.sunat.ruc'));
+        $envRuc = $this->normalizeDocumentNumber(Config::get('greenter.company.ruc'));
 
         $emitterRuc = (is_string($companyRuc) && strlen($companyRuc) === 11) ? $companyRuc : $envRuc;
         if (! $emitterRuc || strlen($emitterRuc) !== 11) {
@@ -495,7 +495,7 @@ class CreateInvoice extends Component
         }
 
         $companyData = [
-            'ruc' => Config::get('billing.sunat.ruc'),
+            'ruc' => Config::get('greenter.company.ruc'),
             'legal_name' => Config::get('app.name', 'Carlos Gabriel Transporte S.A.C.'),
             'commercial_name' => Config::get('app.name', 'Carlos Gabriel Transporte S.A.C.'),
         ];
@@ -511,7 +511,7 @@ class CreateInvoice extends Component
             $this->formattedItemsForDispatch(),
             $companyData,
             $customerData
-        )->onQueue(config('billing.queues.sunat', 'sunat'));
+        )->onQueue(config('greenter.queues.sunat', 'sunat'));
 
 
         session()->flash('message', 'Factura registrada y enviada para procesamiento en SUNAT.');

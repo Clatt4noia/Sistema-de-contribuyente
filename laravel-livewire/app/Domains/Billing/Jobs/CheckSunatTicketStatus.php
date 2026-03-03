@@ -2,8 +2,8 @@
 
 namespace App\Domains\Billing\Jobs;
 
-use App\Domains\Billing\Services\SunatSender;
 use App\Models\Invoice;
+use CodersFree\LaravelGreenter\Facades\Greenter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,32 +25,40 @@ class CheckSunatTicketStatus implements ShouldQueue
 
     public function __construct(public Invoice $invoice, public string $ticket)
     {
-        $this->queue = config('billing.queues.sunat', 'sunat');
+        $this->queue = config('greenter.queues.sunat', 'sunat');
     }
 
-    public function handle(SunatSender $sender): void
+    public function handle(): void
     {
-        $result = $sender->getStatus($this->invoice, $this->ticket);
+        $result = Greenter::getStatus($this->ticket);
 
-        if (! $result['success']) {
-            throw new RuntimeException('SUNAT no devolvió estado para el ticket '.$this->ticket.': '.$result['error']);
+        if (! $result->isSuccess()) {
+             // Si es error de conexión, el job fallará y reintentará.
+             // Si es error de ticket no encontrado O rechazado por sunat, lanzamos excepción.
+             throw new RuntimeException('SUNAT Error Ticket '.$this->ticket.': ' . $result->getError()->getMessage());
         }
 
-        $storageDisk = config('billing.storage.disk_xml_cdr');
-        $cdrDirectory = trim((string) config('billing.storage.cdr_directory'), '/');
+        $cdrResponse = $result->getCdrResponse();
+        
+        $storageDisk = config('greenter.storage.disk_xml_cdr');
+        $cdrDirectory = trim((string) config('greenter.storage.cdr_directory'), '/');
         $fileBase = $this->invoice->numero_completo ?: $this->invoice->invoice_number;
 
-        if (! empty($result['cdr'])) {
+        if ($result->getCdrZip()) {
             $cdrPath = $cdrDirectory.'/'.str_replace('-', '_', $fileBase).'.zip';
-            Storage::disk($storageDisk)->put($cdrPath, $result['cdr'], ['visibility' => 'private']);
+            Storage::disk($storageDisk)->put($cdrPath, $result->getCdrZip(), ['visibility' => 'private']);
         }
 
-        DB::transaction(function () use ($result, $cdrDirectory, $fileBase) {
-            $this->invoice->forceFill([
-                'cdr_path' => ! empty($result['cdr']) ? $cdrDirectory.'/'.str_replace('-', '_', $fileBase).'.zip' : $this->invoice->cdr_path,
-                'sunat_status' => data_get($result, 'parsed.is_accepted') ? 'aceptado' : 'observado',
-                'sunat_response_message' => data_get($result, 'parsed.description', $this->invoice->sunat_response_message),
+        DB::transaction(function () use ($cdrResponse, $cdrDirectory, $fileBase, $result) {
+            $cdrPath = $result->getCdrZip() ? $cdrDirectory.'/'.str_replace('-', '_', $fileBase).'.zip' : $this->invoice->cdr_path;
+            
+            $isAccepted = $cdrResponse && (int)$cdrResponse->getCode() === 0;
 
+            $this->invoice->forceFill([
+                'cdr_path' => $cdrPath,
+                'sunat_status' => $isAccepted ? 'aceptado' : 'observado',
+                'sunat_response_message' => $cdrResponse ? $cdrResponse->getDescription() : $this->invoice->sunat_response_message,
+                'status' => $isAccepted ? 'paid' : $this->invoice->status, // Opcional, actualizar status negocio
             ])->save();
         });
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1ce55b0215bca63e1ea52e04b113dd73",
+    "content-hash": "aeeb3d8fb749d2726dbfe6b9a5a0fb3c",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -415,6 +415,141 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "codersfree/laravel-greenter",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codersfree/laravel-greenter.git",
+                "reference": "573cffae007f5b947defc2e621f2a26c5ddc5911"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codersfree/laravel-greenter/zipball/573cffae007f5b947defc2e621f2a26c5ddc5911",
+                "reference": "573cffae007f5b947defc2e621f2a26c5ddc5911",
+                "shasum": ""
+            },
+            "require": {
+                "codersfree/report": "^1.0",
+                "greenter/htmltopdf": "^5.1",
+                "greenter/lite": "^5.1",
+                "illuminate/console": "^10.0|^11.0|^12.0",
+                "illuminate/contracts": "^10.0|^11.0|^12.0",
+                "illuminate/filesystem": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/view": "^10.0|^11.0|^12.0",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.0"
+            },
+            "suggest": {
+                "laravel/telescope": "Recomendado para depuración durante el desarrollo"
+            },
+            "type": "laravel-package",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Greenter": "CodersFree\\LaravelGreenter\\Facades\\Greenter",
+                        "GreenterReport": "CodersFree\\LaravelGreenter\\Facades\\GreenterReport",
+                        "GreenterDespatch": "CodersFree\\LaravelGreenter\\Facades\\GreenterDespatch"
+                    },
+                    "providers": [
+                        "CodersFree\\LaravelGreenter\\GreenterServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CodersFree\\LaravelGreenter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CodersFree",
+                    "email": "victor@codersfree.com"
+                }
+            ],
+            "description": "Laravel package for Greenter",
+            "homepage": "https://github.com/codersfree/laravel-greenter",
+            "keywords": [
+                "boletas",
+                "facturacion",
+                "facturas",
+                "greenter",
+                "laravel",
+                "pdf",
+                "sunat"
+            ],
+            "support": {
+                "issues": "https://github.com/codersfree/laravel-greenter/issues",
+                "source": "https://github.com/codersfree/laravel-greenter"
+            },
+            "time": "2025-09-04T17:20:52+00:00"
+        },
+        {
+            "name": "codersfree/report",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codersfree/report.git",
+                "reference": "24d3d891e030a1a266ba51d7dd00b3fe3cfdc1aa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codersfree/report/zipball/24d3d891e030a1a266ba51d7dd00b3fe3cfdc1aa",
+                "reference": "24d3d891e030a1a266ba51d7dd00b3fe3cfdc1aa",
+                "shasum": ""
+            },
+            "require": {
+                "bacon/bacon-qr-code": "^2.0|^3.0",
+                "greenter/core": "^5.0",
+                "php": ">=7.4",
+                "twig/twig": "~3.0"
+            },
+            "require-dev": {
+                "greenter/data": "^5.0",
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Greenter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Giancarlos Salas",
+                    "email": "giansalex@gmail.com"
+                }
+            ],
+            "description": "Representacion Impresa para Facturacion Electrónica SUNAT - Perú",
+            "homepage": "https://greenter.dev/",
+            "keywords": [
+                "facturacion-electronica",
+                "greenter",
+                "pdf",
+                "sunat"
+            ],
+            "support": {
+                "forum": "https://community.greenter.dev/",
+                "source": "https://github.com/codersfree/report/tree/v1.0.0"
+            },
+            "time": "2025-06-12T19:04:05+00:00"
         },
         {
             "name": "composer/pcre",
@@ -10513,5 +10648,5 @@
         "ext-soap": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

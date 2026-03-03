@@ -22,7 +22,7 @@ class InvoiceFileDownloader extends Component
 
     public function render()
     {
-        $storageDisk = config('billing.storage.disk_xml_cdr');
+        $storageDisk = config('greenter.storage.disk_xml_cdr');
 
         $xmlAvailable = $this->invoice->xml_path && Storage::disk($storageDisk)->exists($this->invoice->xml_path);
         $cdrAvailable = $this->invoice->cdr_path && Storage::disk($storageDisk)->exists($this->invoice->cdr_path);

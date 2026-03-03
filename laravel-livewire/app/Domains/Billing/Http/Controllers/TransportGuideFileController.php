@@ -17,7 +17,7 @@ class TransportGuideFileController extends Controller
         $this->authorize('view', $transportGuide);
         abort_unless($request->hasValidSignature(), 403);
 
-        $disk = config('billing.storage.disk_xml_cdr');
+        $disk = config('greenter.storage.disk_xml_cdr', 'public');
         abort_if(! $transportGuide->xml_path || ! Storage::disk($disk)->exists($transportGuide->xml_path), 404);
 
         return Storage::disk($disk)->download($transportGuide->xml_path, $transportGuide->full_code . '.xml');
@@ -28,7 +28,7 @@ class TransportGuideFileController extends Controller
         $this->authorize('view', $transportGuide);
         abort_unless($request->hasValidSignature(), 403);
 
-        $disk = config('billing.storage.disk_xml_cdr');
+        $disk = config('greenter.storage.disk_xml_cdr', 'public');
         abort_if(! $transportGuide->cdr_path || ! Storage::disk($disk)->exists($transportGuide->cdr_path), 404);
 
         return Storage::disk($disk)->download($transportGuide->cdr_path, $transportGuide->full_code . '.zip');
@@ -39,7 +39,7 @@ class TransportGuideFileController extends Controller
         $this->authorize('view', $transportGuide);
         abort_unless($request->hasValidSignature(), 403);
 
-        $disk = config('billing.storage.disk_xml_cdr');
+        $disk = config('greenter.storage.disk_xml_cdr', 'public');
         abort_if(! $transportGuide->pdf_path || ! Storage::disk($disk)->exists($transportGuide->pdf_path), 404);
 
         return Storage::disk($disk)->download($transportGuide->pdf_path, $transportGuide->full_code . '.pdf');

@@ -68,6 +68,21 @@
             @enderror
             </div>
 
+            <div class="form-field col-span-1 md:col-span-2 space-y-4 border-t pt-4">
+                <h3 class="text-sm font-medium text-gray-700">Datos de la autorización especial (Opcional)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-field">
+                        <label for="special_auth_issuer" class="form-label">Entidad emisora</label>
+                        <input type="text" id="special_auth_issuer" wire:model.defer="form.special_auth_issuer" class="form-control" placeholder="Ej. MTC, SUCAMEC">
+                        @error('form.special_auth_issuer') <span class="form-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-field">
+                        <label for="special_auth_number" class="form-label">Número de autorización</label>
+                        <input type="text" id="special_auth_number" wire:model.defer="form.special_auth_number" class="form-control" placeholder="Ej. AUT-1234-">
+                        @error('form.special_auth_number') <span class="form-error">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
             <div class="form-field">
                 <label for="capacity" class="form-label">Capacidad (Ton)</label>
                 <input type="number" step="0.01" id="capacity" wire:model.defer="form.capacity" class="form-control">

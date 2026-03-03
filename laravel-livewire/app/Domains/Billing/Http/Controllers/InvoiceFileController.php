@@ -18,7 +18,7 @@ class InvoiceFileController extends Controller
         $this->authorize('view', $invoice);
         abort_unless($request->hasValidSignature(), 403);
 
-        $disk = config('billing.storage.disk_xml_cdr');
+        $disk = config('greenter.storage.disk_xml_cdr');
         abort_if(! $invoice->xml_path || ! Storage::disk($disk)->exists($invoice->xml_path), 404);
 
         return Storage::disk($disk)->download($invoice->xml_path, $invoice->numero_completo.'.xml');
