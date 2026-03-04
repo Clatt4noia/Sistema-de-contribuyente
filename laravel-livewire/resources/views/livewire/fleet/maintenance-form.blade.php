@@ -36,6 +36,7 @@
  <option value="Preventivo">Preventivo</option>
  <option value="Correctivo">Correctivo</option>
  <option value="Revisión">Revisión</option>
+ <option value="Inspección técnica vehicular">Inspección técnica vehicular (ITV)</option>
  <option value="Cambio de aceite">Cambio de aceite</option>
  <option value="Cambio de filtros">Cambio de filtros</option>
  <option value="Cambio de neumáticos">Cambio de neumáticos</option>
@@ -71,7 +72,7 @@
  </div>
 
  <div class="form-field">
- <label for="description" class="form-label">Descripción</label>
+ <label for="description" class="form-label">Descripción *</label>
  <textarea id="description" wire:model="form.description" rows="3" class="form-control"></textarea>
  @error('form.description') <span class="form-error">{{ $message }}</span> @enderror
  </div>

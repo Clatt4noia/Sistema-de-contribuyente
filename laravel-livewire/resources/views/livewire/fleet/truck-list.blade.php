@@ -1,8 +1,8 @@
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
  <div class="space-y-1">
- <h1 class="text-2xl font-semibold text-token ">Gestion de Camiones</h1>
- <p class="text-sm text-token ">Monitorea disponibilidad, mantenimientos y asignaciones de la flota.</p>
+ <h1 class="text-2xl font-semibold text-token">Gestión de Camiones</h1>
+ <p class="text-sm text-token">Monitorea disponibilidad, mantenimientos y asignaciones de la flota.</p>
  </div>
     <a href="{{ route('fleet.trucks.create') }}" class="btn btn-primary">
         <span class="text-lg leading-none">+</span>
@@ -16,23 +16,27 @@
  </div>
  @endif
 
- <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
- <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-token ">Camiones disponibles</p>
- <p class="mt-1 text-2xl font-semibold text-success ">{{ $statusTotals['available'] ?? 0 }}</p>
- </div>
- <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-token ">Camiones en uso</p>
- <p class="mt-1 text-2xl font-semibold text-accent ">{{ $statusTotals['in_use'] ?? 0 }}</p>
- </div>
- <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-token ">En mantenimiento</p>
- <p class="mt-1 text-2xl font-semibold text-warning ">{{ $statusTotals['maintenance'] ?? 0 }}</p>
- </div>
- <div class="surface-card p-4 shadow-sm">
- <p class="text-sm text-token ">Mantenimientos proximos (30 dias)</p>
- <p class="mt-1 text-2xl font-semibold text-danger ">{{ $maintenanceDueSoon }}</p>
- </div>
+ <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
+    <div class="surface-card p-4 shadow-sm">
+        <p class="text-sm text-token">Disponibles</p>
+        <p class="mt-1 text-2xl font-semibold text-success">{{ $statusTotals['available'] ?? 0 }}</p>
+    </div>
+    <div class="surface-card p-4 shadow-sm">
+        <p class="text-sm text-token">En uso</p>
+        <p class="mt-1 text-2xl font-semibold text-accent">{{ $statusTotals['in_use'] ?? 0 }}</p>
+    </div>
+    <div class="surface-card p-4 shadow-sm">
+        <p class="text-sm text-token">En mantenimiento</p>
+        <p class="mt-1 text-2xl font-semibold text-warning">{{ $statusTotals['maintenance'] ?? 0 }}</p>
+    </div>
+    <div class="surface-card p-4 shadow-sm">
+        <p class="text-sm text-token">Fuera de servicio</p>
+        <p class="mt-1 text-2xl font-semibold text-danger">{{ $statusTotals['out_of_service'] ?? 0 }}</p>
+    </div>
+    <div class="surface-card p-4 shadow-sm">
+        <p class="text-sm text-token">Mant. próximos (30 días)</p>
+        <p class="mt-1 text-2xl font-semibold text-danger">{{ $maintenanceDueSoon }}</p>
+    </div>
  </div>
 
  <div class="surface-card shadow-lg">
@@ -61,11 +65,11 @@
         <tr class="table-row">
           <th class="table-header">Placa</th>
           <th class="table-header">Marca/Modelo</th>
-          <th class="table-header">Ano</th>
+          <th class="table-header">Año</th>
           <th class="table-header">Tipo</th>
           <th class="table-header">Kilometraje</th>
           <th class="table-header">Estado</th>
-          <th class="table-header">Prox. Mant.</th>
+          <th class="table-header">Próx. Mant.</th>
           <th class="table-header">Alerta</th>
           <th class="table-header text-center">Pend. Mant.</th>
           <th class="table-header text-right">Acciones</th>

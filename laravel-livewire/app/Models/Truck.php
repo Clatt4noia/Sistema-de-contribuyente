@@ -32,6 +32,7 @@ class Truck extends Model
         'year',
         'type',
         'mtc_registration_number',
+        'tuce_number',
         'special_auth_issuer',
         'special_auth_number',
         'capacity',

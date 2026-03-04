@@ -19,8 +19,8 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('components.layouts.app.sidebar', ['title' => 'Asignacion'])]
-#[Title('Asignacion')]
+#[Layout('components.layouts.app.sidebar', ['title' => 'Asignación'])]
+#[Title('Asignación')]
 class AssignmentForm extends Component
 {
     use AuthorizesRequests;
@@ -140,7 +140,7 @@ class AssignmentForm extends Component
         $validated = $this->validate();
         $this->assignmentService->save($this->assignment, $validated['form']);
 
-        session()->flash('message', $this->isEdit ? 'Asignacion actualizada correctamente.' : 'Asignacion creada correctamente.');
+        session()->flash('message', $this->isEdit ? 'Asignación actualizada correctamente.' : 'Asignación creada correctamente.');
         return $this->redirectRoute('fleet.assignments.index');
     }
 

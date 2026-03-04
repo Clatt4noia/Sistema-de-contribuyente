@@ -64,9 +64,9 @@
             <th class="table-header sticky left-0 z-20 bg-[color:var(--color-surface-muted)]">Chofer</th>
 
             <th class="table-header whitespace-nowrap">Documento</th>
-            <th class="table-header whitespace-nowrap">Licencia</th>
+            <th class="table-header whitespace-nowrap">Licencia / Cat.</th>
             <th class="table-header whitespace-nowrap">Vencimiento</th>
-            <th class="table-header">Horarios</th>
+            <th class="table-header whitespace-nowrap">Horarios</th>
             <th class="table-header whitespace-nowrap">Estado</th>
 
             <!-- Columnas opcionales (visibles desde XL) -->
@@ -115,7 +115,12 @@
               </td>
 
               <td class="table-cell whitespace-nowrap text-sm text-token">{{ $driver->document_number }}</td>
-              <td class="table-cell whitespace-nowrap text-sm text-token">{{ $driver->license_number }}</td>
+              <td class="table-cell whitespace-nowrap text-sm text-token">
+                <div>{{ $driver->license_number }}</div>
+                @if($driver->license_category)
+                  <div class="mt-0.5 text-xs text-token/60 font-medium">{{ $driver->license_category }}</div>
+                @endif
+              </td>
 
               <td class="table-cell whitespace-nowrap text-sm text-token">
                 {{ $driver->license_expiration->format('d/m/Y') }}
@@ -132,17 +137,20 @@
               </td>
 
               <td class="table-cell text-sm text-token">
-                <div class="flex items-center justify-between gap-3">
-               
-
-                  <button
-                    type="button"
-                    wire:click="openDriverModal({{ $driver->id }})"
-                    class="btn btn-ghost btn-sm"
-                  >
-                    Ver
-                  </button>
-                </div>
+                @if($scheduleSummary)
+                  <div class="text-xs text-token/80 max-w-[180px] truncate" title="{{ $scheduleSummary }}">
+                    {{ $scheduleSummary }}
+                  </div>
+                @else
+                  <span class="text-xs text-token/40 italic">Sin horarios</span>
+                @endif
+                <button
+                  type="button"
+                  wire:click="openDriverModal({{ $driver->id }})"
+                  class="btn btn-ghost btn-sm mt-1"
+                >
+                  Ver detalle
+                </button>
               </td>
 
               <td class="table-cell whitespace-nowrap">
@@ -226,6 +234,16 @@
           </div>
 
           <div class="grid gap-5 px-5 py-5 md:grid-cols-2">
+            <div>
+              <p class="text-sm text-token/70">N° Licencia</p>
+              <p class="mt-1 text-sm text-token">{{ $selectedDriver?->license_number ?? '-' }}</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-token/70">Categoría de licencia</p>
+              <p class="mt-1 text-sm text-token">{{ $selectedDriver?->license_category ?? 'No registrada' }}</p>
+            </div>
+
             <div>
               <p class="text-sm text-token/70">Vencimiento de licencia</p>
               <p class="mt-1 text-sm text-token">{{ $selectedDriver?->license_expiration?->format('d/m/Y') ?? '-' }}</p>

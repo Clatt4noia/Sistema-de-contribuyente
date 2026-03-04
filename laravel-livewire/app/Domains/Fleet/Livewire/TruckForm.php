@@ -68,9 +68,9 @@ class TruckForm extends Component
             'form.year' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
             'form.type' => ['required', 'string', 'max:50'],
             'form.mtc_registration_number' => ['nullable', 'string', 'max:50'],
+            'form.tuce_number' => ['nullable', 'string', 'max:50'],
             'form.capacity' => ['nullable', 'numeric', 'min:0'],
             'form.mileage' => ['nullable', 'integer', 'min:0'],
-            'form.status' => ['required', 'string', 'in:' . implode(',', $truckStatusValues)],
             'form.status' => ['required', 'string', 'in:' . implode(',', $truckStatusValues)],
             'form.special_auth_issuer' => ['nullable', 'string', 'max:100'],
             'form.special_auth_number' => ['nullable', 'string', 'max:50'],
@@ -104,8 +104,8 @@ class TruckForm extends Component
             'model' => $this->truck->model ?? '',
             'year' => $this->truck->year ?? (int) date('Y'),
             'type' => $this->truck->type ?? '',
-            'type' => $this->truck->type ?? '',
             'mtc_registration_number' => $this->truck->mtc_registration_number ?? '',
+            'tuce_number' => $this->truck->tuce_number ?? '',
             'special_auth_issuer' => $this->truck->special_auth_issuer ?? '',
             'special_auth_number' => $this->truck->special_auth_number ?? '',
             'capacity' => $this->truck->capacity ?? null,
@@ -157,8 +157,8 @@ class TruckForm extends Component
         // Normalizamos valores numericos y fechas para evitar nulos inconsistentes.
         $data['capacity'] = $data['capacity'] !== null ? (float) $data['capacity'] : null;
         $data['mileage'] = $data['mileage'] !== null ? (int) $data['mileage'] : 0;
-        $data['mileage'] = $data['mileage'] !== null ? (int) $data['mileage'] : 0;
         $data['mtc_registration_number'] = trim((string) ($data['mtc_registration_number'] ?? '')) ?: null;
+        $data['tuce_number'] = trim((string) ($data['tuce_number'] ?? '')) ?: null;
         $data['special_auth_issuer'] = trim((string) ($data['special_auth_issuer'] ?? '')) ?: null;
         $data['special_auth_number'] = trim((string) ($data['special_auth_number'] ?? '')) ?: null;
         $data['technical_details'] = trim((string) $data['technical_details']) ?: null;
