@@ -13,7 +13,7 @@ enum AssignmentStatus: string
     {
         return match ($this) {
             self::Scheduled => __('Programado'),
-            self::InProgress => __('En progreso'),
+            self::InProgress => __('En ruta'),
             self::Completed => __('Completado'),
             self::Cancelled => __('Cancelado'),
         };

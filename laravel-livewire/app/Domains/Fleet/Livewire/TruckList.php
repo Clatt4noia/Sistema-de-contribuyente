@@ -69,7 +69,10 @@ class TruckList extends Component
                 $query->whereNotNull('next_maintenance')
                     ->whereDate('next_maintenance', '<=', now()->addMonth())
                     ->orWhere(function ($mileageQuery) {
-                        $mileageQuery->whereColumn('mileage', '>=', DB::raw('last_maintenance_mileage + maintenance_mileage_threshold'));
+                        $mileageQuery
+                            ->whereNotNull('last_maintenance_mileage')
+                            ->whereNotNull('maintenance_mileage_threshold')
+                            ->whereRaw('mileage >= COALESCE(last_maintenance_mileage, 0) + COALESCE(maintenance_mileage_threshold, 0)');
                     });
             })
             ->count();

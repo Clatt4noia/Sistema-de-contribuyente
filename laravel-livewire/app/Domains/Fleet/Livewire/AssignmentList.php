@@ -101,7 +101,7 @@ class AssignmentList extends Component
             }
         });
 
-        session()->flash('message', 'Asignacion eliminada correctamente.');
+        session()->flash('message', 'Asignación eliminada correctamente.');
     }
 
     public function render()

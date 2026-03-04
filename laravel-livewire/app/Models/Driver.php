@@ -24,6 +24,7 @@ class Driver extends Model
         'document_type',
         'document_number',
         'license_number',
+        'license_category',
         'license_expiration',
         'phone',
         'email',

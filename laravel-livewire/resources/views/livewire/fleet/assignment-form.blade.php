@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
  <div class="flex flex-wrap items-center justify-between gap-4">
- <h2 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Asignacion' : 'Nueva Asignacion' }}</h2>
+ <h2 class="text-2xl font-semibold text-token ">{{ $isEdit ? 'Editar Asignación' : 'Nueva Asignación' }}</h2>
     <a href="{{ route('fleet.assignments.index') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i>
         Volver
@@ -20,7 +20,7 @@
                     class="form-control form-md @error('form.order_id') is-invalid @enderror"
                     @error('form.order_id') aria-invalid="true" aria-describedby="order_id-error" @enderror
                 >
-                    <option value="">Seleccione un Orden</option>
+                    <option value="">Seleccione una orden</option>
                     @foreach($orders as $order)
                         <option value="{{ $order['id'] }}">{{ $order['reference'] }} - {{ $order['origin'] }} -> {{ $order['destination'] }}</option>
                     @endforeach
@@ -68,7 +68,7 @@
                     class="form-control form-md @error('form.truck_id') is-invalid @enderror"
                     @error('form.truck_id') aria-invalid="true" aria-describedby="truck_id-error" @enderror
                 >
-                    <option value="">Seleccione un vehiculo</option>
+                    <option value="">Seleccione un vehículo</option>
                     @foreach($trucks as $truck)
                         <option value="{{ $truck['id'] }}">{{ $truck['plate_number'] }} - {{ $truck['brand'] }} {{ $truck['model'] }} ({{ $truck['status_label'] }})</option>
                     @endforeach
@@ -162,10 +162,10 @@
                     class="form-control form-md @error('form.status') is-invalid @enderror"
                     @error('form.status') aria-invalid="true" aria-describedby="status-error" @enderror
                 >
-                    <option value="scheduled">Programada</option>
+                    <option value="scheduled">Programado</option>
                     <option value="in_progress">En ruta</option>
-                    <option value="completed">Completada</option>
-                    <option value="cancelled">Cancelada</option>
+                    <option value="completed">Completado</option>
+                    <option value="cancelled">Cancelado</option>
                 </select>
                 @error('form.status')
                     <p id="status-error" class="form-error">{{ $message }}</p>
