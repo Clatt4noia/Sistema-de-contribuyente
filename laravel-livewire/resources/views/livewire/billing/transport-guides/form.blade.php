@@ -339,17 +339,17 @@
                         <div class="grid grid-cols-1 gap-y-8 gap-x-6 sm:grid-cols-6">
                             <!-- Vehiculo Card -->
                             <div class="sm:col-span-6 md:col-span-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                <label class="block text-sm font-medium text-gray-900 mb-2">Vehículo / Tracto</label>
+                                <label class="block text-sm font-medium text-gray-900 mb-2">Vehículo / Tracto (Principal) <span class="text-red-500">*</span></label>
                                 <select wire:model.live="form.truck_id" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     <option value="">-- Seleccionar --</option>
-                                    @foreach($trucks as $truck)
+                                    @foreach($primaryTrucks as $truck)
                                         <option value="{{ $truck->id }}">{{ $truck->plate_number }} {{ $truck->brand ? '- '.$truck->brand : '' }}</option>
                                     @endforeach
                                 </select>
                                 
                                 @if($form['vehicle_plate'])
                                     <div class="mt-4 p-3 bg-white rounded border border-gray-200 shadow-sm">
-                                        <p class="text-xs text-gray-500 uppercase tracking-wide">Placa Seleccionada</p>
+                                        <p class="text-xs text-gray-500 uppercase tracking-wide">Placa Principal</p>
                                         <p class="text-lg font-mono font-bold text-indigo-600">{{ $form['vehicle_plate'] }}</p>
                                         @if($form['vehicle_brand'])
                                             <p class="text-sm text-gray-600">{{ $form['vehicle_brand'] }}</p>
@@ -360,20 +360,39 @@
                                         </div>
                                     </div>
 
+                                    @if(!empty($form['special_auth_issuer']) || !empty($form['special_auth_number']))
                                     <div class="mt-4 pt-4 border-t border-gray-200">
-                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Autorización Especial (Opcional)</h4>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Autorización Especial (Principal)</h4>
                                         <div class="space-y-3">
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-700">Entidad Emisora</label>
-                                                <input type="text" wire:model="form.special_auth_issuer" placeholder="Ej: MTC, SUCAMEC" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm sm:text-sm">
+                                                <input type="text" wire:model="form.special_auth_issuer" readonly class="mt-1 block w-full bg-gray-50 border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-600 cursor-not-allowed">
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-700">N° Autorización</label>
-                                                <input type="text" wire:model="form.special_auth_number" placeholder="Ej: AUT-123" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm sm:text-sm">
+                                                <input type="text" wire:model="form.special_auth_number" readonly class="mt-1 block w-full bg-gray-50 border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-600 cursor-not-allowed">
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                 @endif
+
+                                <div class="mt-6 pt-6 border-t border-gray-200">
+                                    <label class="block text-sm font-medium text-gray-900 mb-2">Remolque / Secundario (Opcional)</label>
+                                    <select wire:model.live="form.secondary_truck_id" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <option value="">-- Sin Remolque --</option>
+                                        @foreach($secondaryTrucks as $truck)
+                                            <option value="{{ $truck->id }}">{{ $truck->plate_number }} {{ $truck->brand ? '- '.$truck->brand : '' }}</option>
+                                        @endforeach
+                                    </select>
+                                    
+                                    @if($form['secondary_vehicle_plate'])
+                                        <div class="mt-4 p-3 bg-white rounded border border-gray-200 shadow-sm">
+                                            <p class="text-xs text-gray-500 uppercase tracking-wide">Placa Secundaria</p>
+                                            <p class="text-lg font-mono font-bold text-indigo-600">{{ $form['secondary_vehicle_plate'] }}</p>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
 
                             <!-- Conductor Card -->

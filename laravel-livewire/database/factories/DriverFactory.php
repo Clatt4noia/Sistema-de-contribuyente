@@ -22,6 +22,7 @@ class DriverFactory extends Factory
             'document_type' => $this->faker->randomElement(['1', '4']),
             'document_number' => $this->faker->unique()->numerify('########'),
             'license_number' => strtoupper($this->faker->regexify('[A-Z][0-9]{8}')), // Formato real: Letra + 8 dígitos del DNI
+            'license_category' => $this->faker->randomElement(['A-IIb', 'A-IIIa', 'A-IIIb', 'A-IIIc']),
             'license_expiration' => $licenseExpiration,
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),

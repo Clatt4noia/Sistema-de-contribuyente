@@ -70,6 +70,15 @@
                     </div>
 
                     <div class="form-field">
+                        <label for="is_secondary" class="form-label">Tipo de Vehículo <span class="text-danger-strong">*</span></label>
+                        <select id="is_secondary" wire:model.defer="form.is_secondary" class="form-control">
+                            <option value="0">Tracto / Vehículo Principal</option>
+                            <option value="1">Remolque / Vehículo Secundario</option>
+                        </select>
+                        @error('form.is_secondary') <span class="form-error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-field">
                         <label for="status" class="form-label">Estado <span class="text-danger-strong">*</span></label>
                         <select id="status" wire:model.defer="form.status" class="form-control">
                             @foreach($statusLabels as $value => $label)
@@ -87,14 +96,7 @@
                 <h3 class="text-sm font-semibold text-token uppercase tracking-wide mb-4">Habilitación MTC</h3>
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
-                    <div class="form-field">
-                        <label for="mtc_registration_number" class="form-label">N° Habilitación MTC (empresa)</label>
-                        <input type="text" id="mtc_registration_number"
-                            wire:model.defer="form.mtc_registration_number"
-                            class="form-control" placeholder="Ej. 1586716CNG" autocomplete="off">
-                        <p class="text-xs text-gray-400 mt-1">Número de habilitación de la empresa transportista ante el MTC.</p>
-                        @error('form.mtc_registration_number') <span class="form-error">{{ $message }}</span> @enderror
-                    </div>
+
 
                     <div class="form-field">
                         <label for="tuce_number" class="form-label">N° TUCE (por vehículo)</label>

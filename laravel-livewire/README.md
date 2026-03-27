@@ -215,6 +215,33 @@ Además de facturas, puedes emitir:
 
 Consulta la [documentación de Greenter](https://github.com/thegreenter/greenter) para ver los campos específicos de cada uno.
 
+---
+
+## 🚚 Requisitos Estrictos: Guías de Remisión Transportista (GRE-T)
+
+Para evitar rechazos y errores estructurales de formato al emitir **Guías de Remisión (Transportista / Remitente)** mediante OSE o SUNAT (como el Error 3355), el sistema exige registrar la información maestra con los siguientes formatos obligatorios:
+
+### 1. Vehículos (Tractos y Remolques)
+* **Placa del Vehículo:** 6 caracteres alfanuméricos en mayúsculas, **sin guiones** (ej. `C9F813`).
+* **TUCE (Tarjeta Única de Circulación):** Código alfanumérico emitido al vehículo (ej. `15M23039620E`). Indispensable para validar la unidad principal y al menos un remolque.
+* **Autorización Especial (Emisor):** Usualmente `MTC` (Mapeado internamente en el XML al Código `06` del Catálogo D-37 SUNAT).
+* **N° de Autorización:** Número oficial vinculado al vehículo (ej. `151908863`).
+* **Vehículos Secundarios:** El sistema distingue entre "Principal" y "Secundario" mediante la bandera `is_secondary`. Si se anexa un remolque a la guía, se inyecta la etiqueta UBL `<cac:AttachedTransportEquipment>` respetando la secuencia estandarizada.
+
+### 2. Conductores
+* **Tipo de Documento:** DNI (`1`) obligatorio para nacionales.
+* **Número de Documento:** Exactamente `8` dígitos numéricos.
+* **Licencia de Conducir:** Alfanumérico de `9` caracteres. Normalmente, es una letra alfabética seguida de 8 números (casi siempre el DNI). Ejemplo: `Q09794946` o `V16837629`.
+
+### 3. Clientes (Remitentes / Destinatarios)
+* **Tipo de Documento:** RUC (`6`) para el registro formal de la carga.
+* **Número de RUC:** Exactamente `11` dígitos numéricos (prefijos `10` o `20`).
+
+### 4. Detalles de la Carga (Bienes)
+* **Unidad de Medida (UND):** Deben utilizarse catálogos internacionales de SUNAT (ej. `KGM` para kilogramos, `NIU` para unidades, `TNE` para toneladas).
+
+---
+
 ## 🎨 Generar Representación Impresa
 
 ### 🧾 HTML

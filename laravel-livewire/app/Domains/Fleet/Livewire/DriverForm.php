@@ -40,7 +40,7 @@ class DriverForm extends Component
             'form.license_number' => [
                 'required',
                 'string',
-                'max:20',
+                'regex:/^[A-Z][0-9]{8}$/',
                 Rule::unique('drivers', 'license_number')->ignore($this->driver->id),
             ],
             'form.license_category' => ['nullable', 'string', 'in:A-I,A-IIa,A-IIb,A-IIIa,A-IIIb,B-I,B-IIa,B-IIb,B-IIc'],

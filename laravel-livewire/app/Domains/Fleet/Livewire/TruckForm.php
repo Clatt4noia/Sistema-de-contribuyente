@@ -59,7 +59,7 @@ class TruckForm extends Component
             'form.plate_number' => [
                 'required',
                 'string',
-                'max:20',
+                'regex:/^[A-Z][0-9][A-Z][0-9]{3}$/',
                 Rule::unique('trucks', 'plate_number')->ignore($this->truck->id),
             ],
             // Reglas de integridad para cada campo del formulario.
@@ -67,13 +67,13 @@ class TruckForm extends Component
             'form.model' => ['required', 'string', 'max:50'],
             'form.year' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
             'form.type' => ['required', 'string', 'max:50'],
-            'form.mtc_registration_number' => ['nullable', 'string', 'max:50'],
-            'form.tuce_number' => ['nullable', 'string', 'max:50'],
+            'form.tuce_number' => ['nullable', 'string', 'regex:/^[A-Za-z0-9]+$/', 'max:15'],
+            'form.is_secondary' => ['boolean'],
             'form.capacity' => ['nullable', 'numeric', 'min:0'],
             'form.mileage' => ['nullable', 'integer', 'min:0'],
             'form.status' => ['required', 'string', 'in:' . implode(',', $truckStatusValues)],
-            'form.special_auth_issuer' => ['nullable', 'string', 'max:100'],
-            'form.special_auth_number' => ['nullable', 'string', 'max:50'],
+            'form.special_auth_issuer' => ['nullable', 'string', 'in:MTC'],
+            'form.special_auth_number' => ['nullable', 'string', 'regex:/^[A-Za-z0-9]+$/', 'max:15'],
             'form.technical_details' => ['nullable', 'string'],
         ];
     }
@@ -104,8 +104,8 @@ class TruckForm extends Component
             'model' => $this->truck->model ?? '',
             'year' => $this->truck->year ?? (int) date('Y'),
             'type' => $this->truck->type ?? '',
-            'mtc_registration_number' => $this->truck->mtc_registration_number ?? '',
             'tuce_number' => $this->truck->tuce_number ?? '',
+            'is_secondary' => (bool) $this->truck->is_secondary,
             'special_auth_issuer' => $this->truck->special_auth_issuer ?? '',
             'special_auth_number' => $this->truck->special_auth_number ?? '',
             'capacity' => $this->truck->capacity ?? null,
@@ -157,7 +157,6 @@ class TruckForm extends Component
         // Normalizamos valores numericos y fechas para evitar nulos inconsistentes.
         $data['capacity'] = $data['capacity'] !== null ? (float) $data['capacity'] : null;
         $data['mileage'] = $data['mileage'] !== null ? (int) $data['mileage'] : 0;
-        $data['mtc_registration_number'] = trim((string) ($data['mtc_registration_number'] ?? '')) ?: null;
         $data['tuce_number'] = trim((string) ($data['tuce_number'] ?? '')) ?: null;
         $data['special_auth_issuer'] = trim((string) ($data['special_auth_issuer'] ?? '')) ?: null;
         $data['special_auth_number'] = trim((string) ($data['special_auth_number'] ?? '')) ?: null;

@@ -68,7 +68,8 @@ class TransportGuideForm extends Component
 
     // Resources from DB
     public $clients;
-    public $trucks;
+    public $primaryTrucks;
+    public $secondaryTrucks;
     public $drivers;
 
     // Ubigeo Selectors
@@ -210,7 +211,9 @@ class TransportGuideForm extends Component
             
             // Step 4: Resources
             'truck_id' => $this->transportGuide->truck_id,
+            'secondary_truck_id' => $this->transportGuide->secondary_truck_id,
             'vehicle_plate' => $this->transportGuide->vehicle_plate,
+            'secondary_vehicle_plate' => $this->transportGuide->secondary_vehicle_plate,
             'vehicle_brand' => $this->transportGuide->vehicle_brand,
             'mtc_registration_number' => $this->transportGuide->mtc_registration_number,
             'special_auth_issuer' => $this->transportGuide->special_auth_issuer,
@@ -240,7 +243,8 @@ class TransportGuideForm extends Component
         }
 
         $this->clients = Client::orderBy('business_name')->get(); 
-        $this->trucks = Truck::orderBy('plate_number')->get();
+        $this->primaryTrucks = Truck::where('is_secondary', false)->orderBy('plate_number')->get();
+        $this->secondaryTrucks = Truck::where('is_secondary', true)->orderBy('plate_number')->get();
         $this->drivers = Driver::orderBy('name')->get();
 
         // Load Departments (distinc)
@@ -305,6 +309,7 @@ class TransportGuideForm extends Component
                 $ifPrivate = Rule::requiredIf($this->form['transport_mode_code'] === '02' || $this->type === TransportGuide::TYPE_TRANSPORTISTA);
                 $rules = [
                     'form.truck_id' => $ifPrivate,
+                    'form.secondary_truck_id' => 'nullable',
                     'form.driver_id' => $ifPrivate,
                     'form.vehicle_plate' => $ifPrivate,
                     'form.driver_document_number' => $ifPrivate,
@@ -326,16 +331,25 @@ class TransportGuideForm extends Component
         $this->validate($rules);
     }
     
-    // Updated Logic for Resources Selection
     public function updatedFormTruckId($value): void
     {
-        $truck = $this->trucks->find($value);
+        $truck = $this->primaryTrucks->find($value);
         if ($truck) {
             $this->form['vehicle_plate'] = $truck->plate_number;
             $this->form['vehicle_brand'] = $truck->brand;
-            $this->form['mtc_registration_number'] = $truck->mtc_registration_number;
+            $this->form['mtc_registration_number'] = $truck->tuce_number;
             $this->form['special_auth_issuer'] = $truck->special_auth_issuer;
             $this->form['special_auth_number'] = $truck->special_auth_number;
+        }
+    }
+
+    public function updatedFormSecondaryTruckId($value): void
+    {
+        $truck = $this->secondaryTrucks->find($value);
+        if ($truck) {
+            $this->form['secondary_vehicle_plate'] = $truck->plate_number;
+        } else {
+            $this->form['secondary_vehicle_plate'] = null;
         }
     }
 
@@ -474,9 +488,15 @@ class TransportGuideForm extends Component
             'origin_address' => $this->form['origin_address'],
             'destination_ubigeo' => $this->form['destination_ubigeo'],
             'destination_address' => $this->form['destination_address'],
+            'order_id' => $this->form['order_id'] ?? null,
+            'assignment_id' => $this->form['assignment_id'] ?? null,
             
             'truck_id' => $this->form['truck_id'] ?? null,
+            'secondary_truck_id' => $this->form['secondary_truck_id'] ?? null,
+            'driver_id' => $this->form['driver_id'] ?? null,
+            
             'vehicle_plate' => $this->form['vehicle_plate'] ?? null,
+            'secondary_vehicle_plate' => $this->form['secondary_vehicle_plate'] ?? null,
             'vehicle_brand' => $this->form['vehicle_brand'] ?? null,
             'mtc_registration_number' => $this->form['mtc_registration_number'] ?? null,
             'special_auth_issuer' => $this->form['special_auth_issuer'] ?? null,

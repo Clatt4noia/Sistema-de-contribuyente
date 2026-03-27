@@ -57,8 +57,10 @@ class TransportGuide extends Model
         'order_id',
         'assignment_id',
         'truck_id',
+        'secondary_truck_id',
         'driver_id',
         'vehicle_plate',
+        'secondary_vehicle_plate',
         'vehicle_brand',
         'mtc_registration_number',
         'special_auth_issuer',
@@ -120,6 +122,11 @@ class TransportGuide extends Model
     public function truck(): BelongsTo
     {
         return $this->belongsTo(Truck::class);
+    }
+
+    public function secondaryTruck(): BelongsTo
+    {
+        return $this->belongsTo(Truck::class, 'secondary_truck_id');
     }
 
     public function driver(): BelongsTo

@@ -149,7 +149,44 @@ class TransportGuideIssuer
         if ($guide->vehicle_plate) {
             $vehicle = new Vehicle();
             $vehicle->setPlaca($guide->vehicle_plate);
+            
+            if ($guide->truck) {
+                $tuce = $guide->truck->tuce_number;
+                if ($tuce) {
+                    $vehicle->setNroCirculacion($tuce);
+                }
+                if ($guide->truck->special_auth_issuer) {
+                    // Mapeo a Catálogo N° D-37: 06 = MTC
+                    $issuerCode = strtoupper($guide->truck->special_auth_issuer) === 'MTC' ? '06' : '01';
+                    $vehicle->setCodEmisor($issuerCode);
+                }
+                if ($guide->truck->special_auth_number) {
+                    $vehicle->setNroAutorizacion($guide->truck->special_auth_number);
+                }
+            }
+            
             $shipment->setVehiculo($vehicle);
+        }
+
+        if ($guide->secondary_vehicle_plate) {
+            $secondaryVehicle = new Vehicle();
+            $secondaryVehicle->setPlaca($guide->secondary_vehicle_plate);
+            
+            if ($guide->secondaryTruck) {
+                $tuce = $guide->secondaryTruck->tuce_number;
+                if ($tuce) {
+                    $secondaryVehicle->setNroCirculacion($tuce);
+                }
+                if ($guide->secondaryTruck->special_auth_issuer) {
+                    $issuerCode = strtoupper($guide->secondaryTruck->special_auth_issuer) === 'MTC' ? '06' : '01';
+                    $secondaryVehicle->setCodEmisor($issuerCode);
+                }
+                if ($guide->secondaryTruck->special_auth_number) {
+                    $secondaryVehicle->setNroAutorizacion($guide->secondaryTruck->special_auth_number);
+                }
+            }
+            
+            $shipment->vehiculoSecundario = $secondaryVehicle;
         }
 
         // Agregamos Chofer (DriverPerson)

@@ -41,17 +41,15 @@ class TruckFactory extends Factory
         $lastMaintenance = $this->faker->dateTimeBetween('-6 months', '-1 month');
 
         return [
-            'plate_number' => strtoupper($this->faker->regexify('[A-Z]{3}[0-9]{3}')), // Formato simple sin guiones: ABC1234
+            'plate_number' => strtoupper($this->faker->regexify('[A-Z][0-9][A-Z][0-9]{3}')), // Formato: C9F813
             'brand' => $this->faker->randomElement(['Volvo', 'Scania', 'Mercedes-Benz', 'MAN']),
             'model' => $this->faker->randomElement(['FH', 'R-Series', 'Actros', 'TGX']) . ' ' . $this->faker->numberBetween(2000, 2024),
             'year' => $this->faker->numberBetween(2018, 2024),
-            'type' => $this->faker->randomElement(['semi-trailer', 'straight', 'box', 'flatbed']),
-            'mtc_registration_number' => $this->faker->numerify('#######'), // TUC solo números (7 dígitos)
-            'special_auth_issuer' => $this->faker->boolean(30) ? $this->faker->randomElement(['IQBF', 'MTC_ESPECIAL', 'OSINERGMIN']) : null,
-            'special_auth_number' => function (array $attributes) {
-                return $attributes['special_auth_issuer'] ? strtoupper($this->faker->bothify('AUTH-####')) : null;
-            },
-            'capacity' => $this->faker->numberBetween(10, 30) * 1000,
+            'type' => $this->faker->randomElement(['Tractocamion', 'Camion', 'Semirremolque', 'Furgon', 'Cisterna', 'Volquete', 'Plataforma']),
+            'tuce_number' => $this->faker->numerify('#########'), // 9 dígitos (ej. 151705003)
+            'special_auth_issuer' => 'MTC', // Siempre MTC
+            'special_auth_number' => $this->faker->numerify('#########'), // 9 dígitos (ej. 151908863)
+            'capacity' => $this->faker->numberBetween(10, 30) + 0.5,
             'mileage' => $this->faker->numberBetween(5000, 250000),
             'status' => $this->faker->randomElement(['available', 'maintenance', 'in_use']),
             'last_maintenance' => $lastMaintenance,
